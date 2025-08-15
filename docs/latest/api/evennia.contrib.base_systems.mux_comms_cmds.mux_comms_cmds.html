@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.base_systems.mux_comms_cmds.tests" href="evennia.contrib.base_systems.mux_comms_cmds.tests.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.mux_comms_cmds" href="evennia.contrib.base_systems.mux_comms_cmds.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.mux_comms_cmds.tests.html" title="evennia.contrib.base_systems.mux_comms_cmds.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.mux_comms_cmds.html" title="evennia.contrib.base_systems.mux_comms_cmds"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.mux_comms_cmds.html" accesskey="U">evennia.contrib.base_systems.mux_comms_cmds</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds">
+<span id="evennia-contrib-base-systems-mux-comms-cmds-mux-comms-cmds"></span><h1>evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds<a class="headerlink" href="#module-evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds" title="Link to this heading">¶</a></h1>
+<p>Legacy Comms-commands</p>
+<p>Griatch 2021</p>
+<p>In Evennia 1.0, the old Channel commands (originally inspired by MUX) were
+replaced by the single <strong>channel</strong> command that performs all these function.
+That command is still required to talk on channels. This contrib (extracted
+from Evennia 0.9.5) reuses the channel-management of the base Channel command
+but breaks out its functionality into separate Commands with MUX-familiar names.</p>
+<ul class="simple">
+<li><p><strong>allcom</strong> - <strong>channel/all</strong> and <strong>channel</strong></p></li>
+<li><p><strong>addcom</strong> - <strong>channel/alias</strong>, <strong>channel/sub</strong> and <strong>channel/unmute</strong></p></li>
+<li><p><strong>delcom</strong> - <strong>channel/unalias</strong>, <strong>alias/unsub</strong> and <strong>channel/mute</strong></p></li>
+<li><p><strong>cboot</strong> - <strong>channel/boot</strong> (<strong>channel/ban</strong> and <strong>/unban</strong> not supported)</p></li>
+<li><p><strong>cwho</strong> - <strong>channel/who</strong></p></li>
+<li><p><strong>ccreate</strong> - <strong>channel/create</strong></p></li>
+<li><p><strong>cdestroy</strong> - <strong>channel/destroy</strong></p></li>
+<li><p><strong>clock</strong> - <strong>channel/lock</strong></p></li>
+<li><p><strong>cdesc</strong> - <strong>channel/desc</strong></p></li>
+</ul>
+<p>Installation:</p>
+<ul class="simple">
+<li><p>Import the <strong>CmdSetLegacyComms</strong> cmdset from this module into <strong>mygame/commands/default_cmdsets.py</strong></p></li>
+<li><p>Add it to the CharacterCmdSet’s <strong>at_cmdset_creation</strong> method.</p></li>
+<li><p>Reload the server.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mygame/commands/default_cmdsets.py</span>
+
+<span class="c1"># ..</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.mux_comms_cmds</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSetLegacyComms</span>   <span class="c1"># &lt;----</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterCmdSet</span><span class="p">(</span><span class="n">default_cmds</span><span class="o">.</span><span class="n">CharacterCmdSet</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdSetLegacyComms</span><span class="p">)</span>   <span class="c1"># &lt;----</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdAddCom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdAddCom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>Add a channel alias and/or subscribe to a channel</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>addcom [alias=] &lt;channel&gt;</p>
+</dd>
+</dl>
+<p>Joins a given channel. If alias is given, this will allow you to
+refer to the channel by this alias rather than the full channel
+name. Subsequent calls of this command can be used to add multiple
+aliases to an already joined channel.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'addcom'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['aliaschan',</span> <span class="pre">'chanalias']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdAddCom.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'aliaschan</span> <span class="pre">chanalias',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'addcom',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">aliaschan</span> <span class="pre">chanalias',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nAdd</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">alias</span> <span class="pre">and/or</span> <span class="pre">subscribe</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">channel\n\nUsage:\n</span>&#160;&#160; <span class="pre">addcom</span> <span class="pre">[alias=]</span> <span class="pre">&lt;channel&gt;\n\nJoins</span> <span class="pre">a</span> <span class="pre">given</span> <span class="pre">channel.</span> <span class="pre">If</span> <span class="pre">alias</span> <span class="pre">is</span> <span class="pre">given,</span> <span class="pre">this</span> <span class="pre">will</span> <span class="pre">allow</span> <span class="pre">you</span> <span class="pre">to\nrefer</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">channel</span> <span class="pre">by</span> <span class="pre">this</span> <span class="pre">alias</span> <span class="pre">rather</span> <span class="pre">than</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">channel\nname.</span> <span class="pre">Subsequent</span> <span class="pre">calls</span> <span class="pre">of</span> <span class="pre">this</span> <span class="pre">command</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">add</span> <span class="pre">multiple\naliases</span> <span class="pre">to</span> <span class="pre">an</span> <span class="pre">already</span> <span class="pre">joined</span> <span class="pre">channel.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdDelCom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdDelCom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>remove a channel alias and/or unsubscribe from channel</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>delcom &lt;alias or channel&gt;
+delcom/all &lt;channel&gt;</p>
+</dd>
+</dl>
+<p>If the full channel name is given, unsubscribe from the
+channel. If an alias is given, remove the alias but don’t
+unsubscribe. If the ‘all’ switch is used, remove all aliases
+for that channel.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'delcom'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['delaliaschan',</span> <span class="pre">'delchanalias']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">perm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdDelCom.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implementing the command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">perm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'delaliaschan</span> <span class="pre">delchanalias',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'delcom',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">delaliaschan</span> <span class="pre">delchanalias',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nremove</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">alias</span> <span class="pre">and/or</span> <span class="pre">unsubscribe</span> <span class="pre">from</span> <span class="pre">channel\n\nUsage:\n</span>&#160;&#160; <span class="pre">delcom</span> <span class="pre">&lt;alias</span> <span class="pre">or</span> <span class="pre">channel&gt;\n</span>&#160;&#160; <span class="pre">delcom/all</span> <span class="pre">&lt;channel&gt;\n\nIf</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">channel</span> <span class="pre">name</span> <span class="pre">is</span> <span class="pre">given,</span> <span class="pre">unsubscribe</span> <span class="pre">from</span> <span class="pre">the\nchannel.</span> <span class="pre">If</span> <span class="pre">an</span> <span class="pre">alias</span> <span class="pre">is</span> <span class="pre">given,</span> <span class="pre">remove</span> <span class="pre">the</span> <span class="pre">alias</span> <span class="pre">but</span> <span class="pre">don't\nunsubscribe.</span> <span class="pre">If</span> <span class="pre">the</span> <span class="pre">'all'</span> <span class="pre">switch</span> <span class="pre">is</span> <span class="pre">used,</span> <span class="pre">remove</span> <span class="pre">all</span> <span class="pre">aliases\nfor</span> <span class="pre">that</span> <span class="pre">channel.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdAllCom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdAllCom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>perform admin operations on all channels</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>allcom [on | off | who | destroy]</p>
+</dd>
+</dl>
+<p>Allows the user to universally turn off or on all channels they are on, as
+well as perform a ‘who’ for all channels they are on. Destroy deletes all
+channels that you control.</p>
+<p>Without argument, works like comlist.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'allcom'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdAllCom.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.func" title="Link to this definition">¶</a></dt>
+<dd><p>Runs the function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'allcom',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nperform</span> <span class="pre">admin</span> <span class="pre">operations</span> <span class="pre">on</span> <span class="pre">all</span> <span class="pre">channels\n\nUsage:\n</span>&#160; <span class="pre">allcom</span> <span class="pre">[on</span> <span class="pre">|</span> <span class="pre">off</span> <span class="pre">|</span> <span class="pre">who</span> <span class="pre">|</span> <span class="pre">destroy]\n\nAllows</span> <span class="pre">the</span> <span class="pre">user</span> <span class="pre">to</span> <span class="pre">universally</span> <span class="pre">turn</span> <span class="pre">off</span> <span class="pre">or</span> <span class="pre">on</span> <span class="pre">all</span> <span class="pre">channels</span> <span class="pre">they</span> <span class="pre">are</span> <span class="pre">on,</span> <span class="pre">as\nwell</span> <span class="pre">as</span> <span class="pre">perform</span> <span class="pre">a</span> <span class="pre">'who'</span> <span class="pre">for</span> <span class="pre">all</span> <span class="pre">channels</span> <span class="pre">they</span> <span class="pre">are</span> <span class="pre">on.</span> <span class="pre">Destroy</span> <span class="pre">deletes</span> <span class="pre">all\nchannels</span> <span class="pre">that</span> <span class="pre">you</span> <span class="pre">control.\n\nWithout</span> <span class="pre">argument,</span> <span class="pre">works</span> <span class="pre">like</span> <span class="pre">comlist.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdCdestroy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCdestroy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>destroy a channel you created</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cdestroy &lt;channel&gt;</p>
+</dd>
+</dl>
+<p>Destroys a channel that you control.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdestroy'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCdestroy.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.func" title="Link to this definition">¶</a></dt>
+<dd><p>Destroy objects cleanly.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'cdestroy',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\ndestroy</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">you</span> <span class="pre">created\n\nUsage:\n</span>&#160; <span class="pre">cdestroy</span> <span class="pre">&lt;channel&gt;\n\nDestroys</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">that</span> <span class="pre">you</span> <span class="pre">control.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdCBoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCBoot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>kick an account from a channel you control</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cboot[/quiet] &lt;channel&gt; = &lt;account&gt; [:reason]</p>
+</dd>
+<dt>Switch:</dt><dd><p>quiet - don’t notify the channel</p>
+</dd>
+</dl>
+<p>Kicks an account or object from a channel you control.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cboot'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.switch_options">
+<span class="sig-name descname"><span class="pre">switch_options</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('quiet',)</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.switch_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCBoot.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.func" title="Link to this definition">¶</a></dt>
+<dd><p>implement the function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'cboot',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nkick</span> <span class="pre">an</span> <span class="pre">account</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">you</span> <span class="pre">control\n\nUsage:\n</span>&#160;&#160; <span class="pre">cboot[/quiet]</span> <span class="pre">&lt;channel&gt;</span> <span class="pre">=</span> <span class="pre">&lt;account&gt;</span> <span class="pre">[:reason]\n\nSwitch:\n</span>&#160;&#160; <span class="pre">quiet</span> <span class="pre">-</span> <span class="pre">don't</span> <span class="pre">notify</span> <span class="pre">the</span> <span class="pre">channel\n\nKicks</span> <span class="pre">an</span> <span class="pre">account</span> <span class="pre">or</span> <span class="pre">object</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">you</span> <span class="pre">control.\n\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdCWho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCWho"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>show who is listening to a channel</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cwho &lt;channel&gt;</p>
+</dd>
+</dl>
+<p>List who is connected to a given channel you have access to.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cwho'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCWho.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.func" title="Link to this definition">¶</a></dt>
+<dd><p>implement function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();cmd:</span> <span class="pre">not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'cwho',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nshow</span> <span class="pre">who</span> <span class="pre">is</span> <span class="pre">listening</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">channel\n\nUsage:\n</span>&#160; <span class="pre">cwho</span> <span class="pre">&lt;channel&gt;\n\nList</span> <span class="pre">who</span> <span class="pre">is</span> <span class="pre">connected</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">given</span> <span class="pre">channel</span> <span class="pre">you</span> <span class="pre">have</span> <span class="pre">access</span> <span class="pre">to.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdChannelCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdChannelCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>create a new channel</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>ccreate &lt;new channel&gt;[;alias;alias…] = description</p>
+</dd>
+</dl>
+<p>Creates a new channel owned by you.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ccreate'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['channelcreate']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)</span> <span class="pre">and</span> <span class="pre">pperm(Player)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdChannelCreate.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)</span> <span class="pre">and</span> <span class="pre">pperm(Player)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'channelcreate',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'ccreate',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">channelcreate',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\ncreate</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">channel\n\nUsage:\n</span> <span class="pre">ccreate</span> <span class="pre">&lt;new</span> <span class="pre">channel&gt;[;alias;alias...]</span> <span class="pre">=</span> <span class="pre">description\n\nCreates</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">channel</span> <span class="pre">owned</span> <span class="pre">by</span> <span class="pre">you.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdClock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdClock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>change channel locks of a channel you control</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>clock &lt;channel&gt; [= &lt;lockstring&gt;]</p>
+</dd>
+</dl>
+<p>Changes the lock access restrictions of a channel. If no
+lockstring was given, view the current lock definitions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clock'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)</span> <span class="pre">and</span> <span class="pre">perm(Admin)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdClock.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.func" title="Link to this definition">¶</a></dt>
+<dd><p>run the function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)</span> <span class="pre">and</span> <span class="pre">perm(Admin)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'clock',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nchange</span> <span class="pre">channel</span> <span class="pre">locks</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">you</span> <span class="pre">control\n\nUsage:\n</span>&#160; <span class="pre">clock</span> <span class="pre">&lt;channel&gt;</span> <span class="pre">[=</span> <span class="pre">&lt;lockstring&gt;]\n\nChanges</span> <span class="pre">the</span> <span class="pre">lock</span> <span class="pre">access</span> <span class="pre">restrictions</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">channel.</span> <span class="pre">If</span> <span class="pre">no\nlockstring</span> <span class="pre">was</span> <span class="pre">given,</span> <span class="pre">view</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">lock</span> <span class="pre">definitions.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdCdesc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCdesc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.comms.html#evennia.commands.default.comms.CmdChannel" title="evennia.commands.default.comms.CmdChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdChannel</span></code></a></p>
+<p>describe a channel you control</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cdesc &lt;channel&gt; = &lt;description&gt;</p>
+</dd>
+</dl>
+<p>Changes the description of the channel as shown in
+channel lists.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cdesc'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'comms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdCdesc.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implement command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:not</span> <span class="pre">pperm(channel_banned)'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'comms',</span> <span class="pre">'key':</span> <span class="pre">'cdesc',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\ndescribe</span> <span class="pre">a</span> <span class="pre">channel</span> <span class="pre">you</span> <span class="pre">control\n\nUsage:\n</span>&#160; <span class="pre">cdesc</span> <span class="pre">&lt;channel&gt;</span> <span class="pre">=</span> <span class="pre">&lt;description&gt;\n\nChanges</span> <span class="pre">the</span> <span class="pre">description</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">channel</span> <span class="pre">as</span> <span class="pre">shown</span> <span class="pre">in\nchannel</span> <span class="pre">lists.\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.</span></span><span class="sig-name descname"><span class="pre">CmdSetLegacyComms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdSetLegacyComms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms.at_cmdset_createion">
+<span class="sig-name descname"><span class="pre">at_cmdset_createion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/mux_comms_cmds/mux_comms_cmds.html#CmdSetLegacyComms.at_cmdset_createion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms.at_cmdset_createion" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom"><code class="docutils literal notranslate"><span class="pre">CmdAddCom</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.key"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.locks"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.func"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAddCom.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAddCom.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom"><code class="docutils literal notranslate"><span class="pre">CmdDelCom</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.key"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.locks"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.func"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdDelCom.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDelCom.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom"><code class="docutils literal notranslate"><span class="pre">CmdAllCom</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.key"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.locks"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.func"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdAllCom.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAllCom.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.key"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.locks"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.func"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdestroy.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCdestroy.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot"><code class="docutils literal notranslate"><span class="pre">CmdCBoot</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.key"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.switch_options"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.switch_options</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.locks"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.func"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCBoot.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCBoot.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho"><code class="docutils literal notranslate"><span class="pre">CmdCWho</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.key"><code class="docutils literal notranslate"><span class="pre">CmdCWho.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCWho.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.locks"><code class="docutils literal notranslate"><span class="pre">CmdCWho.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCWho.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdCWho.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.func"><code class="docutils literal notranslate"><span class="pre">CmdCWho.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCWho.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCWho.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCWho.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.key"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.aliases"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.locks"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.help_category"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.func"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdChannelCreate.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdChannelCreate.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock"><code class="docutils literal notranslate"><span class="pre">CmdClock</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.key"><code class="docutils literal notranslate"><span class="pre">CmdClock.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.aliases"><code class="docutils literal notranslate"><span class="pre">CmdClock.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.locks"><code class="docutils literal notranslate"><span class="pre">CmdClock.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.help_category"><code class="docutils literal notranslate"><span class="pre">CmdClock.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdClock.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.func"><code class="docutils literal notranslate"><span class="pre">CmdClock.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdClock.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdClock.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdClock.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc"><code class="docutils literal notranslate"><span class="pre">CmdCdesc</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.key"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.locks"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.func"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdCdesc.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCdesc.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms"><code class="docutils literal notranslate"><span class="pre">CmdSetLegacyComms</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms.at_cmdset_createion"><code class="docutils literal notranslate"><span class="pre">CmdSetLegacyComms.at_cmdset_createion()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.CmdSetLegacyComms.path"><code class="docutils literal notranslate"><span class="pre">CmdSetLegacyComms.path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.mux_comms_cmds.html"
+                          title="previous chapter">evennia.contrib.base_systems.mux_comms_cmds</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.mux_comms_cmds.tests.html"
+                          title="next chapter">evennia.contrib.base_systems.mux_comms_cmds.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.mux_comms_cmds.tests.html" title="evennia.contrib.base_systems.mux_comms_cmds.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.mux_comms_cmds.html" title="evennia.contrib.base_systems.mux_comms_cmds"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.mux_comms_cmds.html" >evennia.contrib.base_systems.mux_comms_cmds</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.mux_comms_cmds.mux_comms_cmds</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

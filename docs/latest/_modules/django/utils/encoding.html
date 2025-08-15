@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.utils.encoding &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.encoding</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.utils.encoding</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">codecs</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">locale</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoneType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">quote</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">Promise</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DjangoUnicodeDecodeError</span><span class="p">(</span><span class="ne">UnicodeDecodeError</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">. You passed in </span><span class="si">%r</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">),</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="smart_str">
+<a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.accounts.models.smart_str">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">smart_str</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">strings_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a string representing &#39;s&#39;. Treat bytestrings using the &#39;encoding&#39;</span>
+<span class="sd">    codec.</span>
+
+<span class="sd">    If strings_only is True, don&#39;t convert (some) non-string-like objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+        <span class="c1"># The input is the result of a gettext_lazy() call.</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">force_str</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">strings_only</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span></div>
+
+
+
+<span class="n">_PROTECTED_TYPES</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">NoneType</span><span class="p">,</span>
+    <span class="nb">int</span><span class="p">,</span>
+    <span class="nb">float</span><span class="p">,</span>
+    <span class="n">Decimal</span><span class="p">,</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_protected_type</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if the object instance is of a protected type.</span>
+
+<span class="sd">    Objects of protected types are preserved as-is when passed to</span>
+<span class="sd">    force_str(strings_only=True).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">_PROTECTED_TYPES</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">force_str</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">strings_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Similar to smart_str(), except that lazy instances are resolved to</span>
+<span class="sd">    strings, rather than kept as lazy objects.</span>
+
+<span class="sd">    If strings_only is True, don&#39;t convert (some) non-string-like objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Handle the common case first for performance reasons.</span>
+    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">if</span> <span class="n">strings_only</span> <span class="ow">and</span> <span class="n">is_protected_type</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DjangoUnicodeDecodeError</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">smart_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">strings_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a bytestring version of &#39;s&#39;, encoded as specified in &#39;encoding&#39;.</span>
+
+<span class="sd">    If strings_only is True, don&#39;t convert (some) non-string-like objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+        <span class="c1"># The input is the result of a gettext_lazy() call.</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">force_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">strings_only</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">force_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">strings_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;strict&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Similar to smart_bytes, except that lazy instances are resolved to</span>
+<span class="sd">    strings, rather than kept as lazy objects.</span>
+
+<span class="sd">    If strings_only is True, don&#39;t convert (some) non-string-like objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Handle the common case first for performance reasons.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">encoding</span> <span class="o">==</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">strings_only</span> <span class="ow">and</span> <span class="n">is_protected_type</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">memoryview</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">iri_to_uri</span><span class="p">(</span><span class="n">iri</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert an Internationalized Resource Identifier (IRI) portion to a URI</span>
+<span class="sd">    portion that is suitable for inclusion in a URL.</span>
+
+<span class="sd">    This is the algorithm from RFC 3987 Section 3.1, slightly simplified since</span>
+<span class="sd">    the input is assumed to be a string rather than an arbitrary byte stream.</span>
+
+<span class="sd">    Take an IRI (string or UTF-8 bytes, e.g. &#39;/I ♥ Django/&#39; or</span>
+<span class="sd">    b&#39;/I \xe2\x99\xa5 Django/&#39;) and return a string containing the encoded</span>
+<span class="sd">    result with ASCII chars only (e.g. &#39;/I%20%E2%99%A5%20Django/&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The list of safe characters here is constructed from the &quot;reserved&quot; and</span>
+    <span class="c1"># &quot;unreserved&quot; characters specified in RFC 3986 Sections 2.2 and 2.3:</span>
+    <span class="c1">#     reserved    = gen-delims / sub-delims</span>
+    <span class="c1">#     gen-delims  = &quot;:&quot; / &quot;/&quot; / &quot;?&quot; / &quot;#&quot; / &quot;[&quot; / &quot;]&quot; / &quot;@&quot;</span>
+    <span class="c1">#     sub-delims  = &quot;!&quot; / &quot;$&quot; / &quot;&amp;&quot; / &quot;&#39;&quot; / &quot;(&quot; / &quot;)&quot;</span>
+    <span class="c1">#                   / &quot;*&quot; / &quot;+&quot; / &quot;,&quot; / &quot;;&quot; / &quot;=&quot;</span>
+    <span class="c1">#     unreserved  = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot;</span>
+    <span class="c1"># Of the unreserved characters, urllib.parse.quote() already considers all</span>
+    <span class="c1"># but the ~ safe.</span>
+    <span class="c1"># The % character is also added to the list of safe characters here, as the</span>
+    <span class="c1"># end of RFC 3987 Section 3.1 specifically mentions that % must not be</span>
+    <span class="c1"># converted.</span>
+    <span class="k">if</span> <span class="n">iri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">iri</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">Promise</span><span class="p">):</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="n">iri</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;/#%[]=:;$&amp;()+,!?*@&#39;~&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># List of byte values that uri_to_iri() decodes from percent encoding.</span>
+<span class="c1"># First, the unreserved characters from RFC 3986:</span>
+<span class="n">_ascii_ranges</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">95</span><span class="p">,</span> <span class="mi">126</span><span class="p">],</span> <span class="nb">range</span><span class="p">(</span><span class="mi">65</span><span class="p">,</span> <span class="mi">91</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">123</span><span class="p">)]</span>
+<span class="n">_hextobyte</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">(</span><span class="n">fmt</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">():</span> <span class="nb">bytes</span><span class="p">((</span><span class="n">char</span><span class="p">,))</span>
+    <span class="k">for</span> <span class="n">ascii_range</span> <span class="ow">in</span> <span class="n">_ascii_ranges</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">ascii_range</span>
+    <span class="k">for</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;</span><span class="si">%02x</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%02X</span><span class="s2">&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="c1"># And then everything above 128, because bytes ≥ 128 are part of multibyte</span>
+<span class="c1"># Unicode characters.</span>
+<span class="n">_hexdig</span> <span class="o">=</span> <span class="s2">&quot;0123456789ABCDEFabcdef&quot;</span>
+<span class="n">_hextobyte</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="p">{(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">():</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">_hexdig</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">_hexdig</span><span class="p">}</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">uri_to_iri</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a Uniform Resource Identifier(URI) into an Internationalized</span>
+<span class="sd">    Resource Identifier(IRI).</span>
+
+<span class="sd">    This is the algorithm from RFC 3987 Section 3.2, excluding step 4.</span>
+
+<span class="sd">    Take an URI in ASCII bytes (e.g. &#39;/I%20%E2%99%A5%20Django/&#39;) and return</span>
+<span class="sd">    a string containing the encoded result (e.g. &#39;/I%20♥%20Django/&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">uri</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">uri</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">force_bytes</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+    <span class="c1"># Fast selective unquote: First, split on &#39;%&#39; and then starting with the</span>
+    <span class="c1"># second block, decode the first 2 bytes if they represent a hex code to</span>
+    <span class="c1"># decode. The rest of the block is the part after &#39;%AB&#39;, not containing</span>
+    <span class="c1"># any &#39;%&#39;. Add that to the output without further processing.</span>
+    <span class="n">bits</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bits</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="n">uri</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">append</span> <span class="o">=</span> <span class="n">parts</span><span class="o">.</span><span class="n">append</span>
+        <span class="n">hextobyte</span> <span class="o">=</span> <span class="n">_hextobyte</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">bits</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="nb">hex</span> <span class="o">=</span> <span class="n">item</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">hex</span> <span class="ow">in</span> <span class="n">hextobyte</span><span class="p">:</span>
+                <span class="n">append</span><span class="p">(</span><span class="n">hextobyte</span><span class="p">[</span><span class="n">item</span><span class="p">[:</span><span class="mi">2</span><span class="p">]])</span>
+                <span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">append</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;%&quot;</span><span class="p">)</span>
+                <span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">iri</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">repercent_broken_unicode</span><span class="p">(</span><span class="n">iri</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">escape_uri_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Escape the unsafe characters from the path portion of a Uniform Resource</span>
+<span class="sd">    Identifier (URI).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># These are the &quot;reserved&quot; and &quot;unreserved&quot; characters specified in RFC</span>
+    <span class="c1"># 3986 Sections 2.2 and 2.3:</span>
+    <span class="c1">#   reserved    = &quot;;&quot; | &quot;/&quot; | &quot;?&quot; | &quot;:&quot; | &quot;@&quot; | &quot;&amp;&quot; | &quot;=&quot; | &quot;+&quot; | &quot;$&quot; | &quot;,&quot;</span>
+    <span class="c1">#   unreserved  = alphanum | mark</span>
+    <span class="c1">#   mark        = &quot;-&quot; | &quot;_&quot; | &quot;.&quot; | &quot;!&quot; | &quot;~&quot; | &quot;*&quot; | &quot;&#39;&quot; | &quot;(&quot; | &quot;)&quot;</span>
+    <span class="c1"># The list of safe characters here is constructed subtracting &quot;;&quot;, &quot;=&quot;,</span>
+    <span class="c1"># and &quot;?&quot; according to RFC 3986 Section 3.3.</span>
+    <span class="c1"># The reason for not subtracting and escaping &quot;/&quot; is that we are escaping</span>
+    <span class="c1"># the entire path, not a path segment.</span>
+    <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;/:@&amp;+$,-_.!~*&#39;()&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">punycode</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the Punycode of the given domain if it&#39;s non-ASCII.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">domain</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;idna&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">repercent_broken_unicode</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    As per RFC 3987 Section 3.2, step three of converting a URI into an IRI,</span>
+<span class="sd">    repercent-encode any octet produced that is not part of a strictly legal</span>
+<span class="sd">    UTF-8 octet sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">changed_parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">UnicodeDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># CVE-2019-14235: A recursion shouldn&#39;t be used since the exception</span>
+            <span class="c1"># handling uses massive amounts of memory</span>
+            <span class="n">repercent</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">end</span><span class="p">],</span> <span class="n">safe</span><span class="o">=</span><span class="sa">b</span><span class="s2">&quot;/#%[]=:;$&amp;()+,!?*@&#39;~&quot;</span><span class="p">)</span>
+            <span class="n">changed_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[:</span> <span class="n">e</span><span class="o">.</span><span class="n">start</span><span class="p">]</span> <span class="o">+</span> <span class="n">repercent</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">end</span> <span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">changed_parts</span><span class="p">)</span> <span class="o">+</span> <span class="n">path</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">filepath_to_uri</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a file system path to a URI portion that is suitable for</span>
+<span class="sd">    inclusion in a URL.</span>
+
+<span class="sd">    Encode certain chars that would normally be recognized as special chars</span>
+<span class="sd">    for URIs. Do not encode the &#39; character, as it is a valid character</span>
+<span class="sd">    within URIs. See the encodeURIComponent() JavaScript function for details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="c1"># I know about `os.sep` and `os.altsep` but I want to leave</span>
+    <span class="c1"># some flexibility for hardcoding separators.</span>
+    <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;/~!*()&#39;&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_system_encoding</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The encoding for the character type functions. Fallback to &#39;ascii&#39; if the</span>
+<span class="sd">    #encoding is unsupported by Python or could not be determined. See tickets</span>
+<span class="sd">    #10335 and #5846.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="n">locale</span><span class="o">.</span><span class="n">getlocale</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="s2">&quot;ascii&quot;</span>
+        <span class="n">codecs</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;ascii&quot;</span>
+    <span class="k">return</span> <span class="n">encoding</span>
+
+
+<span class="n">DEFAULT_LOCALE_ENCODING</span> <span class="o">=</span> <span class="n">get_system_encoding</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.encoding</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

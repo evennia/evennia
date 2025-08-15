@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.utils.git_integration.tests &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.git_integration.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.utils.git_integration.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests of git.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">git</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mock</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.utils.git_integration.git_integration</span><span class="w"> </span><span class="kn">import</span> <span class="n">GitCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_to_string</span>
+
+
+<div class="viewcode-block" id="TestGitIntegration">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.tests.html#evennia.contrib.utils.git_integration.tests.TestGitIntegration">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestGitIntegration</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGitIntegration.setUp">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.tests.html#evennia.contrib.utils.git_integration.tests.TestGitIntegration.setUp">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;git.Repo&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;git.Git&quot;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;git.Actor&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_git</span><span class="p">,</span> <span class="n">mock_repo</span><span class="p">,</span> <span class="n">mock_author</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">mock_git</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">type</span><span class="p">(</span><span class="n">mock_repo</span><span class="o">.</span><span class="n">clone_from</span><span class="o">.</span><span class="n">return_value</span><span class="p">)</span><span class="o">.</span><span class="n">bare</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="n">mock_repo</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">add</span><span class="p">([</span><span class="s2">&quot;mock.txt&quot;</span><span class="p">])</span>
+        <span class="n">mock_git</span><span class="o">.</span><span class="n">Repo</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">git</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">InvalidGitRepositoryError</span>
+
+        <span class="n">mock_author</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Faux Author&quot;</span>
+        <span class="n">mock_author</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="s2">&quot;a@email.com&quot;</span>
+
+        <span class="n">commit_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">mock_repo</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span>
+            <span class="s2">&quot;Initial skeleton&quot;</span><span class="p">,</span>
+            <span class="n">author</span><span class="o">=</span><span class="n">mock_author</span><span class="p">,</span>
+            <span class="n">committer</span><span class="o">=</span><span class="n">mock_author</span><span class="p">,</span>
+            <span class="n">author_date</span><span class="o">=</span><span class="n">commit_date</span><span class="p">,</span>
+            <span class="n">commit_date</span><span class="o">=</span><span class="n">commit_date</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">test_cmd_git</span> <span class="o">=</span> <span class="n">GitCommand</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">test_cmd_git</span><span class="o">.</span><span class="n">repo</span> <span class="o">=</span> <span class="n">mock_repo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commit</span> <span class="o">=</span> <span class="n">test_cmd_git</span><span class="o">.</span><span class="n">commit</span> <span class="o">=</span> <span class="n">mock_git</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">branch</span> <span class="o">=</span> <span class="n">test_cmd_git</span><span class="o">.</span><span class="n">branch</span> <span class="o">=</span> <span class="n">mock_git</span><span class="o">.</span><span class="n">active_branch</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">test_cmd_git</span><span class="o">.</span><span class="n">caller</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char1</span>
+        <span class="n">test_cmd_git</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;nonexistent_branch&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span> <span class="o">=</span> <span class="n">test_cmd_git</span></div>
+
+
+<div class="viewcode-block" id="TestGitIntegration.test_git_status">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.tests.html#evennia.contrib.utils.git_integration.tests.TestGitIntegration.test_git_status">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">time_of_commit</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">committed_date</span><span class="p">)</span>
+        <span class="n">status_msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;Branch: |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">branch</span><span class="si">}</span><span class="s2">|n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span><span class="p">,</span><span class="w"> </span><span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">) (</span><span class="si">{</span><span class="n">time_of_commit</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;By </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">status_msg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">get_status</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="TestGitIntegration.test_git_branch">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.tests.html#evennia.contrib.utils.git_integration.tests.TestGitIntegration.test_git_branch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># View current branch</span>
+        <span class="n">remote_refs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">remote</span><span class="p">()</span><span class="o">.</span><span class="n">refs</span>
+        <span class="n">branch_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Current branch: |w</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">branch</span><span class="si">}</span><span class="s2">|n. Branches available: </span><span class="si">{</span><span class="n">list_to_string</span><span class="p">(</span><span class="n">remote_refs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">branch_msg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">get_branches</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="TestGitIntegration.test_git_checkout">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.tests.html#evennia.contrib.utils.git_integration.tests.TestGitIntegration.test_git_checkout">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_checkout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Checkout no branch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">checkout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="s2">&quot;Branch &#39;nonexistent_branch&#39; not available.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestGitIntegration.test_git_pull">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.utils.git_integration.tests.html#evennia.contrib.utils.git_integration.tests.TestGitIntegration.test_git_pull">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_git_pull</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_cmd_git</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char1</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;You have pulled new code. Server restart initiated.|/Head now at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">rev_parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span><span class="p">,</span><span class="w"> </span><span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">.|/Author: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">email</span><span class="si">}</span><span class="s2">)|/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.utils.git_integration.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

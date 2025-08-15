@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.game_systems.crafting &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.crafting.crafting" href="evennia.contrib.game_systems.crafting.crafting.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.cooldowns.tests" href="evennia.contrib.game_systems.cooldowns.tests.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.crafting.crafting.html" title="evennia.contrib.game_systems.crafting.crafting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.cooldowns.tests.html" title="evennia.contrib.game_systems.cooldowns.tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" accesskey="U">evennia.contrib.game_systems</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.crafting</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.crafting">
+<span id="evennia-contrib-game-systems-crafting"></span><h1>evennia.contrib.game_systems.crafting<a class="headerlink" href="#module-evennia.contrib.game_systems.crafting" title="Link to this heading">¶</a></h1>
+<p>Crafting - Griatch 2020</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html">evennia.contrib.game_systems.crafting.crafting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#crafting-in-game">Crafting in game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#crafting-in-code">Crafting in code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#recipes">Recipes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingError"><code class="docutils literal notranslate"><span class="pre">CraftingError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingValidationError"><code class="docutils literal notranslate"><span class="pre">CraftingValidationError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.name"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.allow_reuse"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.allow_reuse</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.__init__"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.msg"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.msg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.pre_craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.pre_craft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.do_craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.do_craft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.post_craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.post_craft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipeBase.craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipeBase.craft()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe"><code class="docutils literal notranslate"><span class="pre">NonExistentRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.allow_craft"><code class="docutils literal notranslate"><span class="pre">NonExistentRecipe.allow_craft</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.allow_reuse"><code class="docutils literal notranslate"><span class="pre">NonExistentRecipe.allow_reuse</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.__init__"><code class="docutils literal notranslate"><span class="pre">NonExistentRecipe.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.NonExistentRecipe.pre_craft"><code class="docutils literal notranslate"><span class="pre">NonExistentRecipe.pre_craft()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.name"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.consumable_tag_category"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.consumable_tag_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.tool_tag_category"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.tool_tag_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.exact_tools"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.exact_tools</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.exact_tool_order"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.exact_tool_order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.error_tool_missing_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.error_tool_missing_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.error_tool_order_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.error_tool_order_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.error_tool_excess_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.error_tool_excess_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.consume_on_fail"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.consume_on_fail</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.exact_consumables"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.exact_consumables</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.exact_consumable_order"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.exact_consumable_order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.error_consumable_missing_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.error_consumable_missing_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.error_consumable_order_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.error_consumable_order_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.error_consumable_excess_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.error_consumable_excess_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.output_prototypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.failure_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.failure_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.success_message"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.success_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.__init__"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.consumable_names"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.consumable_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.tool_names"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.tool_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.output_names"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.output_names</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.seed"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.pre_craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.pre_craft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.do_craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.do_craft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingRecipe.post_craft"><code class="docutils literal notranslate"><span class="pre">CraftingRecipe.post_craft()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.craft"><code class="docutils literal notranslate"><span class="pre">craft()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingCmdSet"><code class="docutils literal notranslate"><span class="pre">CraftingCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingCmdSet.key"><code class="docutils literal notranslate"><span class="pre">CraftingCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CraftingCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CraftingCmdSet.path"><code class="docutils literal notranslate"><span class="pre">CraftingCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft"><code class="docutils literal notranslate"><span class="pre">CmdCraft</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.key"><code class="docutils literal notranslate"><span class="pre">CmdCraft.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.locks"><code class="docutils literal notranslate"><span class="pre">CmdCraft.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCraft.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCraft.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.arg_regex"><code class="docutils literal notranslate"><span class="pre">CmdCraft.arg_regex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCraft.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCraft.search_index_entry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.parse"><code class="docutils literal notranslate"><span class="pre">CmdCraft.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.crafting.html#evennia.contrib.game_systems.crafting.crafting.CmdCraft.func"><code class="docutils literal notranslate"><span class="pre">CmdCraft.func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html">evennia.contrib.game_systems.crafting.example_recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#sword-crafting-tree">Sword crafting tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#recipes-used-for-spell-casting">Recipes used for spell casting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe"><code class="docutils literal notranslate"><span class="pre">PigIronRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.name"><code class="docutils literal notranslate"><span class="pre">PigIronRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">PigIronRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">PigIronRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.PigIronRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">PigIronRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe"><code class="docutils literal notranslate"><span class="pre">CrucibleSteelRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.name"><code class="docutils literal notranslate"><span class="pre">CrucibleSteelRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">CrucibleSteelRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">CrucibleSteelRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CrucibleSteelRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">CrucibleSteelRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe"><code class="docutils literal notranslate"><span class="pre">SwordBladeRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.name"><code class="docutils literal notranslate"><span class="pre">SwordBladeRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">SwordBladeRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">SwordBladeRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordBladeRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">SwordBladeRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe"><code class="docutils literal notranslate"><span class="pre">SwordPommelRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.name"><code class="docutils literal notranslate"><span class="pre">SwordPommelRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">SwordPommelRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">SwordPommelRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordPommelRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">SwordPommelRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe"><code class="docutils literal notranslate"><span class="pre">SwordGuardRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.name"><code class="docutils literal notranslate"><span class="pre">SwordGuardRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">SwordGuardRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">SwordGuardRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordGuardRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">SwordGuardRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe"><code class="docutils literal notranslate"><span class="pre">RawhideRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.name"><code class="docutils literal notranslate"><span class="pre">RawhideRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">RawhideRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">RawhideRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.RawhideRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">RawhideRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe"><code class="docutils literal notranslate"><span class="pre">OakBarkRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.name"><code class="docutils literal notranslate"><span class="pre">OakBarkRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">OakBarkRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">OakBarkRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.OakBarkRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">OakBarkRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe"><code class="docutils literal notranslate"><span class="pre">LeatherRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.name"><code class="docutils literal notranslate"><span class="pre">LeatherRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">LeatherRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">LeatherRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.LeatherRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">LeatherRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe"><code class="docutils literal notranslate"><span class="pre">SwordHandleRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.name"><code class="docutils literal notranslate"><span class="pre">SwordHandleRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">SwordHandleRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">SwordHandleRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordHandleRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">SwordHandleRecipe.output_prototypes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe"><code class="docutils literal notranslate"><span class="pre">SwordRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.name"><code class="docutils literal notranslate"><span class="pre">SwordRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.tool_tags"><code class="docutils literal notranslate"><span class="pre">SwordRecipe.tool_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.consumable_tags"><code class="docutils literal notranslate"><span class="pre">SwordRecipe.consumable_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.output_prototypes"><code class="docutils literal notranslate"><span class="pre">SwordRecipe.output_prototypes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.SwordRecipe.exact_consumable_order"><code class="docutils literal notranslate"><span class="pre">SwordRecipe.exact_consumable_order</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe"><code class="docutils literal notranslate"><span class="pre">FireballRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.name"><code class="docutils literal notranslate"><span class="pre">FireballRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.skill_requirements"><code class="docutils literal notranslate"><span class="pre">FireballRecipe.skill_requirements</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.skill_roll"><code class="docutils literal notranslate"><span class="pre">FireballRecipe.skill_roll</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.success_message"><code class="docutils literal notranslate"><span class="pre">FireballRecipe.success_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.desired_effects"><code class="docutils literal notranslate"><span class="pre">FireballRecipe.desired_effects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.FireballRecipe.failure_effects"><code class="docutils literal notranslate"><span class="pre">FireballRecipe.failure_effects</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe"><code class="docutils literal notranslate"><span class="pre">HealingRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.name"><code class="docutils literal notranslate"><span class="pre">HealingRecipe.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.skill_requirements"><code class="docutils literal notranslate"><span class="pre">HealingRecipe.skill_requirements</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.skill_roll"><code class="docutils literal notranslate"><span class="pre">HealingRecipe.skill_roll</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.success_message"><code class="docutils literal notranslate"><span class="pre">HealingRecipe.success_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.desired_effects"><code class="docutils literal notranslate"><span class="pre">HealingRecipe.desired_effects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.HealingRecipe.failure_effects"><code class="docutils literal notranslate"><span class="pre">HealingRecipe.failure_effects</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast"><code class="docutils literal notranslate"><span class="pre">CmdCast</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.key"><code class="docutils literal notranslate"><span class="pre">CmdCast.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.parse"><code class="docutils literal notranslate"><span class="pre">CmdCast.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.func"><code class="docutils literal notranslate"><span class="pre">CmdCast.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCast.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCast.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCast.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.example_recipes.html#evennia.contrib.game_systems.crafting.example_recipes.CmdCast.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCast.search_index_entry</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html">evennia.contrib.game_systems.crafting.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftUtils"><code class="docutils literal notranslate"><span class="pre">TestCraftUtils</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftUtils.maxDiff"><code class="docutils literal notranslate"><span class="pre">TestCraftUtils.maxDiff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftUtils.test_load_recipes"><code class="docutils literal notranslate"><span class="pre">TestCraftUtils.test_load_recipes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.setUp"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_msg"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase.test_msg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase.test_pre_craft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_pre_craft_fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase.test_pre_craft_fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_craft_hook__succeed"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase.test_craft_hook__succeed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipeBase.test_craft_hook__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipeBase.test_craft_hook__fail()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.maxDiff"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.maxDiff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.setUp"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.tearDown"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_error_format"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_error_format()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft__success"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft__success()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_seed__success"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_seed__success()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_tool__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_missing_tool__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_missing_cons__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_missing_cons__always_consume__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_missing_cons__always_consume__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_wrong_tool__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_wrong_tool__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_tool_excess__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_cons_excess__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_excess__sucess"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_tool_excess__sucess()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_excess__sucess"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_cons_excess__sucess()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_tool_order__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_tool_order__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftingRecipe.test_craft_cons_order__fail"><code class="docutils literal notranslate"><span class="pre">TestCraftingRecipe.test_craft_cons_order__fail()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword"><code class="docutils literal notranslate"><span class="pre">TestCraftSword</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword.setUp"><code class="docutils literal notranslate"><span class="pre">TestCraftSword.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftSword.test_craft_sword"><code class="docutils literal notranslate"><span class="pre">TestCraftSword.test_craft_sword()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand"><code class="docutils literal notranslate"><span class="pre">TestCraftCommand</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.setUp"><code class="docutils literal notranslate"><span class="pre">TestCraftCommand.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__success"><code class="docutils literal notranslate"><span class="pre">TestCraftCommand.test_craft__success()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__notools__failure"><code class="docutils literal notranslate"><span class="pre">TestCraftCommand.test_craft__notools__failure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__nocons__failure"><code class="docutils literal notranslate"><span class="pre">TestCraftCommand.test_craft__nocons__failure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.crafting.tests.html#evennia.contrib.game_systems.crafting.tests.TestCraftCommand.test_craft__unknown_recipe__failure"><code class="docutils literal notranslate"><span class="pre">TestCraftCommand.test_craft__unknown_recipe__failure()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.cooldowns.tests.html"
+                          title="previous chapter">evennia.contrib.game_systems.cooldowns.tests</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.crafting.crafting.html"
+                          title="next chapter">evennia.contrib.game_systems.crafting.crafting</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.crafting.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.crafting.crafting.html" title="evennia.contrib.game_systems.crafting.crafting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.cooldowns.tests.html" title="evennia.contrib.game_systems.cooldowns.tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.crafting</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

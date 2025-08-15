@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.web.admin.objects &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.web.admin.scripts" href="evennia.web.admin.scripts.html" />
+    <link rel="prev" title="evennia.web.admin.help" href="evennia.web.admin.help.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.scripts.html" title="evennia.web.admin.scripts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.help.html" title="evennia.web.admin.help"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.admin.html" accesskey="U">evennia.web.admin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.admin.objects</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.admin.objects">
+<span id="evennia-web-admin-objects"></span><h1>evennia.web.admin.objects<a class="headerlink" href="#module-evennia.web.admin.objects" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAttributeInline">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.objects.</span></span><span class="sig-name descname"><span class="pre">ObjectAttributeInline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAttributeInline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAttributeInline" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.admin.attributes.html#evennia.web.admin.attributes.AttributeInline" title="evennia.web.admin.attributes.AttributeInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeInline</span></code></a></p>
+<p>Defines inline descriptions of Attributes (experimental)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAttributeInline.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectAttributeInline.model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDB_db_attributes</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAttributeInline.related_field">
+<span class="sig-name descname"><span class="pre">related_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'objectdb'</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAttributeInline.related_field" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAttributeInline.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectAttributeInline.media" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectTagInline">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.objects.</span></span><span class="sig-name descname"><span class="pre">ObjectTagInline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectTagInline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectTagInline" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.admin.tags.html#evennia.web.admin.tags.TagInline" title="evennia.web.admin.tags.TagInline"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagInline</span></code></a></p>
+<p>Defines inline descriptions of Tags (experimental)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectTagInline.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectTagInline.model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDB_db_tags</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectTagInline.related_field">
+<span class="sig-name descname"><span class="pre">related_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'objectdb'</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectTagInline.related_field" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectTagInline.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectTagInline.media" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.objects.</span></span><span class="sig-name descname"><span class="pre">ObjectCreateForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectCreateForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>This form details the look of the fields.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.Meta">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectCreateForm.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.Meta" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.Meta.model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDB</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'__all__'</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.Meta.fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectCreateForm.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Tweak some fields dynamically.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'db_account':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_attributes':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_cmdset_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_destination':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_home':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_location':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_lock_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_sessid':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_tags':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_typeclass_path':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.base_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'db_cmdset_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_destination':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_home':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_location':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_lock_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_typeclass_path':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.declared_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectCreateForm.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectCreateForm.media" title="Link to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.objects.</span></span><span class="sig-name descname"><span class="pre">ObjectEditForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectEditForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm" title="evennia.web.admin.objects.ObjectCreateForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectCreateForm</span></code></a></p>
+<p>Form used for editing. Extends the create one with more fields</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm.Meta">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectEditForm.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm.Meta" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm.Meta.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm.Meta.model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB" title="evennia.objects.models.ObjectDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDB</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'__all__'</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm.Meta.fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'db_account':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_attributes':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_cmdset_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_destination':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_home':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_location':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_lock_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_sessid':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_tags':</span> <span class="pre">&lt;django.forms.models.ModelMultipleChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_typeclass_path':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm.base_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'db_account':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_cmdset_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_destination':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_home':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_location':</span> <span class="pre">&lt;django.forms.models.ModelChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_lock_storage':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_typeclass_path':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm.declared_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectEditForm.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectEditForm.media" title="Link to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.objects.</span></span><span class="sig-name descname"><span class="pre">ObjectAdmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelAdmin</span></code></p>
+<p>Describes the admin page for Objects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.inlines">
+<span class="sig-name descname"><span class="pre">inlines</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;class</span> <span class="pre">'evennia.web.admin.objects.ObjectTagInline'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'evennia.web.admin.objects.ObjectAttributeInline'&gt;]</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.inlines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.list_display">
+<span class="sig-name descname"><span class="pre">list_display</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',</span> <span class="pre">'db_key',</span> <span class="pre">'db_typeclass_path',</span> <span class="pre">'db_location',</span> <span class="pre">'db_destination',</span> <span class="pre">'db_account',</span> <span class="pre">'db_date_created')</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.list_display" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.list_display_links">
+<span class="sig-name descname"><span class="pre">list_display_links</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',</span> <span class="pre">'db_key')</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.list_display_links" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.ordering">
+<span class="sig-name descname"><span class="pre">ordering</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['-db_date_created',</span> <span class="pre">'-id']</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.ordering" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.search_fields">
+<span class="sig-name descname"><span class="pre">search_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['=id',</span> <span class="pre">'^db_key',</span> <span class="pre">'db_typeclass_path',</span> <span class="pre">'^db_account__db_key',</span> <span class="pre">'^db_location__db_key']</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.search_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.raw_id_fields">
+<span class="sig-name descname"><span class="pre">raw_id_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('db_destination',</span> <span class="pre">'db_location',</span> <span class="pre">'db_home',</span> <span class="pre">'db_account')</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.raw_id_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.readonly_fields">
+<span class="sig-name descname"><span class="pre">readonly_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('serialized_string',</span> <span class="pre">'link_button')</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.readonly_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.save_as">
+<span class="sig-name descname"><span class="pre">save_as</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.save_as" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.save_on_top">
+<span class="sig-name descname"><span class="pre">save_on_top</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.save_on_top" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.list_select_related">
+<span class="sig-name descname"><span class="pre">list_select_related</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.list_select_related" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.view_on_site">
+<span class="sig-name descname"><span class="pre">view_on_site</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.view_on_site" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.list_filter">
+<span class="sig-name descname"><span class="pre">list_filter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('db_typeclass_path',)</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.list_filter" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.form">
+<span class="sig-name descname"><span class="pre">form</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.form" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm" title="evennia.web.admin.objects.ObjectEditForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectEditForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.fieldsets">
+<span class="sig-name descname"><span class="pre">fieldsets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">((None,</span> <span class="pre">{'fields':</span> <span class="pre">(('db_key',</span> <span class="pre">'db_typeclass_path'),</span> <span class="pre">('db_location',</span> <span class="pre">'db_home',</span> <span class="pre">'db_destination'),</span> <span class="pre">('db_account',</span> <span class="pre">'link_button'),</span> <span class="pre">'db_cmdset_storage',</span> <span class="pre">'db_lock_storage',</span> <span class="pre">'serialized_string')}),)</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.fieldsets" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.add_form">
+<span class="sig-name descname"><span class="pre">add_form</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.add_form" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm" title="evennia.web.admin.objects.ObjectCreateForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectCreateForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.add_fieldsets">
+<span class="sig-name descname"><span class="pre">add_fieldsets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">((None,</span> <span class="pre">{'fields':</span> <span class="pre">(('db_key',</span> <span class="pre">'db_typeclass_path'),</span> <span class="pre">('db_location',</span> <span class="pre">'db_home',</span> <span class="pre">'db_destination'),</span> <span class="pre">'db_cmdset_storage')}),)</span></em><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.add_fieldsets" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.serialized_string">
+<span class="sig-name descname"><span class="pre">serialized_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.serialized_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.serialized_string" title="Link to this definition">¶</a></dt>
+<dd><p>Get the serialized version of the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.get_fieldsets">
+<span class="sig-name descname"><span class="pre">get_fieldsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.get_fieldsets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.get_fieldsets" title="Link to this definition">¶</a></dt>
+<dd><p>Return fieldsets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – Incoming request.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Database object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.get_form">
+<span class="sig-name descname"><span class="pre">get_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.get_form"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.get_form" title="Link to this definition">¶</a></dt>
+<dd><p>Use special form during creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – Incoming request.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em><em>, </em><em>optional</em>) – Database object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.get_urls">
+<span class="sig-name descname"><span class="pre">get_urls</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.get_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.get_urls" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.link_button">
+<span class="sig-name descname"><span class="pre">link_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.link_button"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.link_button" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.link_object_to_account">
+<span class="sig-name descname"><span class="pre">link_object_to_account</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.link_object_to_account"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.link_object_to_account" title="Link to this definition">¶</a></dt>
+<dd><p>Link object and account when pressing the button.</p>
+<p>This will:</p>
+<ul class="simple">
+<li><p>Set account.db._last_puppet to this object</p></li>
+<li><p>Add object to account.characters</p></li>
+<li><p>Change object locks to allow puppeting by account</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.save_model">
+<span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">form</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.save_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.save_model" title="Link to this definition">¶</a></dt>
+<dd><p>Model-save hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>) – Incoming request.</p></li>
+<li><p><strong>obj</strong> (<em>Object</em>) – Database object.</p></li>
+<li><p><strong>form</strong> (<em>Form</em>) – Form instance.</p></li>
+<li><p><strong>change</strong> (<em>bool</em>) – If this is a change or a new object.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.response_add">
+<span class="sig-name descname"><span class="pre">response_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_url_continue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/objects.html#ObjectAdmin.response_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.response_add" title="Link to this definition">¶</a></dt>
+<dd><p>Determine the HttpResponse for the add_view stage.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.objects.ObjectAdmin.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.objects.ObjectAdmin.media" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.web.admin.objects</a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAttributeInline"><code class="docutils literal notranslate"><span class="pre">ObjectAttributeInline</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAttributeInline.model"><code class="docutils literal notranslate"><span class="pre">ObjectAttributeInline.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAttributeInline.related_field"><code class="docutils literal notranslate"><span class="pre">ObjectAttributeInline.related_field</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAttributeInline.media"><code class="docutils literal notranslate"><span class="pre">ObjectAttributeInline.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectTagInline"><code class="docutils literal notranslate"><span class="pre">ObjectTagInline</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectTagInline.model"><code class="docutils literal notranslate"><span class="pre">ObjectTagInline.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectTagInline.related_field"><code class="docutils literal notranslate"><span class="pre">ObjectTagInline.related_field</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectTagInline.media"><code class="docutils literal notranslate"><span class="pre">ObjectTagInline.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.Meta"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.Meta.model"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.Meta.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.Meta.fields"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.Meta.fields</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.__init__"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.base_fields"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.base_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.declared_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectCreateForm.media"><code class="docutils literal notranslate"><span class="pre">ObjectCreateForm.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm.Meta"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm.Meta.model"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm.Meta.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm.Meta.fields"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm.Meta.fields</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm.base_fields"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm.base_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm.declared_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectEditForm.media"><code class="docutils literal notranslate"><span class="pre">ObjectEditForm.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.inlines"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.inlines</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.list_display"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.list_display</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.list_display_links"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.list_display_links</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.ordering"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.ordering</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.search_fields"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.search_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.raw_id_fields"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.raw_id_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.readonly_fields"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.readonly_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.save_as"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.save_as</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.save_on_top"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.save_on_top</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.list_select_related"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.list_select_related</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.view_on_site"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.view_on_site</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.list_filter"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.list_filter</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.form"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.form</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.fieldsets"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.fieldsets</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.add_form"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.add_form</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.add_fieldsets"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.add_fieldsets</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.serialized_string"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.serialized_string()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.get_fieldsets"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.get_fieldsets()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.get_form"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.get_form()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.get_urls"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.get_urls()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.link_button"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.link_button()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.link_object_to_account"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.link_object_to_account()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.save_model"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.save_model()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.response_add"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.response_add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.objects.ObjectAdmin.media"><code class="docutils literal notranslate"><span class="pre">ObjectAdmin.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.web.admin.help.html"
+                          title="previous chapter">evennia.web.admin.help</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.web.admin.scripts.html"
+                          title="next chapter">evennia.web.admin.scripts</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.admin.objects.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.scripts.html" title="evennia.web.admin.scripts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.help.html" title="evennia.web.admin.help"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.admin.html" >evennia.web.admin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.admin.objects</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.rpg.traits &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.rpg.traits.tests" href="evennia.contrib.rpg.traits.tests.html" />
+    <link rel="prev" title="evennia.contrib.rpg.rpsystem.tests" href="evennia.contrib.rpg.rpsystem.tests.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.traits.tests.html" title="evennia.contrib.rpg.traits.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.rpsystem.tests.html" title="evennia.contrib.rpg.rpsystem.tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" accesskey="U">evennia.contrib.rpg</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.traits</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.rpg.traits">
+<span id="evennia-contrib-rpg-traits"></span><h1>evennia.contrib.rpg.traits<a class="headerlink" href="#module-evennia.contrib.rpg.traits" title="Link to this heading">¶</a></h1>
+<p>Traits - Whitenoise 2014, Griatch 2020</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html">evennia.contrib.rpg.traits.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.setUp"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_add_trait"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_add_trait()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_cache"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_cache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_setting"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_setting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_getting"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_getting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_all"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_remove"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_clear"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_trait_db_connection"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_trait_db_connection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitHandlerTest.test_related_traits"><code class="docutils literal notranslate"><span class="pre">TraitHandlerTest.test_related_traits()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait"><code class="docutils literal notranslate"><span class="pre">TestTrait</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait.setUp"><code class="docutils literal notranslate"><span class="pre">TestTrait.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait.test_init"><code class="docutils literal notranslate"><span class="pre">TestTrait.test_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait.test_validate_input__valid"><code class="docutils literal notranslate"><span class="pre">TestTrait.test_validate_input__valid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait.test_validate_input__fail"><code class="docutils literal notranslate"><span class="pre">TestTrait.test_validate_input__fail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait.test_trait_getset"><code class="docutils literal notranslate"><span class="pre">TestTrait.test_trait_getset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTrait.test_repr"><code class="docutils literal notranslate"><span class="pre">TestTrait.test_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitStatic"><code class="docutils literal notranslate"><span class="pre">TestTraitStatic</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitStatic.setUp"><code class="docutils literal notranslate"><span class="pre">TestTraitStatic.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitStatic.test_init"><code class="docutils literal notranslate"><span class="pre">TestTraitStatic.test_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitStatic.test_value"><code class="docutils literal notranslate"><span class="pre">TestTraitStatic.test_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitStatic.test_delete"><code class="docutils literal notranslate"><span class="pre">TestTraitStatic.test_delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.setUp"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_init"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_value"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__minmax"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_boundaries__minmax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__bigmod"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_boundaries__bigmod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__change_boundaries"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_boundaries__change_boundaries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__disable"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_boundaries__disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_boundaries__inverse"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_boundaries__inverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_current"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_current()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_delete"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_percentage"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_percentage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounter.test_descs"><code class="docutils literal notranslate"><span class="pre">TestTraitCounter.test_descs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed"><code class="docutils literal notranslate"><span class="pre">TestTraitCounterTimed</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.setUp"><code class="docutils literal notranslate"><span class="pre">TestTraitCounterTimed.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.test_timer_rate"><code class="docutils literal notranslate"><span class="pre">TestTraitCounterTimed.test_timer_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitCounterTimed.test_timer_ratetarget"><code class="docutils literal notranslate"><span class="pre">TestTraitCounterTimed.test_timer_ratetarget()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.setUp"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_init"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_value"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__minmax"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_boundaries__minmax()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__bigmod"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_boundaries__bigmod()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__change_boundaries"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_boundaries__change_boundaries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__disable"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_boundaries__disable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_boundaries__inverse"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_boundaries__inverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_current"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_current()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_delete"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_percentage"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_percentage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGauge.test_descs"><code class="docutils literal notranslate"><span class="pre">TestTraitGauge.test_descs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed"><code class="docutils literal notranslate"><span class="pre">TestTraitGaugeTimed</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.setUp"><code class="docutils literal notranslate"><span class="pre">TestTraitGaugeTimed.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.test_timer_rate"><code class="docutils literal notranslate"><span class="pre">TestTraitGaugeTimed.test_timer_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitGaugeTimed.test_timer_ratetarget"><code class="docutils literal notranslate"><span class="pre">TestTraitGaugeTimed.test_timer_ratetarget()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.setUp"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.tearDown"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_pos_shortcut"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_pos_shortcut()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_add_traits"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_add_traits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_sub_traits"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_sub_traits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_mul_traits"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_mul_traits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_floordiv"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_floordiv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_comparisons_traits"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_comparisons_traits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestNumericTraitOperators.test_comparisons_numeric"><code class="docutils literal notranslate"><span class="pre">TestNumericTraitOperators.test_comparisons_numeric()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.DummyCharacter"><code class="docutils literal notranslate"><span class="pre">DummyCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.DummyCharacter.strength"><code class="docutils literal notranslate"><span class="pre">DummyCharacter.strength</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.DummyCharacter.hunting"><code class="docutils literal notranslate"><span class="pre">DummyCharacter.hunting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.DummyCharacter.health"><code class="docutils literal notranslate"><span class="pre">DummyCharacter.health</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitFields"><code class="docutils literal notranslate"><span class="pre">TestTraitFields</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TestTraitFields.test_traitfields"><code class="docutils literal notranslate"><span class="pre">TestTraitFields.test_traitfields()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar"><code class="docutils literal notranslate"><span class="pre">TraitContribTestingChar</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.HP"><code class="docutils literal notranslate"><span class="pre">TraitContribTestingChar.HP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TraitContribTestingChar.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TraitContribTestingChar.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.path"><code class="docutils literal notranslate"><span class="pre">TraitContribTestingChar.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitContribTestingChar.typename"><code class="docutils literal notranslate"><span class="pre">TraitContribTestingChar.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase"><code class="docutils literal notranslate"><span class="pre">TraitPropertyTestCase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.character_typeclass"><code class="docutils literal notranslate"><span class="pre">TraitPropertyTestCase.character_typeclass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round1"><code class="docutils literal notranslate"><span class="pre">TraitPropertyTestCase.test_round1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.tests.html#evennia.contrib.rpg.traits.tests.TraitPropertyTestCase.test_round2"><code class="docutils literal notranslate"><span class="pre">TraitPropertyTestCase.test_round2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html">evennia.contrib.rpg.traits.traits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#traits-with-traithandler">Traits with TraitHandler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#traitproperties">TraitProperties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#using-traits">Using traits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#trait-types">Trait types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#static-trait">Static trait</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#counter">Counter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#descs">.descs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#rate">.rate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#percent">.percent()</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#gauge">Gauge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#trait">Trait</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#expanding-with-your-own-traits">Expanding with your own Traits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitException"><code class="docutils literal notranslate"><span class="pre">TraitException</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitException.__init__"><code class="docutils literal notranslate"><span class="pre">TraitException.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.MandatoryTraitKey"><code class="docutils literal notranslate"><span class="pre">MandatoryTraitKey</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler"><code class="docutils literal notranslate"><span class="pre">TraitHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.__init__"><code class="docutils literal notranslate"><span class="pre">TraitHandler.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.all"><code class="docutils literal notranslate"><span class="pre">TraitHandler.all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.get"><code class="docutils literal notranslate"><span class="pre">TraitHandler.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.add"><code class="docutils literal notranslate"><span class="pre">TraitHandler.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.remove"><code class="docutils literal notranslate"><span class="pre">TraitHandler.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitHandler.clear"><code class="docutils literal notranslate"><span class="pre">TraitHandler.clear()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitProperty"><code class="docutils literal notranslate"><span class="pre">TraitProperty</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.TraitProperty.__init__"><code class="docutils literal notranslate"><span class="pre">TraitProperty.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait"><code class="docutils literal notranslate"><span class="pre">Trait</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.trait_type"><code class="docutils literal notranslate"><span class="pre">Trait.trait_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.default_keys"><code class="docutils literal notranslate"><span class="pre">Trait.default_keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.allow_extra_properties"><code class="docutils literal notranslate"><span class="pre">Trait.allow_extra_properties</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.__init__"><code class="docutils literal notranslate"><span class="pre">Trait.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.validate_input"><code class="docutils literal notranslate"><span class="pre">Trait.validate_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.name"><code class="docutils literal notranslate"><span class="pre">Trait.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.get_trait"><code class="docutils literal notranslate"><span class="pre">Trait.get_trait()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.key"><code class="docutils literal notranslate"><span class="pre">Trait.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.Trait.value"><code class="docutils literal notranslate"><span class="pre">Trait.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait"><code class="docutils literal notranslate"><span class="pre">StaticTrait</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait.trait_type"><code class="docutils literal notranslate"><span class="pre">StaticTrait.trait_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait.default_keys"><code class="docutils literal notranslate"><span class="pre">StaticTrait.default_keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait.base"><code class="docutils literal notranslate"><span class="pre">StaticTrait.base</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait.mod"><code class="docutils literal notranslate"><span class="pre">StaticTrait.mod</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait.mult"><code class="docutils literal notranslate"><span class="pre">StaticTrait.mult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.StaticTrait.value"><code class="docutils literal notranslate"><span class="pre">StaticTrait.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait"><code class="docutils literal notranslate"><span class="pre">CounterTrait</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.trait_type"><code class="docutils literal notranslate"><span class="pre">CounterTrait.trait_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.default_keys"><code class="docutils literal notranslate"><span class="pre">CounterTrait.default_keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.validate_input"><code class="docutils literal notranslate"><span class="pre">CounterTrait.validate_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.base"><code class="docutils literal notranslate"><span class="pre">CounterTrait.base</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.mod"><code class="docutils literal notranslate"><span class="pre">CounterTrait.mod</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.mult"><code class="docutils literal notranslate"><span class="pre">CounterTrait.mult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.min"><code class="docutils literal notranslate"><span class="pre">CounterTrait.min</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.max"><code class="docutils literal notranslate"><span class="pre">CounterTrait.max</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.current"><code class="docutils literal notranslate"><span class="pre">CounterTrait.current</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.value"><code class="docutils literal notranslate"><span class="pre">CounterTrait.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.ratetarget"><code class="docutils literal notranslate"><span class="pre">CounterTrait.ratetarget</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.percent"><code class="docutils literal notranslate"><span class="pre">CounterTrait.percent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.reset"><code class="docutils literal notranslate"><span class="pre">CounterTrait.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.CounterTrait.desc"><code class="docutils literal notranslate"><span class="pre">CounterTrait.desc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait"><code class="docutils literal notranslate"><span class="pre">GaugeTrait</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.trait_type"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.trait_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.default_keys"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.default_keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.base"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.base</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.mod"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.mod</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.mult"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.mult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.min"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.min</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.max"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.max</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.current"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.current</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.value"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.percent"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.percent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.traits.traits.html#evennia.contrib.rpg.traits.traits.GaugeTrait.reset"><code class="docutils literal notranslate"><span class="pre">GaugeTrait.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.rpg.rpsystem.tests.html"
+                          title="previous chapter">evennia.contrib.rpg.rpsystem.tests</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.rpg.traits.tests.html"
+                          title="next chapter">evennia.contrib.rpg.traits.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.rpg.traits.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.traits.tests.html" title="evennia.contrib.rpg.traits.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.rpsystem.tests.html" title="evennia.contrib.rpg.rpsystem.tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" >evennia.contrib.rpg</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.traits</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

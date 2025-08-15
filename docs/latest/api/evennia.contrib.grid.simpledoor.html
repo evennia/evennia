@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.grid.simpledoor &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.grid.simpledoor.simpledoor" href="evennia.contrib.grid.simpledoor.simpledoor.html" />
+    <link rel="prev" title="evennia.contrib.grid.mapbuilder.tests" href="evennia.contrib.grid.mapbuilder.tests.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.simpledoor.simpledoor.html" title="evennia.contrib.grid.simpledoor.simpledoor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.mapbuilder.tests.html" title="evennia.contrib.grid.mapbuilder.tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" accesskey="U">evennia.contrib.grid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.simpledoor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.simpledoor">
+<span id="evennia-contrib-grid-simpledoor"></span><h1>evennia.contrib.grid.simpledoor<a class="headerlink" href="#module-evennia.contrib.grid.simpledoor" title="Link to this heading">¶</a></h1>
+<p>Simple Door - Griatch 2016</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html">evennia.contrib.grid.simpledoor.simpledoor</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor"><code class="docutils literal notranslate"><span class="pre">SimpleDoor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.at_object_creation"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.setlock"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.setlock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.setdesc"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.setdesc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.delete"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.at_failed_traverse"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.at_failed_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.path"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoor.typename"><code class="docutils literal notranslate"><span class="pre">SimpleDoor.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen"><code class="docutils literal notranslate"><span class="pre">CmdOpen</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.create_exit"><code class="docutils literal notranslate"><span class="pre">CmdOpen.create_exit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.aliases"><code class="docutils literal notranslate"><span class="pre">CmdOpen.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.help_category"><code class="docutils literal notranslate"><span class="pre">CmdOpen.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.key"><code class="docutils literal notranslate"><span class="pre">CmdOpen.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdOpen.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpen.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdOpen.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.key"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.aliases"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.locks"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.help_category"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.func"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.CmdOpenCloseDoor.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdOpenCloseDoor.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoorCmdSet"><code class="docutils literal notranslate"><span class="pre">SimpleDoorCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoorCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">SimpleDoorCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.simpledoor.html#evennia.contrib.grid.simpledoor.simpledoor.SimpleDoorCmdSet.path"><code class="docutils literal notranslate"><span class="pre">SimpleDoorCmdSet.path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.simpledoor.tests.html">evennia.contrib.grid.simpledoor.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.simpledoor.tests.html#evennia.contrib.grid.simpledoor.tests.TestSimpleDoor"><code class="docutils literal notranslate"><span class="pre">TestSimpleDoor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.simpledoor.tests.html#evennia.contrib.grid.simpledoor.tests.TestSimpleDoor.test_cmdopen"><code class="docutils literal notranslate"><span class="pre">TestSimpleDoor.test_cmdopen()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.grid.mapbuilder.tests.html"
+                          title="previous chapter">evennia.contrib.grid.mapbuilder.tests</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.grid.simpledoor.simpledoor.html"
+                          title="next chapter">evennia.contrib.grid.simpledoor.simpledoor</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.simpledoor.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.simpledoor.simpledoor.html" title="evennia.contrib.grid.simpledoor.simpledoor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.mapbuilder.tests.html" title="evennia.contrib.grid.mapbuilder.tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.simpledoor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

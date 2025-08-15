@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.game_systems.mail.mail &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.mail.tests" href="evennia.contrib.game_systems.mail.tests.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.mail" href="evennia.contrib.game_systems.mail.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.mail.tests.html" title="evennia.contrib.game_systems.mail.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.mail.html" title="evennia.contrib.game_systems.mail"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.mail.html" accesskey="U">evennia.contrib.game_systems.mail</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.mail.mail</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.mail.mail">
+<span id="evennia-contrib-game-systems-mail-mail"></span><h1>evennia.contrib.game_systems.mail.mail<a class="headerlink" href="#module-evennia.contrib.game_systems.mail.mail" title="Link to this heading">¶</a></h1>
+<p>In-Game Mail system</p>
+<p>Evennia Contribution - grungies1138 2016</p>
+<p>A simple Brandymail style &#64;mail system that uses the Msg class from Evennia
+Core. It has two Commands, both of which can be used on their own:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>CmdMail - this should sit on the Account cmdset and makes the <strong>mail</strong> command</p></li>
+</ul>
+<blockquote>
+<div><p>available both IC and OOC. Mails will always go to Accounts (other players).</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>CmdMailCharacter - this should sit on the Character cmdset and makes the <strong>mail</strong></p></li>
+</ul>
+<blockquote>
+<div><p>command ONLY available when puppeting a character. Mails will be sent to other
+Characters only and will not be available when OOC.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>If adding <em>both</em> commands to their respective cmdsets, you’ll get two separate</p></li>
+</ul>
+<blockquote>
+<div><p>IC and OOC mailing systems, with different lists of mail for IC and OOC modes.</p>
+</div></blockquote>
+</div></blockquote>
+<p>Installation:</p>
+<p>Install one or both of the following (see above):</p>
+<ul>
+<li><p>CmdMail (IC + OOC mail, sent between players)</p>
+<blockquote>
+<div><p># mygame/commands/default_cmds.py</p>
+<p>from evennia.contrib.game_systems import mail</p>
+<dl class="simple">
+<dt># in AccountCmdSet.at_cmdset_creation:</dt><dd><p>self.add(mail.CmdMail())</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>CmdMailCharacter (optional, IC only mail, sent between characters)</p>
+<blockquote>
+<div><p># mygame/commands/default_cmds.py</p>
+<p>from evennia.contrib.game_systems import mail</p>
+<dl class="simple">
+<dt># in CharacterCmdSet.at_cmdset_creation:</dt><dd><p>self.add(mail.CmdMailCharacter())</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ul>
+<p>Once installed, use <strong>help mail</strong> in game for help with the mail command. Use
+ic/ooc to switch in and out of IC/OOC modes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.mail.mail.</span></span><span class="sig-name descname"><span class="pre">CmdMail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxAccountCommand" title="evennia.commands.default.muxcommand.MuxAccountCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxAccountCommand</span></code></a></p>
+<p>Communicate with others by sending mail.</p>
+<dl>
+<dt>Usage:</dt><dd><p>&#64;mail       - Displays all the mail an account has in their mailbox
+&#64;mail &lt;#&gt;   - Displays a specific message
+&#64;mail &lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Sends a message to the comma separated list of accounts.</p></li>
+</ul>
+</div></blockquote>
+<p>&#64;mail/delete &lt;#&gt; - Deletes a specific message
+&#64;mail/forward &lt;account list&gt;=&lt;#&gt;[/&lt;Message&gt;]</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Forwards an existing message to the specified list of accounts,
+original message is delivered with optional Message prepended.</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>&#64;mail/reply &lt;#&gt;=&lt;message&gt;</dt><dd><ul class="simple">
+<li><p>Replies to a message #. Prepends message to the original
+message text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Switches:</dt><dd><p>delete  - deletes a message
+forward - forward a received message to another object with an optional message attached.
+reply   - Replies to a received message, appending the original message to the bottom.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>&#64;mail 2
+&#64;mail Griatch=New mail/Hey man, I am sending you a message!
+&#64;mail/delete 6
+&#64;mail/forward feend78 Griatch=4/You guys should read this.
+&#64;mail/reply 9=Thanks for the info!</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&#64;mail'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['mail']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.lock">
+<span class="sig-name descname"><span class="pre">lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.lock" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMail.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Add convenience check to know if caller is an Account or not since this cmd
+will be able to add to either Object- or Account level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.search_targets">
+<span class="sig-name descname"><span class="pre">search_targets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namelist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMail.search_targets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.search_targets" title="Link to this definition">¶</a></dt>
+<dd><p>Search a list of targets of the same type as caller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em><em> or </em><em>Account</em>) – The type of object to search.</p></li>
+<li><p><strong>namelist</strong> (<em>list</em>) – List of strings for objects to search for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>targetlist (Queryset)</em> – Any target matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.get_all_mail">
+<span class="sig-name descname"><span class="pre">get_all_mail</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMail.get_all_mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.get_all_mail" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Returns a list of all the messages where the caller is a recipient. These</dt><dd><p>are all messages tagged with tags of the <strong>mail</strong> category.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>messages (QuerySet)</em> – Matching Msg objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.send_mail">
+<span class="sig-name descname"><span class="pre">send_mail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recipients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMail.send_mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.send_mail" title="Link to this definition">¶</a></dt>
+<dd><p>Function for sending new mail.  Also useful for sending notifications
+from objects or systems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>recipients</strong> (<em>list</em>) – list of Account or Character objects to receive
+the newly created mails.</p></li>
+<li><p><strong>subject</strong> (<em>str</em>) – The header or subject of the message to be delivered.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – The body of the message being sent.</p></li>
+<li><p><strong>caller</strong> (<em>obj</em>) – The object (or Account or Character) that is sending the message.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMail.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.func" title="Link to this definition">¶</a></dt>
+<dd><p>Do the main command functionality</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMail.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'mail',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'&#64;mail',</span> <span class="pre">'no_prefix':</span> <span class="pre">'mail</span> <span class="pre">mail',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nCommunicate</span> <span class="pre">with</span> <span class="pre">others</span> <span class="pre">by</span> <span class="pre">sending</span> <span class="pre">mail.\n\nUsage:\n</span>&#160; <span class="pre">&#64;mail</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Displays</span> <span class="pre">all</span> <span class="pre">the</span> <span class="pre">mail</span> <span class="pre">an</span> <span class="pre">account</span> <span class="pre">has</span> <span class="pre">in</span> <span class="pre">their</span> <span class="pre">mailbox\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">&lt;#&gt;</span>&#160;&#160; <span class="pre">-</span> <span class="pre">Displays</span> <span class="pre">a</span> <span class="pre">specific</span> <span class="pre">message\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">&lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Sends</span> <span class="pre">a</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">comma</span> <span class="pre">separated</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">accounts.\n</span>&#160; <span class="pre">&#64;mail/delete</span> <span class="pre">&lt;#&gt;</span> <span class="pre">-</span> <span class="pre">Deletes</span> <span class="pre">a</span> <span class="pre">specific</span> <span class="pre">message\n</span>&#160; <span class="pre">&#64;mail/forward</span> <span class="pre">&lt;account</span> <span class="pre">list&gt;=&lt;#&gt;[/&lt;Message&gt;]\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Forwards</span> <span class="pre">an</span> <span class="pre">existing</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">specified</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">accounts,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">original</span> <span class="pre">message</span> <span class="pre">is</span> <span class="pre">delivered</span> <span class="pre">with</span> <span class="pre">optional</span> <span class="pre">Message</span> <span class="pre">prepended.\n</span>&#160; <span class="pre">&#64;mail/reply</span> <span class="pre">&lt;#&gt;=&lt;message&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Replies</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">message</span> <span class="pre">#.</span> <span class="pre">Prepends</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">original\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">message</span> <span class="pre">text.\nSwitches:\n</span>&#160; <span class="pre">delete</span>&#160; <span class="pre">-</span> <span class="pre">deletes</span> <span class="pre">a</span> <span class="pre">message\n</span>&#160; <span class="pre">forward</span> <span class="pre">-</span> <span class="pre">forward</span> <span class="pre">a</span> <span class="pre">received</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">another</span> <span class="pre">object</span> <span class="pre">with</span> <span class="pre">an</span> <span class="pre">optional</span> <span class="pre">message</span> <span class="pre">attached.\n</span>&#160; <span class="pre">reply</span>&#160;&#160; <span class="pre">-</span> <span class="pre">Replies</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">received</span> <span class="pre">message,</span> <span class="pre">appending</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">bottom.\nExamples:\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">2\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">Griatch=New</span> <span class="pre">mail/Hey</span> <span class="pre">man,</span> <span class="pre">I</span> <span class="pre">am</span> <span class="pre">sending</span> <span class="pre">you</span> <span class="pre">a</span> <span class="pre">message!\n</span>&#160; <span class="pre">&#64;mail/delete</span> <span class="pre">6\n</span>&#160; <span class="pre">&#64;mail/forward</span> <span class="pre">feend78</span> <span class="pre">Griatch=4/You</span> <span class="pre">guys</span> <span class="pre">should</span> <span class="pre">read</span> <span class="pre">this.\n</span>&#160; <span class="pre">&#64;mail/reply</span> <span class="pre">9=Thanks</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">info!\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMail.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.mail.mail.</span></span><span class="sig-name descname"><span class="pre">CmdMailCharacter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/mail/mail.html#CmdMailCharacter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail" title="evennia.contrib.game_systems.mail.mail.CmdMail"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdMail</span></code></a></p>
+<p>Communicate with others by sending mail.</p>
+<dl>
+<dt>Usage:</dt><dd><p>&#64;mail       - Displays all the mail an account has in their mailbox
+&#64;mail &lt;#&gt;   - Displays a specific message
+&#64;mail &lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Sends a message to the comma separated list of accounts.</p></li>
+</ul>
+</div></blockquote>
+<p>&#64;mail/delete &lt;#&gt; - Deletes a specific message
+&#64;mail/forward &lt;account list&gt;=&lt;#&gt;[/&lt;Message&gt;]</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Forwards an existing message to the specified list of accounts,
+original message is delivered with optional Message prepended.</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>&#64;mail/reply &lt;#&gt;=&lt;message&gt;</dt><dd><ul class="simple">
+<li><p>Replies to a message #. Prepends message to the original
+message text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Switches:</dt><dd><p>delete  - deletes a message
+forward - forward a received message to another object with an optional message attached.
+reply   - Replies to a received message, appending the original message to the bottom.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>&#64;mail 2
+&#64;mail Griatch=New mail/Hey man, I am sending you a message!
+&#64;mail/delete 6
+&#64;mail/forward feend78 Griatch=4/You guys should read this.
+&#64;mail/reply 9=Thanks for the info!</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter.account_caller">
+<span class="sig-name descname"><span class="pre">account_caller</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.account_caller" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['mail']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&#64;mail'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.mail.mail.CmdMailCharacter.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'mail',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'&#64;mail',</span> <span class="pre">'no_prefix':</span> <span class="pre">'mail</span> <span class="pre">mail',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nCommunicate</span> <span class="pre">with</span> <span class="pre">others</span> <span class="pre">by</span> <span class="pre">sending</span> <span class="pre">mail.\n\nUsage:\n</span>&#160; <span class="pre">&#64;mail</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Displays</span> <span class="pre">all</span> <span class="pre">the</span> <span class="pre">mail</span> <span class="pre">an</span> <span class="pre">account</span> <span class="pre">has</span> <span class="pre">in</span> <span class="pre">their</span> <span class="pre">mailbox\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">&lt;#&gt;</span>&#160;&#160; <span class="pre">-</span> <span class="pre">Displays</span> <span class="pre">a</span> <span class="pre">specific</span> <span class="pre">message\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">&lt;accounts&gt;=&lt;subject&gt;/&lt;message&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Sends</span> <span class="pre">a</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">comma</span> <span class="pre">separated</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">accounts.\n</span>&#160; <span class="pre">&#64;mail/delete</span> <span class="pre">&lt;#&gt;</span> <span class="pre">-</span> <span class="pre">Deletes</span> <span class="pre">a</span> <span class="pre">specific</span> <span class="pre">message\n</span>&#160; <span class="pre">&#64;mail/forward</span> <span class="pre">&lt;account</span> <span class="pre">list&gt;=&lt;#&gt;[/&lt;Message&gt;]\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Forwards</span> <span class="pre">an</span> <span class="pre">existing</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">specified</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">accounts,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">original</span> <span class="pre">message</span> <span class="pre">is</span> <span class="pre">delivered</span> <span class="pre">with</span> <span class="pre">optional</span> <span class="pre">Message</span> <span class="pre">prepended.\n</span>&#160; <span class="pre">&#64;mail/reply</span> <span class="pre">&lt;#&gt;=&lt;message&gt;\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">Replies</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">message</span> <span class="pre">#.</span> <span class="pre">Prepends</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">original\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">message</span> <span class="pre">text.\nSwitches:\n</span>&#160; <span class="pre">delete</span>&#160; <span class="pre">-</span> <span class="pre">deletes</span> <span class="pre">a</span> <span class="pre">message\n</span>&#160; <span class="pre">forward</span> <span class="pre">-</span> <span class="pre">forward</span> <span class="pre">a</span> <span class="pre">received</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">another</span> <span class="pre">object</span> <span class="pre">with</span> <span class="pre">an</span> <span class="pre">optional</span> <span class="pre">message</span> <span class="pre">attached.\n</span>&#160; <span class="pre">reply</span>&#160;&#160; <span class="pre">-</span> <span class="pre">Replies</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">received</span> <span class="pre">message,</span> <span class="pre">appending</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">message</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">bottom.\nExamples:\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">2\n</span>&#160; <span class="pre">&#64;mail</span> <span class="pre">Griatch=New</span> <span class="pre">mail/Hey</span> <span class="pre">man,</span> <span class="pre">I</span> <span class="pre">am</span> <span class="pre">sending</span> <span class="pre">you</span> <span class="pre">a</span> <span class="pre">message!\n</span>&#160; <span class="pre">&#64;mail/delete</span> <span class="pre">6\n</span>&#160; <span class="pre">&#64;mail/forward</span> <span class="pre">feend78</span> <span class="pre">Griatch=4/You</span> <span class="pre">guys</span> <span class="pre">should</span> <span class="pre">read</span> <span class="pre">this.\n</span>&#160; <span class="pre">&#64;mail/reply</span> <span class="pre">9=Thanks</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">info!\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.game_systems.mail.mail</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail"><code class="docutils literal notranslate"><span class="pre">CmdMail</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.key"><code class="docutils literal notranslate"><span class="pre">CmdMail.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.aliases"><code class="docutils literal notranslate"><span class="pre">CmdMail.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.lock"><code class="docutils literal notranslate"><span class="pre">CmdMail.lock</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.help_category"><code class="docutils literal notranslate"><span class="pre">CmdMail.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.parse"><code class="docutils literal notranslate"><span class="pre">CmdMail.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.search_targets"><code class="docutils literal notranslate"><span class="pre">CmdMail.search_targets()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.get_all_mail"><code class="docutils literal notranslate"><span class="pre">CmdMail.get_all_mail()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.send_mail"><code class="docutils literal notranslate"><span class="pre">CmdMail.send_mail()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.func"><code class="docutils literal notranslate"><span class="pre">CmdMail.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdMail.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMail.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdMail.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.account_caller"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter.account_caller</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.aliases"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.help_category"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.key"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.mail.mail.CmdMailCharacter.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdMailCharacter.search_index_entry</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.mail.html"
+                          title="previous chapter">evennia.contrib.game_systems.mail</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.mail.tests.html"
+                          title="next chapter">evennia.contrib.game_systems.mail.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.mail.mail.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.mail.tests.html" title="evennia.contrib.game_systems.mail.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.mail.html" title="evennia.contrib.game_systems.mail"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.mail.html" >evennia.contrib.game_systems.mail</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.mail.mail</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

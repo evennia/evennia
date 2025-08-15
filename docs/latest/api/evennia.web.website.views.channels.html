@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.web.website.views.channels &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.web.website.views.characters" href="evennia.web.website.views.characters.html" />
+    <link rel="prev" title="evennia.web.website.views.accounts" href="evennia.web.website.views.accounts.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.characters.html" title="evennia.web.website.views.characters"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.accounts.html" title="evennia.web.website.views.accounts"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.website.html" >evennia.web.website</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.web.website.views.html" accesskey="U">evennia.web.website.views</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.channels</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.website.views.channels">
+<span id="evennia-web-website-views-channels"></span><h1>evennia.web.website.views.channels<a class="headerlink" href="#module-evennia.web.website.views.channels" title="Link to this heading">¶</a></h1>
+<p>Views for managing channels.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelMixin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.views.channels.</span></span><span class="sig-name descname"><span class="pre">ChannelMixin</span></span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelMixin" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.web.website.views.mixins.html#evennia.web.website.views.mixins.TypeclassMixin" title="evennia.web.website.views.mixins.TypeclassMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeclassMixin</span></code></a></p>
+<p>This is a “mixin”, a modifier of sorts.</p>
+<p>Any view class with this in its inheritance list will be modified to work
+with HelpEntry objects instead of generic Objects or otherwise.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelMixin.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#evennia.web.website.views.channels.ChannelMixin.model" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="evennia.comms.comms.html#evennia.comms.comms.DefaultChannel" title="evennia.comms.comms.DefaultChannel"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultChannel</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelMixin.page_title">
+<span class="sig-name descname"><span class="pre">page_title</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Channels'</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelMixin.page_title" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelMixin.access_type">
+<span class="sig-name descname"><span class="pre">access_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'listen'</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelMixin.access_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelMixin.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelMixin.get_queryset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelMixin.get_queryset" title="Link to this definition">¶</a></dt>
+<dd><p>Django hook; here we want to return a list of only those Channels
+and other documentation that the current user is allowed to see.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>queryset (QuerySet)</em> – List of Channels available to the user.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelListView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.views.channels.</span></span><span class="sig-name descname"><span class="pre">ChannelListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelListView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelListView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin" title="evennia.web.website.views.channels.ChannelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListView</span></code></p>
+<p>Returns a list of channels that can be viewed by a user, authenticated
+or not.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelListView.paginate_by">
+<span class="sig-name descname"><span class="pre">paginate_by</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelListView.paginate_by" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelListView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'website/channel_list.html'</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelListView.template_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelListView.page_title">
+<span class="sig-name descname"><span class="pre">page_title</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Channel</span> <span class="pre">Index'</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelListView.page_title" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelListView.max_popular">
+<span class="sig-name descname"><span class="pre">max_popular</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelListView.max_popular" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelListView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelListView.get_context_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelListView.get_context_data" title="Link to this definition">¶</a></dt>
+<dd><p>Django hook; we override it to calculate the most popular channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelDetailView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.views.channels.</span></span><span class="sig-name descname"><span class="pre">ChannelDetailView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelDetailView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelDetailView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin" title="evennia.web.website.views.channels.ChannelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChannelMixin</span></code></a>, <a class="reference internal" href="evennia.web.website.views.objects.html#evennia.web.website.views.objects.ObjectDetailView" title="evennia.web.website.views.objects.ObjectDetailView"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDetailView</span></code></a></p>
+<p>Returns the log entries for a given channel.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelDetailView.template_name">
+<span class="sig-name descname"><span class="pre">template_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'website/channel_detail.html'</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelDetailView.template_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelDetailView.attributes">
+<span class="sig-name descname"><span class="pre">attributes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['name']</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelDetailView.attributes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelDetailView.max_num_lines">
+<span class="sig-name descname"><span class="pre">max_num_lines</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10000</span></em><a class="headerlink" href="#evennia.web.website.views.channels.ChannelDetailView.max_num_lines" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelDetailView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelDetailView.get_context_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelDetailView.get_context_data" title="Link to this definition">¶</a></dt>
+<dd><p>Django hook; before we can display the channel logs, we need to recall
+the logfile and read its lines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>context (dict)</em> – Django context object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.views.channels.ChannelDetailView.get_object">
+<span class="sig-name descname"><span class="pre">get_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queryset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/views/channels.html#ChannelDetailView.get_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.views.channels.ChannelDetailView.get_object" title="Link to this definition">¶</a></dt>
+<dd><p>Override of Django hook that retrieves an object by slugified channel
+name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>channel (Channel)</em> – Channel requested in the URL.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.web.website.views.channels</a><ul>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin"><code class="docutils literal notranslate"><span class="pre">ChannelMixin</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin.model"><code class="docutils literal notranslate"><span class="pre">ChannelMixin.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin.page_title"><code class="docutils literal notranslate"><span class="pre">ChannelMixin.page_title</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin.access_type"><code class="docutils literal notranslate"><span class="pre">ChannelMixin.access_type</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelMixin.get_queryset"><code class="docutils literal notranslate"><span class="pre">ChannelMixin.get_queryset()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelListView"><code class="docutils literal notranslate"><span class="pre">ChannelListView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelListView.paginate_by"><code class="docutils literal notranslate"><span class="pre">ChannelListView.paginate_by</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelListView.template_name"><code class="docutils literal notranslate"><span class="pre">ChannelListView.template_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelListView.page_title"><code class="docutils literal notranslate"><span class="pre">ChannelListView.page_title</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelListView.max_popular"><code class="docutils literal notranslate"><span class="pre">ChannelListView.max_popular</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelListView.get_context_data"><code class="docutils literal notranslate"><span class="pre">ChannelListView.get_context_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelDetailView"><code class="docutils literal notranslate"><span class="pre">ChannelDetailView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelDetailView.template_name"><code class="docutils literal notranslate"><span class="pre">ChannelDetailView.template_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelDetailView.attributes"><code class="docutils literal notranslate"><span class="pre">ChannelDetailView.attributes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelDetailView.max_num_lines"><code class="docutils literal notranslate"><span class="pre">ChannelDetailView.max_num_lines</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelDetailView.get_context_data"><code class="docutils literal notranslate"><span class="pre">ChannelDetailView.get_context_data()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.views.channels.ChannelDetailView.get_object"><code class="docutils literal notranslate"><span class="pre">ChannelDetailView.get_object()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.web.website.views.accounts.html"
+                          title="previous chapter">evennia.web.website.views.accounts</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.web.website.views.characters.html"
+                          title="next chapter">evennia.web.website.views.characters</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.website.views.channels.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.characters.html" title="evennia.web.website.views.characters"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.views.accounts.html" title="evennia.web.website.views.accounts"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.website.html" >evennia.web.website</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.web.website.views.html" >evennia.web.website.views</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.views.channels</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

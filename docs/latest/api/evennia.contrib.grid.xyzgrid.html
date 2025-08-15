@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.grid.xyzgrid &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.grid.xyzgrid.commands" href="evennia.contrib.grid.xyzgrid.commands.html" />
+    <link rel="prev" title="evennia.contrib.grid.wilderness.wilderness" href="evennia.contrib.grid.wilderness.wilderness.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.commands.html" title="evennia.contrib.grid.xyzgrid.commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.wilderness.wilderness.html" title="evennia.contrib.grid.wilderness.wilderness"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" accesskey="U">evennia.contrib.grid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.xyzgrid">
+<span id="evennia-contrib-grid-xyzgrid"></span><h1>evennia.contrib.grid.xyzgrid<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid" title="Link to this heading">¶</a></h1>
+<p>XYZGrid - Griatch 2021</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html">evennia.contrib.grid.xyzgrid.commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData"><code class="docutils literal notranslate"><span class="pre">PathData</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.directions"><code class="docutils literal notranslate"><span class="pre">PathData.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.step_sequence"><code class="docutils literal notranslate"><span class="pre">PathData.step_sequence</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.target"><code class="docutils literal notranslate"><span class="pre">PathData.target</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.task"><code class="docutils literal notranslate"><span class="pre">PathData.task</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.PathData.xymap"><code class="docutils literal notranslate"><span class="pre">PathData.xymap</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.aliases"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.help_category"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.key"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.aliases"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.help_category"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.key"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto"><code class="docutils literal notranslate"><span class="pre">CmdGoto</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.key"><code class="docutils literal notranslate"><span class="pre">CmdGoto.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.aliases"><code class="docutils literal notranslate"><span class="pre">CmdGoto.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.help_category"><code class="docutils literal notranslate"><span class="pre">CmdGoto.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.locks"><code class="docutils literal notranslate"><span class="pre">CmdGoto.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.auto_step_delay"><code class="docutils literal notranslate"><span class="pre">CmdGoto.auto_step_delay</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.default_xyz_path_interrupt_msg"><code class="docutils literal notranslate"><span class="pre">CmdGoto.default_xyz_path_interrupt_msg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func"><code class="docutils literal notranslate"><span class="pre">CmdGoto.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdGoto.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdGoto.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdGoto.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap"><code class="docutils literal notranslate"><span class="pre">CmdMap</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.key"><code class="docutils literal notranslate"><span class="pre">CmdMap.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.locks"><code class="docutils literal notranslate"><span class="pre">CmdMap.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.func"><code class="docutils literal notranslate"><span class="pre">CmdMap.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.aliases"><code class="docutils literal notranslate"><span class="pre">CmdMap.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.help_category"><code class="docutils literal notranslate"><span class="pre">CmdMap.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdMap.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdMap.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdMap.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.key"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.path"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.key"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.key"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.commands.html#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.path"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet.path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html">evennia.contrib.grid.xyzgrid.example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html#evennia.contrib.grid.xyzgrid.example.TransitionToCave"><code class="docutils literal notranslate"><span class="pre">TransitionToCave</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html#evennia.contrib.grid.xyzgrid.example.TransitionToCave.symbol"><code class="docutils literal notranslate"><span class="pre">TransitionToCave.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html#evennia.contrib.grid.xyzgrid.example.TransitionToCave.target_map_xyz"><code class="docutils literal notranslate"><span class="pre">TransitionToCave.target_map_xyz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html#evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree"><code class="docutils literal notranslate"><span class="pre">TransitionToLargeTree</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html#evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree.symbol"><code class="docutils literal notranslate"><span class="pre">TransitionToLargeTree.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.example.html#evennia.contrib.grid.xyzgrid.example.TransitionToLargeTree.target_map_xyz"><code class="docutils literal notranslate"><span class="pre">TransitionToLargeTree.target_map_xyz</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.launchcmd.html">evennia.contrib.grid.xyzgrid.launchcmd</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.launchcmd.html#evennia.contrib.grid.xyzgrid.launchcmd.xyzcommand"><code class="docutils literal notranslate"><span class="pre">xyzcommand()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.prototypes.html">evennia.contrib.grid.xyzgrid.prototypes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html">evennia.contrib.grid.xyzgrid.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1"><code class="docutils literal notranslate"><span class="pre">TestMap1</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_node_from_coord"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_node_from_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_shortest_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan__character</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__nodes__character"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__nodes__character</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__nodes__character_0"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__nodes__character_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__nodes__character_1"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__nodes__character_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__nodes__character_2"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__nodes__character_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__nodes__character_3"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__nodes__character_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__nodes__character_4"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__nodes__character_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan_0"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan_1"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan_2"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan_3"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_0"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan__character_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_1"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan__character_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_2"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan__character_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap1.test_get_visual_range__scan__character_3"><code class="docutils literal notranslate"><span class="pre">TestMap1.test_get_visual_range__scan__character_3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2"><code class="docutils literal notranslate"><span class="pre">TestMap2</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap2.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap2.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_node_from_coord"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_node_from_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__scan__character"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__scan__character</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_extended_path_tracking__horizontal"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_extended_path_tracking__horizontal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_extended_path_tracking__vertical"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_extended_path_tracking__vertical()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_0"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_1"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_2"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_3"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_4"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_5"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_6"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_6()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_7"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_7()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_8"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_8()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__nodes__character_9"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__nodes__character_9()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__scan__character_0"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__scan__character_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__scan__character_1"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__scan__character_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__scan__character_2"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__scan__character_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_get_visual_range__scan__character_3"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_get_visual_range__scan__character_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_4"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_5"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap2.test_shortest_path_6"><code class="docutils literal notranslate"><span class="pre">TestMap2.test_shortest_path_6()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3"><code class="docutils literal notranslate"><span class="pre">TestMap3</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap3.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap3.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_get_visual_range__nodes__character"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_get_visual_range__nodes__character</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_get_visual_range__nodes__character_0"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_get_visual_range__nodes__character_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_get_visual_range__nodes__character_1"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_get_visual_range__nodes__character_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_00"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_00()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_01"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_01()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_02"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_02()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_03"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_03()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_04"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_04()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_05"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_05()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_06"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_06()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_07"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_07()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_08"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_08()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_09"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_09()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap3.test_shortest_path_10"><code class="docutils literal notranslate"><span class="pre">TestMap3.test_shortest_path_10()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4"><code class="docutils literal notranslate"><span class="pre">TestMap4</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap4.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap4.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path_4"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap4.test_shortest_path_5"><code class="docutils literal notranslate"><span class="pre">TestMap4.test_shortest_path_5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5"><code class="docutils literal notranslate"><span class="pre">TestMap5</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap5.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap5.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap5.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap5.test_shortest_path_3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6"><code class="docutils literal notranslate"><span class="pre">TestMap6</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap6.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap6.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_4"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_5"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_6"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_6()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap6.test_shortest_path_7"><code class="docutils literal notranslate"><span class="pre">TestMap6.test_shortest_path_7()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7"><code class="docutils literal notranslate"><span class="pre">TestMap7</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap7.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap7.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap7.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap7.test_shortest_path_3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8"><code class="docutils literal notranslate"><span class="pre">TestMap8</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap8.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap8.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range__nodes__character"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range__nodes__character</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range_with_path"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range_with_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range__nodes__character_0"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range__nodes__character_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range_with_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range_with_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range_with_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range_with_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range_with_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range_with_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range_with_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range_with_path_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_get_visual_range_with_path_4"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_get_visual_range_with_path_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_4"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_5"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap8.test_shortest_path_6"><code class="docutils literal notranslate"><span class="pre">TestMap8.test_shortest_path_6()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9"><code class="docutils literal notranslate"><span class="pre">TestMap9</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap9.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap9.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap9.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap9.test_shortest_path_3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10"><code class="docutils literal notranslate"><span class="pre">TestMap10</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap10.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap10.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_paths"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_paths</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_paths_0"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_paths_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_paths_1"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_paths_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_2"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_3"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_4"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_4()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_5"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_6"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_6()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_7"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_7()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_8"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_8()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap10.test_shortest_path_9"><code class="docutils literal notranslate"><span class="pre">TestMap10.test_shortest_path_9()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11"><code class="docutils literal notranslate"><span class="pre">TestMap11</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.map_data"><code class="docutils literal notranslate"><span class="pre">TestMap11.map_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.map_display"><code class="docutils literal notranslate"><span class="pre">TestMap11.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_paths"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_paths</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_get_visual_range_with_path"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_get_visual_range_with_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_get_visual_range_with_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_get_visual_range_with_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_get_visual_range_with_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_get_visual_range_with_path_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_paths_0"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_paths_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_paths_1"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_paths_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMap11.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestMap11.test_shortest_path_1()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_creation"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_creation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_pathfind"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_pathfind</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_visibility"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_visibility</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_creation_0"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_creation_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_creation_1"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_creation_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_pathfind_0"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_pathfind_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_pathfind_1"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_pathfind_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_visibility_0"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_visibility_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestMapStressTest.test_grid_visibility_1"><code class="docutils literal notranslate"><span class="pre">TestMapStressTest.test_grid_visibility_1()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid"><code class="docutils literal notranslate"><span class="pre">TestXYZGrid</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid.zcoord"><code class="docutils literal notranslate"><span class="pre">TestXYZGrid.zcoord</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid.setUp"><code class="docutils literal notranslate"><span class="pre">TestXYZGrid.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid.tearDown"><code class="docutils literal notranslate"><span class="pre">TestXYZGrid.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid.test_str_output"><code class="docutils literal notranslate"><span class="pre">TestXYZGrid.test_str_output()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGrid.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestXYZGrid.test_spawn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.Map12aTransition"><code class="docutils literal notranslate"><span class="pre">Map12aTransition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.Map12aTransition.symbol"><code class="docutils literal notranslate"><span class="pre">Map12aTransition.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.Map12aTransition.target_map_xyz"><code class="docutils literal notranslate"><span class="pre">Map12aTransition.target_map_xyz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.Map12bTransition"><code class="docutils literal notranslate"><span class="pre">Map12bTransition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.Map12bTransition.symbol"><code class="docutils literal notranslate"><span class="pre">Map12bTransition.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.Map12bTransition.target_map_xyz"><code class="docutils literal notranslate"><span class="pre">Map12bTransition.target_map_xyz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition.setUp"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition.tearDown"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition.test_shortest_path"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition.test_shortest_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition.test_spawn"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition.test_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition.test_shortest_path_0"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition.test_shortest_path_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXYZGridTransition.test_shortest_path_1"><code class="docutils literal notranslate"><span class="pre">TestXYZGridTransition.test_shortest_path_1()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestBuildExampleGrid"><code class="docutils literal notranslate"><span class="pre">TestBuildExampleGrid</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestBuildExampleGrid.setUp"><code class="docutils literal notranslate"><span class="pre">TestBuildExampleGrid.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestBuildExampleGrid.tearDown"><code class="docutils literal notranslate"><span class="pre">TestBuildExampleGrid.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestBuildExampleGrid.test_build"><code class="docutils literal notranslate"><span class="pre">TestBuildExampleGrid.test_build()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom"><code class="docutils literal notranslate"><span class="pre">TestXyzRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TestXyzRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TestXyzRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TestXyzRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.path"><code class="docutils literal notranslate"><span class="pre">TestXyzRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzRoom.typename"><code class="docutils literal notranslate"><span class="pre">TestXyzRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit"><code class="docutils literal notranslate"><span class="pre">TestXyzExit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TestXyzExit.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TestXyzExit.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TestXyzExit.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.path"><code class="docutils literal notranslate"><span class="pre">TestXyzExit.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestXyzExit.typename"><code class="docutils literal notranslate"><span class="pre">TestXyzExit.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks"><code class="docutils literal notranslate"><span class="pre">TestCallbacks</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks.setUp"><code class="docutils literal notranslate"><span class="pre">TestCallbacks.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks.setup_grid"><code class="docutils literal notranslate"><span class="pre">TestCallbacks.setup_grid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks.tearDown"><code class="docutils literal notranslate"><span class="pre">TestCallbacks.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestCallbacks.test_typeclassed_xyzroom_and_xyzexit_with_at_object_creation_are_called"><code class="docutils literal notranslate"><span class="pre">TestCallbacks.test_typeclassed_xyzroom_and_xyzexit_with_at_object_creation_are_called()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.setUp"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.tearDown"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_00"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_00()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_01"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_01()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_02"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_02()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_03"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_03()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_04"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_04()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_05"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_05()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_06"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_06()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_07"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_07()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_08"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_08()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_09"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_09()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.tests.html#evennia.contrib.grid.xyzgrid.tests.TestFlyDiveCommand.test_fly_and_dive_10"><code class="docutils literal notranslate"><span class="pre">TestFlyDiveCommand.test_fly_and_dive_10()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.utils.html">evennia.contrib.grid.xyzgrid.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError"><code class="docutils literal notranslate"><span class="pre">MapError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapError.__init__"><code class="docutils literal notranslate"><span class="pre">MapError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapParserError"><code class="docutils literal notranslate"><span class="pre">MapParserError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.utils.html#evennia.contrib.grid.xyzgrid.utils.MapTransition"><code class="docutils literal notranslate"><span class="pre">MapTransition</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html">evennia.contrib.grid.xyzgrid.xymap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#xymap">XYMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap"><code class="docutils literal notranslate"><span class="pre">XYMap</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.mapcorner_symbol"><code class="docutils literal notranslate"><span class="pre">XYMap.mapcorner_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.max_pathfinding_length"><code class="docutils literal notranslate"><span class="pre">XYMap.max_pathfinding_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.empty_symbol"><code class="docutils literal notranslate"><span class="pre">XYMap.empty_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.legend_key_exceptions"><code class="docutils literal notranslate"><span class="pre">XYMap.legend_key_exceptions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.__init__"><code class="docutils literal notranslate"><span class="pre">XYMap.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.log"><code class="docutils literal notranslate"><span class="pre">XYMap.log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.reload"><code class="docutils literal notranslate"><span class="pre">XYMap.reload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.parse"><code class="docutils literal notranslate"><span class="pre">XYMap.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.calculate_path_matrix"><code class="docutils literal notranslate"><span class="pre">XYMap.calculate_path_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_nodes"><code class="docutils literal notranslate"><span class="pre">XYMap.spawn_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.spawn_links"><code class="docutils literal notranslate"><span class="pre">XYMap.spawn_links()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_node_from_coord"><code class="docutils literal notranslate"><span class="pre">XYMap.get_node_from_coord()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_components_with_symbol"><code class="docutils literal notranslate"><span class="pre">XYMap.get_components_with_symbol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_shortest_path"><code class="docutils literal notranslate"><span class="pre">XYMap.get_shortest_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap.html#evennia.contrib.grid.xyzgrid.xymap.XYMap.get_visual_range"><code class="docutils literal notranslate"><span class="pre">XYMap.get_visual_range()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html">evennia.contrib.grid.xyzgrid.xymap_legend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#map-legend-components">Map legend components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode"><code class="docutils literal notranslate"><span class="pre">MapNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.display_symbol"><code class="docutils literal notranslate"><span class="pre">MapNode.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.interrupt_path"><code class="docutils literal notranslate"><span class="pre">MapNode.interrupt_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.prototype"><code class="docutils literal notranslate"><span class="pre">MapNode.prototype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.multilink"><code class="docutils literal notranslate"><span class="pre">MapNode.multilink</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.direction_spawn_defaults"><code class="docutils literal notranslate"><span class="pre">MapNode.direction_spawn_defaults</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.__init__"><code class="docutils literal notranslate"><span class="pre">MapNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.node_index"><code class="docutils literal notranslate"><span class="pre">MapNode.node_index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.symbol"><code class="docutils literal notranslate"><span class="pre">MapNode.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.log"><code class="docutils literal notranslate"><span class="pre">MapNode.log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.generate_prototype_key"><code class="docutils literal notranslate"><span class="pre">MapNode.generate_prototype_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.build_links"><code class="docutils literal notranslate"><span class="pre">MapNode.build_links()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.linkweights"><code class="docutils literal notranslate"><span class="pre">MapNode.linkweights()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_display_symbol"><code class="docutils literal notranslate"><span class="pre">MapNode.get_display_symbol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_spawn_xyz"><code class="docutils literal notranslate"><span class="pre">MapNode.get_spawn_xyz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.get_exit_spawn_name"><code class="docutils literal notranslate"><span class="pre">MapNode.get_exit_spawn_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.spawn"><code class="docutils literal notranslate"><span class="pre">MapNode.spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.spawn_links"><code class="docutils literal notranslate"><span class="pre">MapNode.spawn_links()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapNode.unspawn"><code class="docutils literal notranslate"><span class="pre">MapNode.unspawn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode"><code class="docutils literal notranslate"><span class="pre">TransitionMapNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.symbol"><code class="docutils literal notranslate"><span class="pre">TransitionMapNode.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.display_symbol"><code class="docutils literal notranslate"><span class="pre">TransitionMapNode.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.taget_map_xyz"><code class="docutils literal notranslate"><span class="pre">TransitionMapNode.taget_map_xyz</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.get_spawn_xyz"><code class="docutils literal notranslate"><span class="pre">TransitionMapNode.get_spawn_xyz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TransitionMapNode.build_links"><code class="docutils literal notranslate"><span class="pre">TransitionMapNode.build_links()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink"><code class="docutils literal notranslate"><span class="pre">MapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.display_symbol"><code class="docutils literal notranslate"><span class="pre">MapLink.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.default_weight"><code class="docutils literal notranslate"><span class="pre">MapLink.default_weight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.average_long_link_weights"><code class="docutils literal notranslate"><span class="pre">MapLink.average_long_link_weights</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.directions"><code class="docutils literal notranslate"><span class="pre">MapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.direction_aliases"><code class="docutils literal notranslate"><span class="pre">MapLink.direction_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.weights"><code class="docutils literal notranslate"><span class="pre">MapLink.weights</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.multilink"><code class="docutils literal notranslate"><span class="pre">MapLink.multilink</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.interrupt_path"><code class="docutils literal notranslate"><span class="pre">MapLink.interrupt_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.prototype"><code class="docutils literal notranslate"><span class="pre">MapLink.prototype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.spawn_aliases"><code class="docutils literal notranslate"><span class="pre">MapLink.spawn_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.__init__"><code class="docutils literal notranslate"><span class="pre">MapLink.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.symbol"><code class="docutils literal notranslate"><span class="pre">MapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.generate_prototype_key"><code class="docutils literal notranslate"><span class="pre">MapLink.generate_prototype_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.traverse"><code class="docutils literal notranslate"><span class="pre">MapLink.traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_linked_neighbors"><code class="docutils literal notranslate"><span class="pre">MapLink.get_linked_neighbors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.at_empty_target"><code class="docutils literal notranslate"><span class="pre">MapLink.at_empty_target()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_direction"><code class="docutils literal notranslate"><span class="pre">MapLink.get_direction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_weight"><code class="docutils literal notranslate"><span class="pre">MapLink.get_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapLink.get_display_symbol"><code class="docutils literal notranslate"><span class="pre">MapLink.get_display_symbol()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartRerouterMapLink"><code class="docutils literal notranslate"><span class="pre">SmartRerouterMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartRerouterMapLink.multilink"><code class="docutils literal notranslate"><span class="pre">SmartRerouterMapLink.multilink</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartRerouterMapLink.get_direction"><code class="docutils literal notranslate"><span class="pre">SmartRerouterMapLink.get_direction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.display_symbol"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.direction_name"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink.direction_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.__init__"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.at_empty_target"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink.at_empty_target()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartTeleporterMapLink.get_direction"><code class="docutils literal notranslate"><span class="pre">SmartTeleporterMapLink.get_direction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartMapLink"><code class="docutils literal notranslate"><span class="pre">SmartMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartMapLink.multilink"><code class="docutils literal notranslate"><span class="pre">SmartMapLink.multilink</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SmartMapLink.get_direction"><code class="docutils literal notranslate"><span class="pre">SmartMapLink.get_direction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InvisibleSmartMapLink"><code class="docutils literal notranslate"><span class="pre">InvisibleSmartMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InvisibleSmartMapLink.direction_aliases"><code class="docutils literal notranslate"><span class="pre">InvisibleSmartMapLink.direction_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InvisibleSmartMapLink.display_symbol_aliases"><code class="docutils literal notranslate"><span class="pre">InvisibleSmartMapLink.display_symbol_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InvisibleSmartMapLink.get_display_symbol"><code class="docutils literal notranslate"><span class="pre">InvisibleSmartMapLink.get_display_symbol()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BasicMapNode"><code class="docutils literal notranslate"><span class="pre">BasicMapNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BasicMapNode.symbol"><code class="docutils literal notranslate"><span class="pre">BasicMapNode.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BasicMapNode.prototype"><code class="docutils literal notranslate"><span class="pre">BasicMapNode.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapNode"><code class="docutils literal notranslate"><span class="pre">InterruptMapNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapNode.symbol"><code class="docutils literal notranslate"><span class="pre">InterruptMapNode.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapNode.display_symbol"><code class="docutils literal notranslate"><span class="pre">InterruptMapNode.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapNode.interrupt_path"><code class="docutils literal notranslate"><span class="pre">InterruptMapNode.interrupt_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapNode.prototype"><code class="docutils literal notranslate"><span class="pre">InterruptMapNode.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapTransitionNode"><code class="docutils literal notranslate"><span class="pre">MapTransitionNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapTransitionNode.symbol"><code class="docutils literal notranslate"><span class="pre">MapTransitionNode.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapTransitionNode.display_symbol"><code class="docutils literal notranslate"><span class="pre">MapTransitionNode.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapTransitionNode.prototype"><code class="docutils literal notranslate"><span class="pre">MapTransitionNode.prototype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.MapTransitionNode.target_map_xyz"><code class="docutils literal notranslate"><span class="pre">MapTransitionNode.target_map_xyz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSMapLink"><code class="docutils literal notranslate"><span class="pre">NSMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">NSMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSMapLink.display_symbol"><code class="docutils literal notranslate"><span class="pre">NSMapLink.display_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSMapLink.directions"><code class="docutils literal notranslate"><span class="pre">NSMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">NSMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWMapLink"><code class="docutils literal notranslate"><span class="pre">EWMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">EWMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWMapLink.directions"><code class="docutils literal notranslate"><span class="pre">EWMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">EWMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NESWMapLink"><code class="docutils literal notranslate"><span class="pre">NESWMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NESWMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">NESWMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NESWMapLink.directions"><code class="docutils literal notranslate"><span class="pre">NESWMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NESWMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">NESWMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SENWMapLink"><code class="docutils literal notranslate"><span class="pre">SENWMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SENWMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">SENWMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SENWMapLink.directions"><code class="docutils literal notranslate"><span class="pre">SENWMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SENWMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">SENWMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.PlusMapLink"><code class="docutils literal notranslate"><span class="pre">PlusMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.PlusMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">PlusMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.PlusMapLink.directions"><code class="docutils literal notranslate"><span class="pre">PlusMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.PlusMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">PlusMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.CrossMapLink"><code class="docutils literal notranslate"><span class="pre">CrossMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.CrossMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">CrossMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.CrossMapLink.directions"><code class="docutils literal notranslate"><span class="pre">CrossMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.CrossMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">CrossMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSOneWayMapLink"><code class="docutils literal notranslate"><span class="pre">NSOneWayMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSOneWayMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">NSOneWayMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSOneWayMapLink.directions"><code class="docutils literal notranslate"><span class="pre">NSOneWayMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.NSOneWayMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">NSOneWayMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SNOneWayMapLink"><code class="docutils literal notranslate"><span class="pre">SNOneWayMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SNOneWayMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">SNOneWayMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SNOneWayMapLink.directions"><code class="docutils literal notranslate"><span class="pre">SNOneWayMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.SNOneWayMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">SNOneWayMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWOneWayMapLink"><code class="docutils literal notranslate"><span class="pre">EWOneWayMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWOneWayMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">EWOneWayMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWOneWayMapLink.directions"><code class="docutils literal notranslate"><span class="pre">EWOneWayMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.EWOneWayMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">EWOneWayMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.WEOneWayMapLink"><code class="docutils literal notranslate"><span class="pre">WEOneWayMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.WEOneWayMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">WEOneWayMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.WEOneWayMapLink.directions"><code class="docutils literal notranslate"><span class="pre">WEOneWayMapLink.directions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.WEOneWayMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">WEOneWayMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.UpMapLink"><code class="docutils literal notranslate"><span class="pre">UpMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.UpMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">UpMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.UpMapLink.direction_aliases"><code class="docutils literal notranslate"><span class="pre">UpMapLink.direction_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.UpMapLink.spawn_aliases"><code class="docutils literal notranslate"><span class="pre">UpMapLink.spawn_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.UpMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">UpMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.DownMapLink"><code class="docutils literal notranslate"><span class="pre">DownMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.DownMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">DownMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.DownMapLink.direction_aliases"><code class="docutils literal notranslate"><span class="pre">DownMapLink.direction_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.DownMapLink.spawn_aliases"><code class="docutils literal notranslate"><span class="pre">DownMapLink.spawn_aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.DownMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">DownMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapLink"><code class="docutils literal notranslate"><span class="pre">InterruptMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">InterruptMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapLink.interrupt_path"><code class="docutils literal notranslate"><span class="pre">InterruptMapLink.interrupt_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.InterruptMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">InterruptMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BlockedMapLink"><code class="docutils literal notranslate"><span class="pre">BlockedMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BlockedMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">BlockedMapLink.symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BlockedMapLink.weights"><code class="docutils literal notranslate"><span class="pre">BlockedMapLink.weights</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.BlockedMapLink.prototype"><code class="docutils literal notranslate"><span class="pre">BlockedMapLink.prototype</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.RouterMapLink"><code class="docutils literal notranslate"><span class="pre">RouterMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.RouterMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">RouterMapLink.symbol</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TeleporterMapLink"><code class="docutils literal notranslate"><span class="pre">TeleporterMapLink</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xymap_legend.html#evennia.contrib.grid.xyzgrid.xymap_legend.TeleporterMapLink.symbol"><code class="docutils literal notranslate"><span class="pre">TeleporterMapLink.symbol</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html">evennia.contrib.grid.xyzgrid.xyzgrid</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid"><code class="docutils literal notranslate"><span class="pre">XYZGrid</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.at_script_creation"><code class="docutils literal notranslate"><span class="pre">XYZGrid.at_script_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.grid"><code class="docutils literal notranslate"><span class="pre">XYZGrid.grid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_map"><code class="docutils literal notranslate"><span class="pre">XYZGrid.get_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.all_maps"><code class="docutils literal notranslate"><span class="pre">XYZGrid.all_maps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.log"><code class="docutils literal notranslate"><span class="pre">XYZGrid.log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_room"><code class="docutils literal notranslate"><span class="pre">XYZGrid.get_room()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.get_exit"><code class="docutils literal notranslate"><span class="pre">XYZGrid.get_exit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.maps_from_module"><code class="docutils literal notranslate"><span class="pre">XYZGrid.maps_from_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.reload"><code class="docutils literal notranslate"><span class="pre">XYZGrid.reload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.add_maps"><code class="docutils literal notranslate"><span class="pre">XYZGrid.add_maps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.remove_map"><code class="docutils literal notranslate"><span class="pre">XYZGrid.remove_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.delete"><code class="docutils literal notranslate"><span class="pre">XYZGrid.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.spawn"><code class="docutils literal notranslate"><span class="pre">XYZGrid.spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">XYZGrid.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">XYZGrid.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.path"><code class="docutils literal notranslate"><span class="pre">XYZGrid.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.XYZGrid.typename"><code class="docutils literal notranslate"><span class="pre">XYZGrid.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzgrid.html#evennia.contrib.grid.xyzgrid.xyzgrid.get_xyzgrid"><code class="docutils literal notranslate"><span class="pre">get_xyzgrid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html">evennia.contrib.grid.xyzgrid.xyzroom</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager"><code class="docutils literal notranslate"><span class="pre">XYZManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.filter_xyz"><code class="docutils literal notranslate"><span class="pre">XYZManager.filter_xyz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZManager.get_xyz"><code class="docutils literal notranslate"><span class="pre">XYZManager.get_xyz()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager"><code class="docutils literal notranslate"><span class="pre">XYZExitManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.filter_xyz_exit"><code class="docutils literal notranslate"><span class="pre">XYZExitManager.filter_xyz_exit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExitManager.get_xyz_exit"><code class="docutils literal notranslate"><span class="pre">XYZExitManager.get_xyz_exit()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom"><code class="docutils literal notranslate"><span class="pre">XYZRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.objects"><code class="docutils literal notranslate"><span class="pre">XYZRoom.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_display"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_display</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_mode"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_visual_range"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_visual_range</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_character_symbol"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_character_symbol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_align"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_align</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_target_path_style"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_target_path_style</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_fill_all"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_fill_all</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.map_separator_char"><code class="docutils literal notranslate"><span class="pre">XYZRoom.map_separator_char</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.xyz"><code class="docutils literal notranslate"><span class="pre">XYZRoom.xyz</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.xyzgrid"><code class="docutils literal notranslate"><span class="pre">XYZRoom.xyzgrid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.xymap"><code class="docutils literal notranslate"><span class="pre">XYZRoom.xymap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.create"><code class="docutils literal notranslate"><span class="pre">XYZRoom.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.get_display_name"><code class="docutils literal notranslate"><span class="pre">XYZRoom.get_display_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.return_appearance"><code class="docutils literal notranslate"><span class="pre">XYZRoom.return_appearance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">XYZRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">XYZRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.path"><code class="docutils literal notranslate"><span class="pre">XYZRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZRoom.typename"><code class="docutils literal notranslate"><span class="pre">XYZRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit"><code class="docutils literal notranslate"><span class="pre">XYZExit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.objects"><code class="docutils literal notranslate"><span class="pre">XYZExit.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.xyzgrid"><code class="docutils literal notranslate"><span class="pre">XYZExit.xyzgrid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.xyz"><code class="docutils literal notranslate"><span class="pre">XYZExit.xyz</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.xyz_destination"><code class="docutils literal notranslate"><span class="pre">XYZExit.xyz_destination</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.create"><code class="docutils literal notranslate"><span class="pre">XYZExit.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">XYZExit.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">XYZExit.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.path"><code class="docutils literal notranslate"><span class="pre">XYZExit.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.grid.xyzgrid.xyzroom.html#evennia.contrib.grid.xyzgrid.xyzroom.XYZExit.typename"><code class="docutils literal notranslate"><span class="pre">XYZExit.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.grid.wilderness.wilderness.html"
+                          title="previous chapter">evennia.contrib.grid.wilderness.wilderness</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.grid.xyzgrid.commands.html"
+                          title="next chapter">evennia.contrib.grid.xyzgrid.commands</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.xyzgrid.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.commands.html" title="evennia.contrib.grid.xyzgrid.commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.wilderness.wilderness.html" title="evennia.contrib.grid.wilderness.wilderness"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

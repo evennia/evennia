@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.base_systems.godotwebsocket.test_webclient &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.godotwebsocket.test_webclient</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.godotwebsocket.test_webclient</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.contrib.base_systems.godotwebsocket.webclient</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_plugin_services</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.amp_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">AMPServerFactory</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.unittest</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestCase</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unittest</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">unittest</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">override_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">Mock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelayedCall</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.test</span><span class="w"> </span><span class="kn">import</span> <span class="n">proto_helpers</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">evennia</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.portalsessionhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">PortalSessionHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.server.portal.service</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaPortalService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvenniaTest</span>
+
+
+<div class="viewcode-block" id="TestGodotWebSocketClient">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TestGodotWebSocketClient</span><span class="p">(</span><span class="n">BaseEvenniaTest</span><span class="p">):</span>
+<div class="viewcode-block" id="TestGodotWebSocketClient.setUp">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient.setUp">[docs]</a>
+    <span class="nd">@override_settings</span><span class="p">(</span>
+        <span class="n">GODOT_CLIENT_WEBSOCKET_CLIENT_INTERFACE</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">GODOT_CLIENT_WEBSOCKET_PORT</span><span class="o">=</span><span class="s2">&quot;8988&quot;</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">EvenniaPortalService</span><span class="p">()</span>
+        <span class="n">evennia</span><span class="o">.</span><span class="n">EVENNIA_PORTAL_SERVICE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_server_factory</span> <span class="o">=</span> <span class="n">AMPServerFactory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_server_factory</span><span class="o">.</span><span class="n">buildProtocol</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)</span>
+        <span class="n">start_plugin_services</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="p">)</span>
+        <span class="n">godot_ws_service</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="n">srv</span> <span class="k">for</span> <span class="n">srv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">portal</span><span class="o">.</span><span class="n">services</span> <span class="k">if</span> <span class="n">srv</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GodotWebSocket&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">factory</span> <span class="o">=</span> <span class="n">godot_ws_service</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">protocol</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+
+        <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span> <span class="o">=</span> <span class="n">PortalSessionHandler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span> <span class="o">=</span> <span class="n">evennia</span><span class="o">.</span><span class="n">PORTAL_SESSION_HANDLER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">portal</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">proto_helpers</span><span class="o">.</span><span class="n">StringTransport</span><span class="p">()</span>
+        <span class="c1"># self.proto.transport = proto_helpers.FakeDatagramTransport()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;localhost&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">setTcpKeepAlive</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addCleanup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">disconnect_all</span><span class="p">)</span>
+        <span class="n">DelayedCall</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="TestGodotWebSocketClient.test_data_in">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient.test_data_in">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portalsessionhandler.reactor&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_data_in</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">onOpen</span><span class="p">()</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="s2">&quot;logged_in&quot;</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{}])</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">onMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">isBinary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">logged_in</span><span class="o">=</span><span class="p">[[],</span> <span class="p">{}])</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;|rRed Text|n&quot;</span><span class="p">,),</span> <span class="p">{}])</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">onMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">isBinary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_in</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;|rRed Text|n&quot;</span><span class="p">],</span> <span class="p">{}]</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TestGodotWebSocketClient.test_data_out">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.godotwebsocket.test_webclient.html#evennia.contrib.base_systems.godotwebsocket.test_webclient.TestGodotWebSocketClient.test_data_out">[docs]</a>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s2">&quot;evennia.server.portal.portalsessionhandler.reactor&quot;</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="n">MagicMock</span><span class="p">())</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_data_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">onOpen</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sendLine</span> <span class="o">=</span> <span class="n">MagicMock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sessionhandler</span><span class="o">.</span><span class="n">data_out</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="p">[[</span><span class="s2">&quot;|rRed Text|n&quot;</span><span class="p">],</span> <span class="p">{}])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">sendLine</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;[color=#ff0000]Red Text[/color]&quot;</span><span class="p">],</span> <span class="p">{}])</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.godotwebsocket.test_webclient</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

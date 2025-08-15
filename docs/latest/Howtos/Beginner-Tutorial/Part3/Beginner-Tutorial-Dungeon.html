@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>13. Procedurally generated Dungeon &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="14. Game Quests" href="Beginner-Tutorial-Quests.html" />
+    <link rel="prev" title="12. NPC and monster AI" href="Beginner-Tutorial-AI.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Quests.html" title="14. Game Quests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-AI.html" title="12. NPC and monster AI"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Procedurally generated Dungeon</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="procedurally-generated-dungeon">
+<h1><span class="section-number">13. </span>Procedurally generated Dungeon<a class="headerlink" href="#procedurally-generated-dungeon" title="Link to this heading">¶</a></h1>
+<p>The rooms that we discussed in the <a class="reference internal" href="Beginner-Tutorial-Rooms.html"><span class="std std-doc">lesson about Rooms</span></a> are all <em>manually</em> generated. That is, a human builder would have to sit down and spawn each room manually, either in-game or using code.</p>
+<p>In this lesson we’ll explore <em>procedural</em> generation of the rooms making up our game’s underground dungeon. Procedural means that its rooms are spawned automatically and semi-randomly as players explore, creating a different dungeon layout every time.</p>
+<section id="design-concept">
+<h2><span class="section-number">13.1. </span>Design Concept<a class="headerlink" href="#design-concept" title="Link to this heading">¶</a></h2>
+<p>This describes how the procedural generation should work at a high level. It’s important to understand this before we start writing code.</p>
+<p>We will assume our dungeon exists on a 2D plane (x,y, no z directions). We will only use N,E,S,W compass directions, but there is no reason this design couldn’t work with SE, NW etc, except that this could make it harder for the player to visualize. More possible directions also make it more likely to produce collisions and one-way exits (see below).</p>
+<p>This design is pretty simple, but just by playing with some of its settings, it can produce very different-feeling dungeon systems.</p>
+<section id="the-starting-room">
+<h3><span class="section-number">13.1.1. </span>The starting room<a class="headerlink" href="#the-starting-room" title="Link to this heading">¶</a></h3>
+<p>The idea is that all players will descend down a well to get to the start of the dungeon. The bottom of the well is a statically created room that won’t change.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Starting room</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                 Branch N                
+                    ▲                    
+                    │                    
+           ┌────────┼────────┐           
+           │        │n       │           
+           │        ▼        │           
+           │                 │           
+           │                e│           
+Branch W ◄─┼─►     up▲     ◄─┼─► Branch E1
+           │w                │           
+           │                 │           
+           │        ▲        │           
+           │        │s       │           
+           └────────┼────────┘           
+                    │                    
+                    ▼                    
+                 Branch S               
+</pre></div>
+</div>
+</div>
+<p>The magic happens when you choose one of the exits from this room (except the one leading you back to the surface). Let’s assume a PC descends down to the start room and moves <code class="docutils literal notranslate"><span class="pre">east</span></code>:</p>
+<ul class="simple">
+<li><p>The first person to go east will spawn a new “Dungeon branch” (Branch E1 in the diagram). This is a separate “instance” of dungeon compared to what would spawn if moving through any of the other exits. Rooms spawned within one dungeon branch will never overlap with that of another dungeon branch.</p></li>
+<li><p>A timer starts. While this timer is active, everyone going <code class="docutils literal notranslate"><span class="pre">east</span></code> will end up in Branch E1. This allows for players to team up and collaborate to take on a branch.</p></li>
+<li><p>After the timer runs out, everyone going <code class="docutils literal notranslate"><span class="pre">east</span></code> will instead end up in a <em>new</em> Branch E2. This is a new branch that has no overlap with Branch E1.</p></li>
+<li><p>PCs in Branches E1 and E2 can always retreat <code class="docutils literal notranslate"><span class="pre">west</span></code> back to the starting room, but after the timer runs out this is now a one-way exit - they won’t be able to return to their old branches if they do.</p></li>
+</ul>
+</section>
+<section id="generating-new-branch-rooms">
+<h3><span class="section-number">13.1.2. </span>Generating new branch rooms<a class="headerlink" href="#generating-new-branch-rooms" title="Link to this heading">¶</a></h3>
+<p>Each dungeon branch is itself tracking the layout of rooms belonging to this branch on an (X, Y) coordinate grid.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Creating the eastern branch and its first room</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?         
+                   ▲         
+                   │         
+┌─────────┐   ┌────┼────┐    
+│         │   │A   │    │    
+│         │   │   PC    │    
+│  start◄─┼───┼─► is  ──┼──►?
+│         │   │   here  │    
+│         │   │    │    │    
+└─────────┘   └────┼────┘    
+                   │         
+                   ▼         
+</pre></div>
+</div>
+</div>
+<p>The start room is always at coordinate <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code>.</p>
+<p>A dungeon room is only created when actually moving to it. In the above example, the PC moved <code class="docutils literal notranslate"><span class="pre">east</span></code> from the start room, which initiated a new dungeon branch. The branch also created a new room (room <code class="docutils literal notranslate"><span class="pre">A</span></code>) at coordinate <code class="docutils literal notranslate"><span class="pre">(1,0)</span></code>. In this case it (randomly) seeded this room with three exits <code class="docutils literal notranslate"><span class="pre">north</span></code>, <code class="docutils literal notranslate"><span class="pre">east</span></code> and <code class="docutils literal notranslate"><span class="pre">south</span></code>.
+Since this branch was just created, the exit back to the start room is still two-way.</p>
+<p>This is the procedure the dungeon branch follows when spawning a new room:</p>
+<ul class="simple">
+<li><p>It always creates an exit back to the room we came from.</p></li>
+<li><p>It checks how many unexplored exits we have in the dungeon right now. That is, how many exits we haven’t yet traversed. This number must never be zero unless we want a dungeon that can be ‘finished’. The maximum number of unexplored exits open at any given time is a setting we can experiment with. A small max number leads to linear dungeon, a bigger number makes the dungeon sprawling and maze-like.</p></li>
+<li><p>Outgoing exits (exits not leading back to where we came) are generated with the following rules:</p>
+<ul>
+<li><p>Randomly create between 0 and the number of outgoing exits allowed by the room and the branches’ current budget of allowed open unexplored exits.</p></li>
+<li><p>Create 0 outgoing exits (a dead-end) only if this would leave at least one unexplored exit open somewhere in the dungeon branch.</p></li>
+<li><p>Do <em>not</em> create an exit that would connect the exit to a previously generated room (so we prefer exits leading to new places rather than back to old ones)</p></li>
+<li><p>If a previously created exit end up pointing to a newly created room, this <em>is</em> allowed, and is the only time a one-way exit will happen (example below). All other exits are always two-way exits. This also presents the only small chance of closing out a dungeon with no way to proceed but to return to the start.</p></li>
+<li><p>Never create an exit back to the start room (e.g. from another direction). The only way to get back to the start room is by back tracking.</p></li>
+</ul>
+</li>
+</ul>
+<p>In the following examples, we assume the maximum number of unexplored exits allowed open at any time is set to 4.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">After four steps in the eastern dungeon branch</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    ?                                 
+                   ▲                                 
+                   │                                 
+┌─────────┐   ┌────┼────┐                            
+│         │   │A   │    │                            
+│         │   │         │                            
+│  start◄─┼───┼─      ──┼─►?                         
+│         │   │    ▲    │                            
+│         │   │    │    │                            
+└─────────┘   └────┼────┘                            
+                   │                                 
+              ┌────┼────┐   ┌─────────┐   ┌─────────┐
+              │B   │    │   │C        │   │D        │
+              │    ▼    │   │         │   │   PC    │
+          ?◄──┼─      ◄─┼───┼─►     ◄─┼───┼─► is    │
+              │         │   │         │   │   here  │
+              │         │   │         │   │         │
+              └─────────┘   └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<ol class="arabic simple">
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">east</span></code> from the start room. A new room <code class="docutils literal notranslate"><span class="pre">A</span></code> (coordinate <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">0)</span></code> ) is created. After a while the exit back to the start room becomes a one-way exit. The branch can have at most 4 unexplored exits, and the dungeon branch randomly adds three additional exits out of room <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p></li>
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">south</span></code>. A new room <code class="docutils literal notranslate"><span class="pre">B</span></code> (<code class="docutils literal notranslate"><span class="pre">(1,-1)</span></code>) is created, with two random exits, which is as many as the orchetrator is allowed to create at this time (4 are now open). It also always creates an exit back to the previous room (<code class="docutils literal notranslate"><span class="pre">A</span></code>)</p></li>
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">east</span></code> (coordinate (<code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">-1)</span></code>). A new room <code class="docutils literal notranslate"><span class="pre">C</span></code> is created. The  dungaon branch already has 3 exits unexplored, so it can only add one exit our of this room.</p></li>
+<li><p>PC moves <code class="docutils literal notranslate"><span class="pre">east</span></code> (<code class="docutils literal notranslate"><span class="pre">(3,</span> <span class="pre">-1)</span></code>). While the dungeon branch still has a budget of one exit, it knows there are other unexplored exits elsewhere, and is allowed to randomly create 0 exits. This is a dead end. The PC must go back and explore another direction.</p></li>
+</ol>
+<p>Let’s change the dungeon a bit to do another example:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Looping around</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?                   
+                   ▲                   
+                   │                   
+┌─────────┐   ┌────┼────┐              
+│         │   │A   │    │              
+│         │   │         │              
+│  start◄─┼───┼─      ──┼──►?           
+│         │   │    ▲    │              
+│         │   │    │    │        ?     
+└─────────┘   └────┼────┘        ▲     
+                   │             │     
+              ┌────┼────┐   ┌────┼────┐
+              │B   │    │   │C   │    │
+              │    ▼    │   │   PC    │
+          ?◄──┼─      ◄─┼───┼─► is    │
+              │         │   │   here  │
+              │         │   │         │
+              └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<p>In this example the PC moved <code class="docutils literal notranslate"><span class="pre">east</span></code>, <code class="docutils literal notranslate"><span class="pre">south</span></code>, <code class="docutils literal notranslate"><span class="pre">east</span></code> but the exit out of room <code class="docutils literal notranslate"><span class="pre">C</span></code> is leading north, into a coordinate where <code class="docutils literal notranslate"><span class="pre">A</span></code> already has an exit pointing to. Going <code class="docutils literal notranslate"><span class="pre">north</span></code> here leads to the following:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Creation of a one-way exit</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?                   
+                   ▲                   
+                   │                   
+┌─────────┐   ┌────┼────┐   ┌─────────┐
+│         │   │A   │    │   │D   PC   │
+│         │   │         │   │    is   │
+│  start◄─┼───┼─      ──┼───┼─►  here │
+│         │   │    ▲    │   │    ▲    │
+│         │   │    │    │   │    │    │
+└─────────┘   └────┼────┘   └────┼────┘
+                   │             │     
+              ┌────┼────┐   ┌────┼────┐
+              │B   │    │   │C   │    │
+              │    ▼    │   │    ▼    │
+          ?◄──┼─      ◄─┼───┼─►       │
+              │         │   │         │
+              │         │   │         │
+              └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<p>As the PC moves <code class="docutils literal notranslate"><span class="pre">north</span></code>, the room <code class="docutils literal notranslate"><span class="pre">D</span></code> is created at <code class="docutils literal notranslate"><span class="pre">(2,0)</span></code>.</p>
+<p>While <code class="docutils literal notranslate"><span class="pre">C</span></code> to <code class="docutils literal notranslate"><span class="pre">D</span></code> get a two-way exit as normal, this creates a one-way exit from <code class="docutils literal notranslate"><span class="pre">A</span></code> to <code class="docutils literal notranslate"><span class="pre">D</span></code>.</p>
+<p>Whichever exit leads to actually creating the room gets the two-way exit, so if the PC had walked back from <code class="docutils literal notranslate"><span class="pre">C</span></code> and created room <code class="docutils literal notranslate"><span class="pre">D</span></code> by going <code class="docutils literal notranslate"><span class="pre">east</span></code> from room <code class="docutils literal notranslate"><span class="pre">A</span></code>, then the one-way exit would be from room <code class="docutils literal notranslate"><span class="pre">C</span></code> instead.</p>
+<blockquote>
+<div><p>If the maximum allowed number of open unexplored exits is small, this case is the only situation where it’s possible to ‘finish’ the dungeon (having no more unexplored exits to follow). We accept this as a case where the PCs just have to turn back and try another dungeon branch.</p>
+</div></blockquote>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Never link back to start room</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ?                   
+                   ▲                   
+                   │                   
+┌─────────┐   ┌────┼────┐   ┌─────────┐
+│         │   │A   │    │   │D        │
+│         │   │         │   │         │
+│  start◄─┼───┼─      ──┼───┼─►       │
+│         │   │    ▲    │   │    ▲    │
+│         │   │    │    │   │    │    │
+└─────────┘   └────┼────┘   └────┼────┘
+                   │             │     
+┌─────────┐   ┌────┼────┐   ┌────┼────┐
+│E        │   │B   │    │   │C   │    │
+│  PC     │   │    ▼    │   │    ▼    │
+│  is   ◄─┼───┼─►     ◄─┼───┼─►       │
+│  here   │   │         │   │         │
+│         │   │         │   │         │
+└─────────┘   └─────────┘   └─────────┘
+</pre></div>
+</div>
+</div>
+<p>Here the PC moved <code class="docutils literal notranslate"><span class="pre">west</span></code> from room <code class="docutils literal notranslate"><span class="pre">B</span></code> creating room <code class="docutils literal notranslate"><span class="pre">E</span></code> at <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">-1)</span></code>.</p>
+<p>The dungeon branch never creates a link back to the start room, but it <em>could</em> have created up to two new exits <code class="docutils literal notranslate"><span class="pre">west</span></code> and/or <code class="docutils literal notranslate"><span class="pre">south</span></code>. Since there’s still an unexplored exit <code class="docutils literal notranslate"><span class="pre">north</span></code> from room <code class="docutils literal notranslate"><span class="pre">A</span></code>, the  branch is also allowed to randomly assign 0 exits, which is what it did here.</p>
+<p>The PC needs to backtrack and go <code class="docutils literal notranslate"><span class="pre">north</span></code> from <code class="docutils literal notranslate"><span class="pre">A</span></code> to continue exploring this dungeon branch.</p>
+</section>
+<section id="making-the-dungeon-dangerous">
+<h3><span class="section-number">13.1.3. </span>Making the dungeon dangerous<a class="headerlink" href="#making-the-dungeon-dangerous" title="Link to this heading">¶</a></h3>
+<p>A dungeon would not be interesting without peril! There needs to be monsters to slay, puzzles to solve and treasure to be had.</p>
+<p>When PCs first enters a room, that room is marked as <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">clear</span></code>. While a room is not cleared, the PCs <em>cannot use any of the unexplored exits out of that room</em>.  They <em>can</em> still retreat back the way they came unless they become locked in combat, in which case they have to flee from that first.</p>
+<p>Once PCs have overcome the challenge of the room (and probably earned some reward), will it change to <code class="docutils literal notranslate"><span class="pre">clear</span></code> .  A room can auto-clear if it is spawned empty or has no challenge meant to block the PCs (like a written hint for a puzzle elsewhere).</p>
+<p>Note that clear/non-clear only relates to the challenge associated with that room. Roaming monsters (see the <a class="reference internal" href="Beginner-Tutorial-AI.html"><span class="std std-doc">AI tutorial</span></a>) can lead to combat taking place in previously ‘cleared’ rooms.</p>
+</section>
+<section id="difficulty-scaling">
+<h3><span class="section-number">13.1.4. </span>Difficulty scaling<a class="headerlink" href="#difficulty-scaling" title="Link to this heading">¶</a></h3>
+<aside class="sidebar">
+<p class="sidebar-title">Risk and reward</p>
+<p>The concept of dungeon depth/difficulty works well together with limited resources. If healing is limited to what can be carried, this leads to players having to decide if they want to risk push deeper or take their current spoils and retreat back to the surface to recover.</p>
+</aside>
+<p>The “difficulty” of the dungeon is measured by the “depth” PCs have delved to. This is given as the <em>radial distance</em> from the start room, rounded down, found by the good old <a class="reference external" href="https://en.wikipedia.org/wiki/Pythagorean_theorem">Pythagorean theorem</a>:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>depth = int(math.sqrt(x**2 + y**2))
+</pre></div>
+</div>
+<p>So if you are in room <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">1)</span></code> you are at difficulty 1. Conversely at room coordinate <code class="docutils literal notranslate"><span class="pre">(4,-5)</span></code>  the difficulty is 6. Increasing depth should lead to tougher challenges but greater rewards.</p>
+</section>
+</section>
+<section id="start-implementation">
+<h2><span class="section-number">13.2. </span>Start Implementation<a class="headerlink" href="#start-implementation" title="Link to this heading">¶</a></h2>
+<p>Let’s implement the design now!</p>
+<aside class="sidebar">
+<p>You can also find code examples of the dungeon generator at <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorials</span></code>, in <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.dungeon.html#evennia-contrib-tutorials-evadventure-dungeon"><span class="std std-ref">evadventure/dungeon.py</span></a>.</p>
+</aside>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/dungeon.py</span></code>.</p>
+</div></blockquote>
+</section>
+<section id="basic-dungeon-rooms">
+<h2><span class="section-number">13.3. </span>Basic Dungeon rooms<a class="headerlink" href="#basic-dungeon-rooms" title="Link to this heading">¶</a></h2>
+<p>This is the fundamental element of the design, so let’s start here.</p>
+<p>Back in the <a class="reference internal" href="Beginner-Tutorial-Rooms.html"><span class="std std-doc">lesson about rooms</span></a> we created a basic <code class="docutils literal notranslate"><span class="pre">EvAdventureRoom</span></code> typeclass.
+We will expand on this for dungeon rooms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/dungeon.py </span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">AttributeProperty</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">.rooms</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvAdventureRoom</span> 
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonRoom</span><span class="p">(</span><span class="n">EvAdventureRoom</span><span class="p">):</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 9</span><span class="sd">    Dangerous dungeon room.</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">12</span>
+<span class="hll"><span class="linenos">13</span>    <span class="n">allow_combat</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">14</span>    <span class="n">allow_death</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="linenos">15</span>
+<span class="linenos">16</span>    <span class="c1"># dungeon generation attributes; set when room is created</span>
+<span class="linenos">17</span>    <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="n">xy_coords</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">21</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">22</span><span class="sd">        Set the `not_clear` tag on the room. This is removed when the room is</span>
+<span class="linenos">23</span><span class="sd">        &#39;cleared&#39;, whatever that means for each room.</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="sd">        We put this here rather than in the room-creation code so we can override</span>
+<span class="linenos">26</span><span class="sd">        easier (for example we may want an empty room which auto-clears).</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
+</span><span class="linenos">30</span>    
+<span class="linenos">31</span>    <span class="k">def</span><span class="w"> </span><span class="nf">clear_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll"><span class="linenos">32</span>        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
+</span><span class="linenos">33</span>    
+<span class="linenos">34</span>    <span class="nd">@property</span>
+<span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">is_room_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="hll"><span class="linenos">36</span>        <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;not_clear&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">))</span>
+</span><span class="linenos">37</span>
+<span class="hll"><span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span class="linenos">39</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">40</span><span class="sd">        Show if the room is &#39;cleared&#39; or not as part of its description.</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">43</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_room_clear</span><span class="p">:</span>
+<span class="linenos">44</span>            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+<span class="linenos">45</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">46</span>            <span class="k">return</span> <span class="s2">&quot;|rThe path forwards is blocked!|n&quot;</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Storing the room typeclass</p>
+<p>For this tutorial, we’re keeping all dungeon-related code in one module. But one <em>could</em> also argue that they belong in <code class="docutils literal notranslate"><span class="pre">evadventure/rooms.py</span></code> together with the other rooms. This is only a matter of how you want to organize things. Feel free to organize however you prefer for your own game.</p>
+</aside>
+<ul class="simple">
+<li><p><strong>Lines 14-15</strong>: Dungeon rooms are dangerous, so unlike base EvAdventure rooms, we allow combat and death to happen in them.</p></li>
+<li><p><strong>Line 17</strong>: We store a reference to the dungeon branch so that we can access it during room creation if we want. This could be relevant if we want to know things about the dungeon branch as part of creating rooms.</p></li>
+<li><p><strong>Line 18</strong>: The xy coords will be simply stored as a tuple <code class="docutils literal notranslate"><span class="pre">(x,y)</span></code> on the room.</p></li>
+</ul>
+<p>All other functionality is built to manage the “clear” state of the room.</p>
+<ul class="simple">
+<li><p><strong>Line 29</strong>: When we create the room Evennia will always call its <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> hook. We make sure to add a add a <a class="reference internal" href="../../../Components/Tags.html"><span class="std std-doc">Tag</span></a> <code class="docutils literal notranslate"><span class="pre">not_clear</span></code> to it (category “dungeon_room” to avoid collisions with other systems).</p></li>
+<li><p><strong>Line 32</strong>: We will use the <code class="docutils literal notranslate"><span class="pre">.clear_room()</span></code> method to remove this Tag once the room’s challenge is overcome.</p></li>
+<li><p><strong>Line 36</strong> <code class="docutils literal notranslate"><span class="pre">.is_room_clear</span></code> is a convenient property for checking the tag. This hides the Tag so we don’t need to worry about we track the clear-room state.</p></li>
+<li><p><strong>Line 38</strong> The <code class="docutils literal notranslate"><span class="pre">get_display_footer</span></code> is a standard Evennia hook for customizing the room’s footer display.</p></li>
+</ul>
+</section>
+<section id="dungeon-exits">
+<h2><span class="section-number">13.4. </span>Dungeon exits<a class="headerlink" href="#dungeon-exits" title="Link to this heading">¶</a></h2>
+<p>The dungeon exits are special in that we want the very act of traversing them to create the room on the other side.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
+
+<span class="c1"># ...</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultExit</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dungeon exit. This will not create the target room until it&#39;s traversed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We want to block progressing forward unless the room is clear.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;traverse:not objloctag(not_clear, dungeon_room)&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>  <span class="c1"># to be implemented! </span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_failed_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when failing to traverse.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traversing_object</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You can&#39;t get through this way yet!&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>For now, we have not actually created the code for creating a new room in the branch, so we leave the <code class="docutils literal notranslate"><span class="pre">at_traverse</span></code> method un-implemented for now. This hook is what is called by Evennia when traversing the exit.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">at_object_creation</span></code> method we make sure to add a <a class="reference internal" href="../../../Components/Locks.html"><span class="std std-doc">Lock</span></a> of type “traverse”, which will limit who can pass through this exit. We lock it with the <a class="reference internal" href="../../../api/evennia.locks.lockfuncs.html#evennia.locks.lockfuncs.objloctag" title="evennia.locks.lockfuncs.objloctag"><span class="xref myst py py-func">objlocktag</span></a> Lock function. This checks if the accessed object (this exit)’s location (the dungeon room) has a tag “not_clear” with category “dungeon_room” on it. If it does, then the traversal <em>fails</em>. In other words, while the room is not cleared, this type of exit will not let anyone through.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">at_failed_traverse</span></code> hook lets us customize the error message if a PC tries to use the exit before the room is cleared.</p>
+</section>
+<section id="dungeon-branch-and-the-xy-grid">
+<h2><span class="section-number">13.5. </span>Dungeon Branch and the xy grid<a class="headerlink" href="#dungeon-branch-and-the-xy-grid" title="Link to this heading">¶</a></h2>
+<p>The dungeon branch is responsible for the structure of one instance of the dungeon.</p>
+<section id="grid-coordinates-and-exit-mappings">
+<h3><span class="section-number">13.5.1. </span>Grid coordinates and exit mappings<a class="headerlink" href="#grid-coordinates-and-exit-mappings" title="Link to this heading">¶</a></h3>
+<p>Before we start, we need to establish some constants about our grid - the xy plane we will be placing our rooms on.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="c1"># cardinal directions</span>
+<span class="n">_AVAILABLE_DIRECTIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_EXIT_ALIASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">,),</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,),</span>
+<span class="p">}</span>
+<span class="c1"># finding the reverse cardinal direction</span>
+<span class="n">_EXIT_REVERSE_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="s2">&quot;south&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="s2">&quot;west&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="s2">&quot;north&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="s2">&quot;east&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># how xy coordinate shifts by going in direction</span>
+<span class="n">_EXIT_GRID_SHIFT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;north&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;east&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;south&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s2">&quot;west&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this tutorial we only allow NESW movement. You could easily add the NE, SE, SW, NW directions too if you wanted to. We make mappings for exit aliases (there is only one here, but there could be multiple per direction too). We also figure out the “reverse” directions so we’ll easily be able to create a ‘back exit’ later.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">_EXIT_GRID_SHIFT</span></code> mapping indicates how the (x,y) coordinate shifts if you are moving in the specified direction. So if you stand in <code class="docutils literal notranslate"><span class="pre">(4,2)</span></code> and move <code class="docutils literal notranslate"><span class="pre">south</span></code>, you’ll end up in <code class="docutils literal notranslate"><span class="pre">(4,1)</span></code>.</p>
+<section id="base-structure-of-the-dungeon-branch-script">
+<h4><span class="section-number">13.5.1.1. </span>Base structure of the Dungeon branch script<a class="headerlink" href="#base-structure-of-the-dungeon-branch-script" title="Link to this heading">¶</a></h4>
+<p>We will base this component off an Evennia <a class="reference internal" href="../../../Components/Scripts.html"><span class="std std-doc">Script</span></a> - these can be thought of game entities without a physical presence in the world. Scripts also have time-keeping properties.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/dungeon.py </span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultScript</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="c1"># ... </span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">10</span><span class="sd">    One script is created for every dungeon &#39;instance&#39; created. The branch is</span>
+<span class="linenos">11</span><span class="sd">    responsible for determining what is created next when a character enters an</span>
+<span class="linenos">12</span><span class="sd">    exit within the dungeon.</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="sd">    &quot;&quot;&quot;</span>
+<span class="linenos">15</span>    <span class="c1"># this determines how branching the dungeon will be</span>
+<span class="linenos">16</span>    <span class="n">max_unexplored_exits</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="linenos">17</span>    <span class="n">max_new_exits_per_room</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="n">rooms</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">())</span>
+<span class="linenos">20</span>    <span class="n">unvisited_exits</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">list</span><span class="p">())</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span>    <span class="n">last_updated</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span>    <span class="c1"># the room-generator function; copied from the same-name value on the</span>
+<span class="linenos">25</span>    <span class="c1"># start-room when the branch is first created</span>
+<span class="linenos">26</span>    <span class="n">room_generator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>    <span class="c1"># (x,y): room coordinates used up by the branch</span>
+<span class="linenos">29</span>    <span class="n">xy_grid</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="nb">dict</span><span class="p">())</span>
+<span class="linenos">30</span>    <span class="n">start_room</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span>    <span class="k">def</span><span class="w"> </span><span class="nf">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exit</span><span class="p">):</span>
+<span class="linenos">34</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">35</span><span class="sd">        Tell the system the given exit was traversed. This allows us to track</span>
+<span class="linenos">36</span><span class="sd">        how many unvisited paths we have so as to not have it grow</span>
+<span class="linenos">37</span><span class="sd">        exponentially.</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">40</span>        <span class="k">if</span> <span class="n">exit</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">:</span>
+<span class="linenos">41</span>            <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create_out_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">exit_direction</span><span class="o">=</span><span class="s2">&quot;north&quot;</span><span class="p">):</span>
+<span class="linenos">44</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">45</span><span class="sd">        Create outgoing exit from a room. The target room is not yet created.</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">48</span>        <span class="n">out_exit</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+<span class="linenos">49</span>            <span class="n">EvAdventureDungeonExit</span><span class="p">,</span>
+<span class="linenos">50</span>            <span class="n">key</span><span class="o">=</span><span class="n">exit_direction</span><span class="p">,</span>
+<span class="linenos">51</span>            <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+<span class="linenos">52</span>            <span class="n">aliases</span><span class="o">=</span><span class="n">_EXIT_ALIASES</span><span class="p">[</span><span class="n">exit_direction</span><span class="p">],</span>
+<span class="linenos">53</span>        <span class="p">)</span>
+<span class="linenos">54</span>        <span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_exit</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="linenos">55</span>        
+<span class="linenos">56</span>    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">57</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">58</span><span class="sd">        Clean up the dungeon branch.</span>
+<span class="linenos">59</span>
+<span class="linenos">60</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">61</span>        <span class="k">pass</span>  <span class="c1"># to be implemented</span>
+<span class="linenos">62</span>        
+<span class="linenos">63</span>    <span class="k">def</span><span class="w"> </span><span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
+<span class="linenos">64</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">65</span><span class="sd">        Create a new Dungeon room leading from the provided exit.</span>
+<span class="linenos">66</span>
+<span class="linenos">67</span><span class="sd">        Args:</span>
+<span class="linenos">68</span><span class="sd">            from_exit (Exit): The exit leading to this new room.</span>
+<span class="linenos">69</span>
+<span class="linenos">70</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">71</span>        <span class="k">pass</span>  <span class="c1"># to be implemented</span>
+</pre></div>
+</div>
+<p>This sets up useful properties needed for the branch and sketches out some methods we will implement below.</p>
+<p>The branch has several main responsibilities:</p>
+<ul class="simple">
+<li><p>Track how many un-explored exits are available (making sure to not exceed the maximum allowed). As PCs traverse these exits we must update appropriately.</p></li>
+<li><p>Create new rooms when an unexplored exit is traversed. This room can in turn have outgoing exits. We must also track these rooms and exits so we can delete them later when the branch is cleaned up.</p></li>
+<li><p>The branch must also be able to delete itself, cleaning up all its resources and rooms.</p></li>
+</ul>
+<p>Since the <code class="docutils literal notranslate"><span class="pre">register_exit_traversed</span></code> and <code class="docutils literal notranslate"><span class="pre">create_out_exit</span></code> are straightforward, we implement them right away. The only extra thing about exit creation is that it must make sure to register the new exit as ‘un-visited’ so the branch can track it.</p>
+</section>
+</section>
+<section id="a-note-about-the-room-generator">
+<h3><span class="section-number">13.5.2. </span>A note about the room-generator<a class="headerlink" href="#a-note-about-the-room-generator" title="Link to this heading">¶</a></h3>
+<p>Of special note is the <code class="docutils literal notranslate"><span class="pre">room_generator</span></code> property of <code class="docutils literal notranslate"><span class="pre">EvAdventureDungeonBranch</span></code>. This will point to a function. We make this a plug-in since generating a room is something we will probably want to heavily customize as we create the game content - this is where we would generate our challenges, room descriptions etc.</p>
+<p>It makes sense that the room generator must have a link to the dungeon branch, the current expected difficulty (depth in our case) and the xy coordinates to create the room at.</p>
+<p>Here is an example of a very basic room generator that just maps depth to different room descriptions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py (could also be put with game content files)</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">room_generator</span><span class="p">(</span><span class="n">dungeon_branch</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plugin room generator</span>
+
+<span class="sd">    This default one returns the same empty room but with different descriptions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dungeon_branch (EvAdventureDungeonBranch): The current dungeon branch.</span>
+<span class="sd">        depth (int): The &#39;depth&#39; of the dungeon (radial distance from start room) this</span>
+<span class="sd">            new room will be placed at.</span>
+<span class="sd">        coords (tuple): The `(x,y)` coords that the new room will be created at.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">room_typeclass</span> <span class="o">=</span> <span class="n">EvAdventureDungeonRoom</span>
+
+    <span class="c1"># simple map of depth to name and desc of room</span>
+    <span class="n">name_depth_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Water-logged passage&quot;</span><span class="p">,</span> <span class="s2">&quot;This earth-walled passage is dripping of water.&quot;</span><span class="p">),</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Passage with roots&quot;</span><span class="p">,</span> <span class="s2">&quot;Roots are pushing through the earth walls.&quot;</span><span class="p">),</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Hardened clay passage&quot;</span><span class="p">,</span> <span class="s2">&quot;The walls of this passage is of hardened clay.&quot;</span><span class="p">),</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Clay with stones&quot;</span><span class="p">,</span> <span class="s2">&quot;This passage has clay with pieces of stone embedded.&quot;</span><span class="p">),</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Stone passage&quot;</span><span class="p">,</span> <span class="s2">&quot;Walls are crumbling stone, with roots passing through it.&quot;</span><span class="p">),</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Stone hallway&quot;</span><span class="p">,</span> <span class="s2">&quot;Walls are cut from rough stone.&quot;</span><span class="p">),</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Stone rooms&quot;</span><span class="p">,</span> <span class="s2">&quot;A stone room, built from crude and heavy blocks.&quot;</span><span class="p">),</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Granite hall&quot;</span><span class="p">,</span> <span class="s2">&quot;The walls are of well-fitted granite blocks.&quot;</span><span class="p">),</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Marble passages&quot;</span><span class="p">,</span> <span class="s2">&quot;The walls are blank and shiny marble.&quot;</span><span class="p">),</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;Furnished rooms&quot;</span><span class="p">,</span> <span class="s2">&quot;The marble walls have tapestries and furnishings.&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">key</span><span class="p">,</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">name_depth_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;Dark rooms&quot;</span><span class="p">,</span> <span class="s2">&quot;There is very dark here.&quot;</span><span class="p">))</span>
+
+    <span class="n">new_room</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+        <span class="n">room_typeclass</span><span class="p">,</span>
+        <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+        <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="n">desc</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;xy_coords&quot;</span><span class="p">,</span> <span class="n">coords</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;dungeon_branch&quot;</span><span class="p">,</span> <span class="n">dungeon_branch</span><span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_room</span>
+
+</pre></div>
+</div>
+<p>There’s a <em>lot</em> of logic that can go into this function - depending on depth, coordinate or random chance we could generate all sorts of different rooms, and fill it with mobs, puzzles or what have you. Since we have access to the dungeon-branch object we could even change things in other rooms to make for really complex interactions (multi-room puzzles, anyone?).</p>
+<p>This will come into play in <a class="reference internal" href="../Part4/Beginner-Tutorial-Part4-Overview.html"><span class="std std-doc">Part 4 of this tutorial</span></a>, where we’ll make use of the tools we are creating here to actually build the game world.</p>
+</section>
+<section id="deleting-a-dungeon-branch">
+<h3><span class="section-number">13.5.3. </span>Deleting a dungeon branch<a class="headerlink" href="#deleting-a-dungeon-branch" title="Link to this heading">¶</a></h3>
+<p>We will want to be able to clean up a branch. There are many reasons for this:</p>
+<ul class="simple">
+<li><p>Once every PC has left the branch there is no way for them to return, so all that data is now just taking up space.</p></li>
+<li><p>Branches are not meant to be permanent. So if players were to just stop exploring and sit around in the branch for a very long time, we should have a way to just force them back out.</p></li>
+</ul>
+<p>In order for properly cleaning out characters inside this dungeon, we make a few assumptions:</p>
+<ul class="simple">
+<li><p>When we create the dungeon branch, we give its script a unique identifier (e.g. something involving the current time).</p></li>
+<li><p>When we start the dungeon branch, we tag that character with the branch’s unique identifier.</p></li>
+<li><p>Similarly, when we create rooms inside this branch, we tag them with the branch’s identifier.</p></li>
+</ul>
+<p>If have done that it will be easy to find all characters and rooms associated with the branch in order to do this cleanup operation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">search</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+
+    <span class="c1"># ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean up the dungeon branch, removing players safely</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># first secure all characters in this branch back to the start room</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+        <span class="n">start_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_room</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">characters</span><span class="p">:</span>
+            <span class="n">start_room</span><span class="o">.</span><span class="n">msg_contents</span><span class="p">(</span>
+                <span class="s2">&quot;Suddenly someone stumbles out of a dark exit, covered in dust!&quot;</span>
+            <span class="p">)</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">start_room</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;|rAfter a long time of silence, the room suddenly rumbles and then collapses! &quot;</span>
+                <span class="s2">&quot;All turns dark ...|n</span><span class="se">\n\n</span><span class="s2">Then you realize you are back where you started.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">character</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+        <span class="c1"># next delete all rooms in the dungeon (this will also delete exits)</span>
+        <span class="n">rooms</span> <span class="o">=</span> <span class="n">search</span><span class="o">.</span><span class="n">search_object_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_room&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">room</span> <span class="ow">in</span> <span class="n">rooms</span><span class="p">:</span>
+            <span class="n">room</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="c1"># finally delete the branch itself</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+    <span class="c1"># ...</span>
+
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">evennia.search.search_object_by_tag</span></code> is an in-built Evennia utility for finding objects tagged with a specific tag+category combination.</p>
+<ol class="arabic simple">
+<li><p>First we get the characters and move them safely to the start room, with a relevant message.</p></li>
+<li><p>Then we get all the rooms in the branch and delete them (exits will be deleted automatically).</p></li>
+<li><p>Finally we delete the branch itself.</p></li>
+</ol>
+</section>
+<section id="creating-a-new-dungeon-room">
+<h3><span class="section-number">13.5.4. </span>Creating a new dungeon room<a class="headerlink" href="#creating-a-new-dungeon-room" title="Link to this heading">¶</a></h3>
+<p>This is the meat of the Dungeon branch’s responsibilities. In this method we create the new room but also need to create exits leading back to where we came from as well as (randomly) generate exits to other parts of the dungeon.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/dungeon.py </span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">shuffle</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="c1"># ... </span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranch</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="c1"># ...</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>    <span class="k">def</span><span class="w"> </span><span class="nf">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_exit</span><span class="p">):</span>
+<span class="linenos">13</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">14</span><span class="sd">        Create a new Dungeon room leading from the provided exit.</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="sd">        Args:</span>
+<span class="linenos">17</span><span class="sd">            from_exit (Exit): The exit leading to this new room.</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos">20</span>        <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+</span><span class="linenos">21</span>        <span class="c1"># figure out coordinate of old room and figure out what coord the</span>
+<span class="linenos">22</span>        <span class="c1"># new one would get</span>
+<span class="hll"><span class="linenos">23</span>        <span class="n">source_location</span> <span class="o">=</span> <span class="n">from_exit</span><span class="o">.</span><span class="n">location</span>
+</span><span class="linenos">24</span>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">source_location</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xy_coords&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="linenos">25</span>        <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_EXIT_GRID_SHIFT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_exit</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="linenos">26</span>        <span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>        <span class="c1"># the dungeon&#39;s depth acts as a measure of the current difficulty level. This is the radial</span>
+<span class="linenos">29</span>        <span class="c1"># distance from the (0, 0) (the entrance). The branch also tracks the highest</span>
+<span class="linenos">30</span>        <span class="c1"># depth achieved.</span>
+<span class="hll"><span class="linenos">31</span>        <span class="n">depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">new_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">new_y</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+</span><span class="linenos">32</span>
+<span class="linenos">33</span>        <span class="n">new_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">room_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="p">(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">))</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>        <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span><span class="p">[(</span><span class="n">new_x</span><span class="p">,</span> <span class="n">new_y</span><span class="p">)]</span> <span class="o">=</span> <span class="n">new_room</span>
+<span class="linenos">36</span>
+<span class="hll"><span class="linenos">37</span>        <span class="c1"># always make a return exit back to where we came from</span>
+</span><span class="linenos">38</span>        <span class="n">back_exit_key</span> <span class="o">=</span> <span class="n">_EXIT_REVERSE_MAPPING</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">from_exit</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">)</span>
+<span class="linenos">39</span>        <span class="n">create</span><span class="o">.</span><span class="n">create_object</span><span class="p">(</span>
+<span class="linenos">40</span>            <span class="n">EvAdventureDungeonExit</span><span class="p">,</span>
+<span class="linenos">41</span>            <span class="n">key</span><span class="o">=</span><span class="n">back_exit_key</span><span class="p">,</span>
+<span class="linenos">42</span>            <span class="n">aliases</span><span class="o">=</span><span class="n">_EXIT_ALIASES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">back_exit_key</span><span class="p">,</span> <span class="p">()),</span>
+<span class="linenos">43</span>            <span class="n">location</span><span class="o">=</span><span class="n">new_room</span><span class="p">,</span>
+<span class="hll"><span class="linenos">44</span>            <span class="n">destination</span><span class="o">=</span><span class="n">from_exit</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+</span><span class="linenos">45</span>            <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
+<span class="linenos">46</span>                <span class="p">(</span>
+<span class="linenos">47</span>                    <span class="s2">&quot;desc&quot;</span><span class="p">,</span>
+<span class="linenos">48</span>                    <span class="s2">&quot;A dark passage.&quot;</span><span class="p">,</span>
+<span class="linenos">49</span>                <span class="p">),</span>
+<span class="linenos">50</span>            <span class="p">),</span>
+<span class="linenos">51</span>            <span class="c1"># we default to allowing back-tracking (also used for fleeing)</span>
+<span class="linenos">52</span>            <span class="n">locks</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;traverse: true()&quot;</span><span class="p">,),</span>
+<span class="linenos">53</span>        <span class="p">)</span>
+<span class="linenos">54</span>
+<span class="linenos">55</span>        <span class="c1"># figure out what other exits should be here, if any</span>
+<span class="linenos">56</span>        <span class="n">n_unexplored</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unvisited_exits</span><span class="p">)</span>
+<span class="linenos">57</span>
+<span class="hll"><span class="linenos">58</span>        <span class="k">if</span> <span class="n">n_unexplored</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_unexplored_exits</span><span class="p">:</span>
+</span><span class="linenos">59</span>            <span class="c1"># we have a budget of unexplored exits to open</span>
+<span class="linenos">60</span>            <span class="n">n_exits</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_new_exits_per_room</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_unexplored_exits</span><span class="p">)</span>
+<span class="linenos">61</span>            <span class="k">if</span> <span class="n">n_exits</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+<span class="linenos">62</span>                <span class="n">n_exits</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_exits</span><span class="p">)</span>
+<span class="linenos">63</span>            <span class="n">available_directions</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">64</span>                <span class="n">direction</span> <span class="k">for</span> <span class="n">direction</span> <span class="ow">in</span> <span class="n">_AVAILABLE_DIRECTIONS</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">!=</span> <span class="n">back_exit_key</span>
+<span class="linenos">65</span>            <span class="p">]</span>
+<span class="linenos">66</span>            <span class="c1"># randomize order of exits</span>
+<span class="hll"><span class="linenos">67</span>            <span class="n">shuffle</span><span class="p">(</span><span class="n">available_directions</span><span class="p">)</span>
+</span><span class="linenos">68</span>            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_exits</span><span class="p">):</span>
+<span class="linenos">69</span>                <span class="k">while</span> <span class="n">available_directions</span><span class="p">:</span>
+<span class="linenos">70</span>                    <span class="c1"># get a random direction and check so there isn&#39;t a room already</span>
+<span class="linenos">71</span>                    <span class="c1"># created in that direction</span>
+<span class="hll"><span class="linenos">72</span>                    <span class="n">direction</span> <span class="o">=</span> <span class="n">available_directions</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="linenos">73</span>                    <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_EXIT_GRID_SHIFT</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+<span class="linenos">74</span>                    <span class="n">target_coord</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">new_y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span>
+<span class="linenos">75</span>                    <span class="k">if</span> <span class="n">target_coord</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span> <span class="ow">and</span> <span class="n">target_coord</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+<span class="linenos">76</span>                        <span class="c1"># no room there (and not back to start room) - make an exit to it</span>
+<span class="hll"><span class="linenos">77</span>                        <span class="bp">self</span><span class="o">.</span><span class="n">create_out_exit</span><span class="p">(</span><span class="n">new_room</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+</span><span class="linenos">78</span>                        <span class="c1"># we create this to avoid other rooms linking here, but don&#39;t create the</span>
+<span class="linenos">79</span>                        <span class="c1"># room yet</span>
+<span class="linenos">80</span>                        <span class="bp">self</span><span class="o">.</span><span class="n">xy_grid</span><span class="p">[</span><span class="n">target_coord</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">81</span>                        <span class="k">break</span>
+<span class="linenos">82</span>
+<span class="linenos">83</span>        <span class="k">return</span> <span class="n">new_room</span>
+</pre></div>
+</div>
+<p>A lot to unpack here!</p>
+<ul class="simple">
+<li><p><strong>Line 17</strong>: We store the ‘last updated’ time as the current UTC timestamp. As we discussed in the deletion section just above we need to know if a branch has been ‘idle’ for a long time, and this helps track that.</p></li>
+<li><p><strong>Line 20</strong>: The <code class="docutils literal notranslate"><span class="pre">from_exit</span></code> input is an Exit object (probably a <code class="docutils literal notranslate"><span class="pre">EvAdventureDungeonExit)</span></code> It is located in the ‘source’ location (where we start moving from).  On the subsequent lines we figure out the coordinates of the source and where we’d end up by moving in the direction suggested</p></li>
+<li><p><strong>Line 28</strong>: Pythagorean theorem!</p></li>
+<li><p><strong>Line 30</strong>: Here we call the <code class="docutils literal notranslate"><span class="pre">room_generator</span></code> plugin function we exemplified above to get the new room.</p></li>
+<li><p><strong>Line 34</strong>: We always create a back-exit the way we came. This <em>overrides</em> the default dungeon exit lock with <code class="docutils literal notranslate"><span class="pre">&quot;traverse:true()&quot;</span></code>, meaning the PCs will always be able to go back the way they came.</p></li>
+<li><p><strong>Line 44</strong>: We could leave the <code class="docutils literal notranslate"><span class="pre">destination</span></code> field empty, but Evennia assumes exits have a <code class="docutils literal notranslate"><span class="pre">destination</span></code> field set when it displays things in the room etc. So to avoid having to change how rooms display things, this value should be set to <em>something</em>.  Since we don’t want to create the actual destination yet we instead instead point the <code class="docutils literal notranslate"><span class="pre">destination</span></code> back to the current room. That is - if you could pass through this exit you’d end up in the same place. We’ll use this below to identify non-explored exits.</p></li>
+<li><p><strong>Line 55</strong>: We only create new exits our ‘budget’ of unexplored exits allows it.</p></li>
+<li><p><strong>Line 64</strong>: On the line above we create a new list of all possible exits-directions the room can have (excluding the must-have back-exit). Here we shuffle this list in a random order.</p></li>
+<li><p><strong>Line 69</strong>: In this loop we pop off the first element of the shuffled list (so this is a random direction). On the following lines we check so that this direction is not pointing to an already existing dungeon room, nor back to the start room. If all is good we call our exit-creation method on <strong>Line 74</strong>.</p></li>
+</ul>
+<p>In the end the outcome is a new room with at least one back-exit and 0 or more unexplored exits.</p>
+</section>
+</section>
+<section id="back-to-the-dungeon-exit-class">
+<h2><span class="section-number">13.6. </span>Back to the dungeon exit class<a class="headerlink" href="#back-to-the-dungeon-exit-class" title="Link to this heading">¶</a></h2>
+<p>Now that we have the tools, we can go back to the <code class="docutils literal notranslate"><span class="pre">EvAdventureDungeonExit</span></code> class to implement that <code class="docutils literal notranslate"><span class="pre">at_traverse</span></code> method we skipped before.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+
+<span class="c1"># ...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called when traversing. `target_location` will be pointing back to</span>
+<span class="sd">        ourselves if the target was not yet created. It checks the current</span>
+<span class="sd">        location to get the dungeon-branch in use.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">dungeon_branch</span>
+        <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="c1"># destination points back to us - create a new room</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span>
+                <span class="bp">self</span>
+            <span class="p">)</span>
+            <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">register_exit_traversed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>We get the <code class="docutils literal notranslate"><span class="pre">EvAdventureDungeonBranch</span></code> instance and check out if this current exit is pointing back to the current room. If you read line 44 in the previous section, you’ll notice that this is the way to find if this exit is previously non-explored!</p>
+<p>If so, we call the dungeon branche’s <code class="docutils literal notranslate"><span class="pre">new_room</span></code> to generate a new room and change this exit’s <code class="docutils literal notranslate"><span class="pre">destination</span></code> to it. We also make sure to call  <code class="docutils literal notranslate"><span class="pre">.register_exit_traversed</span></code> to show that is exit is now ‘explored’.</p>
+<p>We must also call the parent class’ <code class="docutils literal notranslate"><span class="pre">at_traverse</span></code> using <code class="docutils literal notranslate"><span class="pre">super()</span></code> since that is what is actually moving the PC to the newly created location.</p>
+</section>
+<section id="starting-room-exits">
+<h2><span class="section-number">13.7. </span>Starting room exits<a class="headerlink" href="#starting-room-exits" title="Link to this heading">¶</a></h2>
+<p>We now have all the pieces for actually running a procedural dungeon branch once it’s created. What’s missing is the start room from which all branches originate.</p>
+<p>As described in the design, the room’s exits will spawn new branches, but there should also be a time period while PCs will all end up in the same branch. So we need a special type of exit for those exits leading out of the starting room.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evennia/dungeon.py</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="c1"># ... </span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonStartRoomExit</span><span class="p">(</span><span class="n">DefaultExit</span><span class="p">):</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 8</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 9</span><span class="sd">        Flush the exit, so next traversal creates a new dungeon branch.</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos">12</span>        <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+</span><span class="linenos">13</span>
+<span class="linenos">14</span>    <span class="k">def</span><span class="w"> </span><span class="nf">at_traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="linenos">15</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">16</span><span class="sd">        When traversing create a new branch if one is not already assigned.</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos">19</span>        <span class="k">if</span> <span class="n">target_location</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+</span><span class="linenos">20</span>            <span class="c1"># make a global branch script for this dungeon branch</span>
+<span class="linenos">21</span>            <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">room_generator</span>
+<span class="hll"><span class="linenos">22</span>            <span class="n">dungeon_branch</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+</span><span class="linenos">23</span>                <span class="n">EvAdventureDungeonBranch</span><span class="p">,</span>
+<span class="linenos">24</span>                <span class="n">key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;dungeon_branch_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="linenos">25</span>                <span class="n">attributes</span><span class="o">=</span><span class="p">(</span>
+<span class="linenos">26</span>                    <span class="p">(</span><span class="s2">&quot;start_room&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">),</span>
+<span class="linenos">27</span>                    <span class="p">(</span><span class="s2">&quot;room_generator&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">room_generator</span><span class="p">),</span>
+<span class="linenos">28</span>                <span class="p">),</span>
+<span class="linenos">29</span>            <span class="p">)</span>
+<span class="linenos">30</span>            <span class="bp">self</span><span class="o">.</span><span class="n">destination</span> <span class="o">=</span> <span class="n">target_location</span> <span class="o">=</span> <span class="n">dungeon_branch</span><span class="o">.</span><span class="n">new_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="linenos">31</span>            <span class="c1"># make sure to tag character when entering so we can find them again later</span>
+<span class="hll"><span class="linenos">32</span>            <span class="n">traversing_object</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dungeon_branch</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+</span><span class="linenos">33</span>
+<span class="linenos">34</span>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_traverse</span><span class="p">(</span><span class="n">traversing_object</span><span class="p">,</span> <span class="n">target_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This exit has everything it needs for creating a new dungeon branch.</p>
+<ul class="simple">
+<li><p><strong>Line 12</strong>: Disconnects the exit from whatever it was connected to and links it back to the current room (a looping, worthless exit).</p></li>
+<li><p><strong>Line 19</strong>: The <code class="docutils literal notranslate"><span class="pre">at_traverse</span></code> is called when someone moves through this exit. We detect that special condition above (destination equal to current location) to determine that this exit is currently leading nowhere and we should create a new branch.</p></li>
+<li><p><strong>Line 22</strong>: We create a new <code class="docutils literal notranslate"><span class="pre">EvAdventureDungeonBranch</span></code>and make sure to give it a unique <code class="docutils literal notranslate"><span class="pre">key</span></code> based on the current time. We also make sure to set its starting Attributes.</p></li>
+<li><p><strong>Line 32</strong>: When the player traverses this exit, the character gets tagged with the appropriate tag for this dungeon branch. This can be used by the deletion mechanism later.</p></li>
+</ul>
+</section>
+<section id="utility-scripts">
+<h2><span class="section-number">13.8. </span>Utility scripts<a class="headerlink" href="#utility-scripts" title="Link to this heading">¶</a></h2>
+<p>Before we can create the starting room, we need two last utilities:</p>
+<ul class="simple">
+<li><p>A timer for regularly resetting exits out of the starting room (so they create new branches).</p></li>
+<li><p>A repeating task for cleaning out old/idle dungeon branches.</p></li>
+</ul>
+<p>Both of these scripts are expected to be created ‘on’ the start room, so <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> will be the start room.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">inherits_from</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureStartRoomResetter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple ticker-script. Introduces a chance of the room&#39;s exits cycling every</span>
+<span class="sd">    interval.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_startroom_resetter&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called every time the script repeats.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span>
+        <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="n">room</span><span class="o">.</span><span class="n">exits</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">inherits_from</span><span class="p">(</span><span class="n">exi</span><span class="p">,</span> <span class="n">EvAdventureDungeonStartRoomExit</span><span class="p">)</span> <span class="ow">and</span> <span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="n">exi</span><span class="o">.</span><span class="n">reset_exit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This script is very simple - it just loops over all the start-room exits and resets each exit 50% of the time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonBranchDeleter</span><span class="p">(</span><span class="n">DefaultScript</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cleanup script. After some time a dungeon branch will &#39;collapse&#39;, forcing all players in it</span>
+<span class="sd">    back to the start room.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># set at creation time when the start room is created</span>
+    <span class="n">branch_max_life</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_script_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;evadventure_dungeon_branch_deleter&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Go through all dungeon-branchs and find which ones are too old.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">)</span>
+        <span class="n">max_allowed_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">max_dt</span>
+
+        <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="n">EvAdventureDungeonBranch</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">branch</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">&lt;</span> <span class="n">max_allowed_date</span><span class="p">:</span>
+                <span class="c1"># branch is too old; tell it to clean up and delete itself</span>
+                <span class="n">branch</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+
+</pre></div>
+</div>
+<p>This script checks all branches and sees how long it was since they were last updated (that is, a new room created in them). If it’s been too long, the branch will be deleted (which will dump all players back in the start room).</p>
+</section>
+<section id="starting-room">
+<h2><span class="section-number">13.9. </span>Starting room<a class="headerlink" href="#starting-room" title="Link to this heading">¶</a></h2>
+<p>Finally, we need a class for the starting room. This room will need to be manually created, after which the branches should create themselves automatically.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/dungeon.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureDungeonStartRoom</span><span class="p">(</span><span class="n">EvAdventureDungeonRoom</span><span class="p">):</span>
+
+    <span class="n">recycle_time</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 5 mins</span>
+    <span class="n">branch_check_time</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>  <span class="c1"># one hour</span>
+    <span class="n">branch_max_life</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">7</span>  <span class="c1"># 1 week</span>
+
+    <span class="c1"># allow for a custom room_generator function</span>
+    <span class="n">room_generator</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">room_generator</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_display_footer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;|yYou sense that if you want to team up, &quot;</span>
+            <span class="s2">&quot;you must all pick the same path from here ... or you&#39;ll quickly get separated.|n&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># want to set the script interval on creation time, so we use create_script with obj=self</span>
+        <span class="c1"># instead of self.scripts.add() here</span>
+        <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+            <span class="n">EvAdventureStartRoomResetter</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recycle_time</span><span class="p">,</span> <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span>
+            <span class="n">EvAdventureDungeonBranchDeleter</span><span class="p">,</span>
+            <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_check_time</span><span class="p">,</span>
+            <span class="n">autostart</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">((</span><span class="s2">&quot;branch_max_life&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_max_life</span><span class="p">),),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">source_location</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure to clean the dungeon branch-tag from characters when leaving a dungeon branch.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;dungeon_character&quot;</span><span class="p">)</span>
+
+
+
+</pre></div>
+</div>
+<p>All that is left for this room to do is to set up the scripts we created and make sure to clear out the branch tags of any object returning from a branch into this room. All other work is handled by the exits and the dungeon-branches.</p>
+</section>
+<section id="testing">
+<h2><span class="section-number">13.10. </span>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p>Examples of unit testing files are found at <code class="docutils literal notranslate"><span class="pre">evennia/contrib/tutorials/</span></code> in <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.tests.test_dungeon.html#evennia-contrib-tutorials-evadventure-tests-test-dungeon"><span class="std std-ref">evadventure/tests/test_dungeon.py</span></a>.</p>
+</aside>
+<blockquote>
+<div><p>Create <code class="docutils literal notranslate"><span class="pre">evadventure/tests/test_dungeon.py</span></code>.</p>
+</div></blockquote>
+<p>Testing the procedural dungeon is best done both with unit tests and manually.</p>
+<p>To test manually, it’s simple to in-game do</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>dig<span class="w"> </span>well:evadventure.dungeon.EvAdventureDungeonStartRoom<span class="w"> </span><span class="o">=</span><span class="w"> </span>down,up
+&gt;<span class="w"> </span>down<span class="w"> </span>
+&gt;<span class="w"> </span>create/drop<span class="w"> </span>north<span class="p">;</span>n:evadventure.dungeon.EvAdventureDungeonStartRoomExit
+&gt;<span class="w"> </span>create/drop<span class="w"> </span>east<span class="p">;</span>e:evadventure.dungeon.EvAdventureDungeonStartRoomExit
+&gt;<span class="w"> </span>create/drop<span class="w"> </span>south<span class="p">;</span>s:evadventure.dungeon.EvAdventureDungeonStartRoomExit
+&gt;<span class="w"> </span>create/drop<span class="w"> </span>west<span class="p">;</span>w:evadventure.dungeon.EvAdventureDungeonStartRoomExit
+</pre></div>
+</div>
+<p>You should now be able to head out one of the exits and start exploring the dungeon! This is particularly useful once everything works a</p>
+<p>To unit test, you create a start room and exits in code, and then emulate a character moving through the exits, making sure the results are as expected.  We leave this an exercise to the reader.</p>
+</section>
+<section id="conclusions">
+<h2><span class="section-number">13.11. </span>Conclusions<a class="headerlink" href="#conclusions" title="Link to this heading">¶</a></h2>
+<p>This is only skimming the surface of the possibilities of procedural generation, but with relatively easy means one can create an infinitely growing dungeon for players to explore.</p>
+<p>It’s also worth that this only touches on how to procedurally generate the dungeon structure. It doesn’t yet have much <em>content</em> to fill the dungeon with. We will get back to that in <a class="reference internal" href="../Part4/Beginner-Tutorial-Part4-Overview.html"><span class="std std-doc">Part 4</span></a>, where we’ll make use of the code we’ve created to create game content.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">13. Procedurally generated Dungeon</a><ul>
+<li><a class="reference internal" href="#design-concept">13.1. Design Concept</a><ul>
+<li><a class="reference internal" href="#the-starting-room">13.1.1. The starting room</a></li>
+<li><a class="reference internal" href="#generating-new-branch-rooms">13.1.2. Generating new branch rooms</a></li>
+<li><a class="reference internal" href="#making-the-dungeon-dangerous">13.1.3. Making the dungeon dangerous</a></li>
+<li><a class="reference internal" href="#difficulty-scaling">13.1.4. Difficulty scaling</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#start-implementation">13.2. Start Implementation</a></li>
+<li><a class="reference internal" href="#basic-dungeon-rooms">13.3. Basic Dungeon rooms</a></li>
+<li><a class="reference internal" href="#dungeon-exits">13.4. Dungeon exits</a></li>
+<li><a class="reference internal" href="#dungeon-branch-and-the-xy-grid">13.5. Dungeon Branch and the xy grid</a><ul>
+<li><a class="reference internal" href="#grid-coordinates-and-exit-mappings">13.5.1. Grid coordinates and exit mappings</a><ul>
+<li><a class="reference internal" href="#base-structure-of-the-dungeon-branch-script">13.5.1.1. Base structure of the Dungeon branch script</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-note-about-the-room-generator">13.5.2. A note about the room-generator</a></li>
+<li><a class="reference internal" href="#deleting-a-dungeon-branch">13.5.3. Deleting a dungeon branch</a></li>
+<li><a class="reference internal" href="#creating-a-new-dungeon-room">13.5.4. Creating a new dungeon room</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#back-to-the-dungeon-exit-class">13.6. Back to the dungeon exit class</a></li>
+<li><a class="reference internal" href="#starting-room-exits">13.7. Starting room exits</a></li>
+<li><a class="reference internal" href="#utility-scripts">13.8. Utility scripts</a></li>
+<li><a class="reference internal" href="#starting-room">13.9. Starting room</a></li>
+<li><a class="reference internal" href="#testing">13.10. Testing</a></li>
+<li><a class="reference internal" href="#conclusions">13.11. Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Beginner-Tutorial-AI.html"
+                          title="previous chapter"><span class="section-number">12. </span>NPC and monster AI</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Beginner-Tutorial-Quests.html"
+                          title="next chapter"><span class="section-number">14. </span>Game Quests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-Dungeon.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Quests.html" title="14. Game Quests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-AI.html" title="12. NPC and monster AI"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">13. </span>Procedurally generated Dungeon</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.game_systems.barter.barter &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.barter.tests" href="evennia.contrib.game_systems.barter.tests.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.barter" href="evennia.contrib.game_systems.barter.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.barter.tests.html" title="evennia.contrib.game_systems.barter.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.barter.html" title="evennia.contrib.game_systems.barter"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.barter.html" accesskey="U">evennia.contrib.game_systems.barter</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.barter.barter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.barter.barter">
+<span id="evennia-contrib-game-systems-barter-barter"></span><h1>evennia.contrib.game_systems.barter.barter<a class="headerlink" href="#module-evennia.contrib.game_systems.barter.barter" title="Link to this heading">¶</a></h1>
+<p>Barter system</p>
+<p>Evennia contribution - Griatch 2012</p>
+<p>This implements a full barter system - a way for players to safely
+trade items between each other using code rather than simple free-form
+talking.  The advantage of this is increased buy/sell safety but it
+also streamlines the process and makes it faster when doing many
+transactions (since goods are automatically exchanged once both
+agree).</p>
+<p>This system is primarily intended for a barter economy, but can easily
+be used in a monetary economy as well – just let the “goods” on one
+side be coin objects (this is more flexible than a simple “buy”
+command since you can mix coins and goods in your trade).</p>
+<p>In this module, a “barter” is generally referred to as a “trade”.</p>
+<ul class="simple">
+<li><p>Trade example</p></li>
+</ul>
+<p>A trade (barter) action works like this: A and B are the parties.</p>
+<ol class="arabic simple">
+<li><p>opening a trade</p></li>
+</ol>
+<p>A: trade B: Hi, I have a nice extra sword. You wanna trade?
+B sees: A says: “Hi, I have a nice extra sword. You wanna trade?”</p>
+<blockquote>
+<div><p>A wants to trade with you. Enter ‘trade A &lt;emote&gt;’ to accept.</p>
+</div></blockquote>
+<p>B: trade A: Hm, I could use a good sword …
+A sees: B says: “Hm, I could use a good sword …</p>
+<blockquote>
+<div><p>B accepts the trade. Use ‘trade help’ for aid.</p>
+</div></blockquote>
+<p>B sees: You are now trading with A. Use ‘trade help’ for aid.</p>
+<ol class="arabic simple" start="2">
+<li><p>negotiating</p></li>
+</ol>
+<p>A: offer sword: This is a nice sword. I would need some rations in trade.
+B sees: A says: “This is a nice sword. I would need some rations in trade.”</p>
+<blockquote>
+<div><p>[A offers Sword of might.]</p>
+</div></blockquote>
+<p>B evaluate sword
+B sees: &lt;Sword’s description and possibly stats&gt;
+B: offer ration: This is a prime ration.
+A sees: B says: “This is a prime ration.”</p>
+<blockquote>
+<div><p>[B offers iron ration]</p>
+</div></blockquote>
+<p>A: say Hey, this is a nice sword, I need something more for it.
+B sees: A says: “Hey this is a nice sword, I need something more for it.”
+B: offer sword,apple: Alright. I will also include a magic apple. That’s my last offer.
+A sees: B says: “Alright, I will also include a magic apple. That’s my last offer.”</p>
+<blockquote>
+<div><p>[B offers iron ration and magic apple]</p>
+</div></blockquote>
+<p>A accept: You are killing me here, but alright.
+B sees: A says: “You are killing me here, but alright.”</p>
+<blockquote>
+<div><p>[A accepts your offer. You must now also accept.]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>B accept: Good, nice making business with you.</dt><dd><p>You accept the deal. Deal is made and goods changed hands.</p>
+</dd>
+<dt>A sees: B says: “Good, nice making business with you.”</dt><dd><p>B accepts the deal. Deal is made and goods changed hands.</p>
+</dd>
+</dl>
+<p>At this point the trading system is exited and the negotiated items
+are automatically exchanged between the parties. In this example B was
+the only one changing their offer, but also A could have changed their
+offer until the two parties found something they could agree on. The
+emotes are optional but useful for RP-heavy worlds.</p>
+<ul class="simple">
+<li><p>Technical info</p></li>
+</ul>
+<p>The trade is implemented by use of a TradeHandler. This object is a
+common place for storing the current status of negotiations. It is
+created on the object initiating the trade, and also stored on the
+other party once that party agrees to trade. The trade request times
+out after a certain time - this is handled by a Script. Once trade
+starts, the CmdsetTrade cmdset is initiated on both parties along with
+the commands relevant for the trading.</p>
+<ul class="simple">
+<li><p>Ideas for NPC bartering:</p></li>
+</ul>
+<p>This module is primarily intended for trade between two players. But
+it can also in principle be used for a player negotiating with an
+AI-controlled NPC. If the NPC uses normal commands they can use it
+directly – but more efficient is to have the NPC object send its
+replies directly through the tradehandler to the player. One may want
+to add some functionality to the decline command, so players can
+decline specific objects in the NPC offer (decline &lt;object&gt;) and allow
+the AI to maybe offer something else and make it into a proper
+barter.  Along with an AI that “needs” things or has some sort of
+personality in the trading, this can make bartering with NPCs at least
+moderately more interesting than just plain ‘buy’.</p>
+<ul class="simple">
+<li><p>Installation:</p></li>
+</ul>
+<p>Just import the CmdTrade command into (for example) the default
+cmdset. This will make the trade (or barter) command available
+in-game.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">TradeTimeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeTimeout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript" title="evennia.scripts.scripts.DefaultScript"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultScript</span></code></a></p>
+<p>This times out the trade request, in case player B did not reply in time.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.at_script_creation">
+<span class="sig-name descname"><span class="pre">at_script_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeTimeout.at_script_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.at_script_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when script is first created</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.at_repeat">
+<span class="sig-name descname"><span class="pre">at_repeat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeTimeout.at_repeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.at_repeat" title="Link to this definition">¶</a></dt>
+<dd><p>called once</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.is_valid">
+<span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeTimeout.is_valid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.is_valid" title="Link to this definition">¶</a></dt>
+<dd><p>Only valid if the trade has not yet started</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.DoesNotExist" title="evennia.scripts.scripts.DefaultScript.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned" title="evennia.scripts.scripts.DefaultScript.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.game_systems.barter.barter.TradeTimeout'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeTimeout.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TradeTimeout'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">TradeHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Objects of this class handles the ongoing trade, notably storing the current
+offers from each side and wether both have accepted or not.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the trade. This is called when part A tries to
+initiate a trade with part B. The trade will not start until
+part B repeats this command (B will then call the self.join()
+command)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>part_a</strong> (<em>object</em>) – The party trying to start barter.</p></li>
+<li><p><strong>part_b</strong> (<em>object</em>) – The party asked to barter.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>We also store the back-reference from the respective party
+to this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.msg_other">
+<span class="sig-name descname"><span class="pre">msg_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.msg_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.msg_other" title="Link to this definition">¶</a></dt>
+<dd><p>Relay a message to the <em>other</em> party without needing to know
+which party that is. This allows the calling command to not
+have to worry about which party they are in the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sender</strong> (<em>object</em>) – One of A or B. The method will figure
+out the <em>other</em> party to send to.</p></li>
+<li><p><strong>string</strong> (<em>str</em>) – Text to send.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.get_other">
+<span class="sig-name descname"><span class="pre">get_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">party</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.get_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.get_other" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the other party of the trade</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>party</strong> (<em>object</em>) – One of the parties of the negotiation</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>party_other (object)</em> – The other party, not the first party.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.join">
+<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.join" title="Link to this definition">¶</a></dt>
+<dd><p>This is used once B decides to join the trade</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>part_b</strong> (<em>object</em>) – The party accepting the barter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.unjoin">
+<span class="sig-name descname"><span class="pre">unjoin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">part_b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.unjoin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.unjoin" title="Link to this definition">¶</a></dt>
+<dd><p>This is used if B decides not to join the trade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>part_b</strong> (<em>object</em>) – The party leaving the barter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.offer">
+<span class="sig-name descname"><span class="pre">offer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">party</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.offer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.offer" title="Link to this definition">¶</a></dt>
+<dd><p>Change the current standing offer. We leave it up to the
+command to do the actual checks that the offer consists
+of real, valid, objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>party</strong> (<em>object</em>) – Who is making the offer</p></li>
+<li><p><strong>args</strong> (<em>objects</em><em> or </em><em>str</em>) – Offerings.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.list">
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.list" title="Link to this definition">¶</a></dt>
+<dd><p>List current offers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>offers (tuple)</em> – A tuple with two lists, (A_offers, B_offers).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offername</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.search" title="Link to this definition">¶</a></dt>
+<dd><p>Search current offers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offername</strong> (<em>str</em><em> or </em><em>int</em>) – Object to search for, or its index in
+the list of offered items.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>offer (object)</em> – An object on offer, based on the search criterion.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.accept">
+<span class="sig-name descname"><span class="pre">accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">party</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.accept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.accept" title="Link to this definition">¶</a></dt>
+<dd><p>Accept the current offer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>party</strong> (<em>object</em>) – The party accepting the deal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>result (object)</em> –</p>
+<dl class="simple">
+<dt><strong>True</strong> if this closes the deal, <strong>False</strong></dt><dd><p>otherwise</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will only close the deal if both parties have
+accepted independently. This is done by calling the
+<strong>finish()</strong> method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.decline">
+<span class="sig-name descname"><span class="pre">decline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">party</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.decline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.decline" title="Link to this definition">¶</a></dt>
+<dd><p>Decline the offer (or change one’s mind).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>party</strong> (<em>object</em>) – Party declining the deal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>did_decline (bool)</em> –</p>
+<dl class="simple">
+<dt><strong>True</strong> if there was really an</dt><dd><p><strong>accepted</strong> status to change, <strong>False</strong> otherwise.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If previously having used the <strong>accept</strong> command, this
+function will only work as long as the other party has not
+yet accepted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.TradeHandler.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#TradeHandler.finish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.finish" title="Link to this definition">¶</a></dt>
+<dd><p>Conclude trade - move all offers and clean up</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>force</strong> (<em>bool</em><em>, </em><em>optional</em>) – Force cleanup regardless of if the
+trade was accepted or not (if not, no goods will change
+hands but trading will stop anyway)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>result (bool)</em> – If the finish was successful.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdTradeBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdTradeBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Base command for Trade commands to inherit from. Implements the
+custom parsing.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdTradeBase.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the relevant parts and make it easily
+available to the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'command'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeBase.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'command',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nBase</span> <span class="pre">command</span> <span class="pre">for</span> <span class="pre">Trade</span> <span class="pre">commands</span> <span class="pre">to</span> <span class="pre">inherit</span> <span class="pre">from.</span> <span class="pre">Implements</span> <span class="pre">the\ncustom</span> <span class="pre">parsing.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdTradeHelp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdTradeHelp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>help command for the trade system.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>trade help</p>
+</dd>
+</dl>
+<p>Displays help for the trade commands.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trade</span> <span class="pre">help'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trade'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdTradeHelp.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.func" title="Link to this definition">¶</a></dt>
+<dd><p>Show the help</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTradeHelp.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'trade',</span> <span class="pre">'key':</span> <span class="pre">'trade</span> <span class="pre">help',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nhelp</span> <span class="pre">command</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">trade</span> <span class="pre">system.\n\nUsage:\n</span>&#160;&#160;&#160; <span class="pre">trade</span> <span class="pre">help\n\nDisplays</span> <span class="pre">help</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">trade</span> <span class="pre">commands.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdOffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdOffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>offer one or more items in trade.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>offer &lt;object&gt; [, object2, …][:emote]</p>
+</dd>
+</dl>
+<p>Offer objects in trade. This will replace the currently
+standing offer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'offer'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trading'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdOffer.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.func" title="Link to this definition">¶</a></dt>
+<dd><p>implement the offer</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdOffer.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'trading',</span> <span class="pre">'key':</span> <span class="pre">'offer',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\noffer</span> <span class="pre">one</span> <span class="pre">or</span> <span class="pre">more</span> <span class="pre">items</span> <span class="pre">in</span> <span class="pre">trade.\n\nUsage:\n</span>&#160; <span class="pre">offer</span> <span class="pre">&lt;object&gt;</span> <span class="pre">[,</span> <span class="pre">object2,</span> <span class="pre">...][:emote]\n\nOffer</span> <span class="pre">objects</span> <span class="pre">in</span> <span class="pre">trade.</span> <span class="pre">This</span> <span class="pre">will</span> <span class="pre">replace</span> <span class="pre">the</span> <span class="pre">currently\nstanding</span> <span class="pre">offer.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdAccept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdAccept"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>accept the standing offer</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>accept [:emote]
+agreee [:emote]</p>
+</dd>
+</dl>
+<p>This will accept the current offer. The other party must also accept
+for the deal to go through. You can use the ‘decline’ command to change
+your mind as long as the other party has not yet accepted. You can inspect
+the current offer using the ‘offers’ command.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'accept'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['agree']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trading'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdAccept.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.func" title="Link to this definition">¶</a></dt>
+<dd><p>accept the offer</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdAccept.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'agree',</span> <span class="pre">'category':</span> <span class="pre">'trading',</span> <span class="pre">'key':</span> <span class="pre">'accept',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">agree',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\naccept</span> <span class="pre">the</span> <span class="pre">standing</span> <span class="pre">offer\n\nUsage:\n</span>&#160; <span class="pre">accept</span> <span class="pre">[:emote]\n</span>&#160; <span class="pre">agreee</span> <span class="pre">[:emote]\n\nThis</span> <span class="pre">will</span> <span class="pre">accept</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">offer.</span> <span class="pre">The</span> <span class="pre">other</span> <span class="pre">party</span> <span class="pre">must</span> <span class="pre">also</span> <span class="pre">accept\nfor</span> <span class="pre">the</span> <span class="pre">deal</span> <span class="pre">to</span> <span class="pre">go</span> <span class="pre">through.</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">use</span> <span class="pre">the</span> <span class="pre">'decline'</span> <span class="pre">command</span> <span class="pre">to</span> <span class="pre">change\nyour</span> <span class="pre">mind</span> <span class="pre">as</span> <span class="pre">long</span> <span class="pre">as</span> <span class="pre">the</span> <span class="pre">other</span> <span class="pre">party</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">yet</span> <span class="pre">accepted.</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">inspect\nthe</span> <span class="pre">current</span> <span class="pre">offer</span> <span class="pre">using</span> <span class="pre">the</span> <span class="pre">'offers'</span> <span class="pre">command.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdDecline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdDecline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>decline the standing offer</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>decline [:emote]</p>
+</dd>
+</dl>
+<p>This will decline a previously ‘accept’ed offer (so this allows you to
+change your mind). You can only use this as long as the other party
+has not yet accepted the deal. Also, changing the offer will automatically
+decline the old offer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'decline'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trading'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdDecline.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.func" title="Link to this definition">¶</a></dt>
+<dd><p>decline the offer</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdDecline.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'trading',</span> <span class="pre">'key':</span> <span class="pre">'decline',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\ndecline</span> <span class="pre">the</span> <span class="pre">standing</span> <span class="pre">offer\n\nUsage:\n</span>&#160; <span class="pre">decline</span> <span class="pre">[:emote]\n\nThis</span> <span class="pre">will</span> <span class="pre">decline</span> <span class="pre">a</span> <span class="pre">previously</span> <span class="pre">'accept'ed</span> <span class="pre">offer</span> <span class="pre">(so</span> <span class="pre">this</span> <span class="pre">allows</span> <span class="pre">you</span> <span class="pre">to\nchange</span> <span class="pre">your</span> <span class="pre">mind).</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">only</span> <span class="pre">use</span> <span class="pre">this</span> <span class="pre">as</span> <span class="pre">long</span> <span class="pre">as</span> <span class="pre">the</span> <span class="pre">other</span> <span class="pre">party\nhas</span> <span class="pre">not</span> <span class="pre">yet</span> <span class="pre">accepted</span> <span class="pre">the</span> <span class="pre">deal.</span> <span class="pre">Also,</span> <span class="pre">changing</span> <span class="pre">the</span> <span class="pre">offer</span> <span class="pre">will</span> <span class="pre">automatically\ndecline</span> <span class="pre">the</span> <span class="pre">old</span> <span class="pre">offer.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdEvaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdEvaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>evaluate objects on offer</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>evaluate &lt;offered object&gt;</p>
+</dd>
+</dl>
+<p>This allows you to examine any object currently on offer, to
+determine if it’s worth your while.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evaluate'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['eval']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trading'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdEvaluate.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.func" title="Link to this definition">¶</a></dt>
+<dd><p>evaluate an object</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdEvaluate.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'eval',</span> <span class="pre">'category':</span> <span class="pre">'trading',</span> <span class="pre">'key':</span> <span class="pre">'evaluate',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">eval',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nevaluate</span> <span class="pre">objects</span> <span class="pre">on</span> <span class="pre">offer\n\nUsage:\n</span>&#160; <span class="pre">evaluate</span> <span class="pre">&lt;offered</span> <span class="pre">object&gt;\n\nThis</span> <span class="pre">allows</span> <span class="pre">you</span> <span class="pre">to</span> <span class="pre">examine</span> <span class="pre">any</span> <span class="pre">object</span> <span class="pre">currently</span> <span class="pre">on</span> <span class="pre">offer,</span> <span class="pre">to\ndetermine</span> <span class="pre">if</span> <span class="pre">it's</span> <span class="pre">worth</span> <span class="pre">your</span> <span class="pre">while.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>show a list of the current deal</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>status
+deal
+offers</p>
+</dd>
+</dl>
+<p>Shows the currently suggested offers on each sides of the deal. To
+accept the current deal, use the ‘accept’ command. Use ‘offer’ to
+change your deal. You might also want to use ‘say’, ‘emote’ etc to
+try to influence the other part in the deal.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'status'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['offers',</span> <span class="pre">'deal']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trading'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdStatus.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.func" title="Link to this definition">¶</a></dt>
+<dd><p>Show the current deal</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdStatus.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'offers</span> <span class="pre">deal',</span> <span class="pre">'category':</span> <span class="pre">'trading',</span> <span class="pre">'key':</span> <span class="pre">'status',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">offers</span> <span class="pre">deal',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nshow</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">deal\n\nUsage:\n</span>&#160; <span class="pre">status\n</span>&#160; <span class="pre">deal\n</span>&#160; <span class="pre">offers\n\nShows</span> <span class="pre">the</span> <span class="pre">currently</span> <span class="pre">suggested</span> <span class="pre">offers</span> <span class="pre">on</span> <span class="pre">each</span> <span class="pre">sides</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">deal.</span> <span class="pre">To\naccept</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">deal,</span> <span class="pre">use</span> <span class="pre">the</span> <span class="pre">'accept'</span> <span class="pre">command.</span> <span class="pre">Use</span> <span class="pre">'offer'</span> <span class="pre">to\nchange</span> <span class="pre">your</span> <span class="pre">deal.</span> <span class="pre">You</span> <span class="pre">might</span> <span class="pre">also</span> <span class="pre">want</span> <span class="pre">to</span> <span class="pre">use</span> <span class="pre">'say',</span> <span class="pre">'emote'</span> <span class="pre">etc</span> <span class="pre">to\ntry</span> <span class="pre">to</span> <span class="pre">influence</span> <span class="pre">the</span> <span class="pre">other</span> <span class="pre">part</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">deal.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdFinish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdFinish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase" title="evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a></p>
+<p>end the trade prematurely</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>end trade [:say]
+finish trade [:say]</p>
+</dd>
+</dl>
+<p>This ends the trade prematurely. No trade will take place.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'end</span> <span class="pre">trade'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['finish</span> <span class="pre">trade']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trading'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdFinish.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.func" title="Link to this definition">¶</a></dt>
+<dd><p>end trade</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdFinish.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'finish</span> <span class="pre">trade',</span> <span class="pre">'category':</span> <span class="pre">'trading',</span> <span class="pre">'key':</span> <span class="pre">'end</span> <span class="pre">trade',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">finish</span> <span class="pre">trade',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nend</span> <span class="pre">the</span> <span class="pre">trade</span> <span class="pre">prematurely\n\nUsage:\n</span>&#160; <span class="pre">end</span> <span class="pre">trade</span> <span class="pre">[:say]\n</span>&#160; <span class="pre">finish</span> <span class="pre">trade</span> <span class="pre">[:say]\n\nThis</span> <span class="pre">ends</span> <span class="pre">the</span> <span class="pre">trade</span> <span class="pre">prematurely.</span> <span class="pre">No</span> <span class="pre">trade</span> <span class="pre">will</span> <span class="pre">take</span> <span class="pre">place.\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdsetTrade">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdsetTrade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdsetTrade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>This cmdset is added when trade is initated. It is handled by the
+trade event handler.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdsetTrade.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmdset_trade'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdsetTrade.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdsetTrade.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when cmdset is created</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdsetTrade.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.game_systems.barter.barter.CmdsetTrade'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.barter.barter.</span></span><span class="sig-name descname"><span class="pre">CmdTrade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdTrade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Initiate trade with another party</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>trade &lt;other party&gt; [:say]
+trade &lt;other party&gt; accept [:say]
+trade &lt;other party&gt; decline [:say]</p>
+</dd>
+</dl>
+<p>Initiate trade with another party. The other party needs to repeat
+this command with trade accept/decline within a minute in order to
+properly initiate the trade action. You can use the decline option
+yourself if you want to retract an already suggested trade. The
+optional say part works like the say command and allows you to add
+info to your choice.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'trade'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['barter']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/barter/barter.html#CmdTrade.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.func" title="Link to this definition">¶</a></dt>
+<dd><p>Initiate trade</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.barter.barter.CmdTrade.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'barter',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'trade',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">barter',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nInitiate</span> <span class="pre">trade</span> <span class="pre">with</span> <span class="pre">another</span> <span class="pre">party\n\nUsage:\n</span>&#160; <span class="pre">trade</span> <span class="pre">&lt;other</span> <span class="pre">party&gt;</span> <span class="pre">[:say]\n</span>&#160; <span class="pre">trade</span> <span class="pre">&lt;other</span> <span class="pre">party&gt;</span> <span class="pre">accept</span> <span class="pre">[:say]\n</span>&#160; <span class="pre">trade</span> <span class="pre">&lt;other</span> <span class="pre">party&gt;</span> <span class="pre">decline</span> <span class="pre">[:say]\n\nInitiate</span> <span class="pre">trade</span> <span class="pre">with</span> <span class="pre">another</span> <span class="pre">party.</span> <span class="pre">The</span> <span class="pre">other</span> <span class="pre">party</span> <span class="pre">needs</span> <span class="pre">to</span> <span class="pre">repeat\nthis</span> <span class="pre">command</span> <span class="pre">with</span> <span class="pre">trade</span> <span class="pre">accept/decline</span> <span class="pre">within</span> <span class="pre">a</span> <span class="pre">minute</span> <span class="pre">in</span> <span class="pre">order</span> <span class="pre">to\nproperly</span> <span class="pre">initiate</span> <span class="pre">the</span> <span class="pre">trade</span> <span class="pre">action.</span> <span class="pre">You</span> <span class="pre">can</span> <span class="pre">use</span> <span class="pre">the</span> <span class="pre">decline</span> <span class="pre">option\nyourself</span> <span class="pre">if</span> <span class="pre">you</span> <span class="pre">want</span> <span class="pre">to</span> <span class="pre">retract</span> <span class="pre">an</span> <span class="pre">already</span> <span class="pre">suggested</span> <span class="pre">trade.</span> <span class="pre">The\noptional</span> <span class="pre">say</span> <span class="pre">part</span> <span class="pre">works</span> <span class="pre">like</span> <span class="pre">the</span> <span class="pre">say</span> <span class="pre">command</span> <span class="pre">and</span> <span class="pre">allows</span> <span class="pre">you</span> <span class="pre">to</span> <span class="pre">add\ninfo</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">choice.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.game_systems.barter.barter</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout"><code class="docutils literal notranslate"><span class="pre">TradeTimeout</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.at_script_creation"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.at_script_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.at_repeat"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.at_repeat()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.is_valid"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.is_valid()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.path"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeTimeout.typename"><code class="docutils literal notranslate"><span class="pre">TradeTimeout.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler"><code class="docutils literal notranslate"><span class="pre">TradeHandler</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.__init__"><code class="docutils literal notranslate"><span class="pre">TradeHandler.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.msg_other"><code class="docutils literal notranslate"><span class="pre">TradeHandler.msg_other()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.get_other"><code class="docutils literal notranslate"><span class="pre">TradeHandler.get_other()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.join"><code class="docutils literal notranslate"><span class="pre">TradeHandler.join()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.unjoin"><code class="docutils literal notranslate"><span class="pre">TradeHandler.unjoin()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.offer"><code class="docutils literal notranslate"><span class="pre">TradeHandler.offer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.list"><code class="docutils literal notranslate"><span class="pre">TradeHandler.list()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.search"><code class="docutils literal notranslate"><span class="pre">TradeHandler.search()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.accept"><code class="docutils literal notranslate"><span class="pre">TradeHandler.accept()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.decline"><code class="docutils literal notranslate"><span class="pre">TradeHandler.decline()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.TradeHandler.finish"><code class="docutils literal notranslate"><span class="pre">TradeHandler.finish()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.parse"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.key"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeBase.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTradeBase.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.locks"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.func"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTradeHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTradeHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer"><code class="docutils literal notranslate"><span class="pre">CmdOffer</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.key"><code class="docutils literal notranslate"><span class="pre">CmdOffer.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.locks"><code class="docutils literal notranslate"><span class="pre">CmdOffer.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.help_category"><code class="docutils literal notranslate"><span class="pre">CmdOffer.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.func"><code class="docutils literal notranslate"><span class="pre">CmdOffer.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.aliases"><code class="docutils literal notranslate"><span class="pre">CmdOffer.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdOffer.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdOffer.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdOffer.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept"><code class="docutils literal notranslate"><span class="pre">CmdAccept</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.key"><code class="docutils literal notranslate"><span class="pre">CmdAccept.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAccept.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.locks"><code class="docutils literal notranslate"><span class="pre">CmdAccept.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAccept.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.func"><code class="docutils literal notranslate"><span class="pre">CmdAccept.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAccept.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdAccept.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAccept.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline"><code class="docutils literal notranslate"><span class="pre">CmdDecline</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.key"><code class="docutils literal notranslate"><span class="pre">CmdDecline.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.locks"><code class="docutils literal notranslate"><span class="pre">CmdDecline.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDecline.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.func"><code class="docutils literal notranslate"><span class="pre">CmdDecline.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDecline.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDecline.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdDecline.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDecline.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.key"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.aliases"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.locks"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.help_category"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.func"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdEvaluate.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdEvaluate.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus"><code class="docutils literal notranslate"><span class="pre">CmdStatus</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.key"><code class="docutils literal notranslate"><span class="pre">CmdStatus.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStatus.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.locks"><code class="docutils literal notranslate"><span class="pre">CmdStatus.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStatus.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.func"><code class="docutils literal notranslate"><span class="pre">CmdStatus.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStatus.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdStatus.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStatus.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish"><code class="docutils literal notranslate"><span class="pre">CmdFinish</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.key"><code class="docutils literal notranslate"><span class="pre">CmdFinish.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFinish.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.locks"><code class="docutils literal notranslate"><span class="pre">CmdFinish.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFinish.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.func"><code class="docutils literal notranslate"><span class="pre">CmdFinish.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFinish.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdFinish.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFinish.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade"><code class="docutils literal notranslate"><span class="pre">CmdsetTrade</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade.key"><code class="docutils literal notranslate"><span class="pre">CmdsetTrade.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdsetTrade.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdsetTrade.path"><code class="docutils literal notranslate"><span class="pre">CmdsetTrade.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade"><code class="docutils literal notranslate"><span class="pre">CmdTrade</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.key"><code class="docutils literal notranslate"><span class="pre">CmdTrade.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTrade.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.locks"><code class="docutils literal notranslate"><span class="pre">CmdTrade.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTrade.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.func"><code class="docutils literal notranslate"><span class="pre">CmdTrade.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTrade.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.barter.barter.CmdTrade.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTrade.search_index_entry</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.barter.html"
+                          title="previous chapter">evennia.contrib.game_systems.barter</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.barter.tests.html"
+                          title="next chapter">evennia.contrib.game_systems.barter.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.barter.barter.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.barter.tests.html" title="evennia.contrib.game_systems.barter.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.barter.html" title="evennia.contrib.game_systems.barter"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.barter.html" >evennia.contrib.game_systems.barter</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.barter.barter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

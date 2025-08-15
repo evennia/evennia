@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.web.website.tests &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.web.website.urls" href="evennia.web.website.urls.html" />
+    <link rel="prev" title="evennia.web.website.forms" href="evennia.web.website.forms.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.urls.html" title="evennia.web.website.urls"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.forms.html" title="evennia.web.website.forms"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.website.html" accesskey="U">evennia.web.website</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.tests</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.website.tests">
+<span id="evennia-web-website-tests"></span><h1>evennia.web.website.tests<a class="headerlink" href="#module-evennia.web.website.tests" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">EvenniaWebTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.test_resources.html#evennia.utils.test_resources.BaseEvenniaTest" title="evennia.utils.test_resources.BaseEvenniaTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEvenniaTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.account_typeclass">
+<span class="sig-name descname"><span class="pre">account_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.accounts.Account'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.account_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.object_typeclass">
+<span class="sig-name descname"><span class="pre">object_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.objects.Object'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.object_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.character_typeclass">
+<span class="sig-name descname"><span class="pre">character_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.characters.Character'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.character_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.exit_typeclass">
+<span class="sig-name descname"><span class="pre">exit_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.exits.Exit'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.exit_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.room_typeclass">
+<span class="sig-name descname"><span class="pre">room_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.rooms.Room'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.room_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.script_typeclass">
+<span class="sig-name descname"><span class="pre">script_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.scripts.Script'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.script_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.channel_typeclass">
+<span class="sig-name descname"><span class="pre">channel_typeclass</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typeclasses.channels.Channel'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.channel_typeclass" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'index'</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.authenticated_response">
+<span class="sig-name descname"><span class="pre">authenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.authenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest.setUp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.setUp" title="Link to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.test_valid_chars">
+<span class="sig-name descname"><span class="pre">test_valid_chars</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest.test_valid_chars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.test_valid_chars" title="Link to this definition">¶</a></dt>
+<dd><p>Make sure account has playable characters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.test_get">
+<span class="sig-name descname"><span class="pre">test_get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest.test_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.test_get" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.login">
+<span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest.login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.login" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.EvenniaWebTest.test_get_authenticated">
+<span class="sig-name descname"><span class="pre">test_get_authenticated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#EvenniaWebTest.test_get_authenticated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.EvenniaWebTest.test_get_authenticated" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.AdminTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">AdminTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#AdminTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.AdminTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.AdminTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'django_admin'</span></em><a class="headerlink" href="#evennia.web.website.tests.AdminTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.AdminTest.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.AdminTest.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.IndexTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">IndexTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#IndexTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.IndexTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.IndexTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'index'</span></em><a class="headerlink" href="#evennia.web.website.tests.IndexTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.RegisterTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">RegisterTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#RegisterTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.RegisterTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.RegisterTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'register'</span></em><a class="headerlink" href="#evennia.web.website.tests.RegisterTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LoginTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">LoginTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#LoginTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.LoginTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LoginTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'login'</span></em><a class="headerlink" href="#evennia.web.website.tests.LoginTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LogoutTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">LogoutTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#LogoutTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.LogoutTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LogoutTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'logout'</span></em><a class="headerlink" href="#evennia.web.website.tests.LogoutTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LogoutTest.test_get">
+<span class="sig-name descname"><span class="pre">test_get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#LogoutTest.test_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.LogoutTest.test_get" title="Link to this definition">¶</a></dt>
+<dd><p>Since Django 5.0, logout is no longer supported with GET requests</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LogoutTest.test_post">
+<span class="sig-name descname"><span class="pre">test_post</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#LogoutTest.test_post"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.LogoutTest.test_post" title="Link to this definition">¶</a></dt>
+<dd><p>Do the logout test with a POST request</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.LogoutTest.test_get_authenticated">
+<span class="sig-name descname"><span class="pre">test_get_authenticated</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#LogoutTest.test_get_authenticated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.LogoutTest.test_get_authenticated" title="Link to this definition">¶</a></dt>
+<dd><p>Do the logout test with a POST instead of GET</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.PasswordResetTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">PasswordResetTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#PasswordResetTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.PasswordResetTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.PasswordResetTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'password_change'</span></em><a class="headerlink" href="#evennia.web.website.tests.PasswordResetTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.PasswordResetTest.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.PasswordResetTest.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.WebclientTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">WebclientTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#WebclientTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.WebclientTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.WebclientTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'webclient:index'</span></em><a class="headerlink" href="#evennia.web.website.tests.WebclientTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.WebclientTest.test_get">
+<span class="sig-name descname"><span class="pre">test_get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#WebclientTest.test_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.WebclientTest.test_get" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.WebclientTest.test_get_disabled">
+<span class="sig-name descname"><span class="pre">test_get_disabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#WebclientTest.test_get_disabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.WebclientTest.test_get_disabled" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.ChannelListTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">ChannelListTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#ChannelListTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.ChannelListTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.ChannelListTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'channels'</span></em><a class="headerlink" href="#evennia.web.website.tests.ChannelListTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.ChannelDetailTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">ChannelDetailTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#ChannelDetailTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.ChannelDetailTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.ChannelDetailTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'channel-detail'</span></em><a class="headerlink" href="#evennia.web.website.tests.ChannelDetailTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.ChannelDetailTest.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#ChannelDetailTest.setUp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.ChannelDetailTest.setUp" title="Link to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.ChannelDetailTest.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#ChannelDetailTest.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.ChannelDetailTest.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpListTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">HelpListTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpListTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpListTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpListTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'help'</span></em><a class="headerlink" href="#evennia.web.website.tests.HelpListTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpDetailTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">HelpDetailTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpDetailTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpDetailTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpDetailTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'help-entry-detail'</span></em><a class="headerlink" href="#evennia.web.website.tests.HelpDetailTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpDetailTest.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpDetailTest.setUp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpDetailTest.setUp" title="Link to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpDetailTest.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpDetailTest.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpDetailTest.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpDetailTest.test_view">
+<span class="sig-name descname"><span class="pre">test_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpDetailTest.test_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpDetailTest.test_view" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpDetailTest.test_object_cache">
+<span class="sig-name descname"><span class="pre">test_object_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpDetailTest.test_object_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpDetailTest.test_object_cache" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpLockedDetailTest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">HelpLockedDetailTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpLockedDetailTest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpLockedDetailTest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpLockedDetailTest.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'help-entry-detail'</span></em><a class="headerlink" href="#evennia.web.website.tests.HelpLockedDetailTest.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpLockedDetailTest.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpLockedDetailTest.setUp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpLockedDetailTest.setUp" title="Link to this definition">¶</a></dt>
+<dd><p>Sets up testing environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpLockedDetailTest.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpLockedDetailTest.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpLockedDetailTest.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpLockedDetailTest.test_locked_entry">
+<span class="sig-name descname"><span class="pre">test_locked_entry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpLockedDetailTest.test_locked_entry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpLockedDetailTest.test_locked_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.HelpLockedDetailTest.test_lock_with_perm">
+<span class="sig-name descname"><span class="pre">test_lock_with_perm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#HelpLockedDetailTest.test_lock_with_perm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.HelpLockedDetailTest.test_lock_with_perm" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterCreateView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">CharacterCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterCreateView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterCreateView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterCreateView.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'character-create'</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterCreateView.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterCreateView.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterCreateView.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0">
+<span class="sig-name descname"><span class="pre">test_valid_access_multisession_0</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterCreateView.test_valid_access_multisession_0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 with no characters should be able to create a new one</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2">
+<span class="sig-name descname"><span class="pre">test_valid_access_multisession_2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterCreateView.test_valid_access_multisession_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 should be able to create multiple new characters</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterPuppetView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">CharacterPuppetView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterPuppetView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterPuppetView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterPuppetView.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'character-puppet'</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterPuppetView.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterPuppetView.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterPuppetView.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterPuppetView.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterPuppetView.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterPuppetView.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterPuppetView.test_invalid_access">
+<span class="sig-name descname"><span class="pre">test_invalid_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterPuppetView.test_invalid_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterPuppetView.test_invalid_access" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 should not be able to puppet Account2:Char2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterListView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">CharacterListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterListView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterListView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterListView.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'characters'</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterListView.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterListView.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterListView.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterManageView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">CharacterManageView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterManageView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterManageView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterManageView.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'character-manage'</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterManageView.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterManageView.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterManageView.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterUpdateView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">CharacterUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterUpdateView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterUpdateView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterUpdateView.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'character-update'</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterUpdateView.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterUpdateView.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterUpdateView.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterUpdateView.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterUpdateView.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterUpdateView.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterUpdateView.test_valid_access">
+<span class="sig-name descname"><span class="pre">test_valid_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterUpdateView.test_valid_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterUpdateView.test_valid_access" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 should be able to update Account1:Char1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterUpdateView.test_invalid_access">
+<span class="sig-name descname"><span class="pre">test_invalid_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterUpdateView.test_invalid_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterUpdateView.test_invalid_access" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 should not be able to update Account2:Char2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterDeleteView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.website.tests.</span></span><span class="sig-name descname"><span class="pre">CharacterDeleteView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterDeleteView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterDeleteView" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest" title="evennia.web.website.tests.EvenniaWebTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterDeleteView.url_name">
+<span class="sig-name descname"><span class="pre">url_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'character-delete'</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterDeleteView.url_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterDeleteView.unauthenticated_response">
+<span class="sig-name descname"><span class="pre">unauthenticated_response</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">302</span></em><a class="headerlink" href="#evennia.web.website.tests.CharacterDeleteView.unauthenticated_response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterDeleteView.get_kwargs">
+<span class="sig-name descname"><span class="pre">get_kwargs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterDeleteView.get_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterDeleteView.get_kwargs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterDeleteView.test_valid_access">
+<span class="sig-name descname"><span class="pre">test_valid_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterDeleteView.test_valid_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterDeleteView.test_valid_access" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 should be able to delete Account1:Char1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.website.tests.CharacterDeleteView.test_invalid_access">
+<span class="sig-name descname"><span class="pre">test_invalid_access</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/website/tests.html#CharacterDeleteView.test_invalid_access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.website.tests.CharacterDeleteView.test_invalid_access" title="Link to this definition">¶</a></dt>
+<dd><p>Account1 should not be able to delete Account2:Char2</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.web.website.tests</a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.account_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.account_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.object_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.object_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.character_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.character_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.exit_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.exit_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.room_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.room_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.script_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.script_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.channel_typeclass"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.channel_typeclass</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.url_name"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.unauthenticated_response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.authenticated_response"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.authenticated_response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.setUp"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.setUp()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.test_valid_chars"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.test_valid_chars()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.get_kwargs"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.get_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.test_get"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.test_get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.login"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.login()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.EvenniaWebTest.test_get_authenticated"><code class="docutils literal notranslate"><span class="pre">EvenniaWebTest.test_get_authenticated()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.AdminTest"><code class="docutils literal notranslate"><span class="pre">AdminTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.AdminTest.url_name"><code class="docutils literal notranslate"><span class="pre">AdminTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.AdminTest.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">AdminTest.unauthenticated_response</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.IndexTest"><code class="docutils literal notranslate"><span class="pre">IndexTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.IndexTest.url_name"><code class="docutils literal notranslate"><span class="pre">IndexTest.url_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.RegisterTest"><code class="docutils literal notranslate"><span class="pre">RegisterTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.RegisterTest.url_name"><code class="docutils literal notranslate"><span class="pre">RegisterTest.url_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.LoginTest"><code class="docutils literal notranslate"><span class="pre">LoginTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.LoginTest.url_name"><code class="docutils literal notranslate"><span class="pre">LoginTest.url_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.LogoutTest"><code class="docutils literal notranslate"><span class="pre">LogoutTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.LogoutTest.url_name"><code class="docutils literal notranslate"><span class="pre">LogoutTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.LogoutTest.test_get"><code class="docutils literal notranslate"><span class="pre">LogoutTest.test_get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.LogoutTest.test_post"><code class="docutils literal notranslate"><span class="pre">LogoutTest.test_post()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.LogoutTest.test_get_authenticated"><code class="docutils literal notranslate"><span class="pre">LogoutTest.test_get_authenticated()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.PasswordResetTest"><code class="docutils literal notranslate"><span class="pre">PasswordResetTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.PasswordResetTest.url_name"><code class="docutils literal notranslate"><span class="pre">PasswordResetTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.PasswordResetTest.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">PasswordResetTest.unauthenticated_response</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.WebclientTest"><code class="docutils literal notranslate"><span class="pre">WebclientTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.WebclientTest.url_name"><code class="docutils literal notranslate"><span class="pre">WebclientTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.WebclientTest.test_get"><code class="docutils literal notranslate"><span class="pre">WebclientTest.test_get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.WebclientTest.test_get_disabled"><code class="docutils literal notranslate"><span class="pre">WebclientTest.test_get_disabled()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.ChannelListTest"><code class="docutils literal notranslate"><span class="pre">ChannelListTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.ChannelListTest.url_name"><code class="docutils literal notranslate"><span class="pre">ChannelListTest.url_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.ChannelDetailTest"><code class="docutils literal notranslate"><span class="pre">ChannelDetailTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.ChannelDetailTest.url_name"><code class="docutils literal notranslate"><span class="pre">ChannelDetailTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.ChannelDetailTest.setUp"><code class="docutils literal notranslate"><span class="pre">ChannelDetailTest.setUp()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.ChannelDetailTest.get_kwargs"><code class="docutils literal notranslate"><span class="pre">ChannelDetailTest.get_kwargs()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpListTest"><code class="docutils literal notranslate"><span class="pre">HelpListTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpListTest.url_name"><code class="docutils literal notranslate"><span class="pre">HelpListTest.url_name</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpDetailTest"><code class="docutils literal notranslate"><span class="pre">HelpDetailTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpDetailTest.url_name"><code class="docutils literal notranslate"><span class="pre">HelpDetailTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpDetailTest.setUp"><code class="docutils literal notranslate"><span class="pre">HelpDetailTest.setUp()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpDetailTest.get_kwargs"><code class="docutils literal notranslate"><span class="pre">HelpDetailTest.get_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpDetailTest.test_view"><code class="docutils literal notranslate"><span class="pre">HelpDetailTest.test_view()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpDetailTest.test_object_cache"><code class="docutils literal notranslate"><span class="pre">HelpDetailTest.test_object_cache()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpLockedDetailTest"><code class="docutils literal notranslate"><span class="pre">HelpLockedDetailTest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpLockedDetailTest.url_name"><code class="docutils literal notranslate"><span class="pre">HelpLockedDetailTest.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpLockedDetailTest.setUp"><code class="docutils literal notranslate"><span class="pre">HelpLockedDetailTest.setUp()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpLockedDetailTest.get_kwargs"><code class="docutils literal notranslate"><span class="pre">HelpLockedDetailTest.get_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpLockedDetailTest.test_locked_entry"><code class="docutils literal notranslate"><span class="pre">HelpLockedDetailTest.test_locked_entry()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.HelpLockedDetailTest.test_lock_with_perm"><code class="docutils literal notranslate"><span class="pre">HelpLockedDetailTest.test_lock_with_perm()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterCreateView"><code class="docutils literal notranslate"><span class="pre">CharacterCreateView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterCreateView.url_name"><code class="docutils literal notranslate"><span class="pre">CharacterCreateView.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterCreateView.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">CharacterCreateView.unauthenticated_response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_0"><code class="docutils literal notranslate"><span class="pre">CharacterCreateView.test_valid_access_multisession_0()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterCreateView.test_valid_access_multisession_2"><code class="docutils literal notranslate"><span class="pre">CharacterCreateView.test_valid_access_multisession_2()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterPuppetView"><code class="docutils literal notranslate"><span class="pre">CharacterPuppetView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterPuppetView.url_name"><code class="docutils literal notranslate"><span class="pre">CharacterPuppetView.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterPuppetView.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">CharacterPuppetView.unauthenticated_response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterPuppetView.get_kwargs"><code class="docutils literal notranslate"><span class="pre">CharacterPuppetView.get_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterPuppetView.test_invalid_access"><code class="docutils literal notranslate"><span class="pre">CharacterPuppetView.test_invalid_access()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterListView"><code class="docutils literal notranslate"><span class="pre">CharacterListView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterListView.url_name"><code class="docutils literal notranslate"><span class="pre">CharacterListView.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterListView.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">CharacterListView.unauthenticated_response</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterManageView"><code class="docutils literal notranslate"><span class="pre">CharacterManageView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterManageView.url_name"><code class="docutils literal notranslate"><span class="pre">CharacterManageView.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterManageView.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">CharacterManageView.unauthenticated_response</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterUpdateView"><code class="docutils literal notranslate"><span class="pre">CharacterUpdateView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterUpdateView.url_name"><code class="docutils literal notranslate"><span class="pre">CharacterUpdateView.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterUpdateView.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">CharacterUpdateView.unauthenticated_response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterUpdateView.get_kwargs"><code class="docutils literal notranslate"><span class="pre">CharacterUpdateView.get_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterUpdateView.test_valid_access"><code class="docutils literal notranslate"><span class="pre">CharacterUpdateView.test_valid_access()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterUpdateView.test_invalid_access"><code class="docutils literal notranslate"><span class="pre">CharacterUpdateView.test_invalid_access()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterDeleteView"><code class="docutils literal notranslate"><span class="pre">CharacterDeleteView</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterDeleteView.url_name"><code class="docutils literal notranslate"><span class="pre">CharacterDeleteView.url_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterDeleteView.unauthenticated_response"><code class="docutils literal notranslate"><span class="pre">CharacterDeleteView.unauthenticated_response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterDeleteView.get_kwargs"><code class="docutils literal notranslate"><span class="pre">CharacterDeleteView.get_kwargs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterDeleteView.test_valid_access"><code class="docutils literal notranslate"><span class="pre">CharacterDeleteView.test_valid_access()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.website.tests.CharacterDeleteView.test_invalid_access"><code class="docutils literal notranslate"><span class="pre">CharacterDeleteView.test_invalid_access()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.web.website.forms.html"
+                          title="previous chapter">evennia.web.website.forms</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.web.website.urls.html"
+                          title="next chapter">evennia.web.website.urls</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.website.tests.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.urls.html" title="evennia.web.website.urls"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.website.forms.html" title="evennia.web.website.forms"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.website.html" >evennia.web.website</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.website.tests</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

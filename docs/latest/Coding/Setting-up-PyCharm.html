@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Setting up PyCharm with Evennia &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="Changelog.html" />
+    <link rel="prev" title="Continuous Integration (CI)" href="Continuous-Integration.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Continuous-Integration.html" title="Continuous Integration (CI)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" accesskey="U">Coding and development help</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Setting up PyCharm with Evennia</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="setting-up-pycharm-with-evennia">
+<h1>Setting up PyCharm with Evennia<a class="headerlink" href="#setting-up-pycharm-with-evennia" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://www.jetbrains.com/pycharm/">PyCharm</a> is a Python developer’s IDE from Jetbrains available for Windows, Mac and Linux.
+It is a commercial product but offer free trials, a scaled-down community edition and also generous licenses for OSS projects like Evennia.</p>
+<p>First, download and install the IDE edition of your choosing.
+The community edition should have everything you need,
+but the professional edition has integrated support for Django which can help.</p>
+<section id="from-an-existing-project">
+<h2>From an existing project<a class="headerlink" href="#from-an-existing-project" title="Link to this heading">¶</a></h2>
+<p>Use this if you want to use PyCharm with an already existing Evennia game.
+First, ensure you have completed the steps outlined <a class="reference external" href="https://www.evennia.com/docs/latest/Setup/Installation.html#requirements">here</a>.
+Especially the virtualenv part, this will make setting the IDE up much easier.</p>
+<ol class="arabic simple">
+<li><p>Open Pycharm and click on the open button, open your root folder corresponding to <code class="docutils literal notranslate"><span class="pre">mygame/</span></code>.</p></li>
+<li><p>Click on File -&gt; Settings -&gt; Project -&gt; Python Interpreter -&gt; Add Interpreter -&gt; Add Local Interpreter
+<img alt="Example" src="https://imgur.com/QRo8O1C.png" /></p></li>
+<li><p>Click on VirtualEnv -&gt; Existing Interpreter -&gt; Select your existing virtualenv folder,
+should be <code class="docutils literal notranslate"><span class="pre">evenv</span></code> if you followed the default installation.</p></li>
+</ol>
+<p><img alt="Example" src="https://imgur.com/XDmgjTw.png" /></p>
+</section>
+<section id="from-a-new-project">
+<h2>From a new project<a class="headerlink" href="#from-a-new-project" title="Link to this heading">¶</a></h2>
+<p>Use this if you are starting from scratch or want to make a new Evennia game.</p>
+<ol class="arabic simple">
+<li><p>Click on the new project button.</p></li>
+<li><p>Select the location for your project.
+You should create two new folders, one for the root of your project and one
+for the evennia game directly. It should look like <code class="docutils literal notranslate"><span class="pre">/location/projectfolder/gamefolder</span></code></p></li>
+<li><p>Select the <code class="docutils literal notranslate"><span class="pre">Custom</span> <span class="pre">environment</span></code> interpreter type, using <code class="docutils literal notranslate"><span class="pre">Generate</span> <span class="pre">New</span></code> of type <code class="docutils literal notranslate"><span class="pre">Virtual</span> <span class="pre">env</span></code> using a
+compatible base python version as recommended in <a class="reference external" href="https://www.evennia.com/docs/latest/Setup/Installation.html#requirements">https://www.evennia.com/docs/latest/Setup/Installation.html#requirements</a>
+Then choose a folder for your virtual environment as a sub folder of your project folder.</p></li>
+</ol>
+<p><img alt="Example new project configuration" src="https://imgur.com/R5Yr9I4.png" /></p>
+<p>Click on the create button and it will take you inside your new project with a bare bones virtual environment.
+To install Evennia, you can then either clone evennia in your project folder or install it via pip.
+The simplest way is to use pip.</p>
+<p>Click on the <code class="docutils literal notranslate"><span class="pre">terminal</span></code> button</p>
+<p><img alt="Terminal Button" src="https://i.imgur.com/fDr4nhv.png" /></p>
+<ol class="arabic simple">
+<li><p>Type in <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">evennia</span></code></p></li>
+<li><p>Close the IDE and navigate to the project folder</p></li>
+<li><p>Rename the game folder to a temporary name and create a new empty folder with the previous name</p></li>
+<li><p>Open your OS terminal, navigate to your project folder and activate your virtualenv.
+On linux, <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">.evenv/bin/activate</span></code>
+On windows, <code class="docutils literal notranslate"><span class="pre">evenv\Scripts\activate</span></code></p></li>
+<li><p>Type in <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">--init</span> <span class="pre">mygame</span></code></p></li>
+<li><p>Move the files from your temporary folder, which should contain the <code class="docutils literal notranslate"><span class="pre">.idea/</span></code> folder into
+the folder you have created at step 3 and delete the now empty temporary folder.</p></li>
+<li><p>In the terminal, Move into the folder and type in <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">migrate</span></code></p></li>
+<li><p>Start evennia to ensure that it works with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> and stop it with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code></p></li>
+</ol>
+<p>At this point, you can reopen your IDE and it should be functional.
+<a class="reference external" href="https://www.evennia.com/docs/latest/Setup/Installation.html">Look here for additional information</a></p>
+</section>
+<section id="debug-evennia-from-inside-pycharm">
+<h2>Debug Evennia from inside PyCharm<a class="headerlink" href="#debug-evennia-from-inside-pycharm" title="Link to this heading">¶</a></h2>
+<section id="attaching-to-the-process">
+<h3>Attaching to the process<a class="headerlink" href="#attaching-to-the-process" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Launch Evennia in the pycharm terminal</p></li>
+<li><p>Attempt to start it twice, this will give you the process ID of the server</p></li>
+<li><p>In the PyCharm menu, select <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">&gt;</span> <span class="pre">Attach</span> <span class="pre">to</span> <span class="pre">Process...</span></code></p></li>
+<li><p>From the list, pick the corresponding process id, it should be the <code class="docutils literal notranslate"><span class="pre">twistd</span></code> process with the <code class="docutils literal notranslate"><span class="pre">server.py</span></code> parameter (Example: <code class="docutils literal notranslate"><span class="pre">twistd.exe</span> <span class="pre">--nodaemon</span> <span class="pre">--logfile=\&lt;mygame\&gt;\server\logs\server.log</span> <span class="pre">--python=\&lt;evennia</span> <span class="pre">repo\&gt;\evennia\server\server.py</span></code>)</p></li>
+</ol>
+<p>You can attach to the <code class="docutils literal notranslate"><span class="pre">portal</span></code> process as well, if you want to debug the Evennia launcher
+or runner for some reason (or just learn how they work!), see Run Configuration below.</p>
+<blockquote>
+<div><p>NOTE: Whenever you reload Evennia, the old Server process will die and a new one start. So when you restart you have to detach from the old and then reattach to the new process that was created.</p>
+</div></blockquote>
+</section>
+<section id="run-evennia-with-a-run-debug-configuration">
+<h3>Run Evennia with a Run/Debug Configuration<a class="headerlink" href="#run-evennia-with-a-run-debug-configuration" title="Link to this heading">¶</a></h3>
+<p>This configuration allows you to launch Evennia from inside PyCharm.
+Besides convenience, it also allows suspending and debugging the evennia_launcher or evennia_runner
+at points earlier than you could by running them externally and attaching.
+In fact by the time the server and/or portal are running the launcher will have exited already.</p>
+<section id="on-windows">
+<h4>On Windows<a class="headerlink" href="#on-windows" title="Link to this heading">¶</a></h4>
+<ol class="arabic simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">&gt;</span> <span class="pre">Edit</span> <span class="pre">Configutations...</span></code></p></li>
+<li><p>Click the plus-symbol to add a new configuration and choose Python</p></li>
+<li><p>Add the script: <code class="docutils literal notranslate"><span class="pre">\&lt;yourprojectfolder&gt;\.evenv\Scripts\evennia_launcher.py</span></code> (substitute your virtualenv if it’s not named <code class="docutils literal notranslate"><span class="pre">evenv</span></code>)</p></li>
+<li><p>Set script parameters to: <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">-l</span></code> (-l enables console logging)</p></li>
+<li><p>Ensure the chosen interpreter is your virtualenv</p></li>
+<li><p>Set Working directory to your <code class="docutils literal notranslate"><span class="pre">mygame</span></code> folder (not your project folder nor evennia)</p></li>
+<li><p>You can refer to the PyCharm documentation for general info, but you’ll want to set at least a config name (like “MyMUD start” or similar).</p></li>
+</ol>
+<p>A dropdown box holding your new configurations should appear next to your PyCharm run button.
+Select it start and press the debug icon to begin debugging.</p>
+</section>
+<section id="on-linux">
+<h4>On Linux<a class="headerlink" href="#on-linux" title="Link to this heading">¶</a></h4>
+<ol class="arabic simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">&gt;</span> <span class="pre">Edit</span> <span class="pre">Configutations...</span></code></p></li>
+<li><p>Click the plus-symbol to add a new configuration and choose Python</p></li>
+<li><p>Add the script: <code class="docutils literal notranslate"><span class="pre">/&lt;yourprojectfolder&gt;/.evenv/bin/twistd</span></code> (substitute your virtualenv if it’s not named <code class="docutils literal notranslate"><span class="pre">evenv</span></code>)</p></li>
+<li><p>Set script parameters to: <code class="docutils literal notranslate"><span class="pre">--python=/&lt;yourprojectfolder&gt;/.evenv/lib/python3.11/site-packages/evennia/server/server.py</span> <span class="pre">--logger=evennia.utils.logger.GetServerLogObserver</span> <span class="pre">--pidfile=/&lt;yourprojectfolder&gt;/&lt;yourgamefolder&gt;/server/server.pid</span> <span class="pre">--nodaemon</span></code></p></li>
+<li><p>Add an environment variable <code class="docutils literal notranslate"><span class="pre">DJANGO_SETTINGS_MODULE=server.conf.settings</span></code></p></li>
+<li><p>Ensure the chosen interpreter is your virtualenv</p></li>
+<li><p>Set Working directory to your game folder (not your project folder nor evennia)</p></li>
+<li><p>You can refer to the PyCharm documentation for general info, but you’ll want to set at least a config name (like “MyMUD Server” or similar).</p></li>
+</ol>
+<p>A dropdown box holding your new configurations should appear next to your PyCharm run button.
+Select it start and press the debug icon to begin debugging.
+Note that this only starts the server process, you can either start the portal manually or set up
+the configuration for the portal. The steps are very similar to the ones above.</p>
+<ol class="arabic simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">&gt;</span> <span class="pre">Edit</span> <span class="pre">Configutations...</span></code></p></li>
+<li><p>Click the plus-symbol to add a new configuration and choose Python</p></li>
+<li><p>Add the script: <code class="docutils literal notranslate"><span class="pre">/&lt;yourprojectfolder&gt;/.evenv/bin/twistd</span></code> (substitute your virtualenv if it’s not named <code class="docutils literal notranslate"><span class="pre">evenv</span></code>)</p></li>
+<li><p>Set script parameters to: <code class="docutils literal notranslate"><span class="pre">--python=/&lt;yourprojectfolder&gt;/.evenv/lib/python3.11/site-packages/evennia/server/portal/portal.py</span> <span class="pre">--logger=evennia.utils.logger.GetServerLogObserver</span> <span class="pre">--pidfile=/&lt;yourprojectfolder&gt;/&lt;yourgamefolder&gt;/server/portal.pid</span> <span class="pre">--nodaemon</span></code></p></li>
+<li><p>Add an environment variable <code class="docutils literal notranslate"><span class="pre">DJANGO_SETTINGS_MODULE=server.conf.settings</span></code></p></li>
+<li><p>Ensure the chosen interpreter is your virtualenv</p></li>
+<li><p>Set Working directory to your game folder (not your project folder nor evennia)</p></li>
+<li><p>You can refer to the PyCharm documentation for general info, but you’ll want to set at least a config name (like “MyMUD Portal” or similar).</p></li>
+</ol>
+<p>You should now be able to start both modes and get full debugging.
+If you want to go one step further, you can add another config to automatically start both.</p>
+<ol class="arabic simple">
+<li><p>Go to <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">&gt;</span> <span class="pre">Edit</span> <span class="pre">Configutations...</span></code></p></li>
+<li><p>Click the plus-symbol to add a new configuration and choose Compound</p></li>
+<li><p>Add your two previous configurations, name it appropriately and press Ok.</p></li>
+</ol>
+<p>You can now start your game with one click with full debugging active.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Setting up PyCharm with Evennia</a><ul>
+<li><a class="reference internal" href="#from-an-existing-project">From an existing project</a></li>
+<li><a class="reference internal" href="#from-a-new-project">From a new project</a></li>
+<li><a class="reference internal" href="#debug-evennia-from-inside-pycharm">Debug Evennia from inside PyCharm</a><ul>
+<li><a class="reference internal" href="#attaching-to-the-process">Attaching to the process</a></li>
+<li><a class="reference internal" href="#run-evennia-with-a-run-debug-configuration">Run Evennia with a Run/Debug Configuration</a><ul>
+<li><a class="reference internal" href="#on-windows">On Windows</a></li>
+<li><a class="reference internal" href="#on-linux">On Linux</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Continuous-Integration.html"
+                          title="previous chapter">Continuous Integration (CI)</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Changelog.html"
+                          title="next chapter">Changelog</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Coding/Setting-up-PyCharm.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Changelog.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Continuous-Integration.html" title="Continuous Integration (CI)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Coding-Overview.html" >Coding and development help</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Setting up PyCharm with Evennia</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

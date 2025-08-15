@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.commands.cmdhandler &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.commands.cmdparser" href="evennia.commands.cmdparser.html" />
+    <link rel="prev" title="evennia.commands" href="evennia.commands.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.cmdparser.html" title="evennia.commands.cmdparser"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.html" title="evennia.commands"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.commands.html" accesskey="U">evennia.commands</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdhandler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.commands.cmdhandler">
+<span id="evennia-commands-cmdhandler"></span><h1>evennia.commands.cmdhandler<a class="headerlink" href="#module-evennia.commands.cmdhandler" title="Link to this heading">¶</a></h1>
+<p>Command handler</p>
+<p>This module contains the infrastructure for accepting commands on the
+command line. The processing of a command works as follows:</p>
+<ol class="arabic">
+<li><p>The calling object (caller) is analyzed based on its callertype.</p></li>
+<li><p>Cmdsets are gathered from different sources:
+- object cmdsets: all objects at caller’s location are scanned for non-empty</p>
+<blockquote>
+<div><p>cmdsets. This includes cmdsets on exits.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>caller: the caller is searched for its own currently active cmdset.</p></li>
+<li><p>account: lastly the cmdsets defined on caller.account are added.</p></li>
+</ul>
+</li>
+<li><p>The collected cmdsets are merged together to a combined, current cmdset.</p></li>
+<li><p>If the input string is empty -&gt; check for CMD_NOINPUT command in
+current cmdset or fallback to error message. Exit.</p></li>
+<li><p>The Command Parser is triggered, using the current cmdset to analyze the
+input string for possible command matches.</p></li>
+<li><p>If multiple matches are found -&gt; check for CMD_MULTIMATCH in current
+cmdset, or fallback to error message. Exit.</p></li>
+<li><p>If no match was found -&gt; check for CMD_NOMATCH in current cmdset or
+fallback to error message. Exit.</p></li>
+<li><p>At this point we have found a normal command. We assign useful variables to it that
+will be available to the command coder at run-time.</p></li>
+<li><p>We have a unique cmdobject, primed for use. Call all hooks:
+<strong>at_pre_cmd()</strong>, <strong>cmdobj.parse()</strong>, <strong>cmdobj.func()</strong> and finally <strong>at_post_cmd()</strong>.</p></li>
+<li><p>Return deferred that will fire with the return from <strong>cmdobj.func()</strong> (unused by default).</p></li>
+</ol>
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.cmdhandler">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">cmdhandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">called_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_testing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callertype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'session'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdobj_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#cmdhandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.cmdhandler" title="Link to this definition">¶</a></dt>
+<dd><p>This is the main mechanism that handles any string sent to the engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>called_by</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>Account</em><em> or </em><em>Object</em>) – Object from which this
+command was called. which this was called from.  What this is
+depends on the game state.</p></li>
+<li><p><strong>raw_string</strong> (<em>str</em>) – The command string as given on the command line.</p></li>
+<li><p><strong>_testing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Used for debug purposes and decides if we
+should actually execute the command or not. If True, the
+command instance will be returned.</p></li>
+<li><p><strong>callertype</strong> (<em>str</em><em>, </em><em>optional</em>) – One of “session”, “account” or
+“object”. These are treated in decending order, so when the
+Session is the caller, it will merge its own cmdset into
+cmdsets from both Account and eventual puppeted Object (and
+cmdsets in its room etc). An Account will only include its own
+cmdset and the Objects and so on. Merge order is the same
+order, so that Object cmdsets are merged in last, giving them
+precendence for same-name and same-prio commands.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>optional</em>) – Relevant if callertype is “account” - the session will help
+retrieve the correct cmdsets from puppeted objects.</p></li>
+<li><p><strong>cmdobj</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><em>optional</em>) – If given a command instance, this will be executed using
+<strong>called_by</strong> as the caller, <strong>raw_string</strong> representing its arguments and (optionally)
+<strong>cmdobj_key</strong> as its input command name. No cmdset lookup will be performed but
+all other options apply as normal. This allows for running a specific Command
+within the command system mechanism.</p></li>
+<li><p><strong>cmdobj_key</strong> (<em>string</em><em>, </em><em>optional</em>) – Used together with <strong>cmdobj</strong> keyword to specify
+which cmdname should be assigned when calling the specified Command instance. This
+is made available as <strong>self.cmdstring</strong> when the Command runs.
+If not given, the command will be assumed to be called as <strong>cmdobj.key</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>any</em>) – other keyword arguments will be assigned as named variables on the
+retrieved command object <em>before</em> it is executed. This is unused
+in default Evennia but may be used by code to set custom flags or
+special operating conditions for a command as it executes.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>deferred (Deferred)</em> – This deferred is fired with the return
+value of the command’s <strong>func</strong> method.  This is not used in
+default Evennia.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.InterruptCommand">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">InterruptCommand</span></span><a class="reference internal" href="../_modules/evennia/commands/command.html#InterruptCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.InterruptCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Cleanly interrupt a command.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">CmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class describes a unique cmdset that understands priorities.
+CmdSets can be merged and made to perform various set operations
+on each other.  CmdSets have priorities that affect which of their
+ingoing commands gets used.</p>
+<p>In the examples, cmdset A always have higher priority than cmdset B.</p>
+<p>key - the name of the cmdset. This can be used on its own for game
+operations</p>
+<p>mergetype (partly from Set theory):</p>
+<blockquote>
+<div><dl>
+<dt>Union -    The two command sets are merged so that as many</dt><dd><p>commands as possible of each cmdset ends up in the
+merged cmdset. Same-name commands are merged by
+priority.  This is the most common default.
+Ex: A1,A3 + B1,B2,B4,B5 = A1,B2,A3,B4,B5</p>
+</dd>
+<dt>Intersect - Only commands found in <em>both</em> cmdsets</dt><dd><p>(i.e. which have same names) end up in the merged
+cmdset, with the higher-priority cmdset replacing the
+lower one.  Ex: A1,A3 + B1,B2,B4,B5 = A1</p>
+</dd>
+<dt>Replace -   The commands of this cmdset completely replaces</dt><dd><p>the lower-priority cmdset’s commands, regardless
+of if same-name commands exist.
+Ex: A1,A3 + B1,B2,B4,B5 = A1,A3</p>
+</dd>
+<dt>Remove -    This removes the relevant commands from the</dt><dd><blockquote>
+<div><p>lower-priority cmdset completely.  They are not
+replaced with anything, so this in effects uses the
+high-priority cmdset as a filter to affect the
+low-priority cmdset.
+Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Note: Commands longer than 2 characters and starting</dt><dd><p>with double underscrores, like ‘__noinput_command’
+are considered ‘system commands’ and are
+excempt from all merge operations - they are
+ALWAYS included across mergers and only affected
+if same-named system commands replace them.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>priority- All cmdsets are always merged in pairs of two so that</dt><dd><p>the higher set’s mergetype is applied to the
+lower-priority cmdset. Default commands have priority 0,
+high-priority ones like Exits and Channels have 10 and 9.
+Priorities can be negative as well to give default
+commands preference.</p>
+</dd>
+<dt>duplicates - determines what happens when two sets of equal</dt><dd><blockquote>
+<div><p>priority merge (only). Defaults to None and has the first of them in the
+merger (i.e. A above) automatically taking
+precedence. But if <strong>duplicates</strong> is true, the
+result will be a merger with more than one of each
+name match.  This will usually lead to the account
+receiving a multiple-match error higher up the road,
+but can be good for things like cmdsets on non-account
+objects in a room, to allow the system to warn that
+more than one ‘ball’ in the room has the same ‘kick’
+command defined on it, so it may offer a chance to
+select which ball to kick …  Allowing duplicates
+only makes sense for Union and Intersect, the setting
+is ignored for the other mergetypes.
+Note that the <strong>duplicates</strong> flag is <em>not</em> propagated in
+a cmdset merger. So <strong>A + B = C</strong> will result in
+a cmdset with duplicate commands, but C.duplicates will
+be <strong>None</strong>. For duplication to apply to a whole cmdset
+stack merge, _all_ cmdsets in the stack must have
+<strong>.duplicates=True</strong> set.</p>
+</div></blockquote>
+<p>Finally, if a final cmdset has <strong>.duplicates=None</strong> (the normal
+unless created alone with another value), the cmdhandler
+will assume True for object-based cmdsets and False for
+all other. This is usually the most intuitive outcome.</p>
+</dd>
+<dt>key_mergetype (dict) - allows the cmdset to define a unique</dt><dd><p>mergetype for particular cmdsets.  Format is
+{CmdSetkeystring:mergetype}. Priorities still apply.
+Example: {‘Myevilcmdset’,’Replace’} which would make
+sure for this set to always use ‘Replace’ on
+Myevilcmdset no matter what overall mergetype this set
+has.</p>
+</dd>
+<dt>no_objs  - don’t include any commands from nearby objects</dt><dd><p>when searching for suitable commands</p>
+</dd>
+<dt>no_exits  - ignore the names of exits when matching against</dt><dd><p>commands</p>
+</dd>
+<dt>no_channels   - ignore the name of channels when matching against</dt><dd><p>commands (WARNING- this is dangerous since the
+account can then not even ask staff for help if
+something goes wrong)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new CmdSet instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdsetobj</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>Account</em><em>, </em><em>Object</em><em>, </em><em>optional</em>) – This is the database object
+to which this particular instance of cmdset is related. It
+is often a character but may also be a regular object, Account
+or Session.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The idenfier for this cmdset. This
+helps if wanting to selectively remov cmdsets.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add a new command or commands to this CmdSet, a list of
+commands or a cmdset to this cmdset. Note that this is <em>not</em>
+a merge operation (that is handled by the + operator).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><em>list</em><em>, </em><em>Cmdset</em>) – This allows for adding one or
+more commands to this Cmdset in one go. If another Cmdset
+is given, all its commands will be added.</p></li>
+<li><p><strong>allow_duplicates</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will not try to remove
+duplicate cmds in the set. This is needed during the merge process
+to avoid wiping commands coming from cmdsets with duplicate=True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If cmd already exists in set, it will replace the old one
+(no priority checking etc happens here). This is very useful
+when overloading default commands).</p>
+<p>If cmd is another cmdset class or -instance, the commands of
+that command set is added to this one, as if they were part of
+the original cmdset definition. No merging or priority checks
+are made, rather later added commands will simply replace
+existing ones to make a unique set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.count" title="Link to this definition">¶</a></dt>
+<dd><p>Number of commands in set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>N (int)</em> – Number of commands in this Cmdset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.duplicates">
+<span class="sig-name descname"><span class="pre">duplicates</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.duplicates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.errmessage">
+<span class="sig-name descname"><span class="pre">errmessage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.errmessage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get a command from the cmdset. This is mostly useful to
+check if the command is part of this cmdset or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em> or </em><em>str</em>) – Either the Command object or its key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>cmd (Command)</em> – The first matching Command in the set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.get_all_cmd_keys_and_aliases">
+<span class="sig-name descname"><span class="pre">get_all_cmd_keys_and_aliases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get_all_cmd_keys_and_aliases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.get_all_cmd_keys_and_aliases" title="Link to this definition">¶</a></dt>
+<dd><p>Collects keys/aliases from commands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>Object</em><em>, </em><em>optional</em>) – If set, this is used to check access permissions
+on each command. Only commands that pass are returned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>names (list)</em> –</p>
+<dl class="simple">
+<dt>A list of all command keys and aliases in this cmdset. If <strong>caller</strong></dt><dd><p>was given, this list will only contain commands to which <strong>caller</strong> passed
+the <strong>call</strong> locktype check.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.get_system_cmds">
+<span class="sig-name descname"><span class="pre">get_system_cmds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get_system_cmds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.get_system_cmds" title="Link to this definition">¶</a></dt>
+<dd><p>Get system commands in cmdset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>sys_cmds (list)</em> – The system commands in the set.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>As far as the Cmdset is concerned, system commands are any
+commands with a key starting with double underscore __.
+These are excempt from merge operations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Unnamed</span> <span class="pre">CmdSet'</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.key_mergetypes">
+<span class="sig-name descname"><span class="pre">key_mergetypes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.key_mergetypes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.make_unique">
+<span class="sig-name descname"><span class="pre">make_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.make_unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.make_unique" title="Link to this definition">¶</a></dt>
+<dd><p>Remove duplicate command-keys (unsafe)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>object</em>) – Commands on this object will
+get preference in the duplicate removal.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is an unsafe command meant to clean out a cmdset of
+doublet commands after it has been created. It is useful
+for commands inheriting cmdsets from the cmdhandler where
+obj-based cmdsets always are added double. Doublets will
+be weeded out with preference to commands defined on
+caller, otherwise just by first-come-first-served.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.mergetype">
+<span class="sig-name descname"><span class="pre">mergetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Union'</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.mergetype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.no_channels">
+<span class="sig-name descname"><span class="pre">no_channels</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.no_channels" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.no_exits">
+<span class="sig-name descname"><span class="pre">no_exits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.no_exits" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.no_objs">
+<span class="sig-name descname"><span class="pre">no_objs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.no_objs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.commands.cmdset.CmdSet'</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.persistent">
+<span class="sig-name descname"><span class="pre">persistent</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.persistent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a command instance from the cmdset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em> or </em><em>str</em>) – Either the Command object to remove
+or the key of such a command.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.CmdSet.to_duplicate">
+<span class="sig-name descname"><span class="pre">to_duplicate</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('key',</span> <span class="pre">'cmdsetobj',</span> <span class="pre">'no_exits',</span> <span class="pre">'no_objs',</span> <span class="pre">'no_channels',</span> <span class="pre">'persistent',</span> <span class="pre">'mergetype',</span> <span class="pre">'priority',</span> <span class="pre">'duplicates',</span> <span class="pre">'errmessage')</span></em><a class="headerlink" href="#evennia.commands.cmdhandler.CmdSet.to_duplicate" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.ErrorReported">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">ErrorReported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#ErrorReported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.ErrorReported" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Re-raised when a subsructure already reported the error</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.ErrorReported.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#ErrorReported.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.ErrorReported.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.ExecSystemCommand">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">ExecSystemCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syscmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#ExecSystemCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.ExecSystemCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Run a system command</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.ExecSystemCommand.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">syscmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sysarg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#ExecSystemCommand.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.ExecSystemCommand.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.NoCmdSets">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">NoCmdSets</span></span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#NoCmdSets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.NoCmdSets" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>No cmdsets found. Critical error.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">WeakValueDictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.dbserialize.html#evennia.utils.dbserialize.MutableMapping" title="collections.abc.MutableMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></a></p>
+<p>Mapping class that references values weakly.</p>
+<p>Entries in the dictionary will be discarded when no strong
+reference to the value exists anymore</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.copy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">D[k]</span> <span class="pre">if</span> <span class="pre">k</span> <span class="pre">in</span> <span class="pre">D,</span> <span class="pre">else</span> <span class="pre">d.</span>&#160; <span class="pre">d</span> <span class="pre">defaults</span> <span class="pre">to</span> <span class="pre">None.</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.get" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">items</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.items" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.itervaluerefs">
+<span class="sig-name descname"><span class="pre">itervaluerefs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.itervaluerefs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.itervaluerefs" title="Link to this definition">¶</a></dt>
+<dd><p>Return an iterator that yields the weak references to the values.</p>
+<p>The references are not guaranteed to be ‘live’ at the time
+they are used, so the result of calling the references needs
+to be checked before being used.  This can be used to avoid
+creating references that will cause the garbage collector to
+keep the values around longer than needed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">keys</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.keys" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">v,</span> <span class="pre">remove</span> <span class="pre">specified</span> <span class="pre">key</span> <span class="pre">and</span> <span class="pre">return</span> <span class="pre">the</span> <span class="pre">corresponding</span> <span class="pre">value.</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.pop" title="Link to this definition">¶</a></dt>
+<dd><p>If key is not found, d is returned if given, otherwise KeyError is raised.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.popitem">
+<span class="sig-name descname"><span class="pre">popitem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">(k,</span> <span class="pre">v),</span> <span class="pre">remove</span> <span class="pre">and</span> <span class="pre">return</span> <span class="pre">some</span> <span class="pre">(key,</span> <span class="pre">value)</span> <span class="pre">pair</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.popitem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.popitem" title="Link to this definition">¶</a></dt>
+<dd><p>as a 2-tuple; but raise KeyError if D is empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.setdefault">
+<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="optional">]</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">D.get(k,d),</span> <span class="pre">also</span> <span class="pre">set</span> <span class="pre">D[k]=d</span> <span class="pre">if</span> <span class="pre">k</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">D</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.setdefault"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.setdefault" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <span class="optional">]</span><em class="sig-param"><span class="n"><span class="pre">**F</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None.</span>&#160; <span class="pre">Update</span> <span class="pre">D</span> <span class="pre">from</span> <span class="pre">mapping/iterable</span> <span class="pre">E</span> <span class="pre">and</span> <span class="pre">F.</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.update" title="Link to this definition">¶</a></dt>
+<dd><p>If E present and has a .keys() method, does:     for k in E.keys(): D[k] = E[k]
+If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v
+In either case, this is followed by: for k, v in F.items(): D[k] = v</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.valuerefs">
+<span class="sig-name descname"><span class="pre">valuerefs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.valuerefs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.valuerefs" title="Link to this definition">¶</a></dt>
+<dd><p>Return a list of weak references to the values.</p>
+<p>The references are not guaranteed to be ‘live’ at the time
+they are used, so the result of calling the references needs
+to be checked before being used.  This can be used to avoid
+creating references that will cause the garbage collector to
+keep the values around longer than needed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.WeakValueDictionary.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">an</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">values</span></span></span><a class="reference internal" href="../_modules/weakref.html#WeakValueDictionary.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.WeakValueDictionary.values" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.chain">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">iterables</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdhandler.chain" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Return a chain object whose .__next__() method returns elements from the
+first iterable until it is exhausted, then elements from the next
+iterable, until all of the iterables are exhausted.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.chain.from_iterable">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_iterable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdhandler.chain.from_iterable" title="Link to this definition">¶</a></dt>
+<dd><p>Alternative chain() constructor taking a single iterable argument that evaluates lazily.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.copy">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/copy.html#copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.copy" title="Link to this definition">¶</a></dt>
+<dd><p>Shallow copy operation on arbitrary Python objects.</p>
+<p>See the module’s __doc__ string for more info.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.defaultdict">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">defaultdict</span></span><a class="headerlink" href="#evennia.commands.cmdhandler.defaultdict" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>defaultdict(default_factory=None, /, […]) –&gt; dict with default factory</p>
+<p>The default factory is called without arguments to produce
+a new value when a key is not present, in __getitem__ only.
+A defaultdict compares equal to a dict with the same items.
+All remaining arguments are treated the same as if they were
+passed to the dict constructor, including keyword arguments.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.defaultdict.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.commands.cmdhandler.defaultdict.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.defaultdict.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">shallow</span> <span class="pre">copy</span> <span class="pre">of</span> <span class="pre">D.</span></span></span><a class="headerlink" href="#evennia.commands.cmdhandler.defaultdict.copy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.defaultdict.default_factory">
+<span class="sig-name descname"><span class="pre">default_factory</span></span><a class="headerlink" href="#evennia.commands.cmdhandler.defaultdict.default_factory" title="Link to this definition">¶</a></dt>
+<dd><p>Factory for default value called by __missing__().</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.deferLater">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">deferLater</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">clock:</span> <span class="pre">&lt;InterfaceClass</span> <span class="pre">twisted.internet.interfaces.IReactorTime&gt;,</span> <span class="pre">delay:</span> <span class="pre">float,</span> <span class="pre">callable:</span> <span class="pre">~typing.Callable[[...],</span> <span class="pre">~twisted.internet.task._T]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">*args:</span> <span class="pre">object,</span> <span class="pre">**kw:</span> <span class="pre">object</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.Deferred" title="twisted.internet.defer.Deferred"><span class="pre">Deferred</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/twisted/internet/task.html#deferLater"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.deferLater" title="Link to this definition">¶</a></dt>
+<dd><p>Call the given function after a certain period of time has passed.</p>
+<dl class="simple">
+<dt>&#64;param clock: The object which will be used to schedule the delayed</dt><dd><p>call.</p>
+</dd>
+</dl>
+<p>&#64;param delay: The number of seconds to wait before calling the function.</p>
+<p>&#64;param callable: The callable to call after the delay, or C{None}.</p>
+<p>&#64;param args: The positional arguments to pass to C{callable}.</p>
+<p>&#64;param kw: The keyword arguments to pass to C{callable}.</p>
+<dl class="simple">
+<dt>&#64;return: A deferred that fires with the result of the callable when the</dt><dd><p>specified time has elapsed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.err_helper">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">err_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#err_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.err_helper" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.format_exc">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">format_exc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/traceback.html#format_exc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.format_exc" title="Link to this definition">¶</a></dt>
+<dd><p>Like print_exc() but return a string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.generate_cmdset_providers">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">generate_cmdset_providers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">called_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#generate_cmdset_providers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.generate_cmdset_providers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.get_and_merge_cmdsets">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">get_and_merge_cmdsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdset_providers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callertype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdhandler.html#get_and_merge_cmdsets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.get_and_merge_cmdsets" title="Link to this definition">¶</a></dt>
+<dd><p>Gather all relevant cmdsets and merge them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>Account</em><em> or </em><em>Object</em>) – The entity executing the command. Which
+type of object this is depends on the current game state; for example
+when the user is not logged in, this will be a Session, when being OOC
+it will be an Account and when puppeting an object this will (often) be
+a Character Object. In the end it depends on where the cmdset is stored.</p></li>
+<li><p><strong>cmdset_providers</strong> (<em>list</em>) – A list of sorted objects which provide cmdsets.</p></li>
+<li><p><strong>callertype</strong> (<em>str</em>) – This identifies caller as either “account”, “object” or “session”
+to avoid having to do this check internally.</p></li>
+<li><p><strong>raw_string</strong> (<em>str</em>) – The input string. This is only used for error reporting.</p></li>
+<li><p><strong>report_to</strong> (<em>Object</em><em>, </em><em>optional</em>) – If given, this object will receive error messages</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>cmdset (Deferred)</em> – This deferred fires with the merged cmdset
+result once merger finishes.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The cdmsets are merged in order or generality, so that the
+Object’s cmdset is merged last (and will thus take precedence
+over same-named and same-prio commands on Account and Session).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.inlineCallbacks">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">inlineCallbacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">_P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.Deferred" title="twisted.internet.defer.Deferred"><span class="pre">Deferred</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">_P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="evennia.scripts.scripts.html#evennia.scripts.scripts.Deferred" title="twisted.internet.defer.Deferred"><span class="pre">Deferred</span></a><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/twisted/internet/defer.html#inlineCallbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.inlineCallbacks" title="Link to this definition">¶</a></dt>
+<dd><p>L{inlineCallbacks} helps you write L{Deferred}-using code that looks like a
+regular sequential function. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@inlineCallbacks</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">thingummy</span><span class="p">():</span>
+    <span class="n">thing</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">makeSomeRequestResultingInDeferred</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>  <span class="c1"># the result! hoorj!</span>
+</pre></div>
+</div>
+<p>When you call anything that results in a L{Deferred}, you can simply yield it;
+your generator will automatically be resumed when the Deferred’s result is
+available. The generator will be sent the result of the L{Deferred} with the
+‘send’ method on generators, or if the result was a failure, ‘throw’.</p>
+<p>Things that are not L{Deferred}s may also be yielded, and your generator
+will be resumed with the same object sent back. This means C{yield}
+performs an operation roughly equivalent to L{maybeDeferred}.</p>
+<p>Your inlineCallbacks-enabled generator will return a L{Deferred} object, which
+will result in the return value of the generator (or will fail with a
+failure object if your generator raises an unhandled exception). Inside
+the generator simply use C{return result} to return a value.</p>
+<p>Be aware that generator must not return a L{Deferred}.
+If you believe the thing you’d like to return could be a L{Deferred}, do
+this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">result</span>
+<span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p>The L{Deferred} returned from your deferred generator may errback if your
+generator raised an exception:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@inlineCallbacks</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">thingummy</span><span class="p">():</span>
+    <span class="n">thing</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">makeSomeRequestResultingInDeferred</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">thing</span> <span class="o">==</span> <span class="s1">&#39;I love Twisted&#39;</span><span class="p">:</span>
+        <span class="c1"># will become the result of the Deferred</span>
+        <span class="k">return</span> <span class="s1">&#39;TWISTED IS GREAT!&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># will trigger an errback</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;DESTROY ALL LIFE&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can cancel the L{Deferred} returned from your L{inlineCallbacks}
+generator before it is fired by your generator completing (either by
+reaching its end, a C{return} statement, or by calling L{returnValue}).
+A C{CancelledError} will be raised from the C{yield}ed L{Deferred} that
+has been cancelled if that C{Deferred} does not otherwise suppress it.</p>
+<p>C{inlineCallbacks} behaves very similarly to coroutines. Since Twisted 24.7.0
+it is possible to rewrite functions using C{inlineCallbacks} to C{async def}
+in piecewise manner and be mostly compatible to existing code.</p>
+<p>The rewrite process is simply replacing C{inlineCallbacks} decorator with
+C{async def} and all C{yield} occurrences in the function body with C{await}.
+The function will no longer return a C{Deferred} but a awaitable coroutine.
+This return value will obviously not have C{Deferred} methods such as
+C{addCallback}, but it will be possible to C{yield} it in other code based
+on C{inlineCallbacks}.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.cmdhandler.string_suggestions">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.cmdhandler.</span></span><span class="sig-name descname"><span class="pre">string_suggestions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocabulary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxnum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#string_suggestions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.cmdhandler.string_suggestions" title="Link to this definition">¶</a></dt>
+<dd><p>Given a <strong>string</strong> and a <strong>vocabulary</strong>, return a match or a list of
+suggestions based on string similarity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – A string to search for.</p></li>
+<li><p><strong>vocabulary</strong> (<em>iterable</em>) – A list of available strings.</p></li>
+<li><p><strong>cutoff</strong> (<em>int</em><em>, </em><em>0-1</em>) – Limit the similarity matches (the higher
+the value, the more exact a match is required).</p></li>
+<li><p><strong>maxnum</strong> (<em>int</em>) – Maximum number of suggestions to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>suggestions (list)</em> – Suggestions from <strong>vocabulary</strong> with a
+similarity-rating that higher than or equal to <strong>cutoff</strong>.
+Could be empty if there are no matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.commands.cmdhandler</a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.cmdhandler"><code class="docutils literal notranslate"><span class="pre">cmdhandler()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.InterruptCommand"><code class="docutils literal notranslate"><span class="pre">InterruptCommand</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet"><code class="docutils literal notranslate"><span class="pre">CmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.__init__"><code class="docutils literal notranslate"><span class="pre">CmdSet.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.add"><code class="docutils literal notranslate"><span class="pre">CmdSet.add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.count"><code class="docutils literal notranslate"><span class="pre">CmdSet.count()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.duplicates"><code class="docutils literal notranslate"><span class="pre">CmdSet.duplicates</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.errmessage"><code class="docutils literal notranslate"><span class="pre">CmdSet.errmessage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.get"><code class="docutils literal notranslate"><span class="pre">CmdSet.get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.get_all_cmd_keys_and_aliases"><code class="docutils literal notranslate"><span class="pre">CmdSet.get_all_cmd_keys_and_aliases()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.get_system_cmds"><code class="docutils literal notranslate"><span class="pre">CmdSet.get_system_cmds()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.key"><code class="docutils literal notranslate"><span class="pre">CmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.key_mergetypes"><code class="docutils literal notranslate"><span class="pre">CmdSet.key_mergetypes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.make_unique"><code class="docutils literal notranslate"><span class="pre">CmdSet.make_unique()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">CmdSet.mergetype</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.no_channels"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_channels</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.no_exits"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_exits</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.no_objs"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_objs</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.path"><code class="docutils literal notranslate"><span class="pre">CmdSet.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.persistent"><code class="docutils literal notranslate"><span class="pre">CmdSet.persistent</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.priority"><code class="docutils literal notranslate"><span class="pre">CmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.remove"><code class="docutils literal notranslate"><span class="pre">CmdSet.remove()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.CmdSet.to_duplicate"><code class="docutils literal notranslate"><span class="pre">CmdSet.to_duplicate</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.ErrorReported"><code class="docutils literal notranslate"><span class="pre">ErrorReported</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.ErrorReported.__init__"><code class="docutils literal notranslate"><span class="pre">ErrorReported.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.ExecSystemCommand"><code class="docutils literal notranslate"><span class="pre">ExecSystemCommand</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.ExecSystemCommand.__init__"><code class="docutils literal notranslate"><span class="pre">ExecSystemCommand.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.NoCmdSets"><code class="docutils literal notranslate"><span class="pre">NoCmdSets</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.__init__"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.copy"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.copy()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.get"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.items"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.items()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.itervaluerefs"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.itervaluerefs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.keys"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.keys()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.pop"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.pop()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.popitem"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.popitem()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.setdefault"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.setdefault()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.update"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.update()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.valuerefs"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.valuerefs()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.WeakValueDictionary.values"><code class="docutils literal notranslate"><span class="pre">WeakValueDictionary.values()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.chain"><code class="docutils literal notranslate"><span class="pre">chain</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.chain.from_iterable"><code class="docutils literal notranslate"><span class="pre">chain.from_iterable()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.copy"><code class="docutils literal notranslate"><span class="pre">copy()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.defaultdict"><code class="docutils literal notranslate"><span class="pre">defaultdict</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.defaultdict.__init__"><code class="docutils literal notranslate"><span class="pre">defaultdict.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.defaultdict.copy"><code class="docutils literal notranslate"><span class="pre">defaultdict.copy()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.defaultdict.default_factory"><code class="docutils literal notranslate"><span class="pre">defaultdict.default_factory</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.deferLater"><code class="docutils literal notranslate"><span class="pre">deferLater()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.err_helper"><code class="docutils literal notranslate"><span class="pre">err_helper()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.format_exc"><code class="docutils literal notranslate"><span class="pre">format_exc()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.generate_cmdset_providers"><code class="docutils literal notranslate"><span class="pre">generate_cmdset_providers()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.get_and_merge_cmdsets"><code class="docutils literal notranslate"><span class="pre">get_and_merge_cmdsets()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.inlineCallbacks"><code class="docutils literal notranslate"><span class="pre">inlineCallbacks()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.cmdhandler.string_suggestions"><code class="docutils literal notranslate"><span class="pre">string_suggestions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.commands.html"
+                          title="previous chapter">evennia.commands</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.commands.cmdparser.html"
+                          title="next chapter">evennia.commands.cmdparser</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.commands.cmdhandler.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.cmdparser.html" title="evennia.commands.cmdparser"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.html" title="evennia.commands"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.commands.html" >evennia.commands</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.cmdhandler</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

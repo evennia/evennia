@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.server.portal.discord &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.server.portal.grapevine" href="evennia.server.portal.grapevine.html" />
+    <link rel="prev" title="evennia.server.portal.amp_server" href="evennia.server.portal.amp_server.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.grapevine.html" title="evennia.server.portal.grapevine"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.amp_server.html" title="evennia.server.portal.amp_server"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" accesskey="U">evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.discord</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.portal.discord">
+<span id="evennia-server-portal-discord"></span><h1>evennia.server.portal.discord<a class="headerlink" href="#module-evennia.server.portal.discord" title="Link to this heading">¶</a></h1>
+<p>Implements Discord chat channel integration.</p>
+<p>The Discord API uses a mix of websockets and REST API endpoints.</p>
+<p>In order for this integration to work, you need to have your own
+discord bot set up via <a class="reference external" href="https://discord.com/developers/applications">https://discord.com/developers/applications</a>
+with the MESSAGE CONTENT toggle switched on, and your bot token
+added to <strong>server/conf/secret_settings.py</strong> as your  DISCORD_BOT_TOKEN</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.random">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.portal.discord.</span></span><span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">x</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">interval</span> <span class="pre">[0,</span> <span class="pre">1).</span></span></span><a class="headerlink" href="#evennia.server.portal.discord.random" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.QuietConnectionPool">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.discord.</span></span><span class="sig-name descname"><span class="pre">QuietConnectionPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#QuietConnectionPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.QuietConnectionPool" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPConnectionPool</span></code></p>
+<p>A quiet version of the HTTPConnectionPool which sets the factory’s
+<strong>noisy</strong> property to False to muffle log output.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.QuietConnectionPool.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#QuietConnectionPool.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.QuietConnectionPool.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.should_retry">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.portal.discord.</span></span><span class="sig-name descname"><span class="pre">should_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status_code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#should_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.should_retry" title="Link to this definition">¶</a></dt>
+<dd><p>Helper function to check if the request should be retried later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>status_code</strong> (<em>int</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>retry (bool) - True if request should be retried False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.discord.</span></span><span class="sig-name descname"><span class="pre">DiscordWebsocketServerFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sessionhandler</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClientFactory</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ReconnectingClientFactory</span></code></p>
+<p>A customized websocket client factory that navigates the Discord gateway process.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.initialDelay">
+<span class="sig-name descname"><span class="pre">initialDelay</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.initialDelay" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.factor">
+<span class="sig-name descname"><span class="pre">factor</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.factor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.maxDelay">
+<span class="sig-name descname"><span class="pre">maxDelay</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.maxDelay" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.gateway">
+<span class="sig-name descname"><span class="pre">gateway</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.gateway" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.resume_url">
+<span class="sig-name descname"><span class="pre">resume_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.resume_url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.is_connecting">
+<span class="sig-name descname"><span class="pre">is_connecting</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.is_connecting" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sessionhandler</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.__init__" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In addition to all arguments to the constructor of
+:func:<strong>autobahn.websocket.interfaces.IWebSocketClientChannelFactory</strong>,
+you can supply a <strong>**reactor**</strong> keyword argument to specify the
+Twisted reactor to be used.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.get_gateway_url">
+<span class="sig-name descname"><span class="pre">get_gateway_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.get_gateway_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.get_gateway_url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.websocket_init">
+<span class="sig-name descname"><span class="pre">websocket_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.websocket_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.websocket_init" title="Link to this definition">¶</a></dt>
+<dd><p>callback for when the URL is gotten</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.buildProtocol">
+<span class="sig-name descname"><span class="pre">buildProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.buildProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.buildProtocol" title="Link to this definition">¶</a></dt>
+<dd><p>Build new instance of protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addr</strong> (<em>str</em>) – Not used, using factory/settings data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.startedConnecting">
+<span class="sig-name descname"><span class="pre">startedConnecting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.startedConnecting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.startedConnecting" title="Link to this definition">¶</a></dt>
+<dd><p>Tracks reconnections for debugging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connector</strong> (<em>Connector</em>) – Represents the connection.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.reconnect">
+<span class="sig-name descname"><span class="pre">reconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.reconnect" title="Link to this definition">¶</a></dt>
+<dd><p>Force a reconnection of the bot protocol. This requires
+de-registering the session and then reattaching a new one.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordWebsocketServerFactory.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordWebsocketServerFactory.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.start" title="Link to this definition">¶</a></dt>
+<dd><p>Connect protocol to remote server</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.discord.</span></span><span class="sig-name descname"><span class="pre">DiscordClient</span></span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClientProtocol</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a></p>
+<p>Implements the Discord client</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.nextHeartbeatCall">
+<span class="sig-name descname"><span class="pre">nextHeartbeatCall</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.nextHeartbeatCall" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.pending_heartbeat">
+<span class="sig-name descname"><span class="pre">pending_heartbeat</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.pending_heartbeat" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.heartbeat_interval">
+<span class="sig-name descname"><span class="pre">heartbeat_interval</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.heartbeat_interval" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.last_sequence">
+<span class="sig-name descname"><span class="pre">last_sequence</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.last_sequence" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.session_id">
+<span class="sig-name descname"><span class="pre">session_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.session_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.discord_id">
+<span class="sig-name descname"><span class="pre">discord_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.discord_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.at_login">
+<span class="sig-name descname"><span class="pre">at_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.at_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.at_login" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.onOpen">
+<span class="sig-name descname"><span class="pre">onOpen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.onOpen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.onOpen" title="Link to this definition">¶</a></dt>
+<dd><p>Called when connection is established.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.onMessage">
+<span class="sig-name descname"><span class="pre">onMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isBinary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.onMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.onMessage" title="Link to this definition">¶</a></dt>
+<dd><p>Callback fired when a complete WebSocket message was received.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payload</strong> (<em>bytes</em>) – The WebSocket message received.</p></li>
+<li><p><strong>isBinary</strong> (<em>bool</em>) – Flag indicating whether payload is binary or
+UTF-8 encoded text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.onClose">
+<span class="sig-name descname"><span class="pre">onClose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wasClean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.onClose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.onClose" title="Link to this definition">¶</a></dt>
+<dd><p>This is executed when the connection is lost for whatever
+reason. it can also be called directly, from the disconnect
+method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wasClean</strong> (<em>bool</em>) – <strong>**True**</strong> if the WebSocket was closed cleanly.</p></li>
+<li><p><strong>code</strong> (<em>int</em><em> or </em><em>None</em>) – Close status as sent by the WebSocket peer.</p></li>
+<li><p><strong>reason</strong> (<em>str</em><em> or </em><em>None</em>) – Close reason as sent by the WebSocket peer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.post_response">
+<span class="sig-name descname"><span class="pre">post_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.post_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.post_response" title="Link to this definition">¶</a></dt>
+<dd><p>Process the response from sending a POST request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>body</strong> (<em>bytes</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.handle_error">
+<span class="sig-name descname"><span class="pre">handle_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.handle_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.handle_error" title="Link to this definition">¶</a></dt>
+<dd><p>General hook for processing errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.resume">
+<span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.resume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.resume" title="Link to this definition">¶</a></dt>
+<dd><p>Called after a reconnection to re-identify and replay missed events</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.disconnect">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.disconnect" title="Link to this definition">¶</a></dt>
+<dd><p>Generic hook for the engine to call in order to
+disconnect this protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em><em> or </em><em>None</em>) – Motivation for the disconnection.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.identify">
+<span class="sig-name descname"><span class="pre">identify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.identify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.identify" title="Link to this definition">¶</a></dt>
+<dd><p>Send Discord authentication. This should be sent once heartbeats begin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.connection_ready">
+<span class="sig-name descname"><span class="pre">connection_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.connection_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.connection_ready" title="Link to this definition">¶</a></dt>
+<dd><p>Process READY data for relevant bot info.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.doHeartbeat">
+<span class="sig-name descname"><span class="pre">doHeartbeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.doHeartbeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.doHeartbeat" title="Link to this definition">¶</a></dt>
+<dd><p>Send heartbeat to Discord.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.send_channel">
+<span class="sig-name descname"><span class="pre">send_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.send_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.send_channel" title="Link to this definition">¶</a></dt>
+<dd><p>Send a message from an Evennia channel to a Discord channel.</p>
+<p>Use with session.msg(channel=(message, channel, sender))</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.send_nickname">
+<span class="sig-name descname"><span class="pre">send_nickname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guild_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.send_nickname"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.send_nickname" title="Link to this definition">¶</a></dt>
+<dd><p>Changes a user’s nickname on a Discord server.</p>
+<p>Use with session.msg(nickname=(new_nickname, guild_id, user_id))</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.send_role">
+<span class="sig-name descname"><span class="pre">send_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guild_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.send_role"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.send_role" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.send_default">
+<span class="sig-name descname"><span class="pre">send_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.send_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.send_default" title="Link to this definition">¶</a></dt>
+<dd><p>Ignore other outputfuncs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.discord.DiscordClient.data_in">
+<span class="sig-name descname"><span class="pre">data_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/discord.html#DiscordClient.data_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.discord.DiscordClient.data_in" title="Link to this definition">¶</a></dt>
+<dd><p>Process incoming data from Discord and sent to the Evennia server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Converted json data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.server.portal.discord</a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.discord.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.QuietConnectionPool"><code class="docutils literal notranslate"><span class="pre">QuietConnectionPool</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.discord.QuietConnectionPool.__init__"><code class="docutils literal notranslate"><span class="pre">QuietConnectionPool.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.should_retry"><code class="docutils literal notranslate"><span class="pre">should_retry()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.initialDelay"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.initialDelay</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.factor"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.factor</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.maxDelay"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.maxDelay</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.noisy"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.noisy</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.gateway"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.gateway</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.resume_url"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.resume_url</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.is_connecting"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.is_connecting</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.__init__"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.get_gateway_url"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.get_gateway_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.websocket_init"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.websocket_init()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.buildProtocol"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.buildProtocol()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.startedConnecting"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.startedConnecting()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.reconnect"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.reconnect()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordWebsocketServerFactory.start"><code class="docutils literal notranslate"><span class="pre">DiscordWebsocketServerFactory.start()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient"><code class="docutils literal notranslate"><span class="pre">DiscordClient</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.nextHeartbeatCall"><code class="docutils literal notranslate"><span class="pre">DiscordClient.nextHeartbeatCall</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.pending_heartbeat"><code class="docutils literal notranslate"><span class="pre">DiscordClient.pending_heartbeat</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.heartbeat_interval"><code class="docutils literal notranslate"><span class="pre">DiscordClient.heartbeat_interval</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.last_sequence"><code class="docutils literal notranslate"><span class="pre">DiscordClient.last_sequence</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.session_id"><code class="docutils literal notranslate"><span class="pre">DiscordClient.session_id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.discord_id"><code class="docutils literal notranslate"><span class="pre">DiscordClient.discord_id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.__init__"><code class="docutils literal notranslate"><span class="pre">DiscordClient.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.at_login"><code class="docutils literal notranslate"><span class="pre">DiscordClient.at_login()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.onOpen"><code class="docutils literal notranslate"><span class="pre">DiscordClient.onOpen()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.onMessage"><code class="docutils literal notranslate"><span class="pre">DiscordClient.onMessage()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.onClose"><code class="docutils literal notranslate"><span class="pre">DiscordClient.onClose()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.post_response"><code class="docutils literal notranslate"><span class="pre">DiscordClient.post_response()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.handle_error"><code class="docutils literal notranslate"><span class="pre">DiscordClient.handle_error()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.resume"><code class="docutils literal notranslate"><span class="pre">DiscordClient.resume()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.disconnect"><code class="docutils literal notranslate"><span class="pre">DiscordClient.disconnect()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.identify"><code class="docutils literal notranslate"><span class="pre">DiscordClient.identify()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.connection_ready"><code class="docutils literal notranslate"><span class="pre">DiscordClient.connection_ready()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.doHeartbeat"><code class="docutils literal notranslate"><span class="pre">DiscordClient.doHeartbeat()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.send_channel"><code class="docutils literal notranslate"><span class="pre">DiscordClient.send_channel()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.send_nickname"><code class="docutils literal notranslate"><span class="pre">DiscordClient.send_nickname()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.send_role"><code class="docutils literal notranslate"><span class="pre">DiscordClient.send_role()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.send_default"><code class="docutils literal notranslate"><span class="pre">DiscordClient.send_default()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.discord.DiscordClient.data_in"><code class="docutils literal notranslate"><span class="pre">DiscordClient.data_in()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.server.portal.amp_server.html"
+                          title="previous chapter">evennia.server.portal.amp_server</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.server.portal.grapevine.html"
+                          title="next chapter">evennia.server.portal.grapevine</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.portal.discord.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.grapevine.html" title="evennia.server.portal.grapevine"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.amp_server.html" title="evennia.server.portal.amp_server"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" >evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.discord</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

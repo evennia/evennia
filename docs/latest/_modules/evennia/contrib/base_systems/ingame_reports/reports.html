@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>evennia.contrib.base_systems.ingame_reports.reports &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.ingame_reports.reports</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for evennia.contrib.base_systems.ingame_reports.reports</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">In-Game Reporting System</span>
+
+<span class="sd">This contrib provides an in-game reporting system, with player-facing commands and a staff</span>
+<span class="sd">management interface.</span>
+
+<span class="sd"># Installation</span>
+
+<span class="sd">To install, just add the provided cmdset to your default AccountCmdSet:</span>
+
+<span class="sd">    # in commands/default_cmdset.py</span>
+
+<span class="sd">    from evennia.contrib.base_systems.ingame_reports import ReportsCmdSet</span>
+
+<span class="sd">    class AccountCmdSet(default_cmds.AccountCmdSet):</span>
+<span class="sd">        # ...</span>
+
+<span class="sd">        def at_cmdset_creation(self):</span>
+<span class="sd">            # ...</span>
+<span class="sd">            self.add(ReportsCmdSet)</span>
+
+<span class="sd"># Features</span>
+
+<span class="sd">The contrib provides three commands by default and their associated report types: `CmdBug`, `CmdIdea`,</span>
+<span class="sd">and `CmdReport` (which is for reporting other players).</span>
+
+<span class="sd">The `ReportCmdBase` class holds most of the functionality for creating new reports, providing a</span>
+<span class="sd">convenient parent class for adding your own categories of reports.</span>
+
+<span class="sd">The contrib can be further configured through two settings, `INGAME_REPORT_TYPES` and `INGAME_REPORT_STATUS_TAGS`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">CmdSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.commands.default.muxcommand</span><span class="w"> </span><span class="kn">import</span> <span class="n">MuxCommand</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.comms.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create</span><span class="p">,</span> <span class="n">evmenu</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">search</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">class_from_module</span><span class="p">,</span> <span class="n">datetime_format</span><span class="p">,</span> <span class="n">is_iter</span><span class="p">,</span> <span class="n">iter_to_str</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">menu</span>
+
+<span class="n">_DEFAULT_COMMAND_CLASS</span> <span class="o">=</span> <span class="n">class_from_module</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">COMMAND_DEFAULT_CLASS</span><span class="p">)</span>
+
+<span class="c1"># the default report types</span>
+<span class="n">_REPORT_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;bugs&quot;</span><span class="p">,</span> <span class="s2">&quot;ideas&quot;</span><span class="p">,</span> <span class="s2">&quot;players&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="s2">&quot;INGAME_REPORT_TYPES&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">INGAME_REPORT_TYPES</span><span class="p">):</span>
+        <span class="n">_REPORT_TYPES</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INGAME_REPORT_TYPES</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">log_warn</span><span class="p">(</span>
+            <span class="s2">&quot;The &#39;INGAME_REPORT_TYPES&#39; setting must be an iterable of strings; falling back to defaults.&quot;</span>
+        <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_report_hub</span><span class="p">(</span><span class="n">report_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A helper function to retrieve the global script which acts as the hub for a given report type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        report_type (str):  The category of reports to retrieve the script for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Script or None:  The global script, or None if it couldn&#39;t be retrieved or created</span>
+
+<span class="sd">    Note: If no matching valid script exists, this function will attempt to create it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hub_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">report_type</span><span class="si">}</span><span class="s2">_reports&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLOBAL_SCRIPTS</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">hub</span> <span class="o">:=</span> <span class="n">GLOBAL_SCRIPTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">hub_key</span><span class="p">)):</span>
+        <span class="n">hub</span> <span class="o">=</span> <span class="n">create</span><span class="o">.</span><span class="n">create_script</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">hub_key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hub</span> <span class="ow">or</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="CmdManageReports">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdManageReports">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdManageReports</span><span class="p">(</span><span class="n">_DEFAULT_COMMAND_CLASS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    manage the various reports</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        manage [report type]</span>
+
+<span class="sd">    Available report types:</span>
+<span class="sd">        bugs</span>
+<span class="sd">        ideas</span>
+<span class="sd">        players</span>
+
+<span class="sd">    Initializes a menu for reviewing and changing the status of current reports.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;manage reports&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;manage </span><span class="si">{</span><span class="n">report_type</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">report_type</span> <span class="ow">in</span> <span class="n">_REPORT_TYPES</span><span class="p">)</span>
+    <span class="n">locks</span> <span class="o">=</span> <span class="s2">&quot;cmd:pperm(Admin)&quot;</span>
+
+<div class="viewcode-block" id="CmdManageReports.get_help">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdManageReports.get_help">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">cmdset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a help string containing the configured available report types&quot;&quot;&quot;</span>
+
+        <span class="n">report_types</span> <span class="o">=</span> <span class="n">iter_to_str</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_REPORT_TYPES</span><span class="p">))</span>
+
+        <span class="n">helptext</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">manage the various reports</span>
+
+<span class="s2">Usage:</span>
+<span class="s2">    manage [report type]</span>
+
+<span class="s2">Available report types:</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">report_types</span><span class="si">}</span>
+
+<span class="s2">Initializes a menu for reviewing and changing the status of current reports.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">helptext</span></div>
+
+
+<div class="viewcode-block" id="CmdManageReports.func">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdManageReports.func">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">report_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">report_type</span> <span class="o">==</span> <span class="s2">&quot;reports&quot;</span><span class="p">:</span>
+            <span class="n">report_type</span> <span class="o">=</span> <span class="s2">&quot;players&quot;</span>
+        <span class="k">if</span> <span class="n">report_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_REPORT_TYPES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">report_type</span><span class="si">}</span><span class="s2">&#39; is not a valid report category.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># remove the trailing s, just so everything reads nicer</span>
+        <span class="n">report_type</span> <span class="o">=</span> <span class="n">report_type</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">hub</span> <span class="o">=</span> <span class="n">_get_report_hub</span><span class="p">(</span><span class="n">report_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hub</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You cannot manage that.&quot;</span><span class="p">)</span>
+
+        <span class="n">evmenu</span><span class="o">.</span><span class="n">EvMenu</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">menu</span><span class="p">,</span> <span class="n">startnode</span><span class="o">=</span><span class="s2">&quot;menunode_list_reports&quot;</span><span class="p">,</span> <span class="n">hub</span><span class="o">=</span><span class="n">hub</span><span class="p">,</span> <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ReportCmdBase">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReportCmdBase</span><span class="p">(</span><span class="n">_DEFAULT_COMMAND_CLASS</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A parent class for creating report commands. This help text may be displayed if</span>
+<span class="sd">    your command&#39;s help text is not properly configured.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">help_category</span> <span class="o">=</span> <span class="s2">&quot;reports&quot;</span>
+    <span class="c1"># defines what locks the reports generated by this command will have set</span>
+    <span class="n">report_locks</span> <span class="o">=</span> <span class="s2">&quot;read:pperm(Admin)&quot;</span>
+    <span class="c1"># determines if the report can be filed without a target</span>
+    <span class="n">require_target</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># the message sent to the reporter after the report has been created</span>
+    <span class="n">success_msg</span> <span class="o">=</span> <span class="s2">&quot;Your report has been filed.&quot;</span>
+    <span class="c1"># the report type for this command, if different from the key</span>
+    <span class="n">report_type</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ReportCmdBase.at_pre_cmd">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase.at_pre_cmd">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_pre_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;validate that the needed hub script exists - if not, cancel the command&quot;&quot;&quot;</span>
+        <span class="n">hub</span> <span class="o">=</span> <span class="n">_get_report_hub</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_type</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hub</span><span class="p">:</span>
+            <span class="c1"># a return value of True from `at_pre_cmd` cancels the command</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hub</span> <span class="o">=</span> <span class="n">hub</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_pre_cmd</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ReportCmdBase.parse">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase.parse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the target and message out of the arguments.</span>
+
+<span class="sd">        Override if you want different syntax, but make sure to assign `report_message` and `target_str`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># do the base MuxCommand parsing first</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="c1"># split out the report message and target strings</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lhs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ReportCmdBase.target_search">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase.target_search">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchterm</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search for a target that matches the given search term. By default, does a normal search via the</span>
+<span class="sd">        caller - a local object search for a Character, or an account search for an Account.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            searchterm (str) - The string to search for</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (Object, Account, or None) - the result of the search</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">searchterm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReportCmdBase.create_report">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase.create_report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the report. By default, this creates a Msg with any provided args and kwargs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            success (bool) - True if the report was created successfully, or False if there was an issue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">create</span><span class="o">.</span><span class="n">create_message</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReportCmdBase.func">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportCmdBase.func">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">hub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hub</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must provide a message.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_str</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_str</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">target</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">require_target</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You must include a target.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">receivers</span> <span class="o">=</span> <span class="p">[</span><span class="n">hub</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">target</span><span class="p">:</span>
+            <span class="n">receivers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_report</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report_message</span><span class="p">,</span>
+            <span class="n">receivers</span><span class="o">=</span><span class="n">receivers</span><span class="p">,</span>
+            <span class="n">locks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">report_locks</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;report&quot;</span><span class="p">],</span>
+        <span class="p">):</span>
+            <span class="c1"># the report Msg was successfully created</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">success_msg</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># something went wrong</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                <span class="s2">&quot;Something went wrong creating your report. Please try again later or contact staff directly.&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># The commands below are the usable reporting commands</span>
+
+
+<div class="viewcode-block" id="CmdBug">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdBug">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdBug</span><span class="p">(</span><span class="n">ReportCmdBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    file a bug</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        bug [&lt;target&gt; =] &lt;message&gt;</span>
+
+<span class="sd">    Note: If a specific object, location or character is bugged, please target it for the report.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        bug hammer = This doesn&#39;t work as a crafting tool but it should</span>
+<span class="sd">        bug every time I go through a door I get the message twice</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;bug&quot;</span>
+    <span class="n">report_locks</span> <span class="o">=</span> <span class="s2">&quot;read:pperm(Developer)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="CmdReport">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdReport">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdReport</span><span class="p">(</span><span class="n">ReportCmdBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    report a player</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        report &lt;player&gt; = &lt;message&gt;</span>
+
+<span class="sd">    All player reports will be reviewed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;report&quot;</span>
+    <span class="n">report_type</span> <span class="o">=</span> <span class="s2">&quot;player&quot;</span>
+    <span class="n">require_target</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">account_caller</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="CmdIdea">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdIdea">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CmdIdea</span><span class="p">(</span><span class="n">ReportCmdBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    submit a suggestion</span>
+
+<span class="sd">    Usage:</span>
+<span class="sd">        ideas</span>
+<span class="sd">        idea &lt;message&gt;</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        idea wouldn&#39;t it be cool if we had horses we could ride</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;idea&quot;</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ideas&quot;</span><span class="p">,)</span>
+    <span class="n">report_locks</span> <span class="o">=</span> <span class="s2">&quot;read:pperm(Builder)&quot;</span>
+    <span class="n">success_msg</span> <span class="o">=</span> <span class="s2">&quot;Thank you for your suggestion!&quot;</span>
+
+<div class="viewcode-block" id="CmdIdea.func">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.CmdIdea.func">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># we add an extra feature to this command, allowing you to see all your submitted ideas</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdstring</span> <span class="o">==</span> <span class="s2">&quot;ideas&quot;</span><span class="p">:</span>
+            <span class="c1"># list your ideas</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">ideas</span> <span class="o">:=</span> <span class="n">Msg</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">search_message</span><span class="p">(</span><span class="n">sender</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="n">receiver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hub</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">&quot;-db_date_created&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">db_tags__db_key</span><span class="o">=</span><span class="s2">&quot;closed&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># todo: use a paginated menu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span>
+                    <span class="s2">&quot;Ideas you&#39;ve submitted:</span><span class="se">\n</span><span class="s2">  &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;|w</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">|n (submitted </span><span class="si">{</span><span class="n">datetime_format</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">date_created</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ideas</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;You have no open suggestions.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># proceed to do the normal report-command functionality</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">func</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ReportsCmdSet">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportsCmdSet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReportsCmdSet</span><span class="p">(</span><span class="n">CmdSet</span><span class="p">):</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;Reports CmdSet&quot;</span>
+
+<div class="viewcode-block" id="ReportsCmdSet.at_cmdset_creation">
+<a class="viewcode-back" href="../../../../../api/evennia.contrib.base_systems.ingame_reports.reports.html#evennia.contrib.base_systems.ingame_reports.reports.ReportsCmdSet.at_cmdset_creation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_cmdset_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">at_cmdset_creation</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;bugs&quot;</span> <span class="ow">in</span> <span class="n">_REPORT_TYPES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdBug</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;ideas&quot;</span> <span class="ow">in</span> <span class="n">_REPORT_TYPES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdIdea</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;players&quot;</span> <span class="ow">in</span> <span class="n">_REPORT_TYPES</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdReport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">CmdManageReports</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../../../../evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.ingame_reports.reports</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
