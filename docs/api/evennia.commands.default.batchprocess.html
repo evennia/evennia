@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.commands.default.batchprocess &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.commands.default.building" href="evennia.commands.default.building.html" />
+    <link rel="prev" title="evennia.commands.default.admin" href="evennia.commands.default.admin.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.building.html" title="evennia.commands.default.building"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.admin.html" title="evennia.commands.default.admin"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.commands.html" >evennia.commands</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.commands.default.html" accesskey="U">evennia.commands.default</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.batchprocess</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.commands.default.batchprocess">
+<span id="evennia-commands-default-batchprocess"></span><h1>evennia.commands.default.batchprocess<a class="headerlink" href="#module-evennia.commands.default.batchprocess" title="Link to this heading">¶</a></h1>
+<p>Batch processors</p>
+<p>These commands implements the ‘batch-command’ and ‘batch-code’
+processors, using the functionality in evennia.utils.batchprocessors.
+They allow for offline world-building.</p>
+<p>Batch-command is the simpler system. This reads a file (<a href="#id1"><span class="problematic" id="id2">*</span></a>.ev)
+containing a list of in-game commands and executes them in sequence as
+if they had been entered in the game (including permission checks
+etc).</p>
+<p>Batch-code is a full-fledged python code interpreter that reads blocks
+of python code (<a href="#id3"><span class="problematic" id="id4">*</span></a>.py) and executes them in sequence. This allows for
+much more power than Batch-command, but requires knowing Python and
+the Evennia API.  It is also a severe security risk and should
+therefore always be limited to superusers only.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdBatchCommands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCommands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>build from batch-command file</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>batchcommands[/interactive] &lt;python.path.to.file&gt;</p>
+</dd>
+<dt>Switch:</dt><dd><dl class="simple">
+<dt>interactive - this mode will offer more control when</dt><dd><p>executing the batch file, like stepping,
+skipping, reloading etc.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Runs batches of commands from a batch-cmd text file (<a href="#id5"><span class="problematic" id="id6">*</span></a>.ev).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchcommands'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['batchcmd',</span> <span class="pre">'batchcommand']</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.switch_options">
+<span class="sig-name descname"><span class="pre">switch_options</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('interactive',)</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.switch_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'building'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCommands.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.func" title="Link to this definition">¶</a></dt>
+<dd><p>Starts the processor.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCommands.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'batchcmd</span> <span class="pre">batchcommand',</span> <span class="pre">'category':</span> <span class="pre">'building',</span> <span class="pre">'key':</span> <span class="pre">'batchcommands',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">batchcmd</span> <span class="pre">batchcommand',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nbuild</span> <span class="pre">from</span> <span class="pre">batch-command</span> <span class="pre">file\n\nUsage:\n</span> <span class="pre">batchcommands[/interactive]</span> <span class="pre">&lt;python.path.to.file&gt;\n\nSwitch:\n</span>&#160;&#160; <span class="pre">interactive</span> <span class="pre">-</span> <span class="pre">this</span> <span class="pre">mode</span> <span class="pre">will</span> <span class="pre">offer</span> <span class="pre">more</span> <span class="pre">control</span> <span class="pre">when\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">executing</span> <span class="pre">the</span> <span class="pre">batch</span> <span class="pre">file,</span> <span class="pre">like</span> <span class="pre">stepping,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">skipping,</span> <span class="pre">reloading</span> <span class="pre">etc.\n\nRuns</span> <span class="pre">batches</span> <span class="pre">of</span> <span class="pre">commands</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">batch-cmd</span> <span class="pre">text</span> <span class="pre">file</span> <span class="pre">(*.ev).\n\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCommands.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdBatchCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>build from batch-code file</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>batchcode[/interactive] &lt;python path to file&gt;</p>
+</dd>
+<dt>Switch:</dt><dd><dl class="simple">
+<dt>interactive - this mode will offer more control when</dt><dd><p>executing the batch file, like stepping,
+skipping, reloading etc.</p>
+</dd>
+<dt>debug - auto-delete all objects that has been marked as</dt><dd><p>deletable in the script file (see example files for
+syntax). This is useful so as to to not leave multiple
+object copies behind when testing out the script.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Runs batches of commands from a batch-code text file (<a href="#id7"><span class="problematic" id="id8">*</span></a>.py).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchcode'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['batchcodes']</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.switch_options">
+<span class="sig-name descname"><span class="pre">switch_options</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('interactive',</span> <span class="pre">'debug')</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.switch_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:superuser()'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'building'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdBatchCode.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.func" title="Link to this definition">¶</a></dt>
+<dd><p>Starts the processor.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:superuser()'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdBatchCode.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'batchcodes',</span> <span class="pre">'category':</span> <span class="pre">'building',</span> <span class="pre">'key':</span> <span class="pre">'batchcode',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">batchcodes',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nbuild</span> <span class="pre">from</span> <span class="pre">batch-code</span> <span class="pre">file\n\nUsage:\n</span> <span class="pre">batchcode[/interactive]</span> <span class="pre">&lt;python</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">file&gt;\n\nSwitch:\n</span>&#160;&#160; <span class="pre">interactive</span> <span class="pre">-</span> <span class="pre">this</span> <span class="pre">mode</span> <span class="pre">will</span> <span class="pre">offer</span> <span class="pre">more</span> <span class="pre">control</span> <span class="pre">when\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">executing</span> <span class="pre">the</span> <span class="pre">batch</span> <span class="pre">file,</span> <span class="pre">like</span> <span class="pre">stepping,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">skipping,</span> <span class="pre">reloading</span> <span class="pre">etc.\n</span>&#160;&#160; <span class="pre">debug</span> <span class="pre">-</span> <span class="pre">auto-delete</span> <span class="pre">all</span> <span class="pre">objects</span> <span class="pre">that</span> <span class="pre">has</span> <span class="pre">been</span> <span class="pre">marked</span> <span class="pre">as\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">deletable</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">script</span> <span class="pre">file</span> <span class="pre">(see</span> <span class="pre">example</span> <span class="pre">files</span> <span class="pre">for\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">syntax).</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">useful</span> <span class="pre">so</span> <span class="pre">as</span> <span class="pre">to</span> <span class="pre">to</span> <span class="pre">not</span> <span class="pre">leave</span> <span class="pre">multiple\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">object</span> <span class="pre">copies</span> <span class="pre">behind</span> <span class="pre">when</span> <span class="pre">testing</span> <span class="pre">out</span> <span class="pre">the</span> <span class="pre">script.\n\nRuns</span> <span class="pre">batches</span> <span class="pre">of</span> <span class="pre">commands</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">batch-code</span> <span class="pre">text</span> <span class="pre">file</span> <span class="pre">(*.py).\n\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdBatchCode.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchInteractiveCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">BatchInteractiveCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#BatchInteractiveCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>The cmdset for the interactive batch processor mode.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchInteractiveCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Batch_interactive'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchInteractiveCmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">104</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchInteractiveCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#BatchInteractiveCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>init the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchInteractiveCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.commands.default.batchprocess.BatchInteractiveCmdSet'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchSafeCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">BatchSafeCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#BatchSafeCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>The base cmdset for the batch processor.
+This sets a ‘safe’ abort command that will
+always be available to get out of everything.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchSafeCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Batch_default'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchSafeCmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchSafeCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#BatchSafeCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Init the cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.BatchSafeCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.commands.default.batchprocess.BatchSafeCmdSet'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class describes a unique cmdset that understands priorities.
+CmdSets can be merged and made to perform various set operations
+on each other.  CmdSets have priorities that affect which of their
+ingoing commands gets used.</p>
+<p>In the examples, cmdset A always have higher priority than cmdset B.</p>
+<p>key - the name of the cmdset. This can be used on its own for game
+operations</p>
+<p>mergetype (partly from Set theory):</p>
+<blockquote>
+<div><dl>
+<dt>Union -    The two command sets are merged so that as many</dt><dd><p>commands as possible of each cmdset ends up in the
+merged cmdset. Same-name commands are merged by
+priority.  This is the most common default.
+Ex: A1,A3 + B1,B2,B4,B5 = A1,B2,A3,B4,B5</p>
+</dd>
+<dt>Intersect - Only commands found in <em>both</em> cmdsets</dt><dd><p>(i.e. which have same names) end up in the merged
+cmdset, with the higher-priority cmdset replacing the
+lower one.  Ex: A1,A3 + B1,B2,B4,B5 = A1</p>
+</dd>
+<dt>Replace -   The commands of this cmdset completely replaces</dt><dd><p>the lower-priority cmdset’s commands, regardless
+of if same-name commands exist.
+Ex: A1,A3 + B1,B2,B4,B5 = A1,A3</p>
+</dd>
+<dt>Remove -    This removes the relevant commands from the</dt><dd><blockquote>
+<div><p>lower-priority cmdset completely.  They are not
+replaced with anything, so this in effects uses the
+high-priority cmdset as a filter to affect the
+low-priority cmdset.
+Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Note: Commands longer than 2 characters and starting</dt><dd><p>with double underscrores, like ‘__noinput_command’
+are considered ‘system commands’ and are
+excempt from all merge operations - they are
+ALWAYS included across mergers and only affected
+if same-named system commands replace them.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>priority- All cmdsets are always merged in pairs of two so that</dt><dd><p>the higher set’s mergetype is applied to the
+lower-priority cmdset. Default commands have priority 0,
+high-priority ones like Exits and Channels have 10 and 9.
+Priorities can be negative as well to give default
+commands preference.</p>
+</dd>
+<dt>duplicates - determines what happens when two sets of equal</dt><dd><blockquote>
+<div><p>priority merge (only). Defaults to None and has the first of them in the
+merger (i.e. A above) automatically taking
+precedence. But if <strong>duplicates</strong> is true, the
+result will be a merger with more than one of each
+name match.  This will usually lead to the account
+receiving a multiple-match error higher up the road,
+but can be good for things like cmdsets on non-account
+objects in a room, to allow the system to warn that
+more than one ‘ball’ in the room has the same ‘kick’
+command defined on it, so it may offer a chance to
+select which ball to kick …  Allowing duplicates
+only makes sense for Union and Intersect, the setting
+is ignored for the other mergetypes.
+Note that the <strong>duplicates</strong> flag is <em>not</em> propagated in
+a cmdset merger. So <strong>A + B = C</strong> will result in
+a cmdset with duplicate commands, but C.duplicates will
+be <strong>None</strong>. For duplication to apply to a whole cmdset
+stack merge, _all_ cmdsets in the stack must have
+<strong>.duplicates=True</strong> set.</p>
+</div></blockquote>
+<p>Finally, if a final cmdset has <strong>.duplicates=None</strong> (the normal
+unless created alone with another value), the cmdhandler
+will assume True for object-based cmdsets and False for
+all other. This is usually the most intuitive outcome.</p>
+</dd>
+<dt>key_mergetype (dict) - allows the cmdset to define a unique</dt><dd><p>mergetype for particular cmdsets.  Format is
+{CmdSetkeystring:mergetype}. Priorities still apply.
+Example: {‘Myevilcmdset’,’Replace’} which would make
+sure for this set to always use ‘Replace’ on
+Myevilcmdset no matter what overall mergetype this set
+has.</p>
+</dd>
+<dt>no_objs  - don’t include any commands from nearby objects</dt><dd><p>when searching for suitable commands</p>
+</dd>
+<dt>no_exits  - ignore the names of exits when matching against</dt><dd><p>commands</p>
+</dd>
+<dt>no_channels   - ignore the name of channels when matching against</dt><dd><p>commands (WARNING- this is dangerous since the
+account can then not even ask staff for help if
+something goes wrong)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new CmdSet instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdsetobj</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>Account</em><em>, </em><em>Object</em><em>, </em><em>optional</em>) – This is the database object
+to which this particular instance of cmdset is related. It
+is often a character but may also be a regular object, Account
+or Session.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The idenfier for this cmdset. This
+helps if wanting to selectively remov cmdsets.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add a new command or commands to this CmdSet, a list of
+commands or a cmdset to this cmdset. Note that this is <em>not</em>
+a merge operation (that is handled by the + operator).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><em>list</em><em>, </em><em>Cmdset</em>) – This allows for adding one or
+more commands to this Cmdset in one go. If another Cmdset
+is given, all its commands will be added.</p></li>
+<li><p><strong>allow_duplicates</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will not try to remove
+duplicate cmds in the set. This is needed during the merge process
+to avoid wiping commands coming from cmdsets with duplicate=True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If cmd already exists in set, it will replace the old one
+(no priority checking etc happens here). This is very useful
+when overloading default commands).</p>
+<p>If cmd is another cmdset class or -instance, the commands of
+that command set is added to this one, as if they were part of
+the original cmdset definition. No merging or priority checks
+are made, rather later added commands will simply replace
+existing ones to make a unique set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.count" title="Link to this definition">¶</a></dt>
+<dd><p>Number of commands in set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>N (int)</em> – Number of commands in this Cmdset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.duplicates">
+<span class="sig-name descname"><span class="pre">duplicates</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.duplicates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.errmessage">
+<span class="sig-name descname"><span class="pre">errmessage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.errmessage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get a command from the cmdset. This is mostly useful to
+check if the command is part of this cmdset or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em> or </em><em>str</em>) – Either the Command object or its key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>cmd (Command)</em> – The first matching Command in the set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.get_all_cmd_keys_and_aliases">
+<span class="sig-name descname"><span class="pre">get_all_cmd_keys_and_aliases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get_all_cmd_keys_and_aliases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.get_all_cmd_keys_and_aliases" title="Link to this definition">¶</a></dt>
+<dd><p>Collects keys/aliases from commands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>Object</em><em>, </em><em>optional</em>) – If set, this is used to check access permissions
+on each command. Only commands that pass are returned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>names (list)</em> –</p>
+<dl class="simple">
+<dt>A list of all command keys and aliases in this cmdset. If <strong>caller</strong></dt><dd><p>was given, this list will only contain commands to which <strong>caller</strong> passed
+the <strong>call</strong> locktype check.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.get_system_cmds">
+<span class="sig-name descname"><span class="pre">get_system_cmds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get_system_cmds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.get_system_cmds" title="Link to this definition">¶</a></dt>
+<dd><p>Get system commands in cmdset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>sys_cmds (list)</em> – The system commands in the set.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>As far as the Cmdset is concerned, system commands are any
+commands with a key starting with double underscore __.
+These are excempt from merge operations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Unnamed</span> <span class="pre">CmdSet'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.key_mergetypes">
+<span class="sig-name descname"><span class="pre">key_mergetypes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.key_mergetypes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.make_unique">
+<span class="sig-name descname"><span class="pre">make_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.make_unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.make_unique" title="Link to this definition">¶</a></dt>
+<dd><p>Remove duplicate command-keys (unsafe)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>object</em>) – Commands on this object will
+get preference in the duplicate removal.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is an unsafe command meant to clean out a cmdset of
+doublet commands after it has been created. It is useful
+for commands inheriting cmdsets from the cmdhandler where
+obj-based cmdsets always are added double. Doublets will
+be weeded out with preference to commands defined on
+caller, otherwise just by first-come-first-served.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.mergetype">
+<span class="sig-name descname"><span class="pre">mergetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Union'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.mergetype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.no_channels">
+<span class="sig-name descname"><span class="pre">no_channels</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.no_channels" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.no_exits">
+<span class="sig-name descname"><span class="pre">no_exits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.no_exits" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.no_objs">
+<span class="sig-name descname"><span class="pre">no_objs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.no_objs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.commands.cmdset.CmdSet'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.persistent">
+<span class="sig-name descname"><span class="pre">persistent</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.persistent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a command instance from the cmdset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em> or </em><em>str</em>) – Either the Command object to remove
+or the key of such a command.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdSet.to_duplicate">
+<span class="sig-name descname"><span class="pre">to_duplicate</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('key',</span> <span class="pre">'cmdsetobj',</span> <span class="pre">'no_exits',</span> <span class="pre">'no_objs',</span> <span class="pre">'no_channels',</span> <span class="pre">'persistent',</span> <span class="pre">'mergetype',</span> <span class="pre">'priority',</span> <span class="pre">'duplicates',</span> <span class="pre">'errmessage')</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdSet.to_duplicate" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateAbort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateAbort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>abort</p>
+<p>This is a safety feature. It force-ejects us out of the processor and to
+the default cmdset, regardless of what current cmdset the processor might
+have put us in (e.g. when testing buggy scripts etc).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'abort'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateAbort.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.func" title="Link to this definition">¶</a></dt>
+<dd><p>Exit back to default.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateAbort.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'abort',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nabort\n\nThis</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">safety</span> <span class="pre">feature.</span> <span class="pre">It</span> <span class="pre">force-ejects</span> <span class="pre">us</span> <span class="pre">out</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">processor</span> <span class="pre">and</span> <span class="pre">to\nthe</span> <span class="pre">default</span> <span class="pre">cmdset,</span> <span class="pre">regardless</span> <span class="pre">of</span> <span class="pre">what</span> <span class="pre">current</span> <span class="pre">cmdset</span> <span class="pre">the</span> <span class="pre">processor</span> <span class="pre">might\nhave</span> <span class="pre">put</span> <span class="pre">us</span> <span class="pre">in</span> <span class="pre">(e.g.</span> <span class="pre">when</span> <span class="pre">testing</span> <span class="pre">buggy</span> <span class="pre">scripts</span> <span class="pre">etc).\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateAbort.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateBB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateBB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>bb</p>
+<p>Backwards to previous command. No commands
+are executed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bb'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateBB.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBB.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'bb',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nbb\n\nBackwards</span> <span class="pre">to</span> <span class="pre">previous</span> <span class="pre">command.</span> <span class="pre">No</span> <span class="pre">commands\nare</span> <span class="pre">executed.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBB.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateBL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateBL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>bl</p>
+<p>Backwards to previous command, viewing its full
+source. No commands are executed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bl'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateBL.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateBL.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'bl',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nbl\n\nBackwards</span> <span class="pre">to</span> <span class="pre">previous</span> <span class="pre">command,</span> <span class="pre">viewing</span> <span class="pre">its</span> <span class="pre">full\nsource.</span> <span class="pre">No</span> <span class="pre">commands</span> <span class="pre">are</span> <span class="pre">executed.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateBL.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateCC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateCC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>cc</p>
+<p>Continue to process all remaining
+commands.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cc'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateCC.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateCC.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'cc',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\ncc\n\nContinue</span> <span class="pre">to</span> <span class="pre">process</span> <span class="pre">all</span> <span class="pre">remaining\ncommands.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateCC.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateHH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateHH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Help command</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'hh'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateHH.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateHH.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'hh',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'Help</span> <span class="pre">command'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateHH.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateJJ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateJJ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>jj &lt;command number&gt;</p>
+<p>Jump to specific command number</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'jj'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateJJ.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJJ.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'jj',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\njj</span> <span class="pre">&lt;command</span> <span class="pre">number&gt;\n\nJump</span> <span class="pre">to</span> <span class="pre">specific</span> <span class="pre">command</span> <span class="pre">number\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJJ.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateJL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateJL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>jl &lt;command number&gt;</p>
+<p>Jump to specific command number and view its full source.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'jl'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateJL.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateJL.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'jl',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\njl</span> <span class="pre">&lt;command</span> <span class="pre">number&gt;\n\nJump</span> <span class="pre">to</span> <span class="pre">specific</span> <span class="pre">command</span> <span class="pre">number</span> <span class="pre">and</span> <span class="pre">view</span> <span class="pre">its</span> <span class="pre">full</span> <span class="pre">source.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateJL.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateLL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateLL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>ll</p>
+<p>Look at the full source for the current
+command definition.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ll'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateLL.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateLL.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'ll',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nll\n\nLook</span> <span class="pre">at</span> <span class="pre">the</span> <span class="pre">full</span> <span class="pre">source</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">current\ncommand</span> <span class="pre">definition.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateLL.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateNL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateNL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>nl</p>
+<p>Go to next command, viewing its full source.
+No commands are executed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nl'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateNL.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNL.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'nl',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nnl\n\nGo</span> <span class="pre">to</span> <span class="pre">next</span> <span class="pre">command,</span> <span class="pre">viewing</span> <span class="pre">its</span> <span class="pre">full</span> <span class="pre">source.\nNo</span> <span class="pre">commands</span> <span class="pre">are</span> <span class="pre">executed.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNL.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>nn</p>
+<p>Go to next command. No commands are executed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nn'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateNN.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateNN.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'nn',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nnn\n\nGo</span> <span class="pre">to</span> <span class="pre">next</span> <span class="pre">command.</span> <span class="pre">No</span> <span class="pre">commands</span> <span class="pre">are</span> <span class="pre">executed.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateNN.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStatePP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStatePP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>pp</p>
+<p>Process the currently shown command definition.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pp'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStatePP.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.func" title="Link to this definition">¶</a></dt>
+<dd><p>This checks which type of processor we are running.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStatePP.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'pp',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\npp\n\nProcess</span> <span class="pre">the</span> <span class="pre">currently</span> <span class="pre">shown</span> <span class="pre">command</span> <span class="pre">definition.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStatePP.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateQQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateQQ"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>qq</p>
+<p>Quit the batchprocessor.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'qq'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateQQ.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateQQ.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'qq',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nqq\n\nQuit</span> <span class="pre">the</span> <span class="pre">batchprocessor.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateQQ.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateRR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateRR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>rr</p>
+<p>Reload the batch file, keeping the current
+position in it.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rr'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateRR.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRR.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'rr',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nrr\n\nReload</span> <span class="pre">the</span> <span class="pre">batch</span> <span class="pre">file,</span> <span class="pre">keeping</span> <span class="pre">the</span> <span class="pre">current\nposition</span> <span class="pre">in</span> <span class="pre">it.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRR.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateRRR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateRRR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>rrr</p>
+<p>Reload the batch file, starting over
+from the beginning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rrr'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateRRR.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateRRR.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'rrr',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nrrr\n\nReload</span> <span class="pre">the</span> <span class="pre">batch</span> <span class="pre">file,</span> <span class="pre">starting</span> <span class="pre">over\nfrom</span> <span class="pre">the</span> <span class="pre">beginning.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateRRR.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateSL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateSL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>sl [steps]</p>
+<p>Process current command, then step to the next
+one, viewing its full source. If steps is given,
+process this many commands.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sl'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateSL.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSL.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'sl',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nsl</span> <span class="pre">[steps]\n\nProcess</span> <span class="pre">current</span> <span class="pre">command,</span> <span class="pre">then</span> <span class="pre">step</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">next\none,</span> <span class="pre">viewing</span> <span class="pre">its</span> <span class="pre">full</span> <span class="pre">source.</span> <span class="pre">If</span> <span class="pre">steps</span> <span class="pre">is</span> <span class="pre">given,\nprocess</span> <span class="pre">this</span> <span class="pre">many</span> <span class="pre">commands.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSL.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">CmdStateSS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateSS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>ss [steps]</p>
+<p>Process current command, then step to the next
+one. If steps is given,
+process this many commands.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ss'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'batchprocess'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#CmdStateSS.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(batchcommands)</span> <span class="pre">or</span> <span class="pre">perm(Developer)'</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.CmdStateSS.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'batchprocess',</span> <span class="pre">'key':</span> <span class="pre">'ss',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nss</span> <span class="pre">[steps]\n\nProcess</span> <span class="pre">current</span> <span class="pre">command,</span> <span class="pre">then</span> <span class="pre">step</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">next\none.</span> <span class="pre">If</span> <span class="pre">steps</span> <span class="pre">is</span> <span class="pre">given,\nprocess</span> <span class="pre">this</span> <span class="pre">many</span> <span class="pre">commands.\n'}</span></em><a class="headerlink" href="#evennia.commands.default.batchprocess.CmdStateSS.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.batch_cmd_exec">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">batch_cmd_exec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#batch_cmd_exec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.batch_cmd_exec" title="Link to this definition">¶</a></dt>
+<dd><p>Helper function for executing a single batch-command entry</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.batch_code_exec">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">batch_code_exec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#batch_code_exec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.batch_code_exec" title="Link to this definition">¶</a></dt>
+<dd><p>Helper function for executing a single batch-code entry</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.format_code">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">format_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#format_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.format_code" title="Link to this definition">¶</a></dt>
+<dd><p>Formats the viewing of code and errors</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.format_header">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">format_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#format_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.format_header" title="Link to this definition">¶</a></dt>
+<dd><p>Formats a header</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.purge_processor">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">purge_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#purge_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.purge_processor" title="Link to this definition">¶</a></dt>
+<dd><p>This purges all effects running
+on the caller.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.show_curr">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">show_curr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">showall</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#show_curr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.show_curr" title="Link to this definition">¶</a></dt>
+<dd><p>Show the current position in stack</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.commands.default.batchprocess.step_pointer">
+<span class="sig-prename descclassname"><span class="pre">evennia.commands.default.batchprocess.</span></span><span class="sig-name descname"><span class="pre">step_pointer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/batchprocess.html#step_pointer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.commands.default.batchprocess.step_pointer" title="Link to this definition">¶</a></dt>
+<dd><p>Step in stack, returning the item located.</p>
+<p>stackptr - current position in stack
+stack - the stack of units
+step - how many steps to move from stackptr</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.commands.default.batchprocess</a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.key"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.aliases"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.switch_options"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.switch_options</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.locks"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.help_category"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.func"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCommands.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdBatchCommands.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.key"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.aliases"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.switch_options"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.switch_options</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.locks"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.help_category"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.func"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdBatchCode.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdBatchCode.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet"><code class="docutils literal notranslate"><span class="pre">BatchInteractiveCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BatchInteractiveCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">BatchInteractiveCmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BatchInteractiveCmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchInteractiveCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BatchInteractiveCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet"><code class="docutils literal notranslate"><span class="pre">BatchSafeCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BatchSafeCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">BatchSafeCmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BatchSafeCmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.BatchSafeCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BatchSafeCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet"><code class="docutils literal notranslate"><span class="pre">CmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.__init__"><code class="docutils literal notranslate"><span class="pre">CmdSet.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.add"><code class="docutils literal notranslate"><span class="pre">CmdSet.add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.count"><code class="docutils literal notranslate"><span class="pre">CmdSet.count()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.duplicates"><code class="docutils literal notranslate"><span class="pre">CmdSet.duplicates</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.errmessage"><code class="docutils literal notranslate"><span class="pre">CmdSet.errmessage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.get"><code class="docutils literal notranslate"><span class="pre">CmdSet.get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.get_all_cmd_keys_and_aliases"><code class="docutils literal notranslate"><span class="pre">CmdSet.get_all_cmd_keys_and_aliases()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.get_system_cmds"><code class="docutils literal notranslate"><span class="pre">CmdSet.get_system_cmds()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.key"><code class="docutils literal notranslate"><span class="pre">CmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.key_mergetypes"><code class="docutils literal notranslate"><span class="pre">CmdSet.key_mergetypes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.make_unique"><code class="docutils literal notranslate"><span class="pre">CmdSet.make_unique()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">CmdSet.mergetype</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.no_channels"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_channels</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.no_exits"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_exits</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.no_objs"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_objs</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.path"><code class="docutils literal notranslate"><span class="pre">CmdSet.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.persistent"><code class="docutils literal notranslate"><span class="pre">CmdSet.persistent</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.priority"><code class="docutils literal notranslate"><span class="pre">CmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.remove"><code class="docutils literal notranslate"><span class="pre">CmdSet.remove()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdSet.to_duplicate"><code class="docutils literal notranslate"><span class="pre">CmdSet.to_duplicate</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.key"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.func"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateAbort.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateAbort.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB"><code class="docutils literal notranslate"><span class="pre">CmdStateBB</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.key"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.func"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBB.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateBB.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL"><code class="docutils literal notranslate"><span class="pre">CmdStateBL</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.key"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.func"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateBL.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateBL.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC"><code class="docutils literal notranslate"><span class="pre">CmdStateCC</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.key"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.func"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateCC.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateCC.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH"><code class="docutils literal notranslate"><span class="pre">CmdStateHH</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.key"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.func"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateHH.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateHH.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.key"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.func"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJJ.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateJJ.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL"><code class="docutils literal notranslate"><span class="pre">CmdStateJL</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.key"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.func"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateJL.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateJL.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL"><code class="docutils literal notranslate"><span class="pre">CmdStateLL</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.key"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.func"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateLL.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateLL.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL"><code class="docutils literal notranslate"><span class="pre">CmdStateNL</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.key"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.func"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNL.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateNL.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN"><code class="docutils literal notranslate"><span class="pre">CmdStateNN</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.key"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.func"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateNN.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateNN.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP"><code class="docutils literal notranslate"><span class="pre">CmdStatePP</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.key"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.locks"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.func"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStatePP.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStatePP.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.key"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.func"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateQQ.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateQQ.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR"><code class="docutils literal notranslate"><span class="pre">CmdStateRR</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.key"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.func"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRR.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateRR.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.key"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.func"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateRRR.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateRRR.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL"><code class="docutils literal notranslate"><span class="pre">CmdStateSL</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.key"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.func"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSL.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateSL.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS"><code class="docutils literal notranslate"><span class="pre">CmdStateSS</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.key"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.locks"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.func"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.CmdStateSS.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStateSS.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.batch_cmd_exec"><code class="docutils literal notranslate"><span class="pre">batch_cmd_exec()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.batch_code_exec"><code class="docutils literal notranslate"><span class="pre">batch_code_exec()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.format_code"><code class="docutils literal notranslate"><span class="pre">format_code()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.format_header"><code class="docutils literal notranslate"><span class="pre">format_header()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.purge_processor"><code class="docutils literal notranslate"><span class="pre">purge_processor()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.show_curr"><code class="docutils literal notranslate"><span class="pre">show_curr()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.commands.default.batchprocess.step_pointer"><code class="docutils literal notranslate"><span class="pre">step_pointer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.commands.default.admin.html"
+                          title="previous chapter">evennia.commands.default.admin</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.commands.default.building.html"
+                          title="next chapter">evennia.commands.default.building</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.commands.default.batchprocess.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.building.html" title="evennia.commands.default.building"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.commands.default.admin.html" title="evennia.commands.default.admin"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.commands.html" >evennia.commands</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.commands.default.html" >evennia.commands.default</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.commands.default.batchprocess</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

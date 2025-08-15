@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.base_systems.email_login.email_login &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.base_systems.email_login.tests" href="evennia.contrib.base_systems.email_login.tests.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.email_login.connection_screens" href="evennia.contrib.base_systems.email_login.connection_screens.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.tests.html" title="evennia.contrib.base_systems.email_login.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.connection_screens.html" title="evennia.contrib.base_systems.email_login.connection_screens"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.email_login.html" accesskey="U">evennia.contrib.base_systems.email_login</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.email_login.email_login</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.base_systems.email_login.email_login">
+<span id="evennia-contrib-base-systems-email-login-email-login"></span><h1>evennia.contrib.base_systems.email_login.email_login<a class="headerlink" href="#module-evennia.contrib.base_systems.email_login.email_login" title="Link to this heading">¶</a></h1>
+<p>Email-based login system</p>
+<p>Evennia contrib - Griatch 2012</p>
+<p>This is a variant of the login system that requires an email-address
+instead of a username to login.</p>
+<p>This used to be the default Evennia login before replacing it with a
+more standard username + password system (having to supply an email
+for some reason caused a lot of confusion when people wanted to expand
+on it. The email is not strictly needed internally, nor is any
+confirmation email sent out anyway).</p>
+<p>Installation is simple:</p>
+<p>To your settings file, add/edit settings as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CMDSET_UNLOGGEDIN</span> <span class="o">=</span> <span class="s2">&quot;contrib.base_systems.email_login.email_login.UnloggedinCmdSet&quot;</span>
+<span class="n">CONNECTION_SCREEN_MODULE</span> <span class="o">=</span> <span class="s2">&quot;contrib.base_systems.email_login.connection_screens&quot;</span>
+</pre></div>
+</div>
+<p>That’s it. Reload the server and try to log in to see it.</p>
+<p>The initial login “graphic” will still not mention email addresses
+after this change. The login splashscreen is taken from strings in
+the module given by settings.CONNECTION_SCREEN_MODULE.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">CmdUnconnectedConnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedConnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Connect to the game.</p>
+<dl class="simple">
+<dt>Usage (at login screen):</dt><dd><p>connect &lt;email&gt; &lt;password&gt;</p>
+</dd>
+</dl>
+<p>Use the create command to first create an account before logging in.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'connect'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['co',</span> <span class="pre">'conn',</span> <span class="pre">'con']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedConnect.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.func" title="Link to this definition">¶</a></dt>
+<dd><p>Uses the Django admin api. Note that unlogged-in commands
+have a unique position in that their <strong>func()</strong> receives
+a session object instead of a <strong>source_object</strong> like all
+other types of logged-in commands (this is because
+there is no object yet before the account has logged in)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'co</span> <span class="pre">conn</span> <span class="pre">con',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'connect',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">co</span> <span class="pre">conn</span> <span class="pre">con',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nConnect</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">game.\n\nUsage</span> <span class="pre">(at</span> <span class="pre">login</span> <span class="pre">screen):\n</span>&#160;&#160;&#160; <span class="pre">connect</span> <span class="pre">&lt;email&gt;</span> <span class="pre">&lt;password&gt;\n\nUse</span> <span class="pre">the</span> <span class="pre">create</span> <span class="pre">command</span> <span class="pre">to</span> <span class="pre">first</span> <span class="pre">create</span> <span class="pre">an</span> <span class="pre">account</span> <span class="pre">before</span> <span class="pre">logging</span> <span class="pre">in.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">CmdUnconnectedCreate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedCreate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Create a new account.</p>
+<dl class="simple">
+<dt>Usage (at login screen):</dt><dd><p>create “accountname” &lt;email&gt; &lt;password&gt;</p>
+</dd>
+</dl>
+<p>This creates a new account account.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'create'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['cre',</span> <span class="pre">'cr']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.at_pre_cmd">
+<span class="sig-name descname"><span class="pre">at_pre_cmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedCreate.at_pre_cmd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.at_pre_cmd" title="Link to this definition">¶</a></dt>
+<dd><p>Verify that account creation is enabled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedCreate.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.parse" title="Link to this definition">¶</a></dt>
+<dd><p>The parser must handle the multiple-word account
+name enclosed in quotes:</p>
+<blockquote>
+<div><p>connect “Long name with many words” <a class="reference external" href="mailto:my&#37;&#52;&#48;myserv&#46;com">my<span>&#64;</span>myserv<span>&#46;</span>com</a> mypassw</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedCreate.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.func" title="Link to this definition">¶</a></dt>
+<dd><p>Do checks and create account</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'cre</span> <span class="pre">cr',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'create',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">cre</span> <span class="pre">cr',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nCreate</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">account.\n\nUsage</span> <span class="pre">(at</span> <span class="pre">login</span> <span class="pre">screen):\n</span>&#160;&#160;&#160; <span class="pre">create</span> <span class="pre">&quot;accountname&quot;</span> <span class="pre">&lt;email&gt;</span> <span class="pre">&lt;password&gt;\n\nThis</span> <span class="pre">creates</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">account</span> <span class="pre">account.\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">CmdUnconnectedQuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedQuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>We maintain a different version of the <strong>quit</strong> command
+here for unconnected accounts for the sake of simplicity. The logged in
+version is a bit more complicated.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'quit'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['q',</span> <span class="pre">'qu']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedQuit.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.func" title="Link to this definition">¶</a></dt>
+<dd><p>Simply close the connection.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'q</span> <span class="pre">qu',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'quit',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">q</span> <span class="pre">qu',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nWe</span> <span class="pre">maintain</span> <span class="pre">a</span> <span class="pre">different</span> <span class="pre">version</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">`quit`</span> <span class="pre">command\nhere</span> <span class="pre">for</span> <span class="pre">unconnected</span> <span class="pre">accounts</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">sake</span> <span class="pre">of</span> <span class="pre">simplicity.</span> <span class="pre">The</span> <span class="pre">logged</span> <span class="pre">in\nversion</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">bit</span> <span class="pre">more</span> <span class="pre">complicated.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">CmdUnconnectedLook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedLook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>This is an unconnected version of the <strong>look</strong> command for simplicity.</p>
+<p>This is called by the server and kicks everything in gear.
+All it does is display the connect screen.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'__unloggedin_look_command'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['look',</span> <span class="pre">'l']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedLook.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.func" title="Link to this definition">¶</a></dt>
+<dd><p>Show the connect screen.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'look</span> <span class="pre">l',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'__unloggedin_look_command',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">look</span> <span class="pre">l',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nThis</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">unconnected</span> <span class="pre">version</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">`look`</span> <span class="pre">command</span> <span class="pre">for</span> <span class="pre">simplicity.\n\nThis</span> <span class="pre">is</span> <span class="pre">called</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">server</span> <span class="pre">and</span> <span class="pre">kicks</span> <span class="pre">everything</span> <span class="pre">in</span> <span class="pre">gear.\nAll</span> <span class="pre">it</span> <span class="pre">does</span> <span class="pre">is</span> <span class="pre">display</span> <span class="pre">the</span> <span class="pre">connect</span> <span class="pre">screen.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">CmdUnconnectedHelp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedHelp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>This is an unconnected version of the help command,
+for simplicity. It shows a pane of info.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'help'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['h',</span> <span class="pre">'?']</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#CmdUnconnectedHelp.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.func" title="Link to this definition">¶</a></dt>
+<dd><p>Shows help</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'h</span> <span class="pre">?',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'help',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">h</span> <span class="pre">?',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nThis</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">unconnected</span> <span class="pre">version</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">help</span> <span class="pre">command,\nfor</span> <span class="pre">simplicity.</span> <span class="pre">It</span> <span class="pre">shows</span> <span class="pre">a</span> <span class="pre">pane</span> <span class="pre">of</span> <span class="pre">info.\n'}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">AccountDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/accounts/models.html#AccountDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.models.html#evennia.typeclasses.models.TypedObject" title="evennia.typeclasses.models.TypedObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedObject</span></code></a>, <a class="reference internal" href="evennia.accounts.models.html#evennia.accounts.models.AbstractUser" title="django.contrib.auth.models.AbstractUser"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractUser</span></code></a></p>
+<p>This is a special model using Django’s ‘profile’ functionality
+and extends the default Django User model. It is defined as such
+by use of the variable AUTH_PROFILE_MODULE in the settings.
+One accesses the fields/methods. We try use this model as much
+as possible rather than User, since we can customize this to
+our liking.</p>
+<p>The TypedObject supplies the following (inherited) properties:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>key - main name</p></li>
+<li><p>typeclass_path - the path to the decorating typeclass</p></li>
+<li><p>typeclass - auto-linked typeclass</p></li>
+<li><p>date_created - time stamp of object creation</p></li>
+<li><p>permissions - perm strings</p></li>
+<li><p>dbref - #id of object</p></li>
+<li><p>db - persistent attribute storage</p></li>
+<li><p>ndb - non-persistent attribute storage</p></li>
+</ul>
+</div></blockquote>
+<p>The AccountDB adds the following properties:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>is_connected - If any Session is currently connected to this Account</p></li>
+<li><p>name - alias for user.username</p></li>
+<li><p>sessions - sessions connected to this account</p></li>
+<li><p>is_superuser - bool if this account is a superuser</p></li>
+<li><p>is_bot - bool if this account is a bot and not a real account</p></li>
+</ul>
+</div></blockquote>
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.dbserialize.html#evennia.utils.dbserialize.ObjectDoesNotExist" title="django.core.exceptions.ObjectDoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.account_subscription_set">
+<span class="sig-name descname"><span class="pre">account_subscription_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.account_subscription_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.cmdset_storage">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cmdset_storage</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.cmdset_storage" title="Link to this definition">¶</a></dt>
+<dd><p>Getter. Allows for value = self.name. Returns a list of cmdset_storage.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.date_joined">
+<span class="sig-name descname"><span class="pre">date_joined</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.date_joined" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_attributes">
+<span class="sig-name descname"><span class="pre">db_attributes</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_cmdset_storage">
+<span class="sig-name descname"><span class="pre">db_cmdset_storage</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_cmdset_storage" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_date_created">
+<span class="sig-name descname"><span class="pre">db_date_created</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_date_created" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_is_bot">
+<span class="sig-name descname"><span class="pre">db_is_bot</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_is_bot" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_is_connected">
+<span class="sig-name descname"><span class="pre">db_is_connected</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_is_connected" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_key">
+<span class="sig-name descname"><span class="pre">db_key</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_key" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_lock_storage">
+<span class="sig-name descname"><span class="pre">db_lock_storage</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_lock_storage" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_tags">
+<span class="sig-name descname"><span class="pre">db_tags</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_tags" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.db_typeclass_path">
+<span class="sig-name descname"><span class="pre">db_typeclass_path</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_typeclass_path" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.email">
+<span class="sig-name descname"><span class="pre">email</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.email" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.first_name">
+<span class="sig-name descname"><span class="pre">first_name</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.first_name" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.get_next_by_date_joined">
+<span class="sig-name descname"><span class="pre">get_next_by_date_joined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">date_joined&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_next_by_date_joined" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.get_next_by_db_date_created">
+<span class="sig-name descname"><span class="pre">get_next_by_db_date_created</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">db_date_created&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_next_by_db_date_created" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.get_previous_by_date_joined">
+<span class="sig-name descname"><span class="pre">get_previous_by_date_joined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">date_joined&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_previous_by_date_joined" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.get_previous_by_db_date_created">
+<span class="sig-name descname"><span class="pre">get_previous_by_db_date_created</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">db_date_created&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_previous_by_db_date_created" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.groups">
+<span class="sig-name descname"><span class="pre">groups</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.groups" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.hide_from_accounts_set">
+<span class="sig-name descname"><span class="pre">hide_from_accounts_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.hide_from_accounts_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.id" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.is_active">
+<span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_active" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.is_bot">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_bot</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_bot" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_is_bot</strong>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.is_connected">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_connected</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_connected" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_is_connected</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.is_staff">
+<span class="sig-name descname"><span class="pre">is_staff</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_staff" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.is_superuser">
+<span class="sig-name descname"><span class="pre">is_superuser</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_superuser" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.last_login">
+<span class="sig-name descname"><span class="pre">last_login</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.last_login" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.last_name">
+<span class="sig-name descname"><span class="pre">last_name</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.last_name" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.logentry_set">
+<span class="sig-name descname"><span class="pre">logentry_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.logentry_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.objectdb_set">
+<span class="sig-name descname"><span class="pre">objectdb_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.objectdb_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.accounts.manager.AccountDBManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.objects" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.password">
+<span class="sig-name descname"><span class="pre">password</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.password" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.accounts.models.AccountDB'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.receiver_account_set">
+<span class="sig-name descname"><span class="pre">receiver_account_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.receiver_account_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.scriptdb_set">
+<span class="sig-name descname"><span class="pre">scriptdb_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.scriptdb_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.sender_account_set">
+<span class="sig-name descname"><span class="pre">sender_account_set</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.sender_account_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SharedMemoryModelBase'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.uid">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uid</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.uid" title="Link to this definition">¶</a></dt>
+<dd><p>Getter. Retrieves the user id</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.user_permissions">
+<span class="sig-name descname"><span class="pre">user_permissions</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.user_permissions" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.AccountDB.username">
+<span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.username" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">CmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class describes a unique cmdset that understands priorities.
+CmdSets can be merged and made to perform various set operations
+on each other.  CmdSets have priorities that affect which of their
+ingoing commands gets used.</p>
+<p>In the examples, cmdset A always have higher priority than cmdset B.</p>
+<p>key - the name of the cmdset. This can be used on its own for game
+operations</p>
+<p>mergetype (partly from Set theory):</p>
+<blockquote>
+<div><dl>
+<dt>Union -    The two command sets are merged so that as many</dt><dd><p>commands as possible of each cmdset ends up in the
+merged cmdset. Same-name commands are merged by
+priority.  This is the most common default.
+Ex: A1,A3 + B1,B2,B4,B5 = A1,B2,A3,B4,B5</p>
+</dd>
+<dt>Intersect - Only commands found in <em>both</em> cmdsets</dt><dd><p>(i.e. which have same names) end up in the merged
+cmdset, with the higher-priority cmdset replacing the
+lower one.  Ex: A1,A3 + B1,B2,B4,B5 = A1</p>
+</dd>
+<dt>Replace -   The commands of this cmdset completely replaces</dt><dd><p>the lower-priority cmdset’s commands, regardless
+of if same-name commands exist.
+Ex: A1,A3 + B1,B2,B4,B5 = A1,A3</p>
+</dd>
+<dt>Remove -    This removes the relevant commands from the</dt><dd><blockquote>
+<div><p>lower-priority cmdset completely.  They are not
+replaced with anything, so this in effects uses the
+high-priority cmdset as a filter to affect the
+low-priority cmdset.
+Ex: A1,A3 + B1,B2,B4,B5 = B2,B4,B5</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Note: Commands longer than 2 characters and starting</dt><dd><p>with double underscrores, like ‘__noinput_command’
+are considered ‘system commands’ and are
+excempt from all merge operations - they are
+ALWAYS included across mergers and only affected
+if same-named system commands replace them.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>priority- All cmdsets are always merged in pairs of two so that</dt><dd><p>the higher set’s mergetype is applied to the
+lower-priority cmdset. Default commands have priority 0,
+high-priority ones like Exits and Channels have 10 and 9.
+Priorities can be negative as well to give default
+commands preference.</p>
+</dd>
+<dt>duplicates - determines what happens when two sets of equal</dt><dd><blockquote>
+<div><p>priority merge (only). Defaults to None and has the first of them in the
+merger (i.e. A above) automatically taking
+precedence. But if <strong>duplicates</strong> is true, the
+result will be a merger with more than one of each
+name match.  This will usually lead to the account
+receiving a multiple-match error higher up the road,
+but can be good for things like cmdsets on non-account
+objects in a room, to allow the system to warn that
+more than one ‘ball’ in the room has the same ‘kick’
+command defined on it, so it may offer a chance to
+select which ball to kick …  Allowing duplicates
+only makes sense for Union and Intersect, the setting
+is ignored for the other mergetypes.
+Note that the <strong>duplicates</strong> flag is <em>not</em> propagated in
+a cmdset merger. So <strong>A + B = C</strong> will result in
+a cmdset with duplicate commands, but C.duplicates will
+be <strong>None</strong>. For duplication to apply to a whole cmdset
+stack merge, _all_ cmdsets in the stack must have
+<strong>.duplicates=True</strong> set.</p>
+</div></blockquote>
+<p>Finally, if a final cmdset has <strong>.duplicates=None</strong> (the normal
+unless created alone with another value), the cmdhandler
+will assume True for object-based cmdsets and False for
+all other. This is usually the most intuitive outcome.</p>
+</dd>
+<dt>key_mergetype (dict) - allows the cmdset to define a unique</dt><dd><p>mergetype for particular cmdsets.  Format is
+{CmdSetkeystring:mergetype}. Priorities still apply.
+Example: {‘Myevilcmdset’,’Replace’} which would make
+sure for this set to always use ‘Replace’ on
+Myevilcmdset no matter what overall mergetype this set
+has.</p>
+</dd>
+<dt>no_objs  - don’t include any commands from nearby objects</dt><dd><p>when searching for suitable commands</p>
+</dd>
+<dt>no_exits  - ignore the names of exits when matching against</dt><dd><p>commands</p>
+</dd>
+<dt>no_channels   - ignore the name of channels when matching against</dt><dd><p>commands (WARNING- this is dangerous since the
+account can then not even ask staff for help if
+something goes wrong)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a new CmdSet instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmdsetobj</strong> (<a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><em>Session</em></a><em>, </em><em>Account</em><em>, </em><em>Object</em><em>, </em><em>optional</em>) – This is the database object
+to which this particular instance of cmdset is related. It
+is often a character but may also be a regular object, Account
+or Session.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – The idenfier for this cmdset. This
+helps if wanting to selectively remov cmdsets.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_duplicates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add a new command or commands to this CmdSet, a list of
+commands or a cmdset to this cmdset. Note that this is <em>not</em>
+a merge operation (that is handled by the + operator).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em>, </em><em>list</em><em>, </em><em>Cmdset</em>) – This allows for adding one or
+more commands to this Cmdset in one go. If another Cmdset
+is given, all its commands will be added.</p></li>
+<li><p><strong>allow_duplicates</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will not try to remove
+duplicate cmds in the set. This is needed during the merge process
+to avoid wiping commands coming from cmdsets with duplicate=True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If cmd already exists in set, it will replace the old one
+(no priority checking etc happens here). This is very useful
+when overloading default commands).</p>
+<p>If cmd is another cmdset class or -instance, the commands of
+that command set is added to this one, as if they were part of
+the original cmdset definition. No merging or priority checks
+are made, rather later added commands will simply replace
+existing ones to make a unique set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.count"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.count" title="Link to this definition">¶</a></dt>
+<dd><p>Number of commands in set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>N (int)</em> – Number of commands in this Cmdset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.duplicates">
+<span class="sig-name descname"><span class="pre">duplicates</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.duplicates" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.errmessage">
+<span class="sig-name descname"><span class="pre">errmessage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.errmessage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get a command from the cmdset. This is mostly useful to
+check if the command is part of this cmdset or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em> or </em><em>str</em>) – Either the Command object or its key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>cmd (Command)</em> – The first matching Command in the set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.get_all_cmd_keys_and_aliases">
+<span class="sig-name descname"><span class="pre">get_all_cmd_keys_and_aliases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get_all_cmd_keys_and_aliases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.get_all_cmd_keys_and_aliases" title="Link to this definition">¶</a></dt>
+<dd><p>Collects keys/aliases from commands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>Object</em><em>, </em><em>optional</em>) – If set, this is used to check access permissions
+on each command. Only commands that pass are returned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>names (list)</em> –</p>
+<dl class="simple">
+<dt>A list of all command keys and aliases in this cmdset. If <strong>caller</strong></dt><dd><p>was given, this list will only contain commands to which <strong>caller</strong> passed
+the <strong>call</strong> locktype check.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.get_system_cmds">
+<span class="sig-name descname"><span class="pre">get_system_cmds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.get_system_cmds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.get_system_cmds" title="Link to this definition">¶</a></dt>
+<dd><p>Get system commands in cmdset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>sys_cmds (list)</em> – The system commands in the set.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>As far as the Cmdset is concerned, system commands are any
+commands with a key starting with double underscore __.
+These are excempt from merge operations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Unnamed</span> <span class="pre">CmdSet'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.key_mergetypes">
+<span class="sig-name descname"><span class="pre">key_mergetypes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.key_mergetypes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.make_unique">
+<span class="sig-name descname"><span class="pre">make_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.make_unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.make_unique" title="Link to this definition">¶</a></dt>
+<dd><p>Remove duplicate command-keys (unsafe)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>caller</strong> (<em>object</em>) – Commands on this object will
+get preference in the duplicate removal.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is an unsafe command meant to clean out a cmdset of
+doublet commands after it has been created. It is useful
+for commands inheriting cmdsets from the cmdhandler where
+obj-based cmdsets always are added double. Doublets will
+be weeded out with preference to commands defined on
+caller, otherwise just by first-come-first-served.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.mergetype">
+<span class="sig-name descname"><span class="pre">mergetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Union'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.mergetype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.no_channels">
+<span class="sig-name descname"><span class="pre">no_channels</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.no_channels" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.no_exits">
+<span class="sig-name descname"><span class="pre">no_exits</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.no_exits" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.no_objs">
+<span class="sig-name descname"><span class="pre">no_objs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.no_objs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.commands.cmdset.CmdSet'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.persistent">
+<span class="sig-name descname"><span class="pre">persistent</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.persistent" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/cmdset.html#CmdSet.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a command instance from the cmdset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><em>Command</em></a><em> or </em><em>str</em>) – Either the Command object to remove
+or the key of such a command.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.CmdSet.to_duplicate">
+<span class="sig-name descname"><span class="pre">to_duplicate</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('key',</span> <span class="pre">'cmdsetobj',</span> <span class="pre">'no_exits',</span> <span class="pre">'no_objs',</span> <span class="pre">'no_channels',</span> <span class="pre">'persistent',</span> <span class="pre">'mergetype',</span> <span class="pre">'priority',</span> <span class="pre">'duplicates',</span> <span class="pre">'errmessage')</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.to_duplicate" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">MuxCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>This sets up the basis for a MUX command. The idea
+is that most other Mux-related commands should just
+inherit from this and don’t have to implement much
+parsing of their own unless they do something particularly
+advanced.</p>
+<p>Note that the class’s __doc__ string (this text) is
+used by Evennia to create the automatic help entry for
+the command, so make sure to document consistently here.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.at_post_cmd">
+<span class="sig-name descname"><span class="pre">at_post_cmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.at_post_cmd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.at_post_cmd" title="Link to this definition">¶</a></dt>
+<dd><p>This hook is called after the command has finished executing
+(after self.func()).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.at_pre_cmd">
+<span class="sig-name descname"><span class="pre">at_pre_cmd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.at_pre_cmd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.at_pre_cmd" title="Link to this definition">¶</a></dt>
+<dd><p>This hook is called before self.parse() on all commands</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.get_command_info">
+<span class="sig-name descname"><span class="pre">get_command_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.get_command_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.get_command_info" title="Link to this definition">¶</a></dt>
+<dd><p>Update of parent class’s get_command_info() for MuxCommand.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.has_perm">
+<span class="sig-name descname"><span class="pre">has_perm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">srcobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.has_perm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.has_perm" title="Link to this definition">¶</a></dt>
+<dd><p>This is called by the cmdhandler to determine
+if srcobj is allowed to execute this command.
+We just show it here for completeness - we
+are satisfied using the default check in Command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'command'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/commands/default/muxcommand.html#MuxCommand.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.parse" title="Link to this definition">¶</a></dt>
+<dd><p>This method is called by the cmdhandler once the command name
+has been identified. It creates a new set of member variables
+that can be later accessed from self.func() (see below)</p>
+<p>The following variables are available for our use when entering this
+method (from the command definition, and assigned on the fly by the
+cmdhandler):</p>
+<blockquote>
+<div><p>self.key - the name of this command (‘look’)
+self.aliases - the aliases of this cmd (‘l’)
+self.permissions - permission string for this command
+self.help_category - overall category of command</p>
+<p>self.caller - the object calling this command
+self.cmdstring - the actual command name used to call this</p>
+<blockquote>
+<div><dl class="simple">
+<dt>(this allows you to know which alias was used,</dt><dd><p>for example)</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>self.args - the raw input; everything following self.cmdstring.
+self.cmdset - the cmdset from which this command was picked. Not</p>
+<blockquote>
+<div><p>often used (useful for commands like ‘help’ or to
+list all available commands etc)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>self.obj - the object on which this command was defined. It is often</dt><dd><p>the same as self.caller.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>A MUX command has the following possible syntax:</p>
+<blockquote>
+<div><p>name[ with several words][/switch[/switch..]] arg1[,arg2,…] [[=|,] arg[,..]]</p>
+</div></blockquote>
+<p>The ‘name[ with several words]’ part is already dealt with by the
+cmdhandler at this point, and stored in self.cmdname (we don’t use
+it here). The rest of the command is stored in self.args, which can
+start with the switch indicator /.</p>
+<dl class="simple">
+<dt>Optional variables to aid in parsing, if set:</dt><dd><dl class="simple">
+<dt>self.switch_options  - (tuple of valid /switches expected by this</dt><dd><p>command (without the /))</p>
+</dd>
+<dt>self.rhs_split       - Alternate string delimiter or tuple of strings</dt><dd><p>to separate left/right hand sides. tuple form
+gives priority split to first string delimiter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>This parser breaks self.args into its constituents and stores them in the
+following variables:</p>
+<blockquote>
+<div><p>self.switches = [list of /switches (without the /)]
+self.raw = This is the raw argument input, including switches
+self.args = This is re-defined to be everything <em>except</em> the switches
+self.lhs = Everything to the left of = (lhs:’left-hand side’). If</p>
+<blockquote>
+<div><p>no = is found, this is identical to self.args.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>self.rhs: Everything to the right of = (rhs:’right-hand side’).</dt><dd><p>If no ‘=’ is found, this is None.</p>
+</dd>
+</dl>
+<p>self.lhslist - [self.lhs split into a list by comma]
+self.rhslist - [list of self.rhs split into a list by comma]
+self.arglist = [list of space-separated args (stripped, including ‘=’ if it exists)]</p>
+<p>All args and list members are stripped of excess whitespace around the
+strings, but case is preserved.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.MuxCommand.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'command',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nThis</span> <span class="pre">sets</span> <span class="pre">up</span> <span class="pre">the</span> <span class="pre">basis</span> <span class="pre">for</span> <span class="pre">a</span> <span class="pre">MUX</span> <span class="pre">command.</span> <span class="pre">The</span> <span class="pre">idea\nis</span> <span class="pre">that</span> <span class="pre">most</span> <span class="pre">other</span> <span class="pre">Mux-related</span> <span class="pre">commands</span> <span class="pre">should</span> <span class="pre">just\ninherit</span> <span class="pre">from</span> <span class="pre">this</span> <span class="pre">and</span> <span class="pre">don't</span> <span class="pre">have</span> <span class="pre">to</span> <span class="pre">implement</span> <span class="pre">much\nparsing</span> <span class="pre">of</span> <span class="pre">their</span> <span class="pre">own</span> <span class="pre">unless</span> <span class="pre">they</span> <span class="pre">do</span> <span class="pre">something</span> <span class="pre">particularly\nadvanced.\n\nNote</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">class's</span> <span class="pre">__doc__</span> <span class="pre">string</span> <span class="pre">(this</span> <span class="pre">text)</span> <span class="pre">is\nused</span> <span class="pre">by</span> <span class="pre">Evennia</span> <span class="pre">to</span> <span class="pre">create</span> <span class="pre">the</span> <span class="pre">automatic</span> <span class="pre">help</span> <span class="pre">entry</span> <span class="pre">for\nthe</span> <span class="pre">command,</span> <span class="pre">so</span> <span class="pre">make</span> <span class="pre">sure</span> <span class="pre">to</span> <span class="pre">document</span> <span class="pre">consistently</span> <span class="pre">here.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">ServerConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/models.html#ServerConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.WeakSharedMemoryModel" title="evennia.utils.idmapper.models.WeakSharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeakSharedMemoryModel</span></code></a></p>
+<p>On-the fly storage of global settings.</p>
+<p>Properties defined on ServerConfig:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>key: Main identifier</p></li>
+<li><p>value: Value stored in key. This is a pickled storage.</p></li>
+</ul>
+</div></blockquote>
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.dbserialize.html#evennia.utils.dbserialize.ObjectDoesNotExist" title="django.core.exceptions.ObjectDoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.db_key">
+<span class="sig-name descname"><span class="pre">db_key</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.db_key" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.db_value">
+<span class="sig-name descname"><span class="pre">db_value</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.db_value" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.id" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.key" title="Link to this definition">¶</a></dt>
+<dd><p>Getter. Allows for value = self.key</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.server.manager.ServerConfigManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.objects" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.server.models.ServerConfig'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.store">
+<span class="sig-name descname"><span class="pre">store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/models.html#ServerConfig.store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.store" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap the storage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The name of this store.</p></li>
+<li><p><strong>value</strong> (<em>str</em>) – The data to store with this <strong>key</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'WeakSharedMemoryModelBase'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.ServerConfig.value">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.value" title="Link to this definition">¶</a></dt>
+<dd><p>Getter. Allows for value = self.value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">UnloggedinCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#UnloggedinCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Sets up the unlogged cmdset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Unloggedin'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet'</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/email_login/email_login.html#UnloggedinCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Populate the cmdset</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.email_login.email_login.class_from_module">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.email_login.email_login.</span></span><span class="sig-name descname"><span class="pre">class_from_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaultpaths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#class_from_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.email_login.email_login.class_from_module" title="Link to this definition">¶</a></dt>
+<dd><p>Return a class from a module, given the class’ full python path. This is
+primarily used to convert db_typeclass_path:s to classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Full Python dot-path to module.</p></li>
+<li><p><strong>defaultpaths</strong> (<em>iterable</em><em>, </em><em>optional</em>) – If a direct import from <strong>path</strong> fails,
+try subsequent imports by prepending those paths to <strong>path</strong>.</p></li>
+<li><p><strong>fallback</strong> (<em>str</em>) – If all other attempts fail, use this path as a fallback.
+This is intended as a last-resort. In the example of Evennia
+loading, this would be a path to a default parent class in the
+evennia repo itself.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>class (Class)</em> – An uninstantiated class recovered from path.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ImportError</strong> – If all loading failed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.base_systems.email_login.email_login</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.key"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.locks"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.func"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedConnect.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedConnect.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.key"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.locks"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.at_pre_cmd"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.at_pre_cmd()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.parse"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.func"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedCreate.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedCreate.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.key"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.locks"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.func"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedQuit.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedQuit.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.key"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.locks"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.func"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedLook.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedLook.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.locks"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.func"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdUnconnectedHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUnconnectedHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB"><code class="docutils literal notranslate"><span class="pre">AccountDB</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">AccountDB.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">AccountDB.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.account_subscription_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.account_subscription_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.cmdset_storage"><code class="docutils literal notranslate"><span class="pre">AccountDB.cmdset_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.date_joined"><code class="docutils literal notranslate"><span class="pre">AccountDB.date_joined</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_attributes"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_attributes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_cmdset_storage"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_cmdset_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_date_created"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_date_created</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_is_bot"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_is_bot</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_is_connected"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_is_connected</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_key"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_lock_storage"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_tags"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_tags</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.db_typeclass_path"><code class="docutils literal notranslate"><span class="pre">AccountDB.db_typeclass_path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.email"><code class="docutils literal notranslate"><span class="pre">AccountDB.email</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.first_name"><code class="docutils literal notranslate"><span class="pre">AccountDB.first_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_next_by_date_joined"><code class="docutils literal notranslate"><span class="pre">AccountDB.get_next_by_date_joined()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_next_by_db_date_created"><code class="docutils literal notranslate"><span class="pre">AccountDB.get_next_by_db_date_created()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_previous_by_date_joined"><code class="docutils literal notranslate"><span class="pre">AccountDB.get_previous_by_date_joined()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.get_previous_by_db_date_created"><code class="docutils literal notranslate"><span class="pre">AccountDB.get_previous_by_db_date_created()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.groups"><code class="docutils literal notranslate"><span class="pre">AccountDB.groups</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.hide_from_accounts_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.hide_from_accounts_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.id"><code class="docutils literal notranslate"><span class="pre">AccountDB.id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_active"><code class="docutils literal notranslate"><span class="pre">AccountDB.is_active</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_bot"><code class="docutils literal notranslate"><span class="pre">AccountDB.is_bot</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_connected"><code class="docutils literal notranslate"><span class="pre">AccountDB.is_connected</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_staff"><code class="docutils literal notranslate"><span class="pre">AccountDB.is_staff</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.is_superuser"><code class="docutils literal notranslate"><span class="pre">AccountDB.is_superuser</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.key"><code class="docutils literal notranslate"><span class="pre">AccountDB.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.last_login"><code class="docutils literal notranslate"><span class="pre">AccountDB.last_login</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.last_name"><code class="docutils literal notranslate"><span class="pre">AccountDB.last_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.logentry_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.logentry_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.name"><code class="docutils literal notranslate"><span class="pre">AccountDB.name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.objectdb_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.objectdb_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.objects"><code class="docutils literal notranslate"><span class="pre">AccountDB.objects</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.password"><code class="docutils literal notranslate"><span class="pre">AccountDB.password</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.path"><code class="docutils literal notranslate"><span class="pre">AccountDB.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.receiver_account_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.receiver_account_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.scriptdb_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.scriptdb_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.sender_account_set"><code class="docutils literal notranslate"><span class="pre">AccountDB.sender_account_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.typename"><code class="docutils literal notranslate"><span class="pre">AccountDB.typename</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.uid"><code class="docutils literal notranslate"><span class="pre">AccountDB.uid</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.user_permissions"><code class="docutils literal notranslate"><span class="pre">AccountDB.user_permissions</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.AccountDB.username"><code class="docutils literal notranslate"><span class="pre">AccountDB.username</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet"><code class="docutils literal notranslate"><span class="pre">CmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.__init__"><code class="docutils literal notranslate"><span class="pre">CmdSet.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.add"><code class="docutils literal notranslate"><span class="pre">CmdSet.add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.count"><code class="docutils literal notranslate"><span class="pre">CmdSet.count()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.duplicates"><code class="docutils literal notranslate"><span class="pre">CmdSet.duplicates</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.errmessage"><code class="docutils literal notranslate"><span class="pre">CmdSet.errmessage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.get"><code class="docutils literal notranslate"><span class="pre">CmdSet.get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.get_all_cmd_keys_and_aliases"><code class="docutils literal notranslate"><span class="pre">CmdSet.get_all_cmd_keys_and_aliases()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.get_system_cmds"><code class="docutils literal notranslate"><span class="pre">CmdSet.get_system_cmds()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.key"><code class="docutils literal notranslate"><span class="pre">CmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.key_mergetypes"><code class="docutils literal notranslate"><span class="pre">CmdSet.key_mergetypes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.make_unique"><code class="docutils literal notranslate"><span class="pre">CmdSet.make_unique()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">CmdSet.mergetype</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.no_channels"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_channels</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.no_exits"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_exits</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.no_objs"><code class="docutils literal notranslate"><span class="pre">CmdSet.no_objs</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.path"><code class="docutils literal notranslate"><span class="pre">CmdSet.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.persistent"><code class="docutils literal notranslate"><span class="pre">CmdSet.persistent</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.priority"><code class="docutils literal notranslate"><span class="pre">CmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.remove"><code class="docutils literal notranslate"><span class="pre">CmdSet.remove()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.CmdSet.to_duplicate"><code class="docutils literal notranslate"><span class="pre">CmdSet.to_duplicate</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand"><code class="docutils literal notranslate"><span class="pre">MuxCommand</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.aliases"><code class="docutils literal notranslate"><span class="pre">MuxCommand.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.at_post_cmd"><code class="docutils literal notranslate"><span class="pre">MuxCommand.at_post_cmd()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.at_pre_cmd"><code class="docutils literal notranslate"><span class="pre">MuxCommand.at_pre_cmd()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.func"><code class="docutils literal notranslate"><span class="pre">MuxCommand.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.get_command_info"><code class="docutils literal notranslate"><span class="pre">MuxCommand.get_command_info()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.has_perm"><code class="docutils literal notranslate"><span class="pre">MuxCommand.has_perm()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.help_category"><code class="docutils literal notranslate"><span class="pre">MuxCommand.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.key"><code class="docutils literal notranslate"><span class="pre">MuxCommand.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.lock_storage"><code class="docutils literal notranslate"><span class="pre">MuxCommand.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.parse"><code class="docutils literal notranslate"><span class="pre">MuxCommand.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.MuxCommand.search_index_entry"><code class="docutils literal notranslate"><span class="pre">MuxCommand.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig"><code class="docutils literal notranslate"><span class="pre">ServerConfig</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">ServerConfig.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">ServerConfig.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.db_key"><code class="docutils literal notranslate"><span class="pre">ServerConfig.db_key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.db_value"><code class="docutils literal notranslate"><span class="pre">ServerConfig.db_value</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.id"><code class="docutils literal notranslate"><span class="pre">ServerConfig.id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.key"><code class="docutils literal notranslate"><span class="pre">ServerConfig.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.objects"><code class="docutils literal notranslate"><span class="pre">ServerConfig.objects</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.path"><code class="docutils literal notranslate"><span class="pre">ServerConfig.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.store"><code class="docutils literal notranslate"><span class="pre">ServerConfig.store()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.typename"><code class="docutils literal notranslate"><span class="pre">ServerConfig.typename</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.ServerConfig.value"><code class="docutils literal notranslate"><span class="pre">ServerConfig.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet"><code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.key"><code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.path"><code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.UnloggedinCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">UnloggedinCmdSet.at_cmdset_creation()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.email_login.email_login.class_from_module"><code class="docutils literal notranslate"><span class="pre">class_from_module()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.email_login.connection_screens.html"
+                          title="previous chapter">evennia.contrib.base_systems.email_login.connection_screens</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.email_login.tests.html"
+                          title="next chapter">evennia.contrib.base_systems.email_login.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.base_systems.email_login.email_login.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.tests.html" title="evennia.contrib.base_systems.email_login.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.email_login.connection_screens.html" title="evennia.contrib.base_systems.email_login.connection_screens"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.email_login.html" >evennia.contrib.base_systems.email_login</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.email_login.email_login</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

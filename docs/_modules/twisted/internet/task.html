@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>twisted.internet.task &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.internet.task</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for twisted.internet.task</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- test-case-name: twisted.test.test_task,twisted.test.test_cooperator -*-</span>
+<span class="c1"># Copyright (c) Twisted Matrix Laboratories.</span>
+<span class="c1"># See LICENSE for details.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Scheduling utility methods and classes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Coroutine</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">NoReturn</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">zope.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">implementer</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">incremental</span><span class="w"> </span><span class="kn">import</span> <span class="n">Version</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DelayedCall</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.defer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Deferred</span><span class="p">,</span> <span class="n">ensureDeferred</span><span class="p">,</span> <span class="n">maybeDeferred</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.error</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReactorNotRunning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet.interfaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">IDelayedCall</span><span class="p">,</span> <span class="n">IReactorCore</span><span class="p">,</span> <span class="n">IReactorTime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">log</span><span class="p">,</span> <span class="n">reflect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.deprecate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_getDeprecationWarningString</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.python.failure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Failure</span>
+
+<span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LoopingCall">
+<a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.commands.cmdhandler.LoopingCall">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LoopingCall</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call a function repeatedly.</span>
+
+<span class="sd">    If C{f} returns a deferred, rescheduling will not take place until the</span>
+<span class="sd">    deferred has fired. The result value is ignored.</span>
+
+<span class="sd">    @ivar f: The function to call.</span>
+<span class="sd">    @ivar a: A tuple of arguments to pass the function.</span>
+<span class="sd">    @ivar kw: A dictionary of keyword arguments to pass to the function.</span>
+<span class="sd">    @ivar clock: A provider of</span>
+<span class="sd">        L{twisted.internet.interfaces.IReactorTime}.  The default is</span>
+<span class="sd">        L{twisted.internet.reactor}. Feel free to set this to</span>
+<span class="sd">        something else, but it probably ought to be set *before*</span>
+<span class="sd">        calling L{start}.</span>
+
+<span class="sd">    @ivar running: A flag which is C{True} while C{f} is scheduled to be called</span>
+<span class="sd">        (or is currently being called). It is set to C{True} when L{start} is</span>
+<span class="sd">        called and set to C{False} when L{stop} is called or if C{f} raises an</span>
+<span class="sd">        exception. In either case, it will be C{False} by the time the</span>
+<span class="sd">        C{Deferred} returned by L{start} fires its callback or errback.</span>
+
+<span class="sd">    @ivar _realLastTime: When counting skips, the time at which the skip</span>
+<span class="sd">        counter was last invoked.</span>
+
+<span class="sd">    @ivar _runAtStart: A flag indicating whether the &#39;now&#39; argument was passed</span>
+<span class="sd">        to L{LoopingCall.start}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">call</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IDelayedCall</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_deferred</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="s2">&quot;LoopingCall&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">interval</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_runAtStart</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">starttime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_realLastTime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="LoopingCall.__init__">
+<a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.commands.cmdhandler.LoopingCall.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="o">*</span><span class="n">a</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kw</span> <span class="o">=</span> <span class="n">kw</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">IReactorTime</span><span class="p">,</span> <span class="n">reactor</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deferred</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="s2">&quot;LoopingCall&quot;</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        DEPRECATED. L{Deferred} fired when loop stops or fails.</span>
+
+<span class="sd">        Use the L{Deferred} returned by L{LoopingCall.start}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warningString</span> <span class="o">=</span> <span class="n">_getDeprecationWarningString</span><span class="p">(</span>
+            <span class="s2">&quot;twisted.internet.task.LoopingCall.deferred&quot;</span><span class="p">,</span>
+            <span class="n">Version</span><span class="p">(</span><span class="s2">&quot;Twisted&quot;</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;the deferred returned by start()&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warningString</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span>
+
+<div class="viewcode-block" id="LoopingCall.withCount">
+<a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.commands.cmdhandler.LoopingCall.withCount">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">withCount</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">countCallable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;LoopingCall&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An alternate constructor for L{LoopingCall} that makes available the</span>
+<span class="sd">        number of calls which should have occurred since it was last invoked.</span>
+
+<span class="sd">        Note that this number is an C{int} value; It represents the discrete</span>
+<span class="sd">        number of calls that should have been made.  For example, if you are</span>
+<span class="sd">        using a looping call to display an animation with discrete frames, this</span>
+<span class="sd">        number would be the number of frames to advance.</span>
+
+<span class="sd">        The count is normally 1, but can be higher. For example, if the reactor</span>
+<span class="sd">        is blocked and takes too long to invoke the L{LoopingCall}, a Deferred</span>
+<span class="sd">        returned from a previous call is not fired before an interval has</span>
+<span class="sd">        elapsed, or if the callable itself blocks for longer than an interval,</span>
+<span class="sd">        preventing I{itself} from being called.</span>
+
+<span class="sd">        When running with an interval of 0, count will be always 1.</span>
+
+<span class="sd">        @param countCallable: A callable that will be invoked each time the</span>
+<span class="sd">            resulting LoopingCall is run, with an integer specifying the number</span>
+<span class="sd">            of calls that should have been invoked.</span>
+
+<span class="sd">        @return: An instance of L{LoopingCall} with call counting enabled,</span>
+<span class="sd">            which provides the count as the first positional argument.</span>
+
+<span class="sd">        @since: 9.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">counter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_realLastTime</span> <span class="o">=</span> <span class="n">now</span>
+                <span class="k">return</span> <span class="n">countCallable</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">lastTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_realLastTime</span>
+            <span class="k">if</span> <span class="n">lastTime</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">),</span> <span class="s2">&quot;LoopingCall called before it was started&quot;</span>
+                <span class="n">lastTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runAtStart</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="p">),</span> <span class="s2">&quot;Looping call called with None interval&quot;</span>
+                    <span class="n">lastTime</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span>
+            <span class="n">lastInterval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intervalOf</span><span class="p">(</span><span class="n">lastTime</span><span class="p">)</span>
+            <span class="n">thisInterval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intervalOf</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">thisInterval</span> <span class="o">-</span> <span class="n">lastInterval</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_realLastTime</span> <span class="o">=</span> <span class="n">now</span>
+                <span class="k">return</span> <span class="n">countCallable</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_intervalOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the number of intervals passed as of the given point in</span>
+<span class="sd">        time.</span>
+
+<span class="sd">        @param t: The specified time (from the start of the L{LoopingCall}) to</span>
+<span class="sd">            be measured in intervals</span>
+
+<span class="sd">        @return: The C{int} number of intervals which have passed as of the</span>
+<span class="sd">            given point in time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">elapsedTime</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span>
+        <span class="n">intervalNum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elapsedTime</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">intervalNum</span>
+
+<div class="viewcode-block" id="LoopingCall.start">
+<a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.commands.cmdhandler.LoopingCall.start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="s2">&quot;LoopingCall&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start running function every interval seconds.</span>
+
+<span class="sd">        @param interval: The number of seconds between calls.  May be</span>
+<span class="sd">        less than one.  Precision will depend on the underlying</span>
+<span class="sd">        platform, the available hardware, and the load on the system.</span>
+
+<span class="sd">        @param now: If True, run this call right now.  Otherwise, wait</span>
+<span class="sd">        until the interval has elapsed before beginning.</span>
+
+<span class="sd">        @return: A Deferred whose callback will be invoked with</span>
+<span class="sd">        C{self} when C{self.stop} is called, or whose errback will be</span>
+<span class="sd">        invoked when the function raises an exception or returned a</span>
+<span class="sd">        deferred that has its errback invoked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">,</span> <span class="s2">&quot;Tried to start an already running &quot;</span> <span class="s2">&quot;LoopingCall.&quot;</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;interval must be &gt;= 0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Loop might fail to start and then self._deferred will be cleared.</span>
+        <span class="c1"># This why the local C{deferred} variable is used.</span>
+        <span class="n">deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_runAtStart</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="k">if</span> <span class="n">now</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scheduleFrom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deferred</span></div>
+
+
+<div class="viewcode-block" id="LoopingCall.stop">
+<a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.commands.cmdhandler.LoopingCall.stop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop running function.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">,</span> <span class="s2">&quot;Tried to stop a LoopingCall that was &quot;</span> <span class="s2">&quot;not running.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LoopingCall.reset">
+<a class="viewcode-back" href="../../../api/evennia.scripts.scripts.html#evennia.commands.cmdhandler.LoopingCall.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Skip the next iteration and reset the timer.</span>
+
+<span class="sd">        @since: 11.1</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">,</span> <span class="s2">&quot;Tried to reset a LoopingCall that was &quot;</span> <span class="s2">&quot;not running.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scheduleFrom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">starttime</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">cb</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduleFrom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">seconds</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="k">assert</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">eb</span><span class="p">(</span><span class="n">failure</span><span class="p">:</span> <span class="n">Failure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferred</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">errback</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">maybeDeferred</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kw</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">eb</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scheduleFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Schedule the next iteration of this looping call.</span>
+
+<span class="sd">        @param when: The present time from whence the call is scheduled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">howLong</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="c1"># How long should it take until the next invocation of our</span>
+            <span class="c1"># callable?  Split out into a function because there are multiple</span>
+            <span class="c1"># places we want to &#39;return&#39; out of this.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># If the interval is 0, just go as fast as possible, always</span>
+                <span class="c1"># return zero, call ourselves ASAP.</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="c1"># Compute the time until the next interval; how long has this call</span>
+            <span class="c1"># been running for?</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">runningFor</span> <span class="o">=</span> <span class="n">when</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span>
+            <span class="c1"># And based on that start time, when does the current interval end?</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">untilNextInterval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">-</span> <span class="p">(</span><span class="n">runningFor</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">)</span>
+            <span class="c1"># Now that we know how long it would be, we have to tell if the</span>
+            <span class="c1"># number is effectively zero.  However, we can&#39;t just test against</span>
+            <span class="c1"># zero.  If a number with a small exponent is added to a number</span>
+            <span class="c1"># with a large exponent, it may be so small that the digits just</span>
+            <span class="c1"># fall off the end, which means that adding the increment makes no</span>
+            <span class="c1"># difference; it&#39;s time to tick over into the next interval.</span>
+            <span class="k">if</span> <span class="n">when</span> <span class="o">==</span> <span class="n">when</span> <span class="o">+</span> <span class="n">untilNextInterval</span><span class="p">:</span>
+                <span class="c1"># If it&#39;s effectively zero, then we need to add another</span>
+                <span class="c1"># interval.</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span>
+            <span class="c1"># Finally, if everything else is normal, we just return the</span>
+            <span class="c1"># computed delay.</span>
+            <span class="k">return</span> <span class="n">untilNextInterval</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="n">howLong</span><span class="p">(),</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># This code should be replaced by a utility function in reflect;</span>
+        <span class="c1"># see ticket #6066:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">imClass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;im_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">imClass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">func</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">imClass</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">reflect</span><span class="o">.</span><span class="n">safe_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;LoopingCall&lt;</span><span class="si">{!r}</span><span class="s2">&gt;(</span><span class="si">{}</span><span class="s2">, *</span><span class="si">{}</span><span class="s2">, **</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span>
+            <span class="n">func</span><span class="p">,</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">safe_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">),</span>
+            <span class="n">reflect</span><span class="o">.</span><span class="n">safe_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kw</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SchedulerError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The operation could not be completed because the scheduler or one of its</span>
+<span class="sd">    tasks was in an invalid state.  This exception should not be raised</span>
+<span class="sd">    directly, but is a superclass of various scheduler-state-related</span>
+<span class="sd">    exceptions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SchedulerStopped</span><span class="p">(</span><span class="n">SchedulerError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The operation could not complete because the scheduler was stopped in</span>
+<span class="sd">    progress or was already stopped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskFinished</span><span class="p">(</span><span class="n">SchedulerError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The operation could not complete because the task was already completed,</span>
+<span class="sd">    stopped, encountered an error or otherwise permanently stopped running.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskDone</span><span class="p">(</span><span class="n">TaskFinished</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The operation could not complete because the task was already completed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskStopped</span><span class="p">(</span><span class="n">TaskFinished</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The operation could not complete because the task was stopped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskFailed</span><span class="p">(</span><span class="n">TaskFinished</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The operation could not complete because the task died with an unhandled</span>
+<span class="sd">    error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NotPaused</span><span class="p">(</span><span class="n">SchedulerError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This exception is raised when a task is resumed which was not previously</span>
+<span class="sd">    paused.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_Timer</span><span class="p">:</span>
+    <span class="n">MAX_SLICE</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_SLICE</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span>
+
+
+<span class="n">_EPSILON</span> <span class="o">=</span> <span class="mf">0.00000001</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_defaultScheduler</span><span class="p">(</span><span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">IDelayedCall</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">IReactorTime</span><span class="p">,</span> <span class="n">reactor</span><span class="p">)</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="n">_EPSILON</span><span class="p">,</span> <span class="nb">callable</span><span class="p">)</span>
+
+
+<span class="n">_TaskResultT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_TaskResultT&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CooperativeTask</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A L{CooperativeTask} is a task object inside a L{Cooperator}, which can be</span>
+<span class="sd">    paused, resumed, and stopped.  It can also have its completion (or</span>
+<span class="sd">    termination) monitored.</span>
+
+<span class="sd">    @see: L{Cooperator.cooperate}</span>
+
+<span class="sd">    @ivar _iterator: the iterator to iterate when this L{CooperativeTask} is</span>
+<span class="sd">        asked to do work.</span>
+
+<span class="sd">    @ivar _cooperator: the L{Cooperator} that this L{CooperativeTask}</span>
+<span class="sd">        participates in, which is used to re-insert it upon resume.</span>
+
+<span class="sd">    @ivar _deferreds: the list of L{Deferred}s to fire when this task</span>
+<span class="sd">        completes, fails, or finishes.</span>
+
+<span class="sd">    @ivar _pauseCount: the number of times that this L{CooperativeTask} has</span>
+<span class="sd">        been paused; if 0, it is running.</span>
+
+<span class="sd">    @ivar _completionState: The completion-state of this L{CooperativeTask}.</span>
+<span class="sd">        L{None} if the task is not yet completed, an instance of L{TaskStopped}</span>
+<span class="sd">        if C{stop} was called to stop this task early, of L{TaskFailed} if the</span>
+<span class="sd">        application code in the iterator raised an exception which caused it to</span>
+<span class="sd">        terminate, and of L{TaskDone} if it terminated normally via raising</span>
+<span class="sd">        C{StopIteration}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">],</span> <span class="n">cooperator</span><span class="p">:</span> <span class="s2">&quot;Cooperator&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A private constructor: to create a new L{CooperativeTask}, see</span>
+<span class="sd">        L{Cooperator.cooperate}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span> <span class="o">=</span> <span class="n">iterator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cooperator</span> <span class="o">=</span> <span class="n">cooperator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_deferreds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completionState</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SchedulerError</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completionResult</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">],</span> <span class="n">Failure</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cooperator</span><span class="o">.</span><span class="n">_addTask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">whenDone</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a L{Deferred} notification of when this task is complete.</span>
+
+<span class="sd">        @return: a L{Deferred} that fires with the C{iterator} that this</span>
+<span class="sd">            L{CooperativeTask} was created with when the iterator has been</span>
+<span class="sd">            exhausted (i.e. its C{next} method has raised C{StopIteration}), or</span>
+<span class="sd">            fails with the exception raised by C{next} if it raises some other</span>
+<span class="sd">            exception.</span>
+
+<span class="sd">        @rtype: L{Deferred}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completionState</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deferreds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completionResult</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_completionResult</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pause this L{CooperativeTask}.  Stop doing work until</span>
+<span class="sd">        L{CooperativeTask.resume} is called.  If C{pause} is called more than</span>
+<span class="sd">        once, C{resume} must be called an equal number of times to resume this</span>
+<span class="sd">        task.</span>
+
+<span class="sd">        @raise TaskFinished: if this task has already finished or completed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkFinish</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cooperator</span><span class="o">.</span><span class="n">_removeTask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resume processing of a paused L{CooperativeTask}.</span>
+
+<span class="sd">        @raise NotPaused: if this L{CooperativeTask} is not paused.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotPaused</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completionState</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cooperator</span><span class="o">.</span><span class="n">_addTask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_completeWith</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">completionState</span><span class="p">:</span> <span class="n">SchedulerError</span><span class="p">,</span>
+        <span class="n">deferredResult</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">],</span> <span class="n">Failure</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        @param completionState: a L{SchedulerError} exception or a subclass</span>
+<span class="sd">            thereof, indicating what exception should be raised when subsequent</span>
+<span class="sd">            operations are performed.</span>
+
+<span class="sd">        @param deferredResult: the result to fire all the deferreds with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completionState</span> <span class="o">=</span> <span class="n">completionState</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completionResult</span> <span class="o">=</span> <span class="n">deferredResult</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pauseCount</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cooperator</span><span class="o">.</span><span class="n">_removeTask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># The Deferreds need to be invoked after all this is completed, because</span>
+        <span class="c1"># a Deferred may want to manipulate other tasks in a Cooperator.  For</span>
+        <span class="c1"># example, if you call &quot;stop()&quot; on a cooperator in a callback on a</span>
+        <span class="c1"># Deferred returned from whenDone(), this CooperativeTask must be gone</span>
+        <span class="c1"># from the Cooperator by that point so that _completeWith is not</span>
+        <span class="c1"># invoked reentrantly; that would cause these Deferreds to blow up with</span>
+        <span class="c1"># an AlreadyCalledError, or the _removeTask to fail with a ValueError.</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deferreds</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">deferredResult</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop further processing of this task.</span>
+
+<span class="sd">        @raise TaskFinished: if this L{CooperativeTask} has previously</span>
+<span class="sd">            completed, via C{stop}, completion, or failure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkFinish</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_completeWith</span><span class="p">(</span><span class="n">TaskStopped</span><span class="p">(),</span> <span class="n">Failure</span><span class="p">(</span><span class="n">TaskStopped</span><span class="p">()))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_checkFinish</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If this task has been stopped, raise the appropriate subclass of</span>
+<span class="sd">        L{TaskFinished}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completionState</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_completionState</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_oneWorkUnit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform one unit of work for this task, retrieving one item from its</span>
+<span class="sd">        iterator, stopping if there are no further items in the iterator, and</span>
+<span class="sd">        pausing if the result was a L{Deferred}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_completeWith</span><span class="p">(</span><span class="n">TaskDone</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_completeWith</span><span class="p">(</span><span class="n">TaskFailed</span><span class="p">(),</span> <span class="n">Failure</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Deferred</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+
+                <span class="k">def</span><span class="w"> </span><span class="nf">failLater</span><span class="p">(</span><span class="n">failure</span><span class="p">:</span> <span class="n">Failure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_completeWith</span><span class="p">(</span><span class="n">TaskFailed</span><span class="p">(),</span> <span class="n">failure</span><span class="p">)</span>
+
+                <span class="n">result</span><span class="o">.</span><span class="n">addCallbacks</span><span class="p">(</span><span class="k">lambda</span> <span class="n">result</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resume</span><span class="p">(),</span> <span class="n">failLater</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Cooperator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cooperative task scheduler.</span>
+
+<span class="sd">    A cooperative task is an iterator where each iteration represents an</span>
+<span class="sd">    atomic unit of work.  When the iterator yields, it allows the</span>
+<span class="sd">    L{Cooperator} to decide which of its tasks to execute next.  If the</span>
+<span class="sd">    iterator yields a L{Deferred} then work will pause until the</span>
+<span class="sd">    L{Deferred} fires and completes its callback chain.</span>
+
+<span class="sd">    When a L{Cooperator} has more than one task, it distributes work between</span>
+<span class="sd">    all tasks.</span>
+
+<span class="sd">    There are two ways to add tasks to a L{Cooperator}, L{cooperate} and</span>
+<span class="sd">    L{coiterate}.  L{cooperate} is the more useful of the two, as it returns a</span>
+<span class="sd">    L{CooperativeTask}, which can be L{paused&lt;CooperativeTask.pause&gt;},</span>
+<span class="sd">    L{resumed&lt;CooperativeTask.resume&gt;} and L{waited</span>
+<span class="sd">    on&lt;CooperativeTask.whenDone&gt;}.  L{coiterate} has the same effect, but</span>
+<span class="sd">    returns only a L{Deferred} that fires when the task is done.</span>
+
+<span class="sd">    L{Cooperator} can be used for many things, including but not limited to:</span>
+
+<span class="sd">      - running one or more computationally intensive tasks without blocking</span>
+<span class="sd">      - limiting parallelism by running a subset of the total tasks</span>
+<span class="sd">        simultaneously</span>
+<span class="sd">      - doing one thing, waiting for a L{Deferred} to fire,</span>
+<span class="sd">        doing the next thing, repeat (i.e. serializing a sequence of</span>
+<span class="sd">        asynchronous tasks)</span>
+
+<span class="sd">    Multiple L{Cooperator}s do not cooperate with each other, so for most</span>
+<span class="sd">    cases you should use the L{global cooperator&lt;task.cooperate&gt;}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">terminationPredicateFactory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="n">_Timer</span><span class="p">,</span>
+        <span class="n">scheduler</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="kc">None</span><span class="p">]],</span> <span class="n">IDelayedCall</span><span class="p">]</span> <span class="o">=</span> <span class="n">_defaultScheduler</span><span class="p">,</span>
+        <span class="n">started</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a scheduler-like object to which iterators may be added.</span>
+
+<span class="sd">        @param terminationPredicateFactory: A no-argument callable which will</span>
+<span class="sd">        be invoked at the beginning of each step and should return a</span>
+<span class="sd">        no-argument callable which will return True when the step should be</span>
+<span class="sd">        terminated.  The default factory is time-based and allows iterators to</span>
+<span class="sd">        run for 1/100th of a second at a time.</span>
+
+<span class="sd">        @param scheduler: A one-argument callable which takes a no-argument</span>
+<span class="sd">        callable and should invoke it at some future point.  This will be used</span>
+<span class="sd">        to schedule each step of this Cooperator.</span>
+
+<span class="sd">        @param started: A boolean which indicates whether iterators should be</span>
+<span class="sd">        stepped as soon as they are added, or if they will be queued up until</span>
+<span class="sd">        L{Cooperator.start} is called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CooperativeTask</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metarator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">CooperativeTask</span><span class="p">]</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_terminationPredicateFactory</span> <span class="o">=</span> <span class="n">terminationPredicateFactory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">scheduler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IDelayedCall</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="n">started</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">coiterate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">],</span>
+        <span class="n">doneDeferred</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an iterator to the list of iterators this L{Cooperator} is</span>
+<span class="sd">        currently running.</span>
+
+<span class="sd">        Equivalent to L{cooperate}, but returns a L{Deferred} that will</span>
+<span class="sd">        be fired when the task is done.</span>
+
+<span class="sd">        @param doneDeferred: If specified, this will be the Deferred used as</span>
+<span class="sd">            the completion deferred.  It is suggested that you use the default,</span>
+<span class="sd">            which creates a new Deferred for you.</span>
+
+<span class="sd">        @return: a Deferred that will fire when the iterator finishes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">doneDeferred</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">doneDeferred</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
+        <span class="n">whenDone</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">]]</span> <span class="o">=</span> <span class="n">CooperativeTask</span><span class="p">(</span>
+            <span class="n">iterator</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">whenDone</span><span class="p">()</span>
+        <span class="n">whenDone</span><span class="o">.</span><span class="n">chainDeferred</span><span class="p">(</span><span class="n">doneDeferred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">doneDeferred</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cooperate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_TaskResultT</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CooperativeTask</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start running the given iterator as a long-running cooperative task, by</span>
+<span class="sd">        calling next() on it as a periodic timed event.</span>
+
+<span class="sd">        @param iterator: the iterator to invoke.</span>
+
+<span class="sd">        @return: a L{CooperativeTask} object representing this task.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">CooperativeTask</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_addTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">CooperativeTask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a L{CooperativeTask} object to this L{Cooperator}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>  <span class="c1"># XXX silly, I know, but _completeWith</span>
+            <span class="c1"># does the inverse</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">_completeWith</span><span class="p">(</span><span class="n">SchedulerStopped</span><span class="p">(),</span> <span class="n">Failure</span><span class="p">(</span><span class="n">SchedulerStopped</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reschedule</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_removeTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">CooperativeTask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a L{CooperativeTask} from this L{Cooperator}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        <span class="c1"># If no work left to do, cancel the delayed call:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tasksWhileNotStopped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">CooperativeTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yield all L{CooperativeTask} objects in a loop as long as this</span>
+<span class="sd">        L{Cooperator}&#39;s termination condition has not been met.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">terminator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_terminationPredicateFactory</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metarator</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">t</span>
+                <span class="k">if</span> <span class="n">terminator</span><span class="p">():</span>
+                    <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metarator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run one scheduler tick.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">taskObj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasksWhileNotStopped</span><span class="p">():</span>
+            <span class="n">taskObj</span><span class="o">.</span><span class="n">_oneWorkUnit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reschedule</span><span class="p">()</span>
+
+    <span class="n">_mustScheduleOnStart</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reschedule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mustScheduleOnStart</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tick</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Begin scheduling steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mustScheduleOnStart</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mustScheduleOnStart</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reschedule</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop scheduling steps.  Errback the completion Deferreds of all</span>
+<span class="sd">        iterators which have been added and forget about them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">taskObj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span>
+            <span class="n">taskObj</span><span class="o">.</span><span class="n">_completeWith</span><span class="p">(</span><span class="n">SchedulerStopped</span><span class="p">(),</span> <span class="n">Failure</span><span class="p">(</span><span class="n">SchedulerStopped</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delayedCall</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is this L{Cooperator} is currently running?</span>
+
+<span class="sd">        @return: C{True} if the L{Cooperator} is running, C{False} otherwise.</span>
+<span class="sd">        @rtype: C{bool}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span>
+
+
+<span class="n">_theCooperator</span> <span class="o">=</span> <span class="n">Cooperator</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">coiterate</span><span class="p">(</span><span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">_T</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cooperatively iterate over the given iterator, dividing runtime between it</span>
+<span class="sd">    and all other iterators which have been passed to this function and not yet</span>
+<span class="sd">    exhausted.</span>
+
+<span class="sd">    @param iterator: the iterator to invoke.</span>
+
+<span class="sd">    @return: a Deferred that will fire when the iterator finishes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_theCooperator</span><span class="o">.</span><span class="n">coiterate</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cooperate</span><span class="p">(</span><span class="n">iterator</span><span class="p">:</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CooperativeTask</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Start running the given iterator as a long-running cooperative task, by</span>
+<span class="sd">    calling next() on it as a periodic timed event.</span>
+
+<span class="sd">    This is very useful if you have computationally expensive tasks that you</span>
+<span class="sd">    want to run without blocking the reactor.  Just break each task up so that</span>
+<span class="sd">    it yields frequently, pass it in here and the global L{Cooperator} will</span>
+<span class="sd">    make sure work is distributed between them without blocking longer than a</span>
+<span class="sd">    single iteration of a single task.</span>
+
+<span class="sd">    @param iterator: the iterator to invoke.</span>
+
+<span class="sd">    @return: a L{CooperativeTask} object representing this task.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_theCooperator</span><span class="o">.</span><span class="n">cooperate</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">IReactorTime</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Clock</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide a deterministic, easily-controlled implementation of</span>
+<span class="sd">    L{IReactorTime.callLater}.  This is commonly useful for writing</span>
+<span class="sd">    deterministic unit tests for code which schedules events using this API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">rightNow</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DelayedCall</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">seconds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pretend to be time.time().  This is used internally when an operation</span>
+<span class="sd">        such as L{IDelayedCall.reset} needs to determine a time value</span>
+<span class="sd">        relative to the current time.</span>
+
+<span class="sd">        @return: The time which should be considered the current time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rightNow</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sortCalls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort the pending calls according to the time they are scheduled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">callLater</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">callable</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="nb">object</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IDelayedCall</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See L{twisted.internet.interfaces.IReactorTime.callLater}.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dc</span> <span class="o">=</span> <span class="n">DelayedCall</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">()</span> <span class="o">+</span> <span class="n">delay</span><span class="p">,</span>
+            <span class="nb">callable</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">kw</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">remove</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sortCalls</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dc</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">getDelayedCalls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">IDelayedCall</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See L{twisted.internet.interfaces.IReactorTime.getDelayedCalls}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calls</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">advance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move time on this clock forward by the given amount and run whatever</span>
+<span class="sd">        pending calls should be run.</span>
+
+<span class="sd">        @param amount: The number of seconds which to advance this clock&#39;s</span>
+<span class="sd">        time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightNow</span> <span class="o">+=</span> <span class="n">amount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sortCalls</span><span class="p">()</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">calls</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seconds</span><span class="p">():</span>
+            <span class="n">call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">called</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">call</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">call</span><span class="o">.</span><span class="n">kw</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sortCalls</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timings</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Advance incrementally by the given set of times.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">amount</span> <span class="ow">in</span> <span class="n">timings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">advance</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="deferLater">
+<a class="viewcode-back" href="../../../api/evennia.commands.cmdhandler.html#evennia.commands.cmdhandler.deferLater">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">deferLater</span><span class="p">(</span>
+    <span class="n">clock</span><span class="p">:</span> <span class="n">IReactorTime</span><span class="p">,</span>
+    <span class="n">delay</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="nb">callable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">_T</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kw</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">_T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call the given function after a certain period of time has passed.</span>
+
+<span class="sd">    @param clock: The object which will be used to schedule the delayed</span>
+<span class="sd">        call.</span>
+
+<span class="sd">    @param delay: The number of seconds to wait before calling the function.</span>
+
+<span class="sd">    @param callable: The callable to call after the delay, or C{None}.</span>
+
+<span class="sd">    @param args: The positional arguments to pass to C{callable}.</span>
+
+<span class="sd">    @param kw: The keyword arguments to pass to C{callable}.</span>
+
+<span class="sd">    @return: A deferred that fires with the result of the callable when the</span>
+<span class="sd">        specified time has elapsed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">deferLaterCancel</span><span class="p">(</span><span class="n">deferred</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">delayedCall</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cb</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_T</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">callable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># type: ignore[return-value]</span>
+        <span class="k">return</span> <span class="nb">callable</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+
+    <span class="n">d</span><span class="p">:</span> <span class="n">Deferred</span><span class="p">[</span><span class="n">_T</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">(</span><span class="n">deferLaterCancel</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+    <span class="n">delayedCall</span> <span class="o">=</span> <span class="n">clock</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">react</span><span class="p">(</span>
+    <span class="n">main</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">Union</span><span class="p">[</span><span class="n">Deferred</span><span class="p">[</span><span class="n">_T</span><span class="p">],</span> <span class="n">Coroutine</span><span class="p">[</span><span class="s2">&quot;Deferred[_T]&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">_T</span><span class="p">]],</span>
+    <span class="p">],</span>
+    <span class="n">argv</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">_reactor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IReactorCore</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call C{main} and run the reactor until the L{Deferred} it returns fires or</span>
+<span class="sd">    the coroutine it returns completes.</span>
+
+<span class="sd">    This is intended as the way to start up an application with a well-defined</span>
+<span class="sd">    completion condition.  Use it to write clients or one-off asynchronous</span>
+<span class="sd">    operations.  Prefer this to calling C{reactor.run} directly, as this</span>
+<span class="sd">    function will also:</span>
+
+<span class="sd">      - Take care to call C{reactor.stop} once and only once, and at the right</span>
+<span class="sd">        time.</span>
+<span class="sd">      - Log any failures from the C{Deferred} returned by C{main}.</span>
+<span class="sd">      - Exit the application when done, with exit code 0 in case of success and</span>
+<span class="sd">        1 in case of failure. If C{main} fails with a C{SystemExit} error, the</span>
+<span class="sd">        code returned is used.</span>
+
+<span class="sd">    The following demonstrates the signature of a C{main} function which can be</span>
+<span class="sd">    used with L{react}::</span>
+
+<span class="sd">      async def main(reactor, username, password):</span>
+<span class="sd">          return &quot;ok&quot;</span>
+
+<span class="sd">      task.react(main, (&quot;alice&quot;, &quot;secret&quot;))</span>
+
+<span class="sd">    @param main: A callable which returns a L{Deferred} or</span>
+<span class="sd">        coroutine. It should take the reactor as its first</span>
+<span class="sd">        parameter, followed by the elements of C{argv}.</span>
+
+<span class="sd">    @param argv: A list of arguments to pass to C{main}. If omitted the</span>
+<span class="sd">        callable will be invoked with no additional arguments.</span>
+
+<span class="sd">    @param _reactor: An implementation detail to allow easier unit testing.  Do</span>
+<span class="sd">        not supply this parameter.</span>
+
+<span class="sd">    @since: 12.3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_reactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">twisted.internet</span><span class="w"> </span><span class="kn">import</span> <span class="n">reactor</span>
+
+        <span class="n">_reactor</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">IReactorCore</span><span class="p">,</span> <span class="n">reactor</span><span class="p">)</span>
+
+    <span class="n">finished</span> <span class="o">=</span> <span class="n">ensureDeferred</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">_reactor</span><span class="p">,</span> <span class="o">*</span><span class="n">argv</span><span class="p">))</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">stopping</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">onShutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">nonlocal</span> <span class="n">stopping</span>
+        <span class="n">stopping</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">_reactor</span><span class="o">.</span><span class="n">addSystemEventTrigger</span><span class="p">(</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="n">onShutdown</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">stopReactor</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">stopReactor</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">_reactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_reactor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">ReactorNotRunning</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Failure</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">code</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="ne">SystemExit</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">code</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;main function encountered error&quot;</span><span class="p">)</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">cbFinish</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">stopping</span><span class="p">:</span>
+            <span class="n">stop</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">_reactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">_reactor</span><span class="o">.</span><span class="n">callWhenRunning</span><span class="p">(</span><span class="n">stop</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">finished</span><span class="o">.</span><span class="n">addBoth</span><span class="p">(</span><span class="n">cbFinish</span><span class="p">)</span>
+    <span class="n">_reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;LoopingCall&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Clock&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SchedulerStopped&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Cooperator&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;coiterate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;deferLater&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;react&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">twisted.internet.task</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

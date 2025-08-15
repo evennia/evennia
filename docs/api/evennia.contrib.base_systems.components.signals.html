@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.base_systems.components.signals &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.base_systems.components.tests" href="evennia.contrib.base_systems.components.tests.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.components.listing" href="evennia.contrib.base_systems.components.listing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.components.tests.html" title="evennia.contrib.base_systems.components.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.components.listing.html" title="evennia.contrib.base_systems.components.listing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.components.html" accesskey="U">evennia.contrib.base_systems.components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.signals</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.base_systems.components.signals">
+<span id="evennia-contrib-base-systems-components-signals"></span><h1>evennia.contrib.base_systems.components.signals<a class="headerlink" href="#module-evennia.contrib.base_systems.components.signals" title="Link to this heading">¶</a></h1>
+<p>Components - ChrisLR 2022</p>
+<p>This file contains classes functions related to signals.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.as_listener">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.components.signals.</span></span><span class="sig-name descname"><span class="pre">as_listener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#as_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.as_listener" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator style function that marks a method to be connected as listener.
+It will use the provided signal name and default to the decorated function name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>callable</em>) – The method to mark as listener</p></li>
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to listen to, defaults to function name.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.as_responder">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.components.signals.</span></span><span class="sig-name descname"><span class="pre">as_responder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#as_responder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.as_responder" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator style function that marks a method to be connected as responder.
+It will use the provided signal name and default to the decorated function name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>callable</em>) – The method to mark as responder</p></li>
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to respond to, defaults to function name.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.base_systems.components.signals.</span></span><span class="sig-name descname"><span class="pre">SignalsHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This object handles all about signals.
+It holds the connected listeners and responders.
+It allows triggering signals or querying responders.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.add_listener">
+<span class="sig-name descname"><span class="pre">add_listener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.add_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.add_listener" title="Link to this definition">¶</a></dt>
+<dd><p>Connect a listener to a specific signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to listen to</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – The callable that is called when the signal is triggered</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.add_responder">
+<span class="sig-name descname"><span class="pre">add_responder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.add_responder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.add_responder" title="Link to this definition">¶</a></dt>
+<dd><p>Connect a responder to a specific signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to respond to</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – The callable that is called when the signal is queried</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.remove_listener">
+<span class="sig-name descname"><span class="pre">remove_listener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.remove_listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_listener" title="Link to this definition">¶</a></dt>
+<dd><p>Removes a listener for a specific signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to disconnect from</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – The callable that was used to connect</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.remove_responder">
+<span class="sig-name descname"><span class="pre">remove_responder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.remove_responder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_responder" title="Link to this definition">¶</a></dt>
+<dd><p>Removes a responder for a specific signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to disconnect from</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – The callable that was used to connect</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.trigger">
+<span class="sig-name descname"><span class="pre">trigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.trigger" title="Link to this definition">¶</a></dt>
+<dd><p>Triggers a specific signal with specified args and kwargs
+This method does not return anything</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to trigger</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.query">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggregate_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.query" title="Link to this definition">¶</a></dt>
+<dd><p>Queries a specific signal with specified args and kwargs
+This method will return the responses from its connected responders.
+If an aggregate_func is specified, it is called with the responses
+and its result is returned instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_name</strong> (<em>str</em>) – The name of the signal to trigger</p></li>
+<li><p><strong>default</strong> (<em>any</em>) – The value to use when no responses are given
+It will be passed to aggregate_func if it is also given.</p></li>
+<li><p><strong>aggregate_func</strong> (<em>callable</em>) – The function to process the results before returning.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>list</em> –</p>
+<dl class="simple">
+<dt>An iterable of the responses</dt><dd><p>OR the aggregated result when aggregate_func is specified.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.add_object_listeners_and_responders">
+<span class="sig-name descname"><span class="pre">add_object_listeners_and_responders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.add_object_listeners_and_responders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.add_object_listeners_and_responders" title="Link to this definition">¶</a></dt>
+<dd><p>This connects the methods marked as listener or responder from an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>object</em>) – The instance of an object to connect to this handler.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.base_systems.components.signals.SignalsHandler.remove_object_listeners_and_responders">
+<span class="sig-name descname"><span class="pre">remove_object_listeners_and_responders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/base_systems/components/signals.html#SignalsHandler.remove_object_listeners_and_responders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_object_listeners_and_responders" title="Link to this definition">¶</a></dt>
+<dd><p>This disconnects the methods marked as listener or responder from an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>object</em>) – The instance of an object to disconnect from this handler.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.base_systems.components.signals</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.as_listener"><code class="docutils literal notranslate"><span class="pre">as_listener()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.as_responder"><code class="docutils literal notranslate"><span class="pre">as_responder()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler"><code class="docutils literal notranslate"><span class="pre">SignalsHandler</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.__init__"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.add_listener"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.add_listener()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.add_responder"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.add_responder()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_listener"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.remove_listener()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_responder"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.remove_responder()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.trigger"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.trigger()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.query"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.query()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.add_object_listeners_and_responders"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.add_object_listeners_and_responders()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.base_systems.components.signals.SignalsHandler.remove_object_listeners_and_responders"><code class="docutils literal notranslate"><span class="pre">SignalsHandler.remove_object_listeners_and_responders()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.components.listing.html"
+                          title="previous chapter">evennia.contrib.base_systems.components.listing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.components.tests.html"
+                          title="next chapter">evennia.contrib.base_systems.components.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.base_systems.components.signals.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.components.tests.html" title="evennia.contrib.base_systems.components.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.components.listing.html" title="evennia.contrib.base_systems.components.listing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.base_systems.components.html" >evennia.contrib.base_systems.components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.components.signals</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

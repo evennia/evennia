@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.tutorials.tutorial_world &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.tutorial_world.intro_menu" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.talking_npc.tests" href="evennia.contrib.tutorials.talking_npc.tests.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.tutorial_world.intro_menu.html" title="evennia.contrib.tutorials.tutorial_world.intro_menu"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.talking_npc.tests.html" title="evennia.contrib.tutorials.talking_npc.tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" accesskey="U">evennia.contrib.tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.tutorial_world</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.tutorial_world">
+<span id="evennia-contrib-tutorials-tutorial-world"></span><h1>evennia.contrib.tutorials.tutorial_world<a class="headerlink" href="#module-evennia.contrib.tutorials.tutorial_world" title="Link to this heading">¶</a></h1>
+<p>Tutorial world - Griatch, 2011, 2015</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html">evennia.contrib.tutorials.tutorial_world.intro_menu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.do_nothing"><code class="docutils literal notranslate"><span class="pre">do_nothing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.send_testing_tagged"><code class="docutils literal notranslate"><span class="pre">send_testing_tagged()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetHelp"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetHelp.key"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetHelp.priority"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetHelp.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetHelp.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetHelp.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetHelp.path"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetHelp.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_command_demo_help"><code class="docutils literal notranslate"><span class="pre">goto_command_demo_help()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms.key"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms.priority"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms.no_exits"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms.no_exits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms.no_objs"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms.no_objs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetComms.path"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetComms.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_command_demo_comms"><code class="docutils literal notranslate"><span class="pre">goto_command_demo_comms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom.key"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom.priority"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom.no_exits"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom.no_exits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom.no_objs"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom.no_objs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.DemoCommandSetRoom.path"><code class="docutils literal notranslate"><span class="pre">DemoCommandSetRoom.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_command_demo_room"><code class="docutils literal notranslate"><span class="pre">goto_command_demo_room()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.goto_cleanup_cmdsets"><code class="docutils literal notranslate"><span class="pre">goto_cleanup_cmdsets()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.TutorialEvMenu"><code class="docutils literal notranslate"><span class="pre">TutorialEvMenu</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.TutorialEvMenu.close_menu"><code class="docutils literal notranslate"><span class="pre">TutorialEvMenu.close_menu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.TutorialEvMenu.options_formatter"><code class="docutils literal notranslate"><span class="pre">TutorialEvMenu.options_formatter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.intro_menu.html#evennia.contrib.tutorials.tutorial_world.intro_menu.init_menu"><code class="docutils literal notranslate"><span class="pre">init_menu()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html">evennia.contrib.tutorials.tutorial_world.mob</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.key"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.aliases"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.locks"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.func"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.help_category"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.CmdMobOnOff.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdMobOnOff.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet"><code class="docutils literal notranslate"><span class="pre">MobCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">MobCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.MobCmdSet.path"><code class="docutils literal notranslate"><span class="pre">MobCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob"><code class="docutils literal notranslate"><span class="pre">Mob</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_init"><code class="docutils literal notranslate"><span class="pre">Mob.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_object_creation"><code class="docutils literal notranslate"><span class="pre">Mob.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.set_alive"><code class="docutils literal notranslate"><span class="pre">Mob.set_alive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.set_dead"><code class="docutils literal notranslate"><span class="pre">Mob.set_dead()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_idle"><code class="docutils literal notranslate"><span class="pre">Mob.start_idle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_patrolling"><code class="docutils literal notranslate"><span class="pre">Mob.start_patrolling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_hunting"><code class="docutils literal notranslate"><span class="pre">Mob.start_hunting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.start_attacking"><code class="docutils literal notranslate"><span class="pre">Mob.start_attacking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_patrol"><code class="docutils literal notranslate"><span class="pre">Mob.do_patrol()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_hunting"><code class="docutils literal notranslate"><span class="pre">Mob.do_hunting()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.do_attack"><code class="docutils literal notranslate"><span class="pre">Mob.do_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_hit"><code class="docutils literal notranslate"><span class="pre">Mob.at_hit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.at_new_arrival"><code class="docutils literal notranslate"><span class="pre">Mob.at_new_arrival()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Mob.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Mob.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.path"><code class="docutils literal notranslate"><span class="pre">Mob.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.mob.html#evennia.contrib.tutorials.tutorial_world.mob.Mob.typename"><code class="docutils literal notranslate"><span class="pre">Mob.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html">evennia.contrib.tutorials.tutorial_world.objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="docutils literal notranslate"><span class="pre">TutorialObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialObject.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.reset"><code class="docutils literal notranslate"><span class="pre">TutorialObject.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialObject.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialObject.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.path"><code class="docutils literal notranslate"><span class="pre">TutorialObject.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.typename"><code class="docutils literal notranslate"><span class="pre">TutorialObject.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead"><code class="docutils literal notranslate"><span class="pre">CmdRead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.key"><code class="docutils literal notranslate"><span class="pre">CmdRead.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.locks"><code class="docutils literal notranslate"><span class="pre">CmdRead.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRead.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.func"><code class="docutils literal notranslate"><span class="pre">CmdRead.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRead.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRead.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRead.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable"><code class="docutils literal notranslate"><span class="pre">CmdSetReadable</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetReadable.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.path"><code class="docutils literal notranslate"><span class="pre">CmdSetReadable.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable"><code class="docutils literal notranslate"><span class="pre">TutorialReadable</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.path"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.typename"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb"><code class="docutils literal notranslate"><span class="pre">CmdClimb</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.key"><code class="docutils literal notranslate"><span class="pre">CmdClimb.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.locks"><code class="docutils literal notranslate"><span class="pre">CmdClimb.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.help_category"><code class="docutils literal notranslate"><span class="pre">CmdClimb.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.func"><code class="docutils literal notranslate"><span class="pre">CmdClimb.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.aliases"><code class="docutils literal notranslate"><span class="pre">CmdClimb.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdClimb.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdClimb.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable"><code class="docutils literal notranslate"><span class="pre">CmdSetClimbable</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetClimbable.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.path"><code class="docutils literal notranslate"><span class="pre">CmdSetClimbable.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.path"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.typename"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk"><code class="docutils literal notranslate"><span class="pre">Obelisk</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.at_object_creation"><code class="docutils literal notranslate"><span class="pre">Obelisk.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.return_appearance"><code class="docutils literal notranslate"><span class="pre">Obelisk.return_appearance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Obelisk.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Obelisk.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.path"><code class="docutils literal notranslate"><span class="pre">Obelisk.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.typename"><code class="docutils literal notranslate"><span class="pre">Obelisk.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight"><code class="docutils literal notranslate"><span class="pre">CmdLight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.key"><code class="docutils literal notranslate"><span class="pre">CmdLight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLight.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.locks"><code class="docutils literal notranslate"><span class="pre">CmdLight.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLight.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.func"><code class="docutils literal notranslate"><span class="pre">CmdLight.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLight.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight"><code class="docutils literal notranslate"><span class="pre">CmdSetLight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.key"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.priority"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.path"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource"><code class="docutils literal notranslate"><span class="pre">LightSource</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_init"><code class="docutils literal notranslate"><span class="pre">LightSource.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_object_creation"><code class="docutils literal notranslate"><span class="pre">LightSource.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.light"><code class="docutils literal notranslate"><span class="pre">LightSource.light()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">LightSource.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">LightSource.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.path"><code class="docutils literal notranslate"><span class="pre">LightSource.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.LightSource.typename"><code class="docutils literal notranslate"><span class="pre">LightSource.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.key"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.aliases"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.locks"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.help_category"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.parse"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.func"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton"><code class="docutils literal notranslate"><span class="pre">CmdPressButton</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.key"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.locks"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.func"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.key"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.priority"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.path"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall"><code class="docutils literal notranslate"><span class="pre">CrumblingWall</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_init"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_object_creation"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.open_wall"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.open_wall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.return_appearance"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.return_appearance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_post_traverse"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_post_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_failed_traverse"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_failed_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.reset"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.path"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.typename"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.locks"><code class="docutils literal notranslate"><span class="pre">CmdAttack.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.func"><code class="docutils literal notranslate"><span class="pre">CmdAttack.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon"><code class="docutils literal notranslate"><span class="pre">CmdSetWeapon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetWeapon.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.path"><code class="docutils literal notranslate"><span class="pre">CmdSetWeapon.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.reset"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.path"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.typename"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.key"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.aliases"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.locks"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.help_category"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.func"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.key"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.path"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.produce_weapon"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.produce_weapon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.path"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.objects.html#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.typename"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html">evennia.contrib.tutorials.tutorial_world.rooms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial"><code class="docutils literal notranslate"><span class="pre">CmdTutorial</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.key"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.locks"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.func"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorial.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTutorial.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.key"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.locks"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.func"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialSetDetail.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTutorialSetDetail.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.func"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.key"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialLook.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTutorialLook.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp.key"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp.func"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdTutorialGiveUp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdTutorialGiveUp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoomCmdSet"><code class="docutils literal notranslate"><span class="pre">TutorialRoomCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoomCmdSet.key"><code class="docutils literal notranslate"><span class="pre">TutorialRoomCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoomCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">TutorialRoomCmdSet.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoomCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">TutorialRoomCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoomCmdSet.path"><code class="docutils literal notranslate"><span class="pre">TutorialRoomCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom"><code class="docutils literal notranslate"><span class="pre">TutorialRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.at_object_receive"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.return_detail"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.return_detail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.set_detail"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.set_detail()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.path"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialRoom.typename"><code class="docutils literal notranslate"><span class="pre">TutorialRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit"><code class="docutils literal notranslate"><span class="pre">TutorialStartExit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialStartExit.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialStartExit.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialStartExit.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.path"><code class="docutils literal notranslate"><span class="pre">TutorialStartExit.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TutorialStartExit.typename"><code class="docutils literal notranslate"><span class="pre">TutorialStartExit.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom"><code class="docutils literal notranslate"><span class="pre">WeatherRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">WeatherRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom.update_weather"><code class="docutils literal notranslate"><span class="pre">WeatherRoom.update_weather()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">WeatherRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">WeatherRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom.path"><code class="docutils literal notranslate"><span class="pre">WeatherRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.WeatherRoom.typename"><code class="docutils literal notranslate"><span class="pre">WeatherRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro.key"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro.func"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro.aliases"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro.help_category"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEvenniaIntro.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdEvenniaIntro.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdSetEvenniaIntro"><code class="docutils literal notranslate"><span class="pre">CmdSetEvenniaIntro</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdSetEvenniaIntro.key"><code class="docutils literal notranslate"><span class="pre">CmdSetEvenniaIntro.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdSetEvenniaIntro.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetEvenniaIntro.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdSetEvenniaIntro.path"><code class="docutils literal notranslate"><span class="pre">CmdSetEvenniaIntro.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom"><code class="docutils literal notranslate"><span class="pre">IntroRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">IntroRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.at_object_receive"><code class="docutils literal notranslate"><span class="pre">IntroRoom.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">IntroRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">IntroRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.path"><code class="docutils literal notranslate"><span class="pre">IntroRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.IntroRoom.typename"><code class="docutils literal notranslate"><span class="pre">IntroRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast"><code class="docutils literal notranslate"><span class="pre">CmdEast</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.key"><code class="docutils literal notranslate"><span class="pre">CmdEast.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.aliases"><code class="docutils literal notranslate"><span class="pre">CmdEast.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.locks"><code class="docutils literal notranslate"><span class="pre">CmdEast.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.help_category"><code class="docutils literal notranslate"><span class="pre">CmdEast.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.func"><code class="docutils literal notranslate"><span class="pre">CmdEast.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdEast.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdEast.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdEast.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest"><code class="docutils literal notranslate"><span class="pre">CmdWest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.key"><code class="docutils literal notranslate"><span class="pre">CmdWest.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdWest.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.locks"><code class="docutils literal notranslate"><span class="pre">CmdWest.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdWest.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.func"><code class="docutils literal notranslate"><span class="pre">CmdWest.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdWest.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdWest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdWest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.key"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.locks"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.func"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookBridge.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLookBridge.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.locks"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.func"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdBridgeHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdBridgeHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeCmdSet"><code class="docutils literal notranslate"><span class="pre">BridgeCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BridgeCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">BridgeCmdSet.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BridgeCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BridgeCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom"><code class="docutils literal notranslate"><span class="pre">BridgeRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.update_weather"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.update_weather()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_receive"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.at_object_leave"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.at_object_leave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.path"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.BridgeRoom.typename"><code class="docutils literal notranslate"><span class="pre">BridgeRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark"><code class="docutils literal notranslate"><span class="pre">CmdLookDark</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.key"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.locks"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.func"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdLookDark.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLookDark.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.locks"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.func"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDarkHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.key"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.locks"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.func"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.CmdDarkNoMatch.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDarkNoMatch.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkCmdSet"><code class="docutils literal notranslate"><span class="pre">DarkCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkCmdSet.key"><code class="docutils literal notranslate"><span class="pre">DarkCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkCmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">DarkCmdSet.mergetype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">DarkCmdSet.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">DarkCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkCmdSet.path"><code class="docutils literal notranslate"><span class="pre">DarkCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom"><code class="docutils literal notranslate"><span class="pre">DarkRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">DarkRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_init"><code class="docutils literal notranslate"><span class="pre">DarkRoom.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.check_light_state"><code class="docutils literal notranslate"><span class="pre">DarkRoom.check_light_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_receive"><code class="docutils literal notranslate"><span class="pre">DarkRoom.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.at_object_leave"><code class="docutils literal notranslate"><span class="pre">DarkRoom.at_object_leave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DarkRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">DarkRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.path"><code class="docutils literal notranslate"><span class="pre">DarkRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.DarkRoom.typename"><code class="docutils literal notranslate"><span class="pre">DarkRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom"><code class="docutils literal notranslate"><span class="pre">TeleportRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TeleportRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.at_object_receive"><code class="docutils literal notranslate"><span class="pre">TeleportRoom.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TeleportRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TeleportRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.path"><code class="docutils literal notranslate"><span class="pre">TeleportRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.TeleportRoom.typename"><code class="docutils literal notranslate"><span class="pre">TeleportRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom"><code class="docutils literal notranslate"><span class="pre">OutroRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_creation"><code class="docutils literal notranslate"><span class="pre">OutroRoom.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_receive"><code class="docutils literal notranslate"><span class="pre">OutroRoom.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.at_object_leave"><code class="docutils literal notranslate"><span class="pre">OutroRoom.at_object_leave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">OutroRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">OutroRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.path"><code class="docutils literal notranslate"><span class="pre">OutroRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.rooms.html#evennia.contrib.tutorials.tutorial_world.rooms.OutroRoom.typename"><code class="docutils literal notranslate"><span class="pre">OutroRoom.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html">evennia.contrib.tutorials.tutorial_world.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldMob"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldMob</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldMob.test_mob"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldMob.test_mob()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.tearDown"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_tutorialobj"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_tutorialobj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_readable"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_readable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_climbable"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_climbable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_obelisk"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_obelisk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_lightsource"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_lightsource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_crumblingwall"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_crumblingwall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_weapon"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_weapon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldObjects.test_weaponrack"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldObjects.test_weaponrack()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_cmdtutorial"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_cmdtutorial()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_weatherroom"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_weatherroom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_introroom"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_introroom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_bridgeroom"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_bridgeroom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_darkroom"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_darkroom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_teleportroom"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_teleportroom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.tutorials.tutorial_world.tests.html#evennia.contrib.tutorials.tutorial_world.tests.TestTutorialWorldRooms.test_outroroom"><code class="docutils literal notranslate"><span class="pre">TestTutorialWorldRooms.test_outroroom()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.tutorials.talking_npc.tests.html"
+                          title="previous chapter">evennia.contrib.tutorials.talking_npc.tests</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.tutorials.tutorial_world.intro_menu.html"
+                          title="next chapter">evennia.contrib.tutorials.tutorial_world.intro_menu</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.tutorial_world.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.tutorial_world.intro_menu.html" title="evennia.contrib.tutorials.tutorial_world.intro_menu"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.talking_npc.tests.html" title="evennia.contrib.tutorials.talking_npc.tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.tutorial_world</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

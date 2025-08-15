@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.game_systems.turnbattle &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.turnbattle.tb_basic" href="evennia.contrib.game_systems.turnbattle.tb_basic.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.storage.tests" href="evennia.contrib.game_systems.storage.tests.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_basic.html" title="evennia.contrib.game_systems.turnbattle.tb_basic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.storage.tests.html" title="evennia.contrib.game_systems.storage.tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" accesskey="U">evennia.contrib.game_systems</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.turnbattle">
+<span id="evennia-contrib-game-systems-turnbattle"></span><h1>evennia.contrib.game_systems.turnbattle<a class="headerlink" href="#module-evennia.contrib.game_systems.turnbattle" title="Link to this heading">¶</a></h1>
+<p>Turnbattle system - Tim Ashley Jenkins 2017</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html">evennia.contrib.game_systems.turnbattle.tb_basic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.ACTIONS_PER_TURN"><code class="docutils literal notranslate"><span class="pre">ACTIONS_PER_TURN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.roll_init"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.roll_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.get_attack"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.get_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.get_defense"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.get_defense()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.get_damage"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.get_damage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.apply_damage"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.apply_damage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.at_defeat"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.at_defeat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.resolve_attack"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.resolve_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.combat_cleanup"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.combat_cleanup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.is_in_combat"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.is_in_combat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.is_turn"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.is_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules.spend_action"><code class="docutils literal notranslate"><span class="pre">BasicCombatRules.spend_action()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.COMBAT_RULES"><code class="docutils literal notranslate"><span class="pre">COMBAT_RULES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.rules"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.at_pre_move"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.at_pre_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.path"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.typename"><code class="docutils literal notranslate"><span class="pre">TBBasicCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.rules"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.at_script_creation"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.at_script_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.at_stop"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.at_stop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.at_repeat"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.at_repeat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.initialize_for_combat"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.initialize_for_combat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.start_turn"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.start_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.next_turn"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.next_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.turn_end_check"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.turn_end_check()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.join_fight"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.join_fight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.path"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.typename"><code class="docutils literal notranslate"><span class="pre">TBBasicTurnHandler.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight"><code class="docutils literal notranslate"><span class="pre">CmdFight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.key"><code class="docutils literal notranslate"><span class="pre">CmdFight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFight.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.rules"><code class="docutils literal notranslate"><span class="pre">CmdFight.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.combat_handler_class"><code class="docutils literal notranslate"><span class="pre">CmdFight.combat_handler_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.func"><code class="docutils literal notranslate"><span class="pre">CmdFight.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFight.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFight.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.rules"><code class="docutils literal notranslate"><span class="pre">CmdAttack.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.func"><code class="docutils literal notranslate"><span class="pre">CmdAttack.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass"><code class="docutils literal notranslate"><span class="pre">CmdPass</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.key"><code class="docutils literal notranslate"><span class="pre">CmdPass.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPass.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPass.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.rules"><code class="docutils literal notranslate"><span class="pre">CmdPass.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.func"><code class="docutils literal notranslate"><span class="pre">CmdPass.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPass.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPass.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.key"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.rules"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.func"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest"><code class="docutils literal notranslate"><span class="pre">CmdRest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.key"><code class="docutils literal notranslate"><span class="pre">CmdRest.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRest.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.rules"><code class="docutils literal notranslate"><span class="pre">CmdRest.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.func"><code class="docutils literal notranslate"><span class="pre">CmdRest.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRest.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRest.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdRest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.rules"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.combat_help_text"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.combat_help_text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.func"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BattleCmdSet"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BattleCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BattleCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BattleCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.at_cmdset_creation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html">evennia.contrib.game_systems.turnbattle.tb_equip</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.ACTIONS_PER_TURN"><code class="docutils literal notranslate"><span class="pre">ACTIONS_PER_TURN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules"><code class="docutils literal notranslate"><span class="pre">EquipmentCombatRules</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_attack"><code class="docutils literal notranslate"><span class="pre">EquipmentCombatRules.get_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_defense"><code class="docutils literal notranslate"><span class="pre">EquipmentCombatRules.get_defense()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.get_damage"><code class="docutils literal notranslate"><span class="pre">EquipmentCombatRules.get_damage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.EquipmentCombatRules.resolve_attack"><code class="docutils literal notranslate"><span class="pre">EquipmentCombatRules.resolve_attack()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.COMBAT_RULES"><code class="docutils literal notranslate"><span class="pre">COMBAT_RULES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler"><code class="docutils literal notranslate"><span class="pre">TBEquipTurnHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.rules"><code class="docutils literal notranslate"><span class="pre">TBEquipTurnHandler.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBEquipTurnHandler.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBEquipTurnHandler.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.path"><code class="docutils literal notranslate"><span class="pre">TBEquipTurnHandler.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipTurnHandler.typename"><code class="docutils literal notranslate"><span class="pre">TBEquipTurnHandler.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon"><code class="docutils literal notranslate"><span class="pre">TBEWeapon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.rules"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_drop"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.at_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.at_give"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.at_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.path"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEWeapon.typename"><code class="docutils literal notranslate"><span class="pre">TBEWeapon.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor"><code class="docutils literal notranslate"><span class="pre">TBEArmor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBEArmor.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_pre_drop"><code class="docutils literal notranslate"><span class="pre">TBEArmor.at_pre_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_drop"><code class="docutils literal notranslate"><span class="pre">TBEArmor.at_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_pre_give"><code class="docutils literal notranslate"><span class="pre">TBEArmor.at_pre_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.at_give"><code class="docutils literal notranslate"><span class="pre">TBEArmor.at_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBEArmor.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBEArmor.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.path"><code class="docutils literal notranslate"><span class="pre">TBEArmor.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEArmor.typename"><code class="docutils literal notranslate"><span class="pre">TBEArmor.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter"><code class="docutils literal notranslate"><span class="pre">TBEquipCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBEquipCharacter.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBEquipCharacter.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBEquipCharacter.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.path"><code class="docutils literal notranslate"><span class="pre">TBEquipCharacter.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.TBEquipCharacter.typename"><code class="docutils literal notranslate"><span class="pre">TBEquipCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight"><code class="docutils literal notranslate"><span class="pre">CmdFight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.key"><code class="docutils literal notranslate"><span class="pre">CmdFight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFight.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.rules"><code class="docutils literal notranslate"><span class="pre">CmdFight.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.command_handler_class"><code class="docutils literal notranslate"><span class="pre">CmdFight.command_handler_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFight.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFight.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdFight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.rules"><code class="docutils literal notranslate"><span class="pre">CmdAttack.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass"><code class="docutils literal notranslate"><span class="pre">CmdPass</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.key"><code class="docutils literal notranslate"><span class="pre">CmdPass.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPass.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPass.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.rules"><code class="docutils literal notranslate"><span class="pre">CmdPass.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPass.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdPass.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPass.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.key"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.rules"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDisengage.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest"><code class="docutils literal notranslate"><span class="pre">CmdRest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.key"><code class="docutils literal notranslate"><span class="pre">CmdRest.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRest.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.rules"><code class="docutils literal notranslate"><span class="pre">CmdRest.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRest.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRest.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdRest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.rules"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdCombatHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield"><code class="docutils literal notranslate"><span class="pre">CmdWield</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.key"><code class="docutils literal notranslate"><span class="pre">CmdWield.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.help_category"><code class="docutils literal notranslate"><span class="pre">CmdWield.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.rules"><code class="docutils literal notranslate"><span class="pre">CmdWield.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.func"><code class="docutils literal notranslate"><span class="pre">CmdWield.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.aliases"><code class="docutils literal notranslate"><span class="pre">CmdWield.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdWield.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdWield.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdWield.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield"><code class="docutils literal notranslate"><span class="pre">CmdUnwield</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.key"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.rules"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.func"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdUnwield.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUnwield.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon"><code class="docutils literal notranslate"><span class="pre">CmdDon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.key"><code class="docutils literal notranslate"><span class="pre">CmdDon.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDon.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.rules"><code class="docutils literal notranslate"><span class="pre">CmdDon.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.func"><code class="docutils literal notranslate"><span class="pre">CmdDon.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDon.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDon.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDon.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDon.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff"><code class="docutils literal notranslate"><span class="pre">CmdDoff</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.key"><code class="docutils literal notranslate"><span class="pre">CmdDoff.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDoff.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.rules"><code class="docutils literal notranslate"><span class="pre">CmdDoff.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.func"><code class="docutils literal notranslate"><span class="pre">CmdDoff.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDoff.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDoff.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.CmdDoff.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDoff.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_equip.html#evennia.contrib.game_systems.turnbattle.tb_equip.BattleCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html">evennia.contrib.game_systems.turnbattle.tb_items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.DEF_DOWN_MOD"><code class="docutils literal notranslate"><span class="pre">DEF_DOWN_MOD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.get_attack"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.get_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.get_defense"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.get_defense()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.get_damage"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.get_damage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.resolve_attack"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.resolve_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.spend_item_use"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.spend_item_use()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.use_item"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.use_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.condition_tickdown"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.condition_tickdown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.add_condition"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.add_condition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_heal"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.itemfunc_heal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_add_condition"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.itemfunc_add_condition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_cure_condition"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.itemfunc_cure_condition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ItemCombatRules.itemfunc_attack"><code class="docutils literal notranslate"><span class="pre">ItemCombatRules.itemfunc_attack()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.ITEMFUNCS"><code class="docutils literal notranslate"><span class="pre">ITEMFUNCS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.AMULET_OF_WEAKNESS"><code class="docutils literal notranslate"><span class="pre">AMULET_OF_WEAKNESS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.rules"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.at_turn_start"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.at_turn_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.apply_turn_conditions"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.apply_turn_conditions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.at_update"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.at_update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.path"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacter.typename"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacterTest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacterTest.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacterTest.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacterTest.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest.path"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacterTest.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsCharacterTest.typename"><code class="docutils literal notranslate"><span class="pre">TBItemsCharacterTest.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.rules"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.next_turn"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler.next_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.path"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.TBItemsTurnHandler.typename"><code class="docutils literal notranslate"><span class="pre">TBItemsTurnHandler.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight"><code class="docutils literal notranslate"><span class="pre">CmdFight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.key"><code class="docutils literal notranslate"><span class="pre">CmdFight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFight.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.rules"><code class="docutils literal notranslate"><span class="pre">CmdFight.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.combat_handler_class"><code class="docutils literal notranslate"><span class="pre">CmdFight.combat_handler_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFight.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFight.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdFight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack.rules"><code class="docutils literal notranslate"><span class="pre">CmdAttack.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass"><code class="docutils literal notranslate"><span class="pre">CmdPass</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass.key"><code class="docutils literal notranslate"><span class="pre">CmdPass.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPass.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPass.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass.rules"><code class="docutils literal notranslate"><span class="pre">CmdPass.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPass.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdPass.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPass.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage.key"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage.rules"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdDisengage.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest"><code class="docutils literal notranslate"><span class="pre">CmdRest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest.key"><code class="docutils literal notranslate"><span class="pre">CmdRest.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRest.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest.rules"><code class="docutils literal notranslate"><span class="pre">CmdRest.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRest.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRest.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdRest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.rules"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.combat_help_text"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.combat_help_text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdCombatHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse"><code class="docutils literal notranslate"><span class="pre">CmdUse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.key"><code class="docutils literal notranslate"><span class="pre">CmdUse.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.help_category"><code class="docutils literal notranslate"><span class="pre">CmdUse.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.rules"><code class="docutils literal notranslate"><span class="pre">CmdUse.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.func"><code class="docutils literal notranslate"><span class="pre">CmdUse.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.aliases"><code class="docutils literal notranslate"><span class="pre">CmdUse.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdUse.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.CmdUse.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdUse.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.BattleCmdSet"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.BattleCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.BattleCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_items.html#evennia.contrib.game_systems.turnbattle.tb_items.BattleCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.at_cmdset_creation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html">evennia.contrib.game_systems.turnbattle.tb_magic</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_healing"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules.spell_healing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_attack"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules.spell_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_conjure"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules.spell_conjure()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.COMBAT_RULES"><code class="docutils literal notranslate"><span class="pre">COMBAT_RULES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.SPELLS"><code class="docutils literal notranslate"><span class="pre">SPELLS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.ACTIONS_PER_TURN"><code class="docutils literal notranslate"><span class="pre">ACTIONS_PER_TURN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.rules"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.path"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.typename"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.rules"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.path"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.typename"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight"><code class="docutils literal notranslate"><span class="pre">CmdFight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.key"><code class="docutils literal notranslate"><span class="pre">CmdFight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFight.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.rules"><code class="docutils literal notranslate"><span class="pre">CmdFight.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.combat_handler_class"><code class="docutils literal notranslate"><span class="pre">CmdFight.combat_handler_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFight.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFight.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.rules"><code class="docutils literal notranslate"><span class="pre">CmdAttack.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass"><code class="docutils literal notranslate"><span class="pre">CmdPass</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.key"><code class="docutils literal notranslate"><span class="pre">CmdPass.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPass.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPass.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.rules"><code class="docutils literal notranslate"><span class="pre">CmdPass.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPass.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPass.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.key"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.rules"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.key"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.func"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast"><code class="docutils literal notranslate"><span class="pre">CmdCast</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.key"><code class="docutils literal notranslate"><span class="pre">CmdCast.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCast.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.rules"><code class="docutils literal notranslate"><span class="pre">CmdCast.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.func"><code class="docutils literal notranslate"><span class="pre">CmdCast.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCast.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCast.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCast.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest"><code class="docutils literal notranslate"><span class="pre">CmdRest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.key"><code class="docutils literal notranslate"><span class="pre">CmdRest.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRest.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.rules"><code class="docutils literal notranslate"><span class="pre">CmdRest.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.func"><code class="docutils literal notranslate"><span class="pre">CmdRest.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRest.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRest.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus"><code class="docutils literal notranslate"><span class="pre">CmdStatus</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.key"><code class="docutils literal notranslate"><span class="pre">CmdStatus.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStatus.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.func"><code class="docutils literal notranslate"><span class="pre">CmdStatus.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStatus.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStatus.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStatus.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_magic.html#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.at_cmdset_creation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html">evennia.contrib.game_systems.turnbattle.tb_range</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.ACTIONS_PER_TURN"><code class="docutils literal notranslate"><span class="pre">ACTIONS_PER_TURN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.get_attack"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.get_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.get_defense"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.get_defense()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.get_range"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.get_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.distance_inc"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.distance_inc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.distance_dec"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.distance_dec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.approach"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.approach()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.withdraw"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.withdraw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.resolve_attack"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.resolve_attack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.RangedCombatRules.combat_status_message"><code class="docutils literal notranslate"><span class="pre">RangedCombatRules.combat_status_message()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.COMBAT_RULES"><code class="docutils literal notranslate"><span class="pre">COMBAT_RULES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.rules"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.init_range"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.init_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.join_rangefield"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.join_rangefield()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.start_turn"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.start_turn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.join_fight"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.join_fight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.path"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeTurnHandler.typename"><code class="docutils literal notranslate"><span class="pre">TBRangeTurnHandler.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter"><code class="docutils literal notranslate"><span class="pre">TBRangeCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.rules"><code class="docutils literal notranslate"><span class="pre">TBRangeCharacter.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBRangeCharacter.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBRangeCharacter.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.path"><code class="docutils literal notranslate"><span class="pre">TBRangeCharacter.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeCharacter.typename"><code class="docutils literal notranslate"><span class="pre">TBRangeCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject"><code class="docutils literal notranslate"><span class="pre">TBRangeObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_pre_drop"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.at_pre_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_drop"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.at_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_pre_get"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.at_pre_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_get"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.at_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_pre_give"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.at_pre_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.at_give"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.at_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.path"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.TBRangeObject.typename"><code class="docutils literal notranslate"><span class="pre">TBRangeObject.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight"><code class="docutils literal notranslate"><span class="pre">CmdFight</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.key"><code class="docutils literal notranslate"><span class="pre">CmdFight.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFight.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.rules"><code class="docutils literal notranslate"><span class="pre">CmdFight.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.combat_handler_class"><code class="docutils literal notranslate"><span class="pre">CmdFight.combat_handler_class</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFight.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFight.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdFight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.rules"><code class="docutils literal notranslate"><span class="pre">CmdAttack.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.func"><code class="docutils literal notranslate"><span class="pre">CmdAttack.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot"><code class="docutils literal notranslate"><span class="pre">CmdShoot</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.key"><code class="docutils literal notranslate"><span class="pre">CmdShoot.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.help_category"><code class="docutils literal notranslate"><span class="pre">CmdShoot.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.rules"><code class="docutils literal notranslate"><span class="pre">CmdShoot.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.func"><code class="docutils literal notranslate"><span class="pre">CmdShoot.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.aliases"><code class="docutils literal notranslate"><span class="pre">CmdShoot.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdShoot.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdShoot.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdShoot.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach"><code class="docutils literal notranslate"><span class="pre">CmdApproach</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.key"><code class="docutils literal notranslate"><span class="pre">CmdApproach.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.help_category"><code class="docutils literal notranslate"><span class="pre">CmdApproach.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.rules"><code class="docutils literal notranslate"><span class="pre">CmdApproach.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.func"><code class="docutils literal notranslate"><span class="pre">CmdApproach.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.aliases"><code class="docutils literal notranslate"><span class="pre">CmdApproach.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdApproach.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdApproach.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdApproach.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.key"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.help_category"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.rules"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.func"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.aliases"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdWithdraw.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdWithdraw.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass"><code class="docutils literal notranslate"><span class="pre">CmdPass</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.key"><code class="docutils literal notranslate"><span class="pre">CmdPass.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPass.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPass.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.rules"><code class="docutils literal notranslate"><span class="pre">CmdPass.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPass.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdPass.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPass.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.key"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.rules"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdDisengage.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest"><code class="docutils literal notranslate"><span class="pre">CmdRest</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.key"><code class="docutils literal notranslate"><span class="pre">CmdRest.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRest.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.rules"><code class="docutils literal notranslate"><span class="pre">CmdRest.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRest.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRest.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdRest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus"><code class="docutils literal notranslate"><span class="pre">CmdStatus</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.key"><code class="docutils literal notranslate"><span class="pre">CmdStatus.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStatus.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.rules"><code class="docutils literal notranslate"><span class="pre">CmdStatus.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.func"><code class="docutils literal notranslate"><span class="pre">CmdStatus.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStatus.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStatus.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdStatus.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStatus.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.rules"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.rules</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.combat_help_text"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.combat_help_text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.CmdCombatHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.BattleCmdSet"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.BattleCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.BattleCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_range.html#evennia.contrib.game_systems.turnbattle.tb_range.BattleCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.at_cmdset_creation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html">evennia.contrib.game_systems.turnbattle.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleBasicCmd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicCmd.test_turnbattlecmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleBasicCmd.test_turnbattlecmd()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipCmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipCmd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipCmd.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipCmd.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipCmd.test_turnbattleequipcmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipCmd.test_turnbattleequipcmd()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeCmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleRangeCmd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeCmd.test_turnbattlerangecmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleRangeCmd.test_turnbattlerangecmd()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsCmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsCmd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsCmd.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsCmd.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsCmd.test_turnbattleitemcmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsCmd.test_turnbattleitemcmd()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleMagicCmd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicCmd.test_turnbattlemagiccmd"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleMagicCmd.test_turnbattlemagiccmd()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicFunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleBasicFunc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicFunc.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleBasicFunc.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicFunc.tearDown"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleBasicFunc.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleBasicFunc.test_tbbasicfunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleBasicFunc.test_tbbasicfunc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipFunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipFunc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipFunc.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipFunc.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipFunc.tearDown"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipFunc.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleEquipFunc.test_tbequipfunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleEquipFunc.test_tbequipfunc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeFunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleRangeFunc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeFunc.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleRangeFunc.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeFunc.tearDown"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleRangeFunc.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleRangeFunc.test_tbrangefunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleRangeFunc.test_tbrangefunc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsFunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsFunc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsFunc.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsFunc.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsFunc.tearDown"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsFunc.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleItemsFunc.test_tbitemsfunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleItemsFunc.test_tbitemsfunc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicFunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleMagicFunc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicFunc.setUp"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleMagicFunc.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicFunc.tearDown"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleMagicFunc.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tests.html#evennia.contrib.game_systems.turnbattle.tests.TestTurnBattleMagicFunc.test_tbbasicfunc"><code class="docutils literal notranslate"><span class="pre">TestTurnBattleMagicFunc.test_tbbasicfunc()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.storage.tests.html"
+                          title="previous chapter">evennia.contrib.game_systems.storage.tests</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.turnbattle.tb_basic.html"
+                          title="next chapter">evennia.contrib.game_systems.turnbattle.tb_basic</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.turnbattle.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_basic.html" title="evennia.contrib.game_systems.turnbattle.tb_basic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.storage.tests.html" title="evennia.contrib.game_systems.storage.tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

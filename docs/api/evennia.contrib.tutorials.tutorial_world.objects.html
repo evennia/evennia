@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.tutorials.tutorial_world.objects &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.tutorials.tutorial_world.rooms" href="evennia.contrib.tutorials.tutorial_world.rooms.html" />
+    <link rel="prev" title="evennia.contrib.tutorials.tutorial_world.mob" href="evennia.contrib.tutorials.tutorial_world.mob.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.tutorial_world.rooms.html" title="evennia.contrib.tutorials.tutorial_world.rooms"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.tutorial_world.mob.html" title="evennia.contrib.tutorials.tutorial_world.mob"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.tutorial_world.html" accesskey="U">evennia.contrib.tutorials.tutorial_world</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.tutorial_world.objects</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.tutorials.tutorial_world.objects">
+<span id="evennia-contrib-tutorials-tutorial-world-objects"></span><h1>evennia.contrib.tutorials.tutorial_world.objects<a class="headerlink" href="#module-evennia.contrib.tutorials.tutorial_world.objects" title="Link to this heading">¶</a></h1>
+<p>TutorialWorld - basic objects - Griatch 2011</p>
+<p>This module holds all “dead” object definitions for
+the tutorial world. Object-commands and -cmdsets
+are also defined here, together with the object.</p>
+<p>Objects:</p>
+<p>TutorialObject</p>
+<p>TutorialReadable
+TutorialClimbable
+Obelisk
+LightSource
+CrumblingWall
+TutorialWeapon
+TutorialWeaponRack</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">TutorialObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialObject"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject" title="evennia.objects.objects.DefaultObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultObject</span></code></a></p>
+<p>This is the baseclass for all objects in the tutorial.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialObject.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when the object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialObject.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Resets the object, whatever that may mean.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist" title="evennia.objects.objects.DefaultObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned" title="evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.TutorialObject'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TutorialObject'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdRead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdRead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>read [obj]</p>
+</dd>
+</dl>
+<p>Read some text of a readable object.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'read'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdRead.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implements the read command. This simply looks for an
+Attribute “readable_text” on the object and displays that.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdRead.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'read',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nUsage:\n</span>&#160; <span class="pre">read</span> <span class="pre">[obj]\n\nRead</span> <span class="pre">some</span> <span class="pre">text</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">readable</span> <span class="pre">object.\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdSetReadable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetReadable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>A CmdSet for readables.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetReadable.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when the cmdset is created.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">TutorialReadable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialReadable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a></p>
+<p>This simple object defines some attributes and</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialReadable.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when object is created. We make sure to set the needed
+Attribute and add the readable cmdset.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TutorialReadable'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdClimb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdClimb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Climb an object</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>climb &lt;object&gt;</p>
+</dd>
+</dl>
+<p>This allows you to climb.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'climb'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdClimb.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implements function</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'climb',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nClimb</span> <span class="pre">an</span> <span class="pre">object\n\nUsage:\n</span>&#160; <span class="pre">climb</span> <span class="pre">&lt;object&gt;\n\nThis</span> <span class="pre">allows</span> <span class="pre">you</span> <span class="pre">to</span> <span class="pre">climb.\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdSetClimbable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetClimbable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Climbing cmdset</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetClimbable.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>populate set</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">TutorialClimbable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialClimbable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a></p>
+<p>A climbable object. All that is special about it is that it has
+the “climb” command available on it.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialClimbable.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called at initial creation only</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TutorialClimbable'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">Obelisk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#Obelisk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a></p>
+<p>This object changes its description randomly, and which is shown
+determines which order “clue id” is stored on the Character for
+future puzzles.</p>
+<dl class="simple">
+<dt>Important Attribute:</dt><dd><dl class="simple">
+<dt>puzzle_descs (list): list of descriptions. One of these is</dt><dd><p>picked randomly when this object is looked at and its index
+in the list is used as a key for to solve the puzzle.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#Obelisk.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when object is created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk.return_appearance">
+<span class="sig-name descname"><span class="pre">return_appearance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#Obelisk.return_appearance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.return_appearance" title="Link to this definition">¶</a></dt>
+<dd><p>This hook is called by the look command to get the description
+of the object. We overload it with our own version.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.Obelisk'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.Obelisk.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Obelisk'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdLight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdLight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Creates light where there was none. Something to burn.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'on'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['burn',</span> <span class="pre">'light']</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:holds()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdLight.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implements the light command. Since this command is designed
+to sit on a “lightable” object, we operate only on self.obj.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:holds()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdLight.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'burn</span> <span class="pre">light',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'on',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">burn</span> <span class="pre">light',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nCreates</span> <span class="pre">light</span> <span class="pre">where</span> <span class="pre">there</span> <span class="pre">was</span> <span class="pre">none.</span> <span class="pre">Something</span> <span class="pre">to</span> <span class="pre">burn.\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdSetLight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetLight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>CmdSet for the lightsource commands</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lightsource_cmdset'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetLight.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>called at cmdset creation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">LightSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#LightSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a></p>
+<p>This implements a light source object.</p>
+<p>When burned out, the object will be deleted.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_init">
+<span class="sig-name descname"><span class="pre">at_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#LightSource.at_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_init" title="Link to this definition">¶</a></dt>
+<dd><p>If this is called with the Attribute is_giving_light already
+set, we know that the timer got killed by a server
+reload/reboot before it had time to finish. So we kill it here
+instead. This is the price we pay for the simplicity of the
+non-persistent delay() method.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#LightSource.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called when object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.light">
+<span class="sig-name descname"><span class="pre">light</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#LightSource.light"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.light" title="Link to this definition">¶</a></dt>
+<dd><p>Light this object - this is called by Light command.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.LightSource'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.LightSource.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LightSource'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdShiftRoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdShiftRoot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Shifts roots around.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>shift blue root left/right
+shift red root left/right
+shift yellow root up/down
+shift green root up/down</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'shift'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['push',</span> <span class="pre">'pull',</span> <span class="pre">'move',</span> <span class="pre">'shiftroot']</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:locattr(is_lit)'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdShiftRoot.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Custom parser; split input by spaces for simplicity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdShiftRoot.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Implement the command.</dt><dd><p>blue/red - vertical roots
+yellow/green - horizontal roots</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:locattr(is_lit)'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'push</span> <span class="pre">pull</span> <span class="pre">move</span> <span class="pre">shiftroot',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'shift',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">push</span> <span class="pre">pull</span> <span class="pre">move</span> <span class="pre">shiftroot',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nShifts</span> <span class="pre">roots</span> <span class="pre">around.\n\nUsage:\n</span>&#160; <span class="pre">shift</span> <span class="pre">blue</span> <span class="pre">root</span> <span class="pre">left/right\n</span>&#160; <span class="pre">shift</span> <span class="pre">red</span> <span class="pre">root</span> <span class="pre">left/right\n</span>&#160; <span class="pre">shift</span> <span class="pre">yellow</span> <span class="pre">root</span> <span class="pre">up/down\n</span>&#160; <span class="pre">shift</span> <span class="pre">green</span> <span class="pre">root</span> <span class="pre">up/down\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdPressButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdPressButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Presses a button.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'press'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['button',</span> <span class="pre">'push</span> <span class="pre">button',</span> <span class="pre">'press</span> <span class="pre">button']</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:objattr(button_exposed)</span> <span class="pre">and</span> <span class="pre">objlocattr(is_lit)'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdPressButton.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implements the command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:objattr(button_exposed)</span> <span class="pre">and</span> <span class="pre">objlocattr(is_lit)'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'button</span> <span class="pre">push</span> <span class="pre">button</span> <span class="pre">press</span> <span class="pre">button',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'press',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">button</span> <span class="pre">push</span> <span class="pre">button</span> <span class="pre">press</span> <span class="pre">button',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nPresses</span> <span class="pre">a</span> <span class="pre">button.\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdSetCrumblingWall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetCrumblingWall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Group the commands for crumblingWall</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'crumblingwall_cmdset'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetCrumblingWall.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>called when object is first created.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CrumblingWall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a>, <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit" title="evennia.objects.objects.DefaultExit"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultExit</span></code></a></p>
+<p>This is a custom Exit.</p>
+<p>The CrumblingWall can be examined in various ways, but only if a
+lit light source is in the room. The traversal itself is blocked
+by a traverse: lock on the exit that only allows passage if a
+certain attribute is set on the trying account.</p>
+<dl class="simple">
+<dt>Important attribute</dt><dd><dl class="simple">
+<dt>destination - this property must be set to make this a valid exit</dt><dd><p>whenever the button is pushed (this hides it as an exit
+until it actually is)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_init">
+<span class="sig-name descname"><span class="pre">at_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.at_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_init" title="Link to this definition">¶</a></dt>
+<dd><p>Called when object is recalled from cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>called when the object is first created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.open_wall">
+<span class="sig-name descname"><span class="pre">open_wall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.open_wall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.open_wall" title="Link to this definition">¶</a></dt>
+<dd><p>This method is called by the push button command once the puzzle
+is solved. It opens the wall and sets a timer for it to reset
+itself.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.return_appearance">
+<span class="sig-name descname"><span class="pre">return_appearance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.return_appearance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.return_appearance" title="Link to this definition">¶</a></dt>
+<dd><p>This is called when someone looks at the wall. We need to echo the
+current root positions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_post_traverse">
+<span class="sig-name descname"><span class="pre">at_post_traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traverser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_location</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.at_post_traverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_post_traverse" title="Link to this definition">¶</a></dt>
+<dd><p>This is called after we traversed this exit. Cleans up and resets
+the puzzle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_failed_traverse">
+<span class="sig-name descname"><span class="pre">at_failed_traverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traverser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.at_failed_traverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_failed_traverse" title="Link to this definition">¶</a></dt>
+<dd><p>This is called if the account fails to pass the Exit.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CrumblingWall.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Called by tutorial world runner, or whenever someone successfully
+traversed the Exit.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a>, <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist" title="evennia.objects.objects.DefaultExit.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a>, <a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned" title="evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'CrumblingWall'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdAttack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdAttack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Attack the enemy. Commands:</p>
+<blockquote>
+<div><p>stab &lt;enemy&gt;
+slash &lt;enemy&gt;
+parry</p>
+</div></blockquote>
+<p>stab - (thrust) makes a lot of damage but is harder to hit with.
+slash - is easier to land, but does not make as much damage.
+parry - forgoes your attack but will make you harder to hit on next</p>
+<blockquote>
+<div><p>enemy attack.</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'attack'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['fight',</span> <span class="pre">'chop',</span> <span class="pre">'pierce',</span> <span class="pre">'bash',</span> <span class="pre">'kill',</span> <span class="pre">'thrust',</span> <span class="pre">'parry',</span> <span class="pre">'defend',</span> <span class="pre">'stab',</span> <span class="pre">'hit',</span> <span class="pre">'slash']</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdAttack.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implements the stab</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'fight</span> <span class="pre">chop</span> <span class="pre">pierce</span> <span class="pre">bash</span> <span class="pre">kill</span> <span class="pre">thrust</span> <span class="pre">parry</span> <span class="pre">defend</span> <span class="pre">stab</span> <span class="pre">hit</span> <span class="pre">slash',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'attack',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">fight</span> <span class="pre">chop</span> <span class="pre">pierce</span> <span class="pre">bash</span> <span class="pre">kill</span> <span class="pre">thrust</span> <span class="pre">parry</span> <span class="pre">defend</span> <span class="pre">stab</span> <span class="pre">hit</span> <span class="pre">slash',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nAttack</span> <span class="pre">the</span> <span class="pre">enemy.</span> <span class="pre">Commands:\n\n</span>&#160; <span class="pre">stab</span> <span class="pre">&lt;enemy&gt;\n</span>&#160; <span class="pre">slash</span> <span class="pre">&lt;enemy&gt;\n</span>&#160; <span class="pre">parry\n\nstab</span> <span class="pre">-</span> <span class="pre">(thrust)</span> <span class="pre">makes</span> <span class="pre">a</span> <span class="pre">lot</span> <span class="pre">of</span> <span class="pre">damage</span> <span class="pre">but</span> <span class="pre">is</span> <span class="pre">harder</span> <span class="pre">to</span> <span class="pre">hit</span> <span class="pre">with.\nslash</span> <span class="pre">-</span> <span class="pre">is</span> <span class="pre">easier</span> <span class="pre">to</span> <span class="pre">land,</span> <span class="pre">but</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">make</span> <span class="pre">as</span> <span class="pre">much</span> <span class="pre">damage.\nparry</span> <span class="pre">-</span> <span class="pre">forgoes</span> <span class="pre">your</span> <span class="pre">attack</span> <span class="pre">but</span> <span class="pre">will</span> <span class="pre">make</span> <span class="pre">you</span> <span class="pre">harder</span> <span class="pre">to</span> <span class="pre">hit</span> <span class="pre">on</span> <span class="pre">next\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">enemy</span> <span class="pre">attack.\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdSetWeapon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetWeapon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Holds the attack command.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetWeapon.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>called at first object creation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">TutorialWeapon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialWeapon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a></p>
+<p>This defines a bladed weapon.</p>
+<dl>
+<dt>Important attributes (set at creation):</dt><dd><p>hit - chance to hit (0-1)
+parry - chance to parry (0-1)
+damage - base damage given (modified by hit success and</p>
+<blockquote>
+<div><p>type of attack) (0-10)</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialWeapon.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called at first creation of the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialWeapon.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.reset" title="Link to this definition">¶</a></dt>
+<dd><p>When reset, the weapon is simply deleted, unless it has a place
+to return to.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TutorialWeapon'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdGetWeapon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdGetWeapon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>get weapon</p>
+</dd>
+</dl>
+<p>This will try to obtain a weapon from the container.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'get</span> <span class="pre">weapon'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tutorialworld'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdGetWeapon.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.func" title="Link to this definition">¶</a></dt>
+<dd><p>Get a weapon from the container. It will
+itself handle all messages.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'tutorialworld',</span> <span class="pre">'key':</span> <span class="pre">'get</span> <span class="pre">weapon',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nUsage:\n</span>&#160; <span class="pre">get</span> <span class="pre">weapon\n\nThis</span> <span class="pre">will</span> <span class="pre">try</span> <span class="pre">to</span> <span class="pre">obtain</span> <span class="pre">a</span> <span class="pre">weapon</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">container.\n'}</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">CmdSetWeaponRack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetWeaponRack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>The cmdset for the rack.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'weaponrack_cmdset'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#CmdSetWeaponRack.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called at first creation of cmdset</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.tutorials.tutorial_world.objects.</span></span><span class="sig-name descname"><span class="pre">TutorialWeaponRack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialWeaponRack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">TutorialObject</span></code></a></p>
+<p>This object represents a weapon store. When people use the
+“get weapon” command on this rack, it will produce one
+random weapon from among those registered to exist
+on it. This will also set a property on the character
+to make sure they can’t get more than one at a time.</p>
+<dl class="simple">
+<dt>Attributes to set on this object:</dt><dd><dl class="simple">
+<dt>available_weapons: list of prototype-keys from</dt><dd><p>WEAPON_PROTOTYPES, the weapons available in this rack.</p>
+</dd>
+<dt>no_more_weapons_msg - error message to return to accounts</dt><dd><p>who already got one weapon from the rack and tries to
+grab another one.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialWeaponRack.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>called at creation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.produce_weapon">
+<span class="sig-name descname"><span class="pre">produce_weapon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/tutorials/tutorial_world/objects.html#TutorialWeaponRack.produce_weapon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.produce_weapon" title="Link to this definition">¶</a></dt>
+<dd><p>This will produce a new weapon from the rack,
+assuming the caller hasn’t already gotten one. When
+doing so, the caller will get Tagged with the id
+of this rack, to make sure they cannot keep
+pulling weapons from it indefinitely.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned" title="evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TutorialWeaponRack'</span></em><a class="headerlink" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.tutorials.tutorial_world.objects</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject"><code class="docutils literal notranslate"><span class="pre">TutorialObject</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialObject.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.reset"><code class="docutils literal notranslate"><span class="pre">TutorialObject.reset()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialObject.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialObject.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.path"><code class="docutils literal notranslate"><span class="pre">TutorialObject.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialObject.typename"><code class="docutils literal notranslate"><span class="pre">TutorialObject.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead"><code class="docutils literal notranslate"><span class="pre">CmdRead</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.key"><code class="docutils literal notranslate"><span class="pre">CmdRead.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.locks"><code class="docutils literal notranslate"><span class="pre">CmdRead.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRead.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.func"><code class="docutils literal notranslate"><span class="pre">CmdRead.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRead.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRead.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdRead.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRead.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable"><code class="docutils literal notranslate"><span class="pre">CmdSetReadable</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetReadable.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetReadable.path"><code class="docutils literal notranslate"><span class="pre">CmdSetReadable.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable"><code class="docutils literal notranslate"><span class="pre">TutorialReadable</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.path"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialReadable.typename"><code class="docutils literal notranslate"><span class="pre">TutorialReadable.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb"><code class="docutils literal notranslate"><span class="pre">CmdClimb</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.key"><code class="docutils literal notranslate"><span class="pre">CmdClimb.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.locks"><code class="docutils literal notranslate"><span class="pre">CmdClimb.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.help_category"><code class="docutils literal notranslate"><span class="pre">CmdClimb.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.func"><code class="docutils literal notranslate"><span class="pre">CmdClimb.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.aliases"><code class="docutils literal notranslate"><span class="pre">CmdClimb.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdClimb.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdClimb.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdClimb.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable"><code class="docutils literal notranslate"><span class="pre">CmdSetClimbable</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetClimbable.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetClimbable.path"><code class="docutils literal notranslate"><span class="pre">CmdSetClimbable.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.path"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialClimbable.typename"><code class="docutils literal notranslate"><span class="pre">TutorialClimbable.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk"><code class="docutils literal notranslate"><span class="pre">Obelisk</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.at_object_creation"><code class="docutils literal notranslate"><span class="pre">Obelisk.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.return_appearance"><code class="docutils literal notranslate"><span class="pre">Obelisk.return_appearance()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Obelisk.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Obelisk.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.path"><code class="docutils literal notranslate"><span class="pre">Obelisk.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.Obelisk.typename"><code class="docutils literal notranslate"><span class="pre">Obelisk.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight"><code class="docutils literal notranslate"><span class="pre">CmdLight</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.key"><code class="docutils literal notranslate"><span class="pre">CmdLight.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLight.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.locks"><code class="docutils literal notranslate"><span class="pre">CmdLight.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLight.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.func"><code class="docutils literal notranslate"><span class="pre">CmdLight.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLight.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdLight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight"><code class="docutils literal notranslate"><span class="pre">CmdSetLight</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.key"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.priority"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetLight.path"><code class="docutils literal notranslate"><span class="pre">CmdSetLight.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource"><code class="docutils literal notranslate"><span class="pre">LightSource</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_init"><code class="docutils literal notranslate"><span class="pre">LightSource.at_init()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.at_object_creation"><code class="docutils literal notranslate"><span class="pre">LightSource.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.light"><code class="docutils literal notranslate"><span class="pre">LightSource.light()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">LightSource.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">LightSource.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.path"><code class="docutils literal notranslate"><span class="pre">LightSource.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.LightSource.typename"><code class="docutils literal notranslate"><span class="pre">LightSource.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.key"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.aliases"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.locks"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.help_category"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.parse"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.func"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdShiftRoot.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdShiftRoot.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton"><code class="docutils literal notranslate"><span class="pre">CmdPressButton</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.key"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.locks"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.func"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdPressButton.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPressButton.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.key"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.priority"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetCrumblingWall.path"><code class="docutils literal notranslate"><span class="pre">CmdSetCrumblingWall.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall"><code class="docutils literal notranslate"><span class="pre">CrumblingWall</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_init"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_init()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_object_creation"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.open_wall"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.open_wall()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.return_appearance"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.return_appearance()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_post_traverse"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_post_traverse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.at_failed_traverse"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.at_failed_traverse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.reset"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.reset()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.path"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CrumblingWall.typename"><code class="docutils literal notranslate"><span class="pre">CrumblingWall.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.locks"><code class="docutils literal notranslate"><span class="pre">CmdAttack.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.func"><code class="docutils literal notranslate"><span class="pre">CmdAttack.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon"><code class="docutils literal notranslate"><span class="pre">CmdSetWeapon</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetWeapon.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeapon.path"><code class="docutils literal notranslate"><span class="pre">CmdSetWeapon.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.reset"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.reset()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.path"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeapon.typename"><code class="docutils literal notranslate"><span class="pre">TutorialWeapon.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.key"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.aliases"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.locks"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.help_category"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.func"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdGetWeapon.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdGetWeapon.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.key"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.CmdSetWeaponRack.path"><code class="docutils literal notranslate"><span class="pre">CmdSetWeaponRack.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.produce_weapon"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.produce_weapon()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.path"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.tutorials.tutorial_world.objects.TutorialWeaponRack.typename"><code class="docutils literal notranslate"><span class="pre">TutorialWeaponRack.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.tutorials.tutorial_world.mob.html"
+                          title="previous chapter">evennia.contrib.tutorials.tutorial_world.mob</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.tutorials.tutorial_world.rooms.html"
+                          title="next chapter">evennia.contrib.tutorials.tutorial_world.rooms</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.tutorials.tutorial_world.objects.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.tutorial_world.rooms.html" title="evennia.contrib.tutorials.tutorial_world.rooms"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.tutorials.tutorial_world.mob.html" title="evennia.contrib.tutorials.tutorial_world.mob"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.tutorials.html" >evennia.contrib.tutorials</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.tutorials.tutorial_world.html" >evennia.contrib.tutorials.tutorial_world</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.tutorials.tutorial_world.objects</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

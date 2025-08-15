@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.db.models.functions.comparison &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.db.models.functions.comparison</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.db.models.functions.comparison</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Database functions that do comparisons or type conversions.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.expressions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Func</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.regex_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">_lazy_re_compile</span>
+
+
+<div class="viewcode-block" id="Cast">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cast</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Coerce an expression to a new field type.&quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;CAST&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(function)s</span><span class="s2">(</span><span class="si">%(expressions)s</span><span class="s2"> AS </span><span class="si">%(db_type)s</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="Cast.__init__">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">output_field</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="n">output_field</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cast.as_sql">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast.as_sql">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">extra_context</span><span class="p">[</span><span class="s2">&quot;db_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_field</span><span class="o">.</span><span class="n">cast_db_type</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cast.as_sqlite">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast.as_sqlite">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">db_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_field</span><span class="o">.</span><span class="n">db_type</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">db_type</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;datetime&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">}:</span>
+            <span class="c1"># Use strftime as datetime/time don&#39;t keep fractional seconds.</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;strftime(</span><span class="si">%%</span><span class="s2">s, </span><span class="si">%(expressions)s</span><span class="s2">)&quot;</span>
+            <span class="n">sql</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+                <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span>
+            <span class="p">)</span>
+            <span class="n">format_string</span> <span class="o">=</span> <span class="s2">&quot;%H:%M:</span><span class="si">%f</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">db_type</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span> <span class="k">else</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:</span><span class="si">%f</span><span class="s2">&quot;</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">format_string</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sql</span><span class="p">,</span> <span class="n">params</span>
+        <span class="k">elif</span> <span class="n">db_type</span> <span class="o">==</span> <span class="s2">&quot;date&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;date(</span><span class="si">%(expressions)s</span><span class="s2">)&quot;</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+                <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cast.as_mysql">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast.as_mysql">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_mysql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">output_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_field</span><span class="o">.</span><span class="n">get_internal_type</span><span class="p">()</span>
+        <span class="c1"># MySQL doesn&#39;t support explicit cast to float.</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;FloatField&quot;</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">%(expressions)s</span><span class="s2"> + 0.0)&quot;</span>
+        <span class="c1"># MariaDB doesn&#39;t support explicit cast to JSON.</span>
+        <span class="k">elif</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;JSONField&quot;</span> <span class="ow">and</span> <span class="n">connection</span><span class="o">.</span><span class="n">mysql_is_mariadb</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;JSON_EXTRACT(</span><span class="si">%(expressions)s</span><span class="s2">, &#39;$&#39;)&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cast.as_postgresql">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast.as_postgresql">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_postgresql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="c1"># CAST would be valid too, but the :: shortcut syntax is more readable.</span>
+        <span class="c1"># &#39;expressions&#39; is wrapped in parentheses in case it&#39;s a complex</span>
+        <span class="c1"># expression.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+            <span class="n">compiler</span><span class="p">,</span>
+            <span class="n">connection</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;(</span><span class="si">%(expressions)s</span><span class="s2">)::</span><span class="si">%(db_type)s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">extra_context</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Cast.as_oracle">
+<a class="viewcode-back" href="../../../../../api/evennia.typeclasses.managers.html#evennia.typeclasses.managers.Cast.as_oracle">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_field</span><span class="o">.</span><span class="n">get_internal_type</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;JSONField&quot;</span><span class="p">:</span>
+            <span class="c1"># Oracle doesn&#39;t support explicit cast to JSON.</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;JSON_QUERY(</span><span class="si">%(expressions)s</span><span class="s2">, &#39;$&#39;)&quot;</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span>
+                <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Coalesce</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return, from left to right, the first non-null expression.&quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;COALESCE&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expressions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Coalesce must take at least two expressions&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">empty_result_set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">expression</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_source_expressions</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">expression</span><span class="o">.</span><span class="n">empty_result_set_value</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="bp">NotImplemented</span> <span class="ow">or</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="c1"># Oracle prohibits mixing TextField (NCLOB) and CharField (NVARCHAR2),</span>
+        <span class="c1"># so convert all fields to NCLOB when that type is expected.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_field</span><span class="o">.</span><span class="n">get_internal_type</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;TextField&quot;</span><span class="p">:</span>
+            <span class="n">clone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">clone</span><span class="o">.</span><span class="n">set_source_expressions</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">Func</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;TO_NCLOB&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">expression</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_source_expressions</span><span class="p">()</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Coalesce</span><span class="p">,</span> <span class="n">clone</span><span class="p">)</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Collate</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;COLLATE&quot;</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(expressions)s</span><span class="s2"> </span><span class="si">%(function)s</span><span class="s2"> </span><span class="si">%(collation)s</span><span class="s2">&quot;</span>
+    <span class="n">allowed_default</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="c1"># Inspired from</span>
+    <span class="c1"># https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS</span>
+    <span class="n">collation_re</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[\w-]+$&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">collation</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">collation</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">collation_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">collation</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid collation name: </span><span class="si">%r</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">collation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collation</span> <span class="o">=</span> <span class="n">collation</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sql</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">extra_context</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;collation&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">quote_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collation</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Greatest</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the maximum expression.</span>
+
+<span class="sd">    If any expression is null the return value is database-specific:</span>
+<span class="sd">    On PostgreSQL, the maximum not-null expression is returned.</span>
+<span class="sd">    On MySQL, Oracle, and SQLite, if any expression is null, null is returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;GREATEST&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expressions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Greatest must take at least two expressions&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Use the MAX function on SQLite.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sqlite</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;MAX&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Least</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the minimum expression.</span>
+
+<span class="sd">    If any expression is null the return value is database-specific:</span>
+<span class="sd">    On PostgreSQL, return the minimum not-null expression.</span>
+<span class="sd">    On MySQL, Oracle, and SQLite, if any expression is null, return null.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;LEAST&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expressions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Least must take at least two expressions&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">expressions</span><span class="p">,</span> <span class="o">**</span><span class="n">extra</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_sqlite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Use the MIN function on SQLite.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sqlite</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="s2">&quot;MIN&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NullIf</span><span class="p">(</span><span class="n">Func</span><span class="p">):</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="s2">&quot;NULLIF&quot;</span>
+    <span class="n">arity</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">as_oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">):</span>
+        <span class="n">expression1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_source_expressions</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expression1</span><span class="p">,</span> <span class="n">Value</span><span class="p">)</span> <span class="ow">and</span> <span class="n">expression1</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Oracle does not allow Value(None) for expression1.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_sql</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_context</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../../index.html">
+              <img class="logo" src="../../../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.db.models.functions.comparison</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

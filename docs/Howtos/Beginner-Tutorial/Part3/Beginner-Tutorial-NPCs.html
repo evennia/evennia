@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>8. Non-Player-Characters &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="9. Combat base framework" href="Beginner-Tutorial-Combat-Base.html" />
+    <link rel="prev" title="7. In-game Rooms" href="Beginner-Tutorial-Rooms.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Combat-Base.html" title="9. Combat base framework"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Rooms.html" title="7. In-game Rooms"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">8. </span>Non-Player-Characters</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="non-player-characters">
+<h1><span class="section-number">8. </span>Non-Player-Characters<a class="headerlink" href="#non-player-characters" title="Link to this heading">¶</a></h1>
+<aside class="sidebar">
+<p class="sidebar-title">vNPCs</p>
+<p>You should usually avoid creating hundreds of NPC objects to populate your ‘busy town’ - in a text game so many NPCs will just spam the screen and annoy your players. Since this is a text game, you can usually get away with using <em>vNPcs</em> - virtual NPCs. vNPCs are only described in text - a room could be described as a bustling street, farmers can be described shouting to each other. Using room descriptions for this works well, but the tutorial lesson about <a class="reference internal" href="Beginner-Tutorial-Rooms.html"><span class="std std-doc">EvAdventure Rooms</span></a> has a section called <a class="reference internal" href="Beginner-Tutorial-Rooms.html#adding-life-to-a-room"><span class="std std-ref">adding life to a room</span></a> that can be used for making vNPCs appear to do things in the background.</p>
+</aside>
+<p><em>Non-Player-Characters</em>, or NPCs, is the common term for all active agents that are <em>not</em> controlled by players. NPCs could be anything from merchants and quest givers, to monsters and bosses.  They could also be ‘flavor’ - townsfolk doing their chores, farmers tending their fields - there to make the world feel “more alive”.</p>
+<p>In this lesson we will create the base class of <em>EvAdventure</em> NPCs based on the <em>Knave</em> ruleset. According to the <em>Knave</em> rules, NPCs have some simplified stats compared to the <a class="reference internal" href="Beginner-Tutorial-Characters.html"><span class="std std-doc">PC characters</span></a> we designed earlier.</p>
+<div style="clear: right;"></div>
+<section id="the-npc-base-class">
+<h2><span class="section-number">8.1. </span>The NPC base class<a class="headerlink" href="#the-npc-base-class" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p>See <a class="reference internal" href="../../../api/evennia.contrib.tutorials.evadventure.npcs.html#evennia-contrib-tutorials-evadventure-npcs"><span class="std std-ref">evennia/contrib/tutorials/evadventure/npcs.py</span></a> for a ready-made example of an npc module.</p>
+</aside>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/npcs.py</span></code>.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/npcs.py </span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultCharacter</span><span class="p">,</span> <span class="n">AttributeProperty</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">.characters</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivingMixin</span>
+<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">.enums</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ability</span>
+<span class="linenos"> 7</span><span class="kn">from</span><span class="w"> </span><span class="nn">.objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_bare_hands</span>
+<span class="linenos"> 8</span>
+<span class="hll"><span class="linenos"> 9</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureNPC</span><span class="p">(</span><span class="n">LivingMixin</span><span class="p">,</span> <span class="n">DefaultCharacter</span><span class="p">):</span> 
+</span><span class="linenos">10</span><span class="w">	</span><span class="sd">&quot;&quot;&quot;Base class for NPCs&quot;&quot;&quot;</span> 
+<span class="linenos">11</span>
+<span class="hll"><span class="linenos">12</span>    <span class="n">is_pc</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span class="hll"><span class="linenos">13</span>    <span class="n">hit_dice</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="linenos">14</span>    <span class="n">armor</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># +10 to get armor defense</span>
+<span class="hll"><span class="linenos">15</span>    <span class="n">hp_multiplier</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># 4 default in Knave</span>
+</span><span class="linenos">16</span>    <span class="n">hp</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># internal tracking, use .hp property</span>
+<span class="hll"><span class="linenos">17</span>    <span class="n">morale</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="linenos">18</span>    <span class="n">allegiance</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">Ability</span><span class="o">.</span><span class="n">ALLEGIANCE_HOSTILE</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="hll"><span class="linenos">19</span>
+</span><span class="linenos">20</span>    <span class="n">weapon</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">get_bare_hands</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># instead of inventory</span>
+<span class="linenos">21</span>    <span class="n">coins</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># coin loot</span>
+<span class="linenos">22</span> 
+<span class="hll"><span class="linenos">23</span>    <span class="n">is_idle</span> <span class="o">=</span> <span class="n">AttributeProperty</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autocreate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span class="linenos">24</span>    
+<span class="hll"><span class="linenos">25</span>    <span class="nd">@property</span>
+</span><span class="linenos">26</span>    <span class="k">def</span><span class="w"> </span><span class="nf">strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">27</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
+<span class="linenos">28</span>        
+<span class="linenos">29</span>    <span class="nd">@property</span>
+<span class="linenos">30</span>    <span class="k">def</span><span class="w"> </span><span class="nf">dexterity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">31</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
+<span class="linenos">32</span> 
+<span class="linenos">33</span>    <span class="nd">@property</span>
+<span class="linenos">34</span>    <span class="k">def</span><span class="w"> </span><span class="nf">constitution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">35</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
+<span class="linenos">36</span> 
+<span class="linenos">37</span>    <span class="nd">@property</span>
+<span class="linenos">38</span>    <span class="k">def</span><span class="w"> </span><span class="nf">intelligence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">39</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
+<span class="linenos">40</span> 
+<span class="linenos">41</span>    <span class="nd">@property</span>
+<span class="linenos">42</span>    <span class="k">def</span><span class="w"> </span><span class="nf">wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">43</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
+<span class="linenos">44</span> 
+<span class="linenos">45</span>    <span class="nd">@property</span>
+<span class="linenos">46</span>    <span class="k">def</span><span class="w"> </span><span class="nf">charisma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">47</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span>
+<span class="linenos">48</span> 
+<span class="linenos">49</span>    <span class="nd">@property</span>
+<span class="linenos">50</span>    <span class="k">def</span><span class="w"> </span><span class="nf">hp_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">51</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hit_dice</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_multiplier</span>
+<span class="linenos">52</span>    
+<span class="linenos">53</span>    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">54</span><span class="w">         </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">55</span><span class="sd">         Start with max health.</span>
+<span class="linenos">56</span><span class="sd">  </span>
+<span class="linenos">57</span><span class="sd">         &quot;&quot;&quot;</span>
+<span class="linenos">58</span>         <span class="bp">self</span><span class="o">.</span><span class="n">hp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hp_max</span>
+<span class="hll"><span class="linenos">59</span>         <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;npcs&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+</span><span class="linenos">60</span>
+<span class="hll"><span class="linenos">61</span>
+</span><span class="linenos">62</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+<span class="linenos">63</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">64</span><span class="sd">    Mob(ile) NPC to be used for enemies.</span>
+<span class="linenos">65</span><span class="sd">     </span>
+<span class="linenos">66</span><span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Line 9</strong>: By use of <em>multiple inheritance</em> we use the <code class="docutils literal notranslate"><span class="pre">LinvingMixin</span></code> we created in the <a class="reference internal" href="Beginner-Tutorial-Characters.html"><span class="std std-doc">Character lesson</span></a>. This includes a lot of useful methods, such as showing our ‘hurt level’, methods to use to heal, hooks to call when getting attacked, hurt and so on. We can re-use all of those in upcoming NPC subclasses.</p></li>
+<li><p><strong>Line 12</strong>: The <code class="docutils literal notranslate"><span class="pre">is_pc</span></code> is a quick and convenient way to check if this is, well, a PC or not. We will use it in the upcoming <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html"><span class="std std-doc">Combat base lesson</span></a>.</p></li>
+<li><p><strong>Line 13</strong>: The NPC is simplified in that all stats are just based on the <code class="docutils literal notranslate"><span class="pre">Hit</span> <span class="pre">dice</span></code> number (see <strong>Lines 25-51</strong>). We store <code class="docutils literal notranslate"><span class="pre">armor</span></code> and a <code class="docutils literal notranslate"><span class="pre">weapon</span></code> as direct <a class="reference internal" href="../../../Components/Attributes.html"><span class="std std-doc">Attributes</span></a> on the class rather than bother implementing a full equipment system.</p></li>
+<li><p><strong>Lines 17, 18</strong>: The <code class="docutils literal notranslate"><span class="pre">morale</span></code> and <code class="docutils literal notranslate"><span class="pre">allegiance</span></code> are <em>Knave</em> properties determining how likely the NPC is to flee in a combat situation and if they are hostile or friendly.</p></li>
+<li><p><strong>Line 19</strong>: The <code class="docutils literal notranslate"><span class="pre">is_idle</span></code> Attribute is a useful property. It should be available on all NPCs and will be used to disable AI entirely.</p></li>
+<li><p><strong>Line 59</strong>: We make sure to tag NPCs. We may want to group different NPCs together later, for example to have all NPCs with the same tag respond if one of them is attacked.</p></li>
+</ul>
+<p>We make an empty subclass <code class="docutils literal notranslate"><span class="pre">EvAdventureMob</span></code>. A ‘mob’ (short for ‘mobile’) is a common MUD term for NPCs that can move around on their own. We will in the future use this class to represent enemies in the game. We will get back to this class [in the lesson about adding AI][Beginner-Tutoroal-AI].</p>
+</section>
+<section id="testing">
+<h2><span class="section-number">8.2. </span>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p>Create a new module <code class="docutils literal notranslate"><span class="pre">evadventure/tests/test_npcs.py</span></code></p>
+</div></blockquote>
+<p>Not so much to test yet, but we will be using the same module to test other aspects of NPCs in the future, so let’s create it now.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/tests/test_npcs.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_object</span>                                           
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.test_resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvenniaTest</span>                        
+                                                                            
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">npcs</span>                                                         
+                                                                            
+<span class="k">class</span><span class="w"> </span><span class="nc">TestNPCBase</span><span class="p">(</span><span class="n">EvenniaTest</span><span class="p">):</span>                                             
+<span class="w">	</span><span class="sd">&quot;&quot;&quot;Test the NPC base class&quot;&quot;&quot;</span> 
+	
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_npc_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">npc</span> <span class="o">=</span> <span class="n">create_object</span><span class="p">(</span>
+            <span class="n">npcs</span><span class="o">.</span><span class="n">EvAdventureNPC</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;TestNPC&quot;</span><span class="p">,</span>
+            <span class="n">attributes</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;hit_dice&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)],</span>  <span class="c1"># set hit_dice to 4</span>
+        <span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">npc</span><span class="o">.</span><span class="n">hp_multiplier</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">npc</span><span class="o">.</span><span class="n">hp</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">npc</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">npc</span><span class="o">.</span><span class="n">charisma</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+
+
+</pre></div>
+</div>
+<p>Nothing special here. Note how the <code class="docutils literal notranslate"><span class="pre">create_object</span></code> helper function takes <code class="docutils literal notranslate"><span class="pre">attributes</span></code> as a keyword. This is a list of tuples we use to set different values than the default ones to Attributes. We then check a few of the properties to make sure they return what we expect.</p>
+</section>
+<section id="conclusions">
+<h2><span class="section-number">8.3. </span>Conclusions<a class="headerlink" href="#conclusions" title="Link to this heading">¶</a></h2>
+<p>In <em>Knave</em>, an NPC is a simplified version of a Player Character. In other games and rule systems, they may be all but identical.</p>
+<p>With the NPC class in place, we have enough to create a ‘test dummy’. Since it has no AI yet, it won’t fight back, but it will be enough to have something to hit when we test our combat in the upcoming lessons.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">8. Non-Player-Characters</a><ul>
+<li><a class="reference internal" href="#the-npc-base-class">8.1. The NPC base class</a></li>
+<li><a class="reference internal" href="#testing">8.2. Testing</a></li>
+<li><a class="reference internal" href="#conclusions">8.3. Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Beginner-Tutorial-Rooms.html"
+                          title="previous chapter"><span class="section-number">7. </span>In-game Rooms</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Beginner-Tutorial-Combat-Base.html"
+                          title="next chapter"><span class="section-number">9. </span>Combat base framework</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-NPCs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Combat-Base.html" title="9. Combat base framework"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Rooms.html" title="7. In-game Rooms"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">8. </span>Non-Player-Characters</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>12. NPC and monster AI &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="13. Procedurally generated Dungeon" href="Beginner-Tutorial-Dungeon.html" />
+    <link rel="prev" title="11. Turnbased Combat" href="Beginner-Tutorial-Combat-Turnbased.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Dungeon.html" title="13. Procedurally generated Dungeon"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Combat-Turnbased.html" title="11. Turnbased Combat"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" accesskey="U">Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">12. </span>NPC and monster AI</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="npc-and-monster-ai">
+<h1><span class="section-number">12. </span>NPC and monster AI<a class="headerlink" href="#npc-and-monster-ai" title="Link to this heading">¶</a></h1>
+<aside class="sidebar">
+<p class="sidebar-title">Artificial Intelligence sounds complex</p>
+<p>The term “Artificial Intelligence” can sound daunting. It evokes images of supercomputers, machine learning, neural networks and large language models. For our use case though, you can get something that feels pretty ‘intelligent’ by just using a few if-statements.</p>
+</aside>
+<p>Not every entity in the game are controlled by a player. NPCs and enemies need to be controlled by the computer - that is, we need to give them artificial intelligence (AI).</p>
+<p>For our game we will implement a type of AI called a ‘state machine’. It means that the entity (like an NPC or mob) is always in a given ‘state’. An example of a state could be ‘idle’, ‘roaming’ or ‘attacking’.
+At regular intervals, the AI entity will be ‘ticked’ by Evennia. This ‘tick’ starts with an evaluation which determines if the entity should switch to another state, or stay and perform one (or more) actions inside the current state.</p>
+<aside class="sidebar">
+<p class="sidebar-title">Mobs and NPC</p>
+<p>‘Mob’ is short for ‘Mobile’ and is a common MUD term for an entity that can move between rooms. The term is usually used for aggressive enemies. A Mob is also an ‘NPC’ (Non-Player Character), but the latter term is often used for more peaceful entities, like shopkeeprs and quest givers.</p>
+</aside>
+<p>For example, if a mob in a ‘roaming’ state comes upon a player character, it may switch into the ‘attack’ state. In combat it could move between different combat actions, and if it survives combat it would go back to its ‘roaming’ state.</p>
+<p>The AI can be ‘ticked’ on different time scales depending on how your game works. For example, while a mob is moving, they might automatically move from room to room every 20 seconds. But once it enters turn-based combat (if you use that), the AI will ‘tick’ only on every turn.</p>
+<section id="our-requirements">
+<h2><span class="section-number">12.1. </span>Our requirements<a class="headerlink" href="#our-requirements" title="Link to this heading">¶</a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Shopkeepers and quest givers</p>
+<p>NPC shopkeepers and quest givers will be assumed to always be in the ‘idle’ state in our game - the functionality of talking to or shopping from them will be explored in a future lesson.</p>
+</aside>
+<p>For this tutorial game, we’ll need AI entities to be able to be in the following states:</p>
+<ul class="simple">
+<li><p><em>Idle</em> - don’t do anything, just stand around.</p></li>
+<li><p><em>Roam</em> - move from room to room. It’s important that we add the ability to limit where the AI can roam to. For example, if we have non-combat areas we want to be able to <a class="reference internal" href="../../../Components/Locks.html"><span class="std std-doc">lock</span></a> all exits leading into those areas so aggressive mods doesn’t walk into them.</p></li>
+<li><p><em>Combat</em> - initiate and perform combat with PCs. This state will make use of the <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html"><span class="std std-doc">Combat Tutorial</span></a> to randomly select combat actions (turn-based or tick-based as appropriately).</p></li>
+<li><p><em>Flee</em> - this is like <em>Roam</em> except the AI will move so as to avoid entering rooms with PCs, if possible.</p></li>
+</ul>
+<p>We will organize the AI code like this:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">AIHandler</span></code> this will be a handler stored as <code class="docutils literal notranslate"><span class="pre">.ai</span></code> on the AI entity. It is responsible for storing the AI’s state. To ‘tick’ the AI, we run <code class="docutils literal notranslate"><span class="pre">.ai.run()</span></code>. How often we crank the wheels of the AI this way we leave up to other game systems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.ai_&lt;state_name&gt;</span></code> methods on the NPC/Mob class - when the <code class="docutils literal notranslate"><span class="pre">ai.run()</span></code> method is called, it is responsible for finding a method named like its current state (e.g. <code class="docutils literal notranslate"><span class="pre">.ai_combat</span></code> if we are in the <em>combat</em> state). Having methods like this makes it easy to add new states - just add a new method named appropriately and the AI now knows how to handle that state!</p></li>
+</ul>
+</section>
+<section id="the-aihandler">
+<h2><span class="section-number">12.2. </span>The AIHandler<a class="headerlink" href="#the-aihandler" title="Link to this heading">¶</a></h2>
+<p>This is the core logic for managing AI states. Create a new file <code class="docutils literal notranslate"><span class="pre">evadventure/ai.py</span></code>.</p>
+<blockquote>
+<div><p>Create a new file <code class="docutils literal notranslate"><span class="pre">evadventure/ai.py</span></code>.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/ai.py</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_trace</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="k">class</span><span class="w"> </span><span class="nc">AIHandler</span><span class="p">:</span>
+<span class="linenos"> 6</span>    <span class="n">attribute_name</span> <span class="o">=</span> <span class="s2">&quot;ai_state&quot;</span>
+<span class="linenos"> 7</span>    <span class="n">attribute_category</span> <span class="o">=</span> <span class="s2">&quot;ai_state&quot;</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="hll"><span class="linenos">10</span>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span>
+</span><span class="hll"><span class="linenos">11</span>        <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">12</span>                                           <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_category</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">13</span>                                           <span class="n">default</span><span class="o">=</span><span class="s2">&quot;idle&quot;</span><span class="p">)</span>
+</span><span class="linenos">14</span>    <span class="k">def</span><span class="w"> </span><span class="nf">set_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="linenos">15</span>        <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span> <span class="o">=</span> <span class="n">state</span>
+<span class="hll"><span class="linenos">16</span>        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute_category</span><span class="p">)</span>
+</span><span class="linenos">17</span>
+<span class="linenos">18</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">19</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai_state</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span>    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">22</span>        <span class="k">try</span><span class="p">:</span>
+<span class="hll"><span class="linenos">23</span>            <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+</span><span class="linenos">24</span>            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ai_</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)()</span>
+<span class="linenos">25</span>        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<span class="linenos">26</span>            <span class="n">log_trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AI error in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (running state: </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The AIHandler is an example of an <a class="reference internal" href="../../Tutorial-Persistent-Handler.html"><span class="std std-doc">Object Handler</span></a>. This is a design style that groups all functionality together. To look-ahead a little, this handler will be added to the object like this:</p>
+<aside class="sidebar">
+<p class="sidebar-title">lazy_property</p>
+<p>This is an Evennia <a class="reference external" href="https://realpython.com/primer-on-python-decorators/">&#64;decorator</a> that makes it so that the handler won’t be initialized until someone actually tries to access <code class="docutils literal notranslate"><span class="pre">obj.ai</span></code> for the first time. On subsequent calls, the already initialized handler is returned. This is a very useful performance optimization when you have a lot of objects and also important for the functionality of handlers.</p>
+</aside>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># just an example, don&#39;t put this anywhere yet</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">evadventure.ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIHandler</span> 
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyMob</span><span class="p">(</span><span class="n">SomeParent</span><span class="p">):</span> 
+
+    <span class="nd">@lazy_property</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>So in short, accessing the <code class="docutils literal notranslate"><span class="pre">.ai</span></code> property will initialize an instance of <code class="docutils literal notranslate"><span class="pre">AIHandler</span></code>, to which we pass <code class="docutils literal notranslate"><span class="pre">self</span></code> (the current object). In the <code class="docutils literal notranslate"><span class="pre">AIHandler.__init__</span></code> we take this input and store it as <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> (<strong>lines 10-13</strong>). This way the handler can always operate on the entity it’s “sitting on” by accessing <code class="docutils literal notranslate"><span class="pre">self.obj</span></code>.  The <code class="docutils literal notranslate"><span class="pre">lazy_property</span></code> makes sure that this initialization only happens once per server reload.</p>
+<p>More key functionality:</p>
+<ul class="simple">
+<li><p><strong>Line 11</strong>: We (re)load the AI state by accessing <code class="docutils literal notranslate"><span class="pre">self.obj.attributes.get()</span></code>. This loads a database <a class="reference internal" href="../../../Components/Attributes.html"><span class="std std-doc">Attribute</span></a> with a given name and category. If one is not (yet) saved, return “idle”. Note that we must access <code class="docutils literal notranslate"><span class="pre">self.obj</span></code> (the NPC/mob) since that is the only thing with access to the database.</p></li>
+<li><p><strong>Line 16</strong>: In the <code class="docutils literal notranslate"><span class="pre">set_state</span></code> method we force the handler to switch to a given state. When we do, we make sure to save it to the database as well, so its state survives a reload. But we also store it in <code class="docutils literal notranslate"><span class="pre">self.ai_state</span></code> so we don’t need to hit the database on every fetch.</p></li>
+<li><p><strong>line 23</strong>: The <code class="docutils literal notranslate"><span class="pre">getattr</span></code> function is an in-built Python function for getting a named property on an object. This allows us to, based on the current state, call a method <code class="docutils literal notranslate"><span class="pre">ai_&lt;statename&gt;</span></code> defined on the NPC/mob. We must wrap this call in a <code class="docutils literal notranslate"><span class="pre">try...except</span></code> block to properly handle errors in the AI method. Evennia’s <code class="docutils literal notranslate"><span class="pre">log_trace</span></code> will make sure to log the error, including its traceback for debugging.</p></li>
+</ul>
+<section id="more-helpers-on-the-ai-handler">
+<h3><span class="section-number">12.2.1. </span>More helpers on the AI handler<a class="headerlink" href="#more-helpers-on-the-ai-handler" title="Link to this heading">¶</a></h3>
+<p>It’s also convenient to put a few helpers on the AIHandler. This makes them easily available from inside the <code class="docutils literal notranslate"><span class="pre">ai_&lt;state&gt;</span></code> methods, callable as e.g. <code class="docutils literal notranslate"><span class="pre">self.ai.get_targets()</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/ai.py </span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="c1"># ... </span>
+<span class="linenos"> 4</span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="k">class</span><span class="w"> </span><span class="nc">AIHandler</span><span class="p">:</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="c1"># ...</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">11</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">12</span><span class="sd">        Get a list of potential targets for the NPC to combat.</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">15</span>        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;is_pc&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_pc</span><span class="p">]</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span>    <span class="k">def</span><span class="w"> </span><span class="nf">get_traversable_exits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude_destination</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="linenos">18</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">19</span><span class="sd">        Get a list of exits that the NPC can traverse. Optionally exclude a destination.</span>
+<span class="linenos">20</span><span class="sd">        </span>
+<span class="linenos">21</span><span class="sd">        Args:</span>
+<span class="linenos">22</span><span class="sd">            exclude_destination (Object, optional): Exclude exits with this destination.</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">25</span>        <span class="k">return</span> <span class="p">[</span>
+<span class="linenos">26</span>            <span class="n">exi</span>
+<span class="linenos">27</span>            <span class="k">for</span> <span class="n">exi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">exits</span>
+<span class="linenos">28</span>            <span class="k">if</span> <span class="n">exi</span><span class="o">.</span><span class="n">destination</span> <span class="o">!=</span> <span class="n">exclude_destination</span> <span class="ow">and</span> <span class="n">exi</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;traverse&quot;</span><span class="p">)</span>
+<span class="linenos">29</span>        <span class="p">]</span>
+<span class="linenos">30</span>    
+<span class="linenos">31</span>    <span class="k">def</span><span class="w"> </span><span class="nf">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+<span class="linenos">32</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">33</span><span class="sd">        Given a dictionary of probabilities, return the key of the chosen probability.</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span><span class="sd">        Args:</span>
+<span class="linenos">36</span><span class="sd">            probabilities (dict): A dictionary of probabilities, where the key is the action and the</span>
+<span class="linenos">37</span><span class="sd">                value is the probability of that action.</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">40</span>        <span class="c1"># sort probabilities from higheest to lowest, making sure to normalize them 0..1</span>
+<span class="hll"><span class="linenos">41</span>        <span class="n">prob_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">probabilities</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span><span class="hll"><span class="linenos">42</span>        <span class="n">sorted_probs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+</span><span class="linenos">43</span>            <span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="o">/</span> <span class="n">prob_total</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">probabilities</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+<span class="linenos">44</span>            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="linenos">45</span>            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">46</span>        <span class="p">)</span>
+<span class="hll"><span class="linenos">47</span>        <span class="n">rand</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+</span><span class="linenos">48</span>        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="hll"><span class="linenos">49</span>        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">sorted_probs</span><span class="p">:</span>
+</span><span class="linenos">50</span>            <span class="n">total</span> <span class="o">+=</span> <span class="n">prob</span>
+<span class="linenos">51</span>            <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;=</span> <span class="n">total</span><span class="p">:</span>
+<span class="linenos">52</span>                <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Locking exits</p>
+<p>The ‘traverse’ lock is the default lock-type checked by Evennia before allowing something to pass through an exit. Since only PCs have the <code class="docutils literal notranslate"><span class="pre">is_pc</span></code> property, we could lock down exits to <em>only</em> allow entities with the property to pass through.</p>
+<p>In game:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>lock north = traverse:attr(is_pc, True)
+</pre></div>
+</div>
+<p>Or in code:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>exit_obj.locks.add(
+    &quot;traverse:attr(is_pc, True)&quot;)
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../../../Components/Locks.html"><span class="std std-doc">Locks</span></a> for a lot more information about Evennia locks.</p>
+</aside>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_targets</span></code> checks if any of the other objects in the same location as the <code class="docutils literal notranslate"><span class="pre">is_pc</span></code> property set on their typeclass. For simplicity we assume Mobs will only ever attack PCs (no monster in-fighting!).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_traversable_exits</span></code> fetches all valid exits from the current location, excluding those with a provided destination <em>or</em> those which doesn’t pass the “traverse” access check.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_random_probability</span></code> takes a dict <code class="docutils literal notranslate"><span class="pre">{action:</span> <span class="pre">probability,</span> <span class="pre">...}</span></code>. This will randomly select an action, but the higher the probability, the more likely it is that it will be picked. We will use this for the combat state later, to allow different combatants to more or less likely to perform different combat actions. This algorithm uses a few useful Python tools:</p>
+<ul>
+<li><p><strong>Line 41</strong>: Remember <code class="docutils literal notranslate"><span class="pre">probabilities</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> <code class="docutils literal notranslate"><span class="pre">{key:</span> <span class="pre">value,</span> <span class="pre">...}</span></code>, where the values are the probabilities. So <code class="docutils literal notranslate"><span class="pre">probabilities.values()</span></code> gets us a list of only the probabilities. Running <code class="docutils literal notranslate"><span class="pre">sum()</span></code> on them gets us the total sum of those probabilities. We need that to normalize all probabilities between 0 and 1.0 on the line below.</p></li>
+<li><p><strong>Lines 42-46</strong>: Here we create a new iterable of tuples <code class="docutils literal notranslate"><span class="pre">(key,</span> <span class="pre">prob/prob_total)</span></code>. We sort them using the Python <code class="docutils literal notranslate"><span class="pre">sorted</span></code> helper. The <code class="docutils literal notranslate"><span class="pre">key=lambda</span> <span class="pre">x:</span> <span class="pre">x[1]</span></code> means that we sort on the second element of each tuple (the probability). The <code class="docutils literal notranslate"><span class="pre">reverse=True</span></code> means that we’ll sort from highest probability to lowest.</p></li>
+<li><p><strong>Line 47</strong>:The <code class="docutils literal notranslate"><span class="pre">random.random()</span></code> call generates a random value between 0 and 1.</p></li>
+<li><p><strong>Line 49</strong>: Since the probabilities are sorted from highest to lowest, we loop over them until we find the first one fitting in the random value - this is the action/key we are looking for.</p></li>
+<li><p>To give an example, if you have a <code class="docutils literal notranslate"><span class="pre">probability</span></code> input of <code class="docutils literal notranslate"><span class="pre">{&quot;attack&quot;:</span> <span class="pre">0.5,</span> <span class="pre">&quot;defend&quot;:</span> <span class="pre">0.1,</span> <span class="pre">&quot;idle&quot;:</span> <span class="pre">0.4}</span></code>, this would become a sorted iterable <code class="docutils literal notranslate"><span class="pre">((&quot;attack&quot;,</span> <span class="pre">0.5),</span> <span class="pre">(&quot;idle&quot;,</span> <span class="pre">0.4),</span> <span class="pre">(&quot;defend&quot;:</span> <span class="pre">0.1))</span></code>, and if <code class="docutils literal notranslate"><span class="pre">random.random()</span></code> returned 0.65, the outcome would be “idle”. If <code class="docutils literal notranslate"><span class="pre">random.random()</span></code> returned <code class="docutils literal notranslate"><span class="pre">0.90</span></code>, it would be “defend”.  That is, this AI entity would attack 50% of the time, idle 40% and defend 10% of the time.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="adding-ai-to-an-entity">
+<h2><span class="section-number">12.3. </span>Adding AI to an entity<a class="headerlink" href="#adding-ai-to-an-entity" title="Link to this heading">¶</a></h2>
+<p>All we need to add AI-support to a game entity is to add the AI handler and a bunch of <code class="docutils literal notranslate"><span class="pre">.ai_statename()</span></code> methods onto that object’s typeclass.</p>
+<p>We already sketched out NPCs and Mob typeclasses back in the <a class="reference internal" href="#Beginner-Tutorial_NPCs"><span class="xref myst">NPC tutorial</span></a>. Open <code class="docutils literal notranslate"><span class="pre">evadventure/npcs.py</span></code> and expand the so-far empty <code class="docutils literal notranslate"><span class="pre">EvAdventureMob</span></code> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/npcs.py </span>
+
+<span class="c1"># ... </span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">lazy_property</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AIHandler</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+
+    <span class="nd">@lazy_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">return</span> <span class="n">AIHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">pass</span> 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">pass</span> 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">pass</span> 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">pass</span> 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+</pre></div>
+</div>
+<p>All the remaining logic will go into each state-method.</p>
+<section id="idle-state">
+<h3><span class="section-number">12.3.1. </span>Idle state<a class="headerlink" href="#idle-state" title="Link to this heading">¶</a></h3>
+<p>In the idle state the mob does nothing, so we just leave the <code class="docutils literal notranslate"><span class="pre">ai_idle</span></code> method as it is - with just an empty <code class="docutils literal notranslate"><span class="pre">pass</span></code> in it. This means that it will also not attack PCs in the same room - but if a PC attacks it, we must make sure to force it into a combat state (otherwise it will be defenseless).</p>
+</section>
+<section id="roam-state">
+<h3><span class="section-number">12.3.2. </span>Roam state<a class="headerlink" href="#roam-state" title="Link to this heading">¶</a></h3>
+<p>In this state the mob should move around from room to room until it finds PCs to attack.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/npcs.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_roam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        roam, moving randomly to a new room. If a target is found, switch to combat state.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">targets</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_targets</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;combat&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attack </span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_traversable_exits</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
+                <span class="n">exi</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exi</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Every time the AI is ticked, this method will be called. It will first check if there are any valid targets in the room (using the <code class="docutils literal notranslate"><span class="pre">get_targets()</span></code> helper we made on the <code class="docutils literal notranslate"><span class="pre">AIHandler</span></code>). If so, we switch to the <code class="docutils literal notranslate"><span class="pre">combat</span></code> state and immediately call the <code class="docutils literal notranslate"><span class="pre">attack</span></code> command to initiate/join combat (see the <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html"><span class="std std-doc">Combat tutorial</span></a>).</p>
+<p>If no target is found, we get a list of traversible exits (exits that fail the <code class="docutils literal notranslate"><span class="pre">traverse</span></code> lock check is already excluded from this list). Using Python’s in-bult <code class="docutils literal notranslate"><span class="pre">random.choice</span></code> function we grab a random exit from that list and moves through it by its name.</p>
+</section>
+<section id="flee-state">
+<h3><span class="section-number">12.3.3. </span>Flee state<a class="headerlink" href="#flee-state" title="Link to this heading">¶</a></h3>
+<p>Flee is similar to <em>Roam</em> except the the AI never tries to attack anything and will make sure to not return the way it came.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in evadventure/npcs.py</span>
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span>
+
+    <span class="c1"># ... </span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ai_flee</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flee from the current room, avoiding going back to the room from which we came. If no exits</span>
+<span class="sd">        are found, switch to roam state.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span>
+        <span class="n">past_room</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;past_room&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai_state&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">exits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_traversable_exits</span><span class="p">(</span><span class="n">exclude_destination</span><span class="o">=</span><span class="n">past_room</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">exits</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;past_room&quot;</span><span class="p">,</span> <span class="n">current_room</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ai_state&quot;</span><span class="p">)</span>
+            <span class="n">exi</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">exits</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exi</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if in a dead end, roam will allow for backing out</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;roam&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>We store the <code class="docutils literal notranslate"><span class="pre">past_room</span></code> in an Attribute “past_room” on ourselves and make sure to exclude it when trying to find random exits to traverse to.</p>
+<p>If we end up in a dead end we switch to <em>Roam</em> mode so that it can get back out (and also start attacking things again). So the effect of this is that the mob will flee in terror as far as it can before ‘calming down’.</p>
+</section>
+<section id="combat-state">
+<h3><span class="section-number">12.3.4. </span>Combat state<a class="headerlink" href="#combat-state" title="Link to this heading">¶</a></h3>
+<p>While in the combat state, the mob will use one of the combat systems we’ve designed (either <a class="reference internal" href="Beginner-Tutorial-Combat-Twitch.html"><span class="std std-doc">twitch-based combat</span></a> or <a class="reference internal" href="Beginner-Tutorial-Combat-Turnbased.html"><span class="std std-doc">turn-based combat</span></a>). This means that every time the AI ticks, and we are in the combat state, the entity needs to perform one of the available combat actions, <em>hold</em>, <em>attack</em>, <em>do a stunt</em>, <em>use an item</em> or <em>flee</em>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># in evadventure/npcs.py </span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="c1"># ... </span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="k">class</span><span class="w"> </span><span class="nc">EvAdventureMob</span><span class="p">(</span><span class="n">EvAdventureNPC</span><span class="p">):</span> 
+<span class="linenos"> 6</span>
+<span class="hll"><span class="linenos"> 7</span>    <span class="n">combat_probabilities</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="linenos"> 8</span>        <span class="s2">&quot;hold&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="linenos"> 9</span>        <span class="s2">&quot;attack&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span>
+<span class="linenos">10</span>        <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">11</span>        <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+<span class="linenos">12</span>        <span class="s2">&quot;flee&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+<span class="linenos">13</span>    <span class="p">}</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>    <span class="c1"># ... </span>
+<span class="linenos">16</span>
+<span class="linenos">17</span>    <span class="k">def</span><span class="w"> </span><span class="nf">ai_combat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">18</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">19</span><span class="sd">        Manage the combat/combat state of the mob.</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="hll"><span class="linenos">22</span>        <span class="k">if</span> <span class="n">combathandler</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbd</span><span class="o">.</span><span class="n">combathandler</span><span class="p">:</span>
+</span><span class="linenos">23</span>            <span class="c1"># already in combat</span>
+<span class="hll"><span class="linenos">24</span>            <span class="n">allies</span><span class="p">,</span> <span class="n">enemies</span> <span class="o">=</span> <span class="n">combathandler</span><span class="o">.</span><span class="n">get_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">25</span>            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">random_probability</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combat_probabilities</span><span class="p">)</span>
+</span><span class="linenos">26</span>
+<span class="linenos">27</span>            <span class="k">match</span> <span class="n">action</span><span class="p">:</span>
+<span class="linenos">28</span>                <span class="k">case</span> <span class="s2">&quot;hold&quot;</span><span class="p">:</span>
+<span class="linenos">29</span>                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;hold&quot;</span><span class="p">})</span>
+<span class="linenos">30</span>                <span class="k">case</span> <span class="s2">&quot;combat&quot;</span><span class="p">:</span>
+<span class="linenos">31</span>                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;attack&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">enemies</span><span class="p">)})</span>
+<span class="linenos">32</span>                <span class="k">case</span> <span class="s2">&quot;stunt&quot;</span><span class="p">:</span>
+<span class="linenos">33</span>                    <span class="c1"># choose a random ally to help</span>
+<span class="linenos">34</span>                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span>
+<span class="linenos">35</span>                        <span class="p">{</span>
+<span class="linenos">36</span>                            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;stunt&quot;</span><span class="p">,</span>
+<span class="linenos">37</span>                            <span class="s2">&quot;recipient&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">allies</span><span class="p">),</span>
+<span class="linenos">38</span>                            <span class="s2">&quot;advantage&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">39</span>                            <span class="s2">&quot;stunt&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">STR</span><span class="p">,</span>
+<span class="linenos">40</span>                            <span class="s2">&quot;defense&quot;</span><span class="p">:</span> <span class="n">Ability</span><span class="o">.</span><span class="n">DEX</span><span class="p">,</span>
+<span class="linenos">41</span>                        <span class="p">}</span>
+<span class="linenos">42</span>                    <span class="p">)</span>
+<span class="linenos">43</span>                <span class="k">case</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span>
+<span class="linenos">44</span>                    <span class="c1"># use a random item on a random ally</span>
+<span class="linenos">45</span>                    <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">allies</span><span class="p">)</span>
+<span class="linenos">46</span>                    <span class="n">valid_items</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">at_pre_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)]</span>
+<span class="linenos">47</span>                    <span class="n">combathandler</span><span class="o">.</span><span class="n">queue_action</span><span class="p">(</span>
+<span class="linenos">48</span>                        <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;item&quot;</span><span class="p">,</span> <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">valid_items</span><span class="p">),</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">target</span><span class="p">}</span>
+<span class="linenos">49</span>                    <span class="p">)</span>
+<span class="linenos">50</span>                <span class="k">case</span> <span class="s2">&quot;flee&quot;</span><span class="p">:</span>
+<span class="linenos">51</span>                    <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;flee&quot;</span><span class="p">)</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span>        <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="n">targets</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">get_targets</span><span class="p">()):</span>
+<span class="linenos">54</span>            <span class="bp">self</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="s2">&quot;roam&quot;</span><span class="p">)</span>
+<span class="linenos">55</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">56</span>            <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+<span class="linenos">57</span>            <span class="bp">self</span><span class="o">.</span><span class="n">execute_cmd</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attack </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Lines 7-13</strong>: This dict describe how likely the mob is to perform a given combat action. By just modifying this dictionary we can easily creating mobs that behave very differently, like using items more or being more prone to fleeing. You can also turn off certain action entirely - by default his mob never “holds” or “uses items”.</p></li>
+<li><p><strong>Line 22</strong>: If we are in combat, a <code class="docutils literal notranslate"><span class="pre">CombadHandler</span></code> should be initialized on us, available as as <code class="docutils literal notranslate"><span class="pre">self.ndb.combathandler</span></code> (see the <a class="reference internal" href="Beginner-Tutorial-Combat-Base.html"><span class="std std-doc">base combat tutorial</span></a>).</p></li>
+<li><p><strong>Line 24</strong>: The <code class="docutils literal notranslate"><span class="pre">combathandler.get_sides()</span></code> produces the allies and enemies for the one passed to it.</p></li>
+<li><p><strong>Line 25</strong>: Now that <code class="docutils literal notranslate"><span class="pre">random_probability</span></code> method we created earlier in this lesson becomes handy!</p></li>
+</ul>
+<p>The rest of this method just takes the randomly chosen action and performs the required operations to queue it as a new action with the <code class="docutils literal notranslate"><span class="pre">CombatHandler</span></code>.  For simplicity, we only use stunts to boost our allies, not to hamper our enemies.</p>
+<p>Finally, if we are not currently in combat and there are no enemies nearby, we switch to  roaming - otherwise we start another fight!</p>
+</section>
+</section>
+<section id="unit-testing">
+<h2><span class="section-number">12.4. </span>Unit Testing<a class="headerlink" href="#unit-testing" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p>Create a new file <code class="docutils literal notranslate"><span class="pre">evadventure/tests/test_ai.py</span></code>.</p>
+</div></blockquote>
+<p>Testing the AI handler and mob is straightforward if you have followed along with previous lessons. Create an <code class="docutils literal notranslate"><span class="pre">EvAdventureMob</span></code> and test that calling the various ai-related methods and handlers on it works as expected. A complexity is to mock the output from <code class="docutils literal notranslate"><span class="pre">random</span></code> so that you always get the same random result to compare against. We leave the implementation of AI tests as an extra exercise for the reader.</p>
+</section>
+<section id="conclusions">
+<h2><span class="section-number">12.5. </span>Conclusions<a class="headerlink" href="#conclusions" title="Link to this heading">¶</a></h2>
+<p>You can easily expand this simple system to make Mobs more ‘clever’. For example, instead of just randomly decide which action to take in combat, the mob could consider more factors - maybe some support mobs could use stunts to pave the way for their heavy hitters or use health potions when badly hurt.</p>
+<p>It’s also simple to add a ‘hunt’ state, where mobs check adjoining rooms for targets before moving there.</p>
+<p>And while implementing a functional game AI system requires no advanced math or machine learning techniques, there’s of course no limit to what kind of advanced things you could add if you really wanted to!</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">12. NPC and monster AI</a><ul>
+<li><a class="reference internal" href="#our-requirements">12.1. Our requirements</a></li>
+<li><a class="reference internal" href="#the-aihandler">12.2. The AIHandler</a><ul>
+<li><a class="reference internal" href="#more-helpers-on-the-ai-handler">12.2.1. More helpers on the AI handler</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adding-ai-to-an-entity">12.3. Adding AI to an entity</a><ul>
+<li><a class="reference internal" href="#idle-state">12.3.1. Idle state</a></li>
+<li><a class="reference internal" href="#roam-state">12.3.2. Roam state</a></li>
+<li><a class="reference internal" href="#flee-state">12.3.3. Flee state</a></li>
+<li><a class="reference internal" href="#combat-state">12.3.4. Combat state</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#unit-testing">12.4. Unit Testing</a></li>
+<li><a class="reference internal" href="#conclusions">12.5. Conclusions</a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Beginner-Tutorial-Combat-Turnbased.html"
+                          title="previous chapter"><span class="section-number">11. </span>Turnbased Combat</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Beginner-Tutorial-Dungeon.html"
+                          title="next chapter"><span class="section-number">13. </span>Procedurally generated Dungeon</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/Howtos/Beginner-Tutorial/Part3/Beginner-Tutorial-AI.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Dungeon.html" title="13. Procedurally generated Dungeon"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Beginner-Tutorial-Combat-Turnbased.html" title="11. Turnbased Combat"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../Howtos-Overview.html" >Tutorials and How-To’s</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../Beginner-Tutorial-Overview.html" >Beginner Tutorial</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="Beginner-Tutorial-Part3-Overview.html" >Part 3: How We Get There (Example Game)</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">12. </span>NPC and monster AI</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

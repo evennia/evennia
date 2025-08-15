@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.contrib.auth.models &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../auth.html" accesskey="U">django.contrib.auth</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.contrib.auth.models</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.contrib.auth.models</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">apps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">auth</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.base_user</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractBaseUser</span><span class="p">,</span> <span class="n">BaseUserManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.hashers</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_password</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.contenttypes.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContentType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PermissionDenied</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.mail</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_mail</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnicodeUsernameValidator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">update_last_login</span><span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A signal receiver which updates the last_login date for</span>
+<span class="sd">    the user logging in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">last_login</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">update_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;last_login&quot;</span><span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionManager</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+    <span class="n">use_in_migrations</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_natural_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codename</span><span class="p">,</span> <span class="n">app_label</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">codename</span><span class="o">=</span><span class="n">codename</span><span class="p">,</span>
+            <span class="n">content_type</span><span class="o">=</span><span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">db_manager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">get_by_natural_key</span><span class="p">(</span>
+                <span class="n">app_label</span><span class="p">,</span> <span class="n">model</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Permission</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The permissions system provides a way to assign permissions to specific</span>
+<span class="sd">    users and groups of users.</span>
+
+<span class="sd">    The permission system is used by the Django admin site, but may also be</span>
+<span class="sd">    useful in your own code. The Django admin site uses permissions as follows:</span>
+
+<span class="sd">        - The &quot;add&quot; permission limits the user&#39;s ability to view the &quot;add&quot; form</span>
+<span class="sd">          and add an object.</span>
+<span class="sd">        - The &quot;change&quot; permission limits a user&#39;s ability to view the change</span>
+<span class="sd">          list, view the &quot;change&quot; form and change an object.</span>
+<span class="sd">        - The &quot;delete&quot; permission limits the ability to delete an object.</span>
+<span class="sd">        - The &quot;view&quot; permission limits the ability to view an object.</span>
+
+<span class="sd">    Permissions are set globally per type of object, not per specific object</span>
+<span class="sd">    instance. It is possible to say &quot;Mary may change news stories,&quot; but it&#39;s</span>
+<span class="sd">    not currently possible to say &quot;Mary may change news stories, but only the</span>
+<span class="sd">    ones she created herself&quot; or &quot;Mary may only change news stories that have a</span>
+<span class="sd">    certain status or publication date.&quot;</span>
+
+<span class="sd">    The permissions listed above are automatically created for each model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+    <span class="n">content_type</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span>
+        <span class="n">ContentType</span><span class="p">,</span>
+        <span class="n">models</span><span class="o">.</span><span class="n">CASCADE</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;content type&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">codename</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;codename&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">PermissionManager</span><span class="p">()</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;permission&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">)</span>
+        <span class="n">unique_together</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;content_type&quot;</span><span class="p">,</span> <span class="s2">&quot;codename&quot;</span><span class="p">]]</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;content_type__app_label&quot;</span><span class="p">,</span> <span class="s2">&quot;content_type__model&quot;</span><span class="p">,</span> <span class="s2">&quot;codename&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> | </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">natural_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">codename</span><span class="p">,)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_type</span><span class="o">.</span><span class="n">natural_key</span><span class="p">()</span>
+
+    <span class="n">natural_key</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;contenttypes.contenttype&quot;</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GroupManager</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Manager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The manager for the auth&#39;s Group model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">use_in_migrations</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_natural_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_by_natural_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">aget</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Group</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Groups are a generic way of categorizing users to apply permissions, or</span>
+<span class="sd">    some other label, to those users. A user can belong to any number of</span>
+<span class="sd">    groups.</span>
+
+<span class="sd">    A user in a group automatically has all the permissions granted to that</span>
+<span class="sd">    group. For example, if the group &#39;Site editors&#39; has the permission</span>
+<span class="sd">    can_edit_home_page, any user in that group will have that permission.</span>
+
+<span class="sd">    Beyond permissions, groups are a convenient way to categorize users to</span>
+<span class="sd">    apply some label, or extended functionality, to them. For example, you</span>
+<span class="sd">    could create a group &#39;Special users&#39;, and you could write code that would</span>
+<span class="sd">    do special things to those users -- such as giving them access to a</span>
+<span class="sd">    members-only portion of your site, or sending them members-only email</span>
+<span class="sd">    messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">permissions</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Permission</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;permissions&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">GroupManager</span><span class="p">()</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">natural_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+
+
+<div class="viewcode-block" id="UserManager">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.manager.html#evennia.accounts.manager.UserManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserManager</span><span class="p">(</span><span class="n">BaseUserManager</span><span class="p">):</span>
+    <span class="n">use_in_migrations</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_user_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">username</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The given username must be set&quot;</span><span class="p">)</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+        <span class="c1"># Lookup the real model class from the global app registry so this</span>
+        <span class="c1"># manager method can be used in migrations. This is fine because</span>
+        <span class="c1"># managers are by definition working on the real model.</span>
+        <span class="n">GlobalUserModel</span> <span class="o">=</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_model</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">object_name</span>
+        <span class="p">)</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="n">GlobalUserModel</span><span class="o">.</span><span class="n">normalize_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">make_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create and save a user with the given username, email, and password.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user_object</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_acreate_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See _create_user()&quot;&quot;&quot;</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user_object</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">asave</span><span class="p">(</span><span class="n">using</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user</span>
+
+<div class="viewcode-block" id="UserManager.create_user">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.manager.html#evennia.accounts.manager.UserManager.create_user">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span></div>
+
+
+    <span class="n">create_user</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="UserManager.acreate_user">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.manager.html#evennia.accounts.manager.UserManager.acreate_user">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acreate_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acreate_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span></div>
+
+
+    <span class="n">acreate_user</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="UserManager.create_superuser">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.manager.html#evennia.accounts.manager.UserManager.create_superuser">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_superuser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">):</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_staff&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Superuser must have is_staff=True.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Superuser must have is_superuser=True.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span></div>
+
+
+    <span class="n">create_superuser</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="UserManager.acreate_superuser">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.manager.html#evennia.accounts.manager.UserManager.acreate_superuser">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acreate_superuser</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span>
+    <span class="p">):</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_staff&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">extra_fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_staff&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Superuser must have is_staff=True.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_superuser&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Superuser must have is_superuser=True.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acreate_user</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_fields</span><span class="p">)</span></div>
+
+
+    <span class="n">acreate_superuser</span><span class="o">.</span><span class="n">alters_data</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="UserManager.with_perm">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.manager.html#evennia.accounts.manager.UserManager.with_perm">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_perm</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_superusers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">backends</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">_get_backends</span><span class="p">(</span><span class="n">return_tuples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">backends</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">backend</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">backends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;You have multiple authentication backends configured and &quot;</span>
+                    <span class="s2">&quot;therefore must provide the `backend` argument.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;backend must be a dotted import path string (got </span><span class="si">%r</span><span class="s2">).&quot;</span> <span class="o">%</span> <span class="n">backend</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">backend</span> <span class="o">=</span> <span class="n">auth</span><span class="o">.</span><span class="n">load_backend</span><span class="p">(</span><span class="n">backend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;with_perm&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">backend</span><span class="o">.</span><span class="n">with_perm</span><span class="p">(</span>
+                <span class="n">perm</span><span class="p">,</span>
+                <span class="n">is_active</span><span class="o">=</span><span class="n">is_active</span><span class="p">,</span>
+                <span class="n">include_superusers</span><span class="o">=</span><span class="n">include_superusers</span><span class="p">,</span>
+                <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">none</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="c1"># A few helper functions for common logic between User and AnonymousUser.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_user_get_permissions</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">from_name</span><span class="p">):</span>
+    <span class="n">permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;get_</span><span class="si">%s</span><span class="s2">_permissions&quot;</span> <span class="o">%</span> <span class="n">from_name</span>
+    <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="n">permissions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">user</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">permissions</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_auser_get_permissions</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">from_name</span><span class="p">):</span>
+    <span class="n">permissions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;aget_</span><span class="si">%s</span><span class="s2">_permissions&quot;</span> <span class="o">%</span> <span class="n">from_name</span>
+    <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="n">permissions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="k">await</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">user</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">permissions</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_user_has_perm</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A backend can raise `PermissionDenied` to short-circuit permission checking.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;has_perm&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">PermissionDenied</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_auser_has_perm</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See _user_has_perm()&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;ahas_perm&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">ahas_perm</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">PermissionDenied</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_user_has_module_perms</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A backend can raise `PermissionDenied` to short-circuit permission checking.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;has_module_perms&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">backend</span><span class="o">.</span><span class="n">has_module_perms</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">PermissionDenied</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_auser_has_module_perms</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See _user_has_module_perms()&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="n">auth</span><span class="o">.</span><span class="n">get_backends</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="s2">&quot;ahas_module_perms&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">ahas_module_perms</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">PermissionDenied</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionsMixin</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add the fields and methods necessary to support the Group and Permission</span>
+<span class="sd">    models using the ModelBackend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_superuser</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;superuser status&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Designates that this user has all permissions without &quot;</span>
+            <span class="s2">&quot;explicitly assigning them.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Group</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;The groups this user belongs to. A user will get all permissions &quot;</span>
+            <span class="s2">&quot;granted to each of their groups.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;user_set&quot;</span><span class="p">,</span>
+        <span class="n">related_query_name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">user_permissions</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">(</span>
+        <span class="n">Permission</span><span class="p">,</span>
+        <span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;user permissions&quot;</span><span class="p">),</span>
+        <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Specific permissions for this user.&quot;</span><span class="p">),</span>
+        <span class="n">related_name</span><span class="o">=</span><span class="s2">&quot;user_set&quot;</span><span class="p">,</span>
+        <span class="n">related_query_name</span><span class="o">=</span><span class="s2">&quot;user&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of permission strings that this user has directly.</span>
+<span class="sd">        Query all available auth backends. If an object is passed in,</span>
+<span class="sd">        return only permissions matching this object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_user_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_user_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See get_user_permissions()&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_group_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of permission strings that this user has through their</span>
+<span class="sd">        groups. Query all available auth backends. If an object is passed in,</span>
+<span class="sd">        return only permissions matching this object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_user_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_group_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See get_group_permissions()&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_user_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_all_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the user has the specified permission. Query all</span>
+<span class="sd">        available auth backends, but return immediately if any backend returns</span>
+<span class="sd">        True. Thus, a user who has permission from a single auth backend is</span>
+<span class="sd">        assumed to have permission in general. If an object is provided, check</span>
+<span class="sd">        permissions for that object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Active superusers have all permissions.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Otherwise we need to check the backends.</span>
+        <span class="k">return</span> <span class="n">_user_has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ahas_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See has_perm()&quot;&quot;&quot;</span>
+        <span class="c1"># Active superusers have all permissions.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Otherwise we need to check the backends.</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm_list</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the user has each of the specified permissions. If</span>
+<span class="sd">        object is passed, check if the user has all required perms for it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;perm_list must be an iterable of permissions.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">perm_list</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ahas_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm_list</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See has_perms()&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;perm_list must be an iterable of permissions.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">perm_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ahas_perm</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if the user has any permissions in the given app label.</span>
+<span class="sd">        Use similar logic as has_perm(), above.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Active superusers have all permissions.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">_user_has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_label</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ahas_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_label</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;See has_module_perms()&quot;&quot;&quot;</span>
+        <span class="c1"># Active superusers have all permissions.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_active</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_label</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AbstractUser">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.models.html#evennia.accounts.manager.AbstractUser">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AbstractUser</span><span class="p">(</span><span class="n">AbstractBaseUser</span><span class="p">,</span> <span class="n">PermissionsMixin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract base class implementing a fully featured User model with</span>
+<span class="sd">    admin-compliant permissions.</span>
+
+<span class="sd">    Username and password are required. Other fields are optional.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">username_validator</span> <span class="o">=</span> <span class="n">UnicodeUsernameValidator</span><span class="p">()</span>
+
+    <span class="n">username</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;username&quot;</span><span class="p">),</span>
+        <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">username_validator</span><span class="p">],</span>
+        <span class="n">error_messages</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;unique&quot;</span><span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;A user with that username already exists.&quot;</span><span class="p">),</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;first name&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;last name&quot;</span><span class="p">),</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">EmailField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;email address&quot;</span><span class="p">),</span> <span class="n">blank</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">is_staff</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;staff status&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;Designates whether the user can log into this admin site.&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span>
+            <span class="s2">&quot;Designates whether this user should be treated as active. &quot;</span>
+            <span class="s2">&quot;Unselect this instead of deleting accounts.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">date_joined</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">&quot;date joined&quot;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">UserManager</span><span class="p">()</span>
+
+    <span class="n">EMAIL_FIELD</span> <span class="o">=</span> <span class="s2">&quot;email&quot;</span>
+    <span class="n">USERNAME_FIELD</span> <span class="o">=</span> <span class="s2">&quot;username&quot;</span>
+    <span class="n">REQUIRED_FIELDS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="AbstractUser.Meta">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.models.html#evennia.accounts.manager.AbstractUser.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">verbose_name</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">)</span>
+        <span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">)</span>
+        <span class="n">abstract</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="AbstractUser.clean">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.models.html#evennia.accounts.manager.AbstractUser.clean">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">normalize_email</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractUser.get_full_name">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.models.html#evennia.accounts.manager.AbstractUser.get_full_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the first_name plus the last_name, with a space in between.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">full_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">full_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AbstractUser.get_short_name">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.models.html#evennia.accounts.manager.AbstractUser.get_short_name">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_short_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the short name for the user.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_name</span></div>
+
+
+<div class="viewcode-block" id="AbstractUser.email_user">
+<a class="viewcode-back" href="../../../../api/evennia.accounts.models.html#evennia.accounts.manager.AbstractUser.email_user">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">email_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">from_email</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send an email to this user.&quot;&quot;&quot;</span>
+        <span class="n">send_mail</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">from_email</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">email</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">AbstractUser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Users within the Django authentication system are represented by this</span>
+<span class="sd">    model.</span>
+
+<span class="sd">    Username and password are required. Other fields are optional.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">(</span><span class="n">AbstractUser</span><span class="o">.</span><span class="n">Meta</span><span class="p">):</span>
+        <span class="n">swappable</span> <span class="o">=</span> <span class="s2">&quot;AUTH_USER_MODEL&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AnonymousUser</span><span class="p">:</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pk</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">is_staff</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_active</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_superuser</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_groups</span> <span class="o">=</span> <span class="n">EmptyManager</span><span class="p">(</span><span class="n">Group</span><span class="p">)</span>
+    <span class="n">_user_permissions</span> <span class="o">=</span> <span class="n">EmptyManager</span><span class="p">(</span><span class="n">Permission</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;AnonymousUser&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span>  <span class="c1"># instances always return the same hash value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot cast AnonymousUser to int. Are you trying to use it in place of &quot;</span>
+            <span class="s2">&quot;User?&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Django doesn&#39;t provide a DB representation for AnonymousUser.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Django doesn&#39;t provide a DB representation for AnonymousUser.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_password</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Django doesn&#39;t provide a DB representation for AnonymousUser.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_password</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_password</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Django doesn&#39;t provide a DB representation for AnonymousUser.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_permissions</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_user_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_user_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_user_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;user&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_group_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_group_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group_permissions</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_user_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aget_all_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_get_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_user_has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ahas_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_has_perm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm_list</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;perm_list must be an iterable of permissions.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_perm</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">perm_list</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ahas_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perm_list</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">perm_list</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;perm_list must be an iterable of permissions.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">perm_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ahas_perm</span><span class="p">(</span><span class="n">perm</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_user_has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ahas_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_auser_has_module_perms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_anonymous</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_authenticated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_username</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">username</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../auth.html" >django.contrib.auth</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.contrib.auth.models</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.server.service &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.server.session" href="evennia.server.session.html" />
+    <link rel="prev" title="evennia.server.serversession" href="evennia.server.serversession.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.session.html" title="evennia.server.session"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.serversession.html" title="evennia.server.serversession"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" accesskey="U">evennia.server</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.service</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.service">
+<span id="evennia-server-service"></span><h1>evennia.server.service<a class="headerlink" href="#module-evennia.server.service" title="Link to this heading">¶</a></h1>
+<p>This module contains the main EvenniaService class, which is the very core of the
+Evennia server. It is instantiated by the evennia/server/server.py module.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.service.</span></span><span class="sig-name descname"><span class="pre">EvenniaServerService</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiService</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.server_maintenance">
+<span class="sig-name descname"><span class="pre">server_maintenance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.server_maintenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.server_maintenance" title="Link to this definition">¶</a></dt>
+<dd><p>This maintenance function handles repeated checks and updates that
+the server needs to do. It is called every minute.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.process_idle_timeouts">
+<span class="sig-name descname"><span class="pre">process_idle_timeouts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.process_idle_timeouts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.process_idle_timeouts" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.privilegedStartService">
+<span class="sig-name descname"><span class="pre">privilegedStartService</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.privilegedStartService"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.privilegedStartService" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.register_plugins">
+<span class="sig-name descname"><span class="pre">register_plugins</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.register_plugins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.register_plugins" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.register_amp">
+<span class="sig-name descname"><span class="pre">register_amp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.register_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.register_amp" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.register_webserver">
+<span class="sig-name descname"><span class="pre">register_webserver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.register_webserver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.register_webserver" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.sqlite3_prep">
+<span class="sig-name descname"><span class="pre">sqlite3_prep</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.sqlite3_prep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.sqlite3_prep" title="Link to this definition">¶</a></dt>
+<dd><p>Optimize some SQLite stuff at startup since we
+can’t save it to the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.update_defaults">
+<span class="sig-name descname"><span class="pre">update_defaults</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.update_defaults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.update_defaults" title="Link to this definition">¶</a></dt>
+<dd><p>We make sure to store the most important object defaults here, so
+we can catch if they change and update them on-objects automatically.
+This allows for changing default cmdset locations and default
+typeclasses in the settings file and have them auto-update all
+already existing objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.run_initial_setup">
+<span class="sig-name descname"><span class="pre">run_initial_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.run_initial_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.run_initial_setup" title="Link to this definition">¶</a></dt>
+<dd><p>This is triggered by the amp protocol when the connection
+to the portal has been established.
+This attempts to run the initial_setup script of the server.
+It returns if this is not the first time the server starts.
+Once finished the last_initial_setup_step is set to ‘done’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.create_default_channels">
+<span class="sig-name descname"><span class="pre">create_default_channels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.create_default_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.create_default_channels" title="Link to this definition">¶</a></dt>
+<dd><p>check so default channels exist on every restart, create if not.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.run_init_hooks">
+<span class="sig-name descname"><span class="pre">run_init_hooks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.run_init_hooks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.run_init_hooks" title="Link to this definition">¶</a></dt>
+<dd><p>Called by the amp client once receiving sync back from Portal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – One of shutdown, reload or reset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'reload'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_reactor_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.shutdown" title="Link to this definition">¶</a></dt>
+<dd><p>Shuts down the server from inside it.</p>
+<dl class="simple">
+<dt>mode - sets the server restart mode.</dt><dd><ul class="simple">
+<li><p>‘reload’ - server restarts, no “persistent” scripts
+are stopped, at_reload hooks called.</p></li>
+<li><p>‘reset’ - server restarts, non-persistent scripts stopped,
+at_shutdown hooks called but sessions will not
+be disconnected.</p></li>
+<li><p>‘shutdown’ - like reset, but server will not auto-restart.</p></li>
+</ul>
+</dd>
+<dt>_reactor_stopping - this is set if server is stopped by a kill</dt><dd><p>command OR this method was already called
+once - in both cases the reactor is
+dead/stopping already.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.get_info_dict">
+<span class="sig-name descname"><span class="pre">get_info_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.get_info_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.get_info_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Return the server info, for display.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_init">
+<span class="sig-name descname"><span class="pre">at_server_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_init" title="Link to this definition">¶</a></dt>
+<dd><p>This is called first when the server is starting, before any other hooks, regardless of how it’s starting.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_start">
+<span class="sig-name descname"><span class="pre">at_server_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_start" title="Link to this definition">¶</a></dt>
+<dd><p>This is called every time the server starts up, regardless of
+how it was shut down.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_stop">
+<span class="sig-name descname"><span class="pre">at_server_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_stop" title="Link to this definition">¶</a></dt>
+<dd><p>This is called just before a server is shut down, regardless
+of it is fore a reload, reset or shutdown.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_reload_start">
+<span class="sig-name descname"><span class="pre">at_server_reload_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_reload_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_reload_start" title="Link to this definition">¶</a></dt>
+<dd><p>This is called only when server starts back up after a reload.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_post_portal_sync">
+<span class="sig-name descname"><span class="pre">at_post_portal_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_post_portal_sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_post_portal_sync" title="Link to this definition">¶</a></dt>
+<dd><p>This is called just after the portal has finished syncing back data to the server
+after reconnecting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – One of ‘reload’, ‘reset’ or ‘shutdown’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_reload_stop">
+<span class="sig-name descname"><span class="pre">at_server_reload_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_reload_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_reload_stop" title="Link to this definition">¶</a></dt>
+<dd><p>This is called only time the server stops before a reload.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_cold_start">
+<span class="sig-name descname"><span class="pre">at_server_cold_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_cold_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_cold_start" title="Link to this definition">¶</a></dt>
+<dd><p>This is called only when the server starts “cold”, i.e. after a
+shutdown or a reset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.service.EvenniaServerService.at_server_cold_stop">
+<span class="sig-name descname"><span class="pre">at_server_cold_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/service.html#EvenniaServerService.at_server_cold_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.service.EvenniaServerService.at_server_cold_stop" title="Link to this definition">¶</a></dt>
+<dd><p>This is called only when the server goes down due to a shutdown or reset.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.server.service</a><ul>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.__init__"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.server_maintenance"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.server_maintenance()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.process_idle_timeouts"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.process_idle_timeouts()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.privilegedStartService"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.privilegedStartService()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.register_plugins"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.register_plugins()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.register_amp"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.register_amp()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.register_webserver"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.register_webserver()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.sqlite3_prep"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.sqlite3_prep()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.update_defaults"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.update_defaults()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.run_initial_setup"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.run_initial_setup()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.create_default_channels"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.create_default_channels()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.run_init_hooks"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.run_init_hooks()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.shutdown"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.shutdown()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.get_info_dict"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.get_info_dict()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_init"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_init()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_start"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_start()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_stop"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_stop()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_reload_start"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_reload_start()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_post_portal_sync"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_post_portal_sync()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_reload_stop"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_reload_stop()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_cold_start"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_cold_start()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.service.EvenniaServerService.at_server_cold_stop"><code class="docutils literal notranslate"><span class="pre">EvenniaServerService.at_server_cold_stop()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.server.serversession.html"
+                          title="previous chapter">evennia.server.serversession</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.server.session.html"
+                          title="next chapter">evennia.server.session</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.service.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.session.html" title="evennia.server.session"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.serversession.html" title="evennia.server.serversession"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.service</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

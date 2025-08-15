@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.game_systems.turnbattle.tb_magic &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.turnbattle.tb_range" href="evennia.contrib.game_systems.turnbattle.tb_range.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.turnbattle.tb_items" href="evennia.contrib.game_systems.turnbattle.tb_items.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_range.html" title="evennia.contrib.game_systems.turnbattle.tb_range"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_items.html" title="evennia.contrib.game_systems.turnbattle.tb_items"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.turnbattle.html" accesskey="U">evennia.contrib.game_systems.turnbattle</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle.tb_magic</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.turnbattle.tb_magic">
+<span id="evennia-contrib-game-systems-turnbattle-tb-magic"></span><h1>evennia.contrib.game_systems.turnbattle.tb_magic<a class="headerlink" href="#module-evennia.contrib.game_systems.turnbattle.tb_magic" title="Link to this heading">¶</a></h1>
+<p>Simple turn-based combat system with spell casting</p>
+<p>Contrib - Tim Ashley Jenkins 2017, Refactor by Griatch, 2022</p>
+<p>This is a version of the ‘turnbattle’ contrib that includes a basic,
+expandable framework for a ‘magic system’, whereby players can spend
+a limited resource (MP) to achieve a wide variety of effects, both in
+and out of combat. This does not have to strictly be a system for
+magic - it can easily be re-flavored to any other sort of resource
+based mechanic, like psionic powers, special moves and stamina, and
+so forth.</p>
+<p>In this system, spells are learned by name with the ‘learnspell’
+command, and then used with the ‘cast’ command. Spells can be cast in or
+out of combat - some spells can only be cast in combat, some can only be
+cast outside of combat, and some can be cast any time. However, if you
+are in combat, you can only cast a spell on your turn, and doing so will
+typically use an action (as specified in the spell’s funciton).</p>
+<p>Spells are defined at the end of the module in a database that’s a
+dictionary of dictionaries - each spell is matched by name to a function,
+along with various parameters that restrict when the spell can be used and
+what the spell can be cast on. Included is a small variety of spells that
+damage opponents and heal HP, as well as one that creates an object.</p>
+<p>Because a spell can call any function, a spell can be made to do just
+about anything at all. The SPELLS dictionary at the bottom of the module
+even allows kwargs to be passed to the spell function, so that the same
+function can be re-used for multiple similar spells.</p>
+<p>Spells in this system work on a very basic resource: MP, which is spent
+when casting spells and restored by resting. It shouldn’t be too difficult
+to modify this system to use spell slots, some physical fuel or resource,
+or whatever else your game requires.</p>
+<p>To install and test, import this module’s TBMagicCharacter object into
+your game’s character.py module:</p>
+<blockquote>
+<div><p>from evennia.contrib.game_systems.turnbattle.tb_magic import TBMagicCharacter</p>
+</div></blockquote>
+<p>And change your game’s character typeclass to inherit from TBMagicCharacter
+instead of the default:</p>
+<blockquote>
+<div><p>class Character(TBMagicCharacter):</p>
+</div></blockquote>
+<p>Note: If your character already existed you need to also make sure
+to re-run the creation hooks on it to set the needed Attributes.
+Use <strong>update self</strong> to try on yourself or use py to call <strong>at_object_creation()</strong>
+on all existing Characters.</p>
+<p>Next, import this module into your default_cmdsets.py module:</p>
+<blockquote>
+<div><p>from evennia.contrib.game_systems.turnbattle import tb_magic</p>
+</div></blockquote>
+<p>And add the battle command set to your default command set:</p>
+<blockquote>
+<div><p>#
+# any commands you add below will overload the default ones.
+#
+self.add(tb_magic.BattleCmdSet())</p>
+</div></blockquote>
+<p>This module is meant to be heavily expanded on, so you may want to copy it
+to your game’s ‘world’ folder and modify it there rather than importing it
+in your game and using it as-is.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">MagicCombatRules</span></span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#MagicCombatRules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules" title="evennia.contrib.game_systems.turnbattle.tb_basic.BasicCombatRules"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasicCombatRules</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_healing">
+<span class="sig-name descname"><span class="pre">spell_healing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#MagicCombatRules.spell_healing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_healing" title="Link to this definition">¶</a></dt>
+<dd><p>Spell that restores HP to a target or targets.</p>
+<dl class="simple">
+<dt>kwargs:</dt><dd><dl class="simple">
+<dt>healing_range (tuple): Minimum and maximum amount healed to</dt><dd><p>each target. (20, 40) by default.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_attack">
+<span class="sig-name descname"><span class="pre">spell_attack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#MagicCombatRules.spell_attack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_attack" title="Link to this definition">¶</a></dt>
+<dd><p>Spell that deals damage in combat. Similar to resolve_attack.</p>
+<dl class="simple">
+<dt>kwargs:</dt><dd><dl class="simple">
+<dt>attack_name (tuple): Single and plural describing the sort of</dt><dd><p>attack or projectile that strikes each enemy.</p>
+</dd>
+<dt>damage_range (tuple): Minimum and maximum damage dealt by the</dt><dd><p>spell. (10, 20) by default.</p>
+</dd>
+<dt>accuracy (int): Modifier to the spell’s attack roll, determining</dt><dd><p>an increased or decreased chance to hit. 0 by default.</p>
+</dd>
+<dt>attack_count (int): How many individual attacks are made as part</dt><dd><p>of the spell. If the number of attacks exceeds the number of
+targets, the first target specified will be attacked more
+than once. Just 1 by default - if the attack_count is less
+than the number targets given, each target will only be
+attacked once.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_conjure">
+<span class="sig-name descname"><span class="pre">spell_conjure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spell_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#MagicCombatRules.spell_conjure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_conjure" title="Link to this definition">¶</a></dt>
+<dd><p>Spell that creates an object.</p>
+<dl class="simple">
+<dt>kwargs:</dt><dd><p>obj_key (str): Key of the created object.
+obj_desc (str): Desc of the created object.
+obj_typeclass (str): Typeclass path of the object.</p>
+</dd>
+</dl>
+<p>If you want to make more use of this particular spell funciton,
+you may want to modify it to use the spawner (in evennia.utils.spawner)
+instead of creating objects directly.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.COMBAT_RULES">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">COMBAT_RULES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.COMBAT_RULES" title="Link to this definition">¶</a></dt>
+<dd><section id="spell-definitions-start-here">
+<h2>SPELL DEFINITIONS START HERE<a class="headerlink" href="#spell-definitions-start-here" title="Link to this heading">¶</a></h2>
+<p>In this section, each spell is matched to a function, and given parameters
+that determine its MP cost, valid type and number of targets, and what
+function casting the spell executes.</p>
+<p>This data is given as a dictionary of dictionaries - the key of each entry
+is the spell’s name, and the value is a dictionary of various options and
+parameters, some of which are required and others which are optional.</p>
+<p>Required values for spells:</p>
+<blockquote>
+<div><p>cost (int): MP cost of casting the spell
+target (str): Valid targets for the spell. Can be any of:</p>
+<blockquote>
+<div><p>“none” - No target needed
+“self” - Self only
+“any” - Any object
+“anyobj” - Any object that isn’t a character
+“anychar” - Any character
+“other” - Any object excluding the caster
+“otherchar” - Any character excluding the caster</p>
+</div></blockquote>
+<dl class="simple">
+<dt>spellfunc (callable): Function that performs the action of the spell.</dt><dd><p>Must take the following arguments: caster (obj), spell_name (str),
+targets (list), and cost (int), as well as <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Optional values for spells:</p>
+<blockquote>
+<div><p>combat_spell (bool): If the spell can be cast in combat. True by default.
+noncombat_spell (bool): If the spell can be cast out of combat. True by default.
+max_targets (int): Maximum number of objects that can be targeted by the spell.</p>
+<blockquote>
+<div><p>1 by default - unused if target is “none” or “self”</p>
+</div></blockquote>
+</div></blockquote>
+<p>Any other values specified besides the above will be passed as kwargs to ‘spellfunc’.
+You can use kwargs to effectively re-use the same function for different but similar
+spells - for example, ‘magic missile’ and ‘flame shot’ use the same function, but
+behave differently, as they have different damage ranges, accuracy, amount of attacks
+made as part of the spell, and so forth. If you make your spell functions flexible
+enough, you can make a wide variety of spells just by adding more entries to this
+dictionary.</p>
+</section>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.SPELLS">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">SPELLS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'cactus</span> <span class="pre">conjuration':</span> <span class="pre">{'combat_spell':</span> <span class="pre">False,</span> <span class="pre">'cost':</span> <span class="pre">2,</span> <span class="pre">'obj_desc':</span> <span class="pre">'An</span> <span class="pre">ordinary</span> <span class="pre">green</span> <span class="pre">cactus</span> <span class="pre">with</span> <span class="pre">little</span> <span class="pre">spines.',</span> <span class="pre">'obj_key':</span> <span class="pre">'a</span> <span class="pre">cactus',</span> <span class="pre">'spellfunc':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">MagicCombatRules.spell_conjure</span> <span class="pre">of</span> <span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;&gt;,</span> <span class="pre">'target':</span> <span class="pre">'none'},</span> <span class="pre">'cure</span> <span class="pre">wounds':</span> <span class="pre">{'cost':</span> <span class="pre">5,</span> <span class="pre">'spellfunc':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">MagicCombatRules.spell_healing</span> <span class="pre">of</span> <span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;&gt;,</span> <span class="pre">'target':</span> <span class="pre">'anychar'},</span> <span class="pre">'flame</span> <span class="pre">shot':</span> <span class="pre">{'attack_name':</span> <span class="pre">('A</span> <span class="pre">jet</span> <span class="pre">of</span> <span class="pre">flame',</span> <span class="pre">'jets</span> <span class="pre">of</span> <span class="pre">flame'),</span> <span class="pre">'cost':</span> <span class="pre">3,</span> <span class="pre">'damage_range':</span> <span class="pre">(25,</span> <span class="pre">35),</span> <span class="pre">'noncombat_spell':</span> <span class="pre">False,</span> <span class="pre">'spellfunc':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">MagicCombatRules.spell_attack</span> <span class="pre">of</span> <span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;&gt;,</span> <span class="pre">'target':</span> <span class="pre">'otherchar'},</span> <span class="pre">'full</span> <span class="pre">heal':</span> <span class="pre">{'cost':</span> <span class="pre">12,</span> <span class="pre">'healing_range':</span> <span class="pre">(100,</span> <span class="pre">100),</span> <span class="pre">'spellfunc':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">MagicCombatRules.spell_healing</span> <span class="pre">of</span> <span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;&gt;,</span> <span class="pre">'target':</span> <span class="pre">'anychar'},</span> <span class="pre">'magic</span> <span class="pre">missile':</span> <span class="pre">{'accuracy':</span> <span class="pre">999,</span> <span class="pre">'attack_count':</span> <span class="pre">3,</span> <span class="pre">'attack_name':</span> <span class="pre">('A</span> <span class="pre">bolt',</span> <span class="pre">'bolts'),</span> <span class="pre">'cost':</span> <span class="pre">3,</span> <span class="pre">'damage_range':</span> <span class="pre">(4,</span> <span class="pre">7),</span> <span class="pre">'max_targets':</span> <span class="pre">3,</span> <span class="pre">'noncombat_spell':</span> <span class="pre">False,</span> <span class="pre">'spellfunc':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">MagicCombatRules.spell_attack</span> <span class="pre">of</span> <span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;&gt;,</span> <span class="pre">'target':</span> <span class="pre">'otherchar'},</span> <span class="pre">'mass</span> <span class="pre">cure</span> <span class="pre">wounds':</span> <span class="pre">{'cost':</span> <span class="pre">10,</span> <span class="pre">'max_targets':</span> <span class="pre">5,</span> <span class="pre">'spellfunc':</span> <span class="pre">&lt;bound</span> <span class="pre">method</span> <span class="pre">MagicCombatRules.spell_healing</span> <span class="pre">of</span> <span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;&gt;,</span> <span class="pre">'target':</span> <span class="pre">'anychar'}}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.SPELLS" title="Link to this definition">¶</a></dt>
+<dd><section id="options">
+<h2>OPTIONS<a class="headerlink" href="#options" title="Link to this heading">¶</a></h2>
+</section>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.ACTIONS_PER_TURN">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">ACTIONS_PER_TURN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.ACTIONS_PER_TURN" title="Link to this definition">¶</a></dt>
+<dd><section id="character-typeclass">
+<h2>CHARACTER TYPECLASS<a class="headerlink" href="#character-typeclass" title="Link to this heading">¶</a></h2>
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">TBMagicCharacter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#TBMagicCharacter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TBBasicCharacter</span></code></a></p>
+<p>A character able to participate in turn-based combat. Has attributes for current
+and maximum HP, access to combat commands and magic.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.at_object_creation">
+<span class="sig-name descname"><span class="pre">at_object_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#TBMagicCharacter.at_object_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.at_object_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Called once, when this object is first created. This is the
+normal hook to overload for most object types.</p>
+<p>Adds attributes for a character’s current and maximum HP.
+We’re just going to set this value at ‘100’ by default.</p>
+<p>You may want to expand this to include various ‘stats’ that
+can be changed at creation and factor into combat calculations.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.DoesNotExist" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.MultipleObjectsReturned" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicCharacter.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TBMagicCharacter'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">TBMagicTurnHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#TBMagicTurnHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">TBBasicTurnHandler</span></code></a></p>
+<p>This is the script that handles the progression of combat through turns.
+On creation (when a fight is started) it adds all combat-ready characters
+to its roster and then sorts them into a turn order. There can only be one
+fight going on in a single room at a time, so the script is assigned to a
+room as its object.</p>
+<p>Fights persist until only one participant is left with any HP or all
+remaining participants choose to end the combat with the ‘disengage’ command.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.DoesNotExist" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.DoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">DoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.MultipleObjectsReturned" title="evennia.contrib.game_systems.turnbattle.tb_basic.TBBasicTurnHandler.MultipleObjectsReturned"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TBMagicTurnHandler'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdFight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdFight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdFight"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdFight</span></code></a></p>
+<p>Starts a fight with everyone in the same room as you.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>fight</p>
+</dd>
+</dl>
+<p>When you start a fight, everyone in the room who is able to
+fight is added to combat, and a turn order is randomly rolled.
+When it’s your turn, you can attack other characters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fight'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'combat'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.combat_handler_class">
+<span class="sig-name descname"><span class="pre">combat_handler_class</span></span><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.combat_handler_class" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler" title="evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">TBMagicTurnHandler</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'combat',</span> <span class="pre">'key':</span> <span class="pre">'fight',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nStarts</span> <span class="pre">a</span> <span class="pre">fight</span> <span class="pre">with</span> <span class="pre">everyone</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">room</span> <span class="pre">as</span> <span class="pre">you.\n\nUsage:\n</span>&#160; <span class="pre">fight\n\nWhen</span> <span class="pre">you</span> <span class="pre">start</span> <span class="pre">a</span> <span class="pre">fight,</span> <span class="pre">everyone</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">room</span> <span class="pre">who</span> <span class="pre">is</span> <span class="pre">able</span> <span class="pre">to\nfight</span> <span class="pre">is</span> <span class="pre">added</span> <span class="pre">to</span> <span class="pre">combat,</span> <span class="pre">and</span> <span class="pre">a</span> <span class="pre">turn</span> <span class="pre">order</span> <span class="pre">is</span> <span class="pre">randomly</span> <span class="pre">rolled.\nWhen</span> <span class="pre">it's</span> <span class="pre">your</span> <span class="pre">turn,</span> <span class="pre">you</span> <span class="pre">can</span> <span class="pre">attack</span> <span class="pre">other</span> <span class="pre">characters.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdAttack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdAttack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdAttack"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdAttack</span></code></a></p>
+<p>Attacks another character.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>attack &lt;target&gt;</p>
+</dd>
+</dl>
+<p>When in a fight, you may attack another character. The attack has
+a chance to hit, and if successful, will deal damage.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'attack'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'combat'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'combat',</span> <span class="pre">'key':</span> <span class="pre">'attack',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nAttacks</span> <span class="pre">another</span> <span class="pre">character.\n\nUsage:\n</span>&#160; <span class="pre">attack</span> <span class="pre">&lt;target&gt;\n\nWhen</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">fight,</span> <span class="pre">you</span> <span class="pre">may</span> <span class="pre">attack</span> <span class="pre">another</span> <span class="pre">character.</span> <span class="pre">The</span> <span class="pre">attack</span> <span class="pre">has\na</span> <span class="pre">chance</span> <span class="pre">to</span> <span class="pre">hit,</span> <span class="pre">and</span> <span class="pre">if</span> <span class="pre">successful,</span> <span class="pre">will</span> <span class="pre">deal</span> <span class="pre">damage.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdPass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdPass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdPass"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdPass</span></code></a></p>
+<p>Passes on your turn.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>pass</p>
+</dd>
+</dl>
+<p>When in a fight, you can use this command to end your turn early, even
+if there are still any actions you can take.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pass'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['hold',</span> <span class="pre">'wait']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'combat'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'hold</span> <span class="pre">wait',</span> <span class="pre">'category':</span> <span class="pre">'combat',</span> <span class="pre">'key':</span> <span class="pre">'pass',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">hold</span> <span class="pre">wait',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nPasses</span> <span class="pre">on</span> <span class="pre">your</span> <span class="pre">turn.\n\nUsage:\n</span>&#160; <span class="pre">pass\n\nWhen</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">fight,</span> <span class="pre">you</span> <span class="pre">can</span> <span class="pre">use</span> <span class="pre">this</span> <span class="pre">command</span> <span class="pre">to</span> <span class="pre">end</span> <span class="pre">your</span> <span class="pre">turn</span> <span class="pre">early,</span> <span class="pre">even\nif</span> <span class="pre">there</span> <span class="pre">are</span> <span class="pre">still</span> <span class="pre">any</span> <span class="pre">actions</span> <span class="pre">you</span> <span class="pre">can</span> <span class="pre">take.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdDisengage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdDisengage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdDisengage"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a></p>
+<p>Passes your turn and attempts to end combat.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>disengage</p>
+</dd>
+</dl>
+<p>Ends your turn early and signals that you’re trying to end
+the fight. If all participants in a fight disengage, the
+fight ends.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'disengage'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['spare']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'combat'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'spare',</span> <span class="pre">'category':</span> <span class="pre">'combat',</span> <span class="pre">'key':</span> <span class="pre">'disengage',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">spare',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nPasses</span> <span class="pre">your</span> <span class="pre">turn</span> <span class="pre">and</span> <span class="pre">attempts</span> <span class="pre">to</span> <span class="pre">end</span> <span class="pre">combat.\n\nUsage:\n</span>&#160; <span class="pre">disengage\n\nEnds</span> <span class="pre">your</span> <span class="pre">turn</span> <span class="pre">early</span> <span class="pre">and</span> <span class="pre">signals</span> <span class="pre">that</span> <span class="pre">you're</span> <span class="pre">trying</span> <span class="pre">to</span> <span class="pre">end\nthe</span> <span class="pre">fight.</span> <span class="pre">If</span> <span class="pre">all</span> <span class="pre">participants</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">fight</span> <span class="pre">disengage,</span> <span class="pre">the\nfight</span> <span class="pre">ends.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdLearnSpell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdLearnSpell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Learn a magic spell.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>learnspell &lt;spell name&gt;</p>
+</dd>
+</dl>
+<p>Adds a spell by name to your list of spells known.</p>
+<p>The following spells are provided as examples:</p>
+<blockquote>
+<div><dl class="simple">
+<dt><a href="#id3"><span class="problematic" id="id4">|</span></a>wmagic missile|n (3 MP): Fires three missiles that never miss. Can target</dt><dd><p>up to three different enemies.</p>
+</dd>
+</dl>
+<p><a href="#id5"><span class="problematic" id="id6">|</span></a>wflame shot|n (3 MP): Shoots a high-damage jet of flame at one target.</p>
+<p><a href="#id7"><span class="problematic" id="id8">|</span></a>wcure wounds|n (5 MP): Heals damage on one target.</p>
+<dl class="simple">
+<dt><a href="#id9"><span class="problematic" id="id10">|</span></a>wmass cure wounds|n (10 MP): Like ‘cure wounds’, but can heal up to 5</dt><dd><p>targets at once.</p>
+</dd>
+</dl>
+<p><a href="#id11"><span class="problematic" id="id12">|</span></a>wfull heal|n (12 MP): Heals one target back to full HP.</p>
+<p><a href="#id13"><span class="problematic" id="id14">|</span></a>wcactus conjuration|n (2 MP): Creates a cactus.</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'learnspell'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'magic'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdLearnSpell.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.func" title="Link to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'magic',</span> <span class="pre">'key':</span> <span class="pre">'learnspell',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nLearn</span> <span class="pre">a</span> <span class="pre">magic</span> <span class="pre">spell.\n\nUsage:\n</span>&#160;&#160;&#160; <span class="pre">learnspell</span> <span class="pre">&lt;spell</span> <span class="pre">name&gt;\n\nAdds</span> <span class="pre">a</span> <span class="pre">spell</span> <span class="pre">by</span> <span class="pre">name</span> <span class="pre">to</span> <span class="pre">your</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">spells</span> <span class="pre">known.\n\nThe</span> <span class="pre">following</span> <span class="pre">spells</span> <span class="pre">are</span> <span class="pre">provided</span> <span class="pre">as</span> <span class="pre">examples:\n\n</span>&#160;&#160;&#160; <span class="pre">|wmagic</span> <span class="pre">missile|n</span> <span class="pre">(3</span> <span class="pre">MP):</span> <span class="pre">Fires</span> <span class="pre">three</span> <span class="pre">missiles</span> <span class="pre">that</span> <span class="pre">never</span> <span class="pre">miss.</span> <span class="pre">Can</span> <span class="pre">target\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">up</span> <span class="pre">to</span> <span class="pre">three</span> <span class="pre">different</span> <span class="pre">enemies.\n\n</span>&#160;&#160;&#160; <span class="pre">|wflame</span> <span class="pre">shot|n</span> <span class="pre">(3</span> <span class="pre">MP):</span> <span class="pre">Shoots</span> <span class="pre">a</span> <span class="pre">high-damage</span> <span class="pre">jet</span> <span class="pre">of</span> <span class="pre">flame</span> <span class="pre">at</span> <span class="pre">one</span> <span class="pre">target.\n\n</span>&#160;&#160;&#160; <span class="pre">|wcure</span> <span class="pre">wounds|n</span> <span class="pre">(5</span> <span class="pre">MP):</span> <span class="pre">Heals</span> <span class="pre">damage</span> <span class="pre">on</span> <span class="pre">one</span> <span class="pre">target.\n\n</span>&#160;&#160;&#160; <span class="pre">|wmass</span> <span class="pre">cure</span> <span class="pre">wounds|n</span> <span class="pre">(10</span> <span class="pre">MP):</span> <span class="pre">Like</span> <span class="pre">'cure</span> <span class="pre">wounds',</span> <span class="pre">but</span> <span class="pre">can</span> <span class="pre">heal</span> <span class="pre">up</span> <span class="pre">to</span> <span class="pre">5\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">targets</span> <span class="pre">at</span> <span class="pre">once.\n\n</span>&#160;&#160;&#160; <span class="pre">|wfull</span> <span class="pre">heal|n</span> <span class="pre">(12</span> <span class="pre">MP):</span> <span class="pre">Heals</span> <span class="pre">one</span> <span class="pre">target</span> <span class="pre">back</span> <span class="pre">to</span> <span class="pre">full</span> <span class="pre">HP.\n\n</span>&#160;&#160;&#160; <span class="pre">|wcactus</span> <span class="pre">conjuration|n</span> <span class="pre">(2</span> <span class="pre">MP):</span> <span class="pre">Creates</span> <span class="pre">a</span> <span class="pre">cactus.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdCast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdCast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Cast a magic spell that you know, provided you have the MP
+to spend on its casting.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>cast &lt;spellname&gt; [= &lt;target1&gt;, &lt;target2&gt;, etc…]</p>
+</dd>
+</dl>
+<p>Some spells can be cast on multiple targets, some can be cast
+on only yourself, and some don’t need a target specified at all.
+Typing ‘cast’ by itself will give you a list of spells you know.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cast'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'magic'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdCast.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.func" title="Link to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+<p>Note: This is a quite long command, since it has to cope with all
+the different circumstances in which you may or may not be able
+to cast a spell. None of the spell’s effects are handled by the
+command - all the command does is verify that the player’s input
+is valid for the spell being cast and then call the spell’s
+function.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'magic',</span> <span class="pre">'key':</span> <span class="pre">'cast',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nCast</span> <span class="pre">a</span> <span class="pre">magic</span> <span class="pre">spell</span> <span class="pre">that</span> <span class="pre">you</span> <span class="pre">know,</span> <span class="pre">provided</span> <span class="pre">you</span> <span class="pre">have</span> <span class="pre">the</span> <span class="pre">MP\nto</span> <span class="pre">spend</span> <span class="pre">on</span> <span class="pre">its</span> <span class="pre">casting.\n\nUsage:\n</span>&#160;&#160;&#160; <span class="pre">cast</span> <span class="pre">&lt;spellname&gt;</span> <span class="pre">[=</span> <span class="pre">&lt;target1&gt;,</span> <span class="pre">&lt;target2&gt;,</span> <span class="pre">etc...]\n\nSome</span> <span class="pre">spells</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">cast</span> <span class="pre">on</span> <span class="pre">multiple</span> <span class="pre">targets,</span> <span class="pre">some</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">cast\non</span> <span class="pre">only</span> <span class="pre">yourself,</span> <span class="pre">and</span> <span class="pre">some</span> <span class="pre">don't</span> <span class="pre">need</span> <span class="pre">a</span> <span class="pre">target</span> <span class="pre">specified</span> <span class="pre">at</span> <span class="pre">all.\nTyping</span> <span class="pre">'cast'</span> <span class="pre">by</span> <span class="pre">itself</span> <span class="pre">will</span> <span class="pre">give</span> <span class="pre">you</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">spells</span> <span class="pre">you</span> <span class="pre">know.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdRest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdRest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Recovers damage and restores MP.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>rest</p>
+</dd>
+</dl>
+<p>Resting recovers your HP and MP to their maximum, but you can
+only rest if you’re not in a fight.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rest'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'combat'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.rules" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdRest.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.func" title="Link to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'combat',</span> <span class="pre">'key':</span> <span class="pre">'rest',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nRecovers</span> <span class="pre">damage</span> <span class="pre">and</span> <span class="pre">restores</span> <span class="pre">MP.\n\nUsage:\n</span>&#160; <span class="pre">rest\n\nResting</span> <span class="pre">recovers</span> <span class="pre">your</span> <span class="pre">HP</span> <span class="pre">and</span> <span class="pre">MP</span> <span class="pre">to</span> <span class="pre">their</span> <span class="pre">maximum,</span> <span class="pre">but</span> <span class="pre">you</span> <span class="pre">can\nonly</span> <span class="pre">rest</span> <span class="pre">if</span> <span class="pre">you're</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">fight.\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.command.html#evennia.commands.command.Command" title="evennia.commands.command.Command"><code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></a></p>
+<p>Gives combat information.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>status</p>
+</dd>
+</dl>
+<p>Shows your current and maximum HP and your distance from
+other targets in combat.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'status'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'combat'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdStatus.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.func" title="Link to this definition">¶</a></dt>
+<dd><p>This performs the actual command.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'combat',</span> <span class="pre">'key':</span> <span class="pre">'status',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nGives</span> <span class="pre">combat</span> <span class="pre">information.\n\nUsage:\n</span>&#160; <span class="pre">status\n\nShows</span> <span class="pre">your</span> <span class="pre">current</span> <span class="pre">and</span> <span class="pre">maximum</span> <span class="pre">HP</span> <span class="pre">and</span> <span class="pre">your</span> <span class="pre">distance</span> <span class="pre">from\nother</span> <span class="pre">targets</span> <span class="pre">in</span> <span class="pre">combat.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">CmdCombatHelp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#CmdCombatHelp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.contrib.game_systems.turnbattle.tb_basic.html#evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp" title="evennia.contrib.game_systems.turnbattle.tb_basic.CmdCombatHelp"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a></p>
+<p>View help or a list of topics</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>help &lt;topic or command&gt;
+help list
+help all</p>
+</dd>
+</dl>
+<p>This will search for help on commands and other
+topics related to the game.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['?']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'help'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'?',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'help',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">?',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nView</span> <span class="pre">help</span> <span class="pre">or</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">topics\n\nUsage:\n</span>&#160; <span class="pre">help</span> <span class="pre">&lt;topic</span> <span class="pre">or</span> <span class="pre">command&gt;\n</span>&#160; <span class="pre">help</span> <span class="pre">list\n</span>&#160; <span class="pre">help</span> <span class="pre">all\n\nThis</span> <span class="pre">will</span> <span class="pre">search</span> <span class="pre">for</span> <span class="pre">help</span> <span class="pre">on</span> <span class="pre">commands</span> <span class="pre">and</span> <span class="pre">other\ntopics</span> <span class="pre">related</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">game.\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.turnbattle.tb_magic.</span></span><span class="sig-name descname"><span class="pre">BattleCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#BattleCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.cmdset_character.html#evennia.commands.default.cmdset_character.CharacterCmdSet" title="evennia.commands.default.cmdset_character.CharacterCmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterCmdSet</span></code></a></p>
+<p>This command set includes all the commmands used in the battle system.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DefaultCharacter'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/turnbattle/tb_magic.html#BattleCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Populates the cmdset</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.game_systems.turnbattle.tb_magic</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_healing"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules.spell_healing()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_attack"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules.spell_attack()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.MagicCombatRules.spell_conjure"><code class="docutils literal notranslate"><span class="pre">MagicCombatRules.spell_conjure()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.COMBAT_RULES"><code class="docutils literal notranslate"><span class="pre">COMBAT_RULES</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.SPELLS"><code class="docutils literal notranslate"><span class="pre">SPELLS</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.ACTIONS_PER_TURN"><code class="docutils literal notranslate"><span class="pre">ACTIONS_PER_TURN</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.rules"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.at_object_creation"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.at_object_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.path"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicCharacter.typename"><code class="docutils literal notranslate"><span class="pre">TBMagicCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.rules"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.path"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.TBMagicTurnHandler.typename"><code class="docutils literal notranslate"><span class="pre">TBMagicTurnHandler.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight"><code class="docutils literal notranslate"><span class="pre">CmdFight</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.key"><code class="docutils literal notranslate"><span class="pre">CmdFight.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFight.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.rules"><code class="docutils literal notranslate"><span class="pre">CmdFight.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.combat_handler_class"><code class="docutils literal notranslate"><span class="pre">CmdFight.combat_handler_class</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFight.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFight.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdFight.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFight.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack"><code class="docutils literal notranslate"><span class="pre">CmdAttack</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.key"><code class="docutils literal notranslate"><span class="pre">CmdAttack.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAttack.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.rules"><code class="docutils literal notranslate"><span class="pre">CmdAttack.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAttack.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAttack.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdAttack.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAttack.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass"><code class="docutils literal notranslate"><span class="pre">CmdPass</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.key"><code class="docutils literal notranslate"><span class="pre">CmdPass.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.aliases"><code class="docutils literal notranslate"><span class="pre">CmdPass.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.help_category"><code class="docutils literal notranslate"><span class="pre">CmdPass.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.rules"><code class="docutils literal notranslate"><span class="pre">CmdPass.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdPass.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdPass.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdPass.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.key"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.aliases"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.help_category"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.rules"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdDisengage.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdDisengage.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.key"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.func"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdLearnSpell.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLearnSpell.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast"><code class="docutils literal notranslate"><span class="pre">CmdCast</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.key"><code class="docutils literal notranslate"><span class="pre">CmdCast.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCast.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.rules"><code class="docutils literal notranslate"><span class="pre">CmdCast.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.func"><code class="docutils literal notranslate"><span class="pre">CmdCast.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCast.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCast.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCast.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCast.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest"><code class="docutils literal notranslate"><span class="pre">CmdRest</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.key"><code class="docutils literal notranslate"><span class="pre">CmdRest.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.help_category"><code class="docutils literal notranslate"><span class="pre">CmdRest.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.rules"><code class="docutils literal notranslate"><span class="pre">CmdRest.rules</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.func"><code class="docutils literal notranslate"><span class="pre">CmdRest.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.aliases"><code class="docutils literal notranslate"><span class="pre">CmdRest.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdRest.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdRest.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdRest.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus"><code class="docutils literal notranslate"><span class="pre">CmdStatus</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.key"><code class="docutils literal notranslate"><span class="pre">CmdStatus.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.help_category"><code class="docutils literal notranslate"><span class="pre">CmdStatus.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.func"><code class="docutils literal notranslate"><span class="pre">CmdStatus.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.aliases"><code class="docutils literal notranslate"><span class="pre">CmdStatus.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdStatus.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdStatus.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdStatus.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.aliases"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.help_category"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.key"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.CmdCombatHelp.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdCombatHelp.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.turnbattle.tb_magic.BattleCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BattleCmdSet.at_cmdset_creation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.turnbattle.tb_items.html"
+                          title="previous chapter">evennia.contrib.game_systems.turnbattle.tb_items</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.turnbattle.tb_range.html"
+                          title="next chapter">evennia.contrib.game_systems.turnbattle.tb_range</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.turnbattle.tb_magic.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_range.html" title="evennia.contrib.game_systems.turnbattle.tb_range"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.turnbattle.tb_items.html" title="evennia.contrib.game_systems.turnbattle.tb_items"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.turnbattle.html" >evennia.contrib.game_systems.turnbattle</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.turnbattle.tb_magic</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

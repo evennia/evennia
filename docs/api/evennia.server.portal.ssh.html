@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.server.portal.ssh &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.server.portal.ssl" href="evennia.server.portal.ssl.html" />
+    <link rel="prev" title="evennia.server.portal.service" href="evennia.server.portal.service.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.ssl.html" title="evennia.server.portal.ssl"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.service.html" title="evennia.server.portal.service"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" accesskey="U">evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.ssh</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.portal.ssh">
+<span id="evennia-server-portal-ssh"></span><h1>evennia.server.portal.ssh<a class="headerlink" href="#module-evennia.server.portal.ssh" title="Link to this heading">¶</a></h1>
+<p>This module implements the ssh (Secure SHell) protocol for encrypted
+connections.</p>
+<p>This depends on a generic session module that implements the actual
+login procedure of the game, tracks sessions etc.</p>
+<p>Using standard ssh client,</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SSHServerFactory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">SSHServerFactory</span></span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SSHServerFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SSHServerFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ServerFactory</span></code></p>
+<p>This is only to name this better in logs</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SSHServerFactory.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.ssh.SSHServerFactory.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SSHServerFactory.logPrefix">
+<span class="sig-name descname"><span class="pre">logPrefix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SSHServerFactory.logPrefix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SSHServerFactory.logPrefix" title="Link to this definition">¶</a></dt>
+<dd><p>Describe this factory for log messages.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">SshProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starttuple</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Manhole</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a></p>
+<p>Each account connecting over ssh gets this protocol assigned to
+them.  All communication between game and account goes through
+here.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">starttuple</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>For setting up the account.  If account is not None then we’ll
+login automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>starttuple</strong> (<em>tuple</em>) – A (account, factory) tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.terminalSize">
+<span class="sig-name descname"><span class="pre">terminalSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.terminalSize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.terminalSize" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the terminal and connect to the new session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>int</em>) – Width of terminal.</p></li>
+<li><p><strong>height</strong> (<em>int</em>) – Height of terminal.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.connectionMade">
+<span class="sig-name descname"><span class="pre">connectionMade</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.connectionMade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.connectionMade" title="Link to this definition">¶</a></dt>
+<dd><p>This is called when the connection is first established.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.handle_INT">
+<span class="sig-name descname"><span class="pre">handle_INT</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.handle_INT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.handle_INT" title="Link to this definition">¶</a></dt>
+<dd><p>Handle ^C as an interrupt keystroke by resetting the current
+input variables to their initial state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.handle_EOF">
+<span class="sig-name descname"><span class="pre">handle_EOF</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.handle_EOF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.handle_EOF" title="Link to this definition">¶</a></dt>
+<dd><p>Handles EOF generally used to exit.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.handle_FF">
+<span class="sig-name descname"><span class="pre">handle_FF</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.handle_FF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.handle_FF" title="Link to this definition">¶</a></dt>
+<dd><p>Handle a ‘form feed’ byte - generally used to request a screen
+refresh/redraw.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.handle_QUIT">
+<span class="sig-name descname"><span class="pre">handle_QUIT</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.handle_QUIT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.handle_QUIT" title="Link to this definition">¶</a></dt>
+<dd><p>Quit, end, and lose the connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.connectionLost">
+<span class="sig-name descname"><span class="pre">connectionLost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.connectionLost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.connectionLost" title="Link to this definition">¶</a></dt>
+<dd><p>This is executed when the connection is lost for whatever
+reason. It can also be called directly, from the disconnect
+method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em>) – Motivation for loosing connection.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.getClientAddress">
+<span class="sig-name descname"><span class="pre">getClientAddress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.getClientAddress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.getClientAddress" title="Link to this definition">¶</a></dt>
+<dd><p>Get client address.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><em>address_and_port (tuple)</em> –</p>
+<dl class="simple">
+<dt>The client’s address and port in</dt><dd><p>a tuple. For example <strong>(‘127.0.0.1’, 41917)</strong>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.lineReceived">
+<span class="sig-name descname"><span class="pre">lineReceived</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.lineReceived"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.lineReceived" title="Link to this definition">¶</a></dt>
+<dd><p>Communication User -&gt; Evennia. Any line return indicates a
+command for the purpose of the MUD.  So we take the user input
+and pass it on to the game engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – Input text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.sendLine">
+<span class="sig-name descname"><span class="pre">sendLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.sendLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.sendLine" title="Link to this definition">¶</a></dt>
+<dd><p>Communication Evennia -&gt; User.  Any string sent should
+already have been properly formatted and processed before
+reaching this point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – Output text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.at_login">
+<span class="sig-name descname"><span class="pre">at_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.at_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.at_login" title="Link to this definition">¶</a></dt>
+<dd><p>Called when this session gets authenticated by the server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.disconnect">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Connection</span> <span class="pre">closed.</span> <span class="pre">Goodbye</span> <span class="pre">for</span> <span class="pre">now.'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.disconnect" title="Link to this definition">¶</a></dt>
+<dd><p>Disconnect from server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em>) – Motivation for disconnect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.data_out">
+<span class="sig-name descname"><span class="pre">data_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.data_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.data_out" title="Link to this definition">¶</a></dt>
+<dd><p>Data Evennia -&gt; User</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<em>any</em>) – Options to the protocol.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.send_text">
+<span class="sig-name descname"><span class="pre">send_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.send_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.send_text" title="Link to this definition">¶</a></dt>
+<dd><p>Send text data. This is an in-band telnet operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The first argument is always the text string to send. No other arguments
+are considered.</p>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>options</strong> (<em>dict</em>) – <p>Send-option flags (booleans)</p>
+<ul class="simple">
+<li><p>mxp: enforce mxp link support.</p></li>
+<li><p>ansi: enforce no ansi colors.</p></li>
+<li><p>xterm256: enforce xterm256 colors, regardless of ttype setting.</p></li>
+<li><p>nocolor: strip all colors.</p></li>
+<li><p>raw: pass string through without any ansi processing
+(i.e. include evennia ansi markers but do not
+convert them into ansi tokens)</p></li>
+<li><p>echo: turn on/off line echo on the client. turn
+off line echo for client, for example for password.
+note that it must be actively turned back on again!</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.send_prompt">
+<span class="sig-name descname"><span class="pre">send_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.send_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.send_prompt" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.SshProtocol.send_default">
+<span class="sig-name descname"><span class="pre">send_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#SshProtocol.send_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.SshProtocol.send_default" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.ExtraInfoAuthServer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">ExtraInfoAuthServer</span></span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#ExtraInfoAuthServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.ExtraInfoAuthServer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SSHUserAuthServer</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.ExtraInfoAuthServer.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.ssh.ExtraInfoAuthServer.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.ExtraInfoAuthServer.auth_password">
+<span class="sig-name descname"><span class="pre">auth_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#ExtraInfoAuthServer.auth_password"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.ExtraInfoAuthServer.auth_password" title="Link to this definition">¶</a></dt>
+<dd><p>Password authentication.</p>
+<p>Used mostly for setting up the transport so we can query
+username and password later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packet</strong> (<em>Packet</em>) – Auth packet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.AccountDBPasswordChecker">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">AccountDBPasswordChecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#AccountDBPasswordChecker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.AccountDBPasswordChecker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Checks the django db for the correct credentials for
+username/password otherwise it returns the account or None which is
+useful for the Realm.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.AccountDBPasswordChecker.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.AccountDBPasswordChecker.credentialInterfaces">
+<span class="sig-name descname"><span class="pre">credentialInterfaces</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;InterfaceClass</span> <span class="pre">twisted.cred.credentials.IUsernamePassword&gt;,)</span></em><a class="headerlink" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.credentialInterfaces" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.AccountDBPasswordChecker.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#AccountDBPasswordChecker.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the factory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factory</strong> (<em>SSHFactory</em>) – Checker factory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.AccountDBPasswordChecker.requestAvatarId">
+<span class="sig-name descname"><span class="pre">requestAvatarId</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#AccountDBPasswordChecker.requestAvatarId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.requestAvatarId" title="Link to this definition">¶</a></dt>
+<dd><p>Generic credentials.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.PassAvatarIdTerminalRealm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">PassAvatarIdTerminalRealm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transportFactory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#PassAvatarIdTerminalRealm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.PassAvatarIdTerminalRealm" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalRealm</span></code></p>
+<p>Returns an avatar that passes the avatarId through to the
+protocol.  This is probably not the best way to do it.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.PassAvatarIdTerminalRealm.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.ssh.PassAvatarIdTerminalRealm.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.TerminalSessionTransport_getPeer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">TerminalSessionTransport_getPeer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chainedProtocol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avatar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#TerminalSessionTransport_getPeer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.TerminalSessionTransport_getPeer" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Taken from twisted’s TerminalSessionTransport which doesn’t
+provide getPeer to the transport.  This one does.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.TerminalSessionTransport_getPeer.noisy">
+<span class="sig-name descname"><span class="pre">noisy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.server.portal.ssh.TerminalSessionTransport_getPeer.noisy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.TerminalSessionTransport_getPeer.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chainedProtocol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avatar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#TerminalSessionTransport_getPeer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.TerminalSessionTransport_getPeer.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.getKeyPair">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">getKeyPair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pubkeyfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">privkeyfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#getKeyPair"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.getKeyPair" title="Link to this definition">¶</a></dt>
+<dd><p>This function looks for RSA keypair files in the current directory. If they
+do not exist, the keypair is created.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.portal.ssh.makeFactory">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.portal.ssh.</span></span><span class="sig-name descname"><span class="pre">makeFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configdict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/ssh.html#makeFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.ssh.makeFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Creates the ssh server factory.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.server.portal.ssh</a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SSHServerFactory"><code class="docutils literal notranslate"><span class="pre">SSHServerFactory</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SSHServerFactory.noisy"><code class="docutils literal notranslate"><span class="pre">SSHServerFactory.noisy</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SSHServerFactory.logPrefix"><code class="docutils literal notranslate"><span class="pre">SSHServerFactory.logPrefix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol"><code class="docutils literal notranslate"><span class="pre">SshProtocol</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.noisy"><code class="docutils literal notranslate"><span class="pre">SshProtocol.noisy</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">SshProtocol.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.terminalSize"><code class="docutils literal notranslate"><span class="pre">SshProtocol.terminalSize()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.connectionMade"><code class="docutils literal notranslate"><span class="pre">SshProtocol.connectionMade()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.handle_INT"><code class="docutils literal notranslate"><span class="pre">SshProtocol.handle_INT()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.handle_EOF"><code class="docutils literal notranslate"><span class="pre">SshProtocol.handle_EOF()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.handle_FF"><code class="docutils literal notranslate"><span class="pre">SshProtocol.handle_FF()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.handle_QUIT"><code class="docutils literal notranslate"><span class="pre">SshProtocol.handle_QUIT()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.connectionLost"><code class="docutils literal notranslate"><span class="pre">SshProtocol.connectionLost()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.getClientAddress"><code class="docutils literal notranslate"><span class="pre">SshProtocol.getClientAddress()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.lineReceived"><code class="docutils literal notranslate"><span class="pre">SshProtocol.lineReceived()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.sendLine"><code class="docutils literal notranslate"><span class="pre">SshProtocol.sendLine()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.at_login"><code class="docutils literal notranslate"><span class="pre">SshProtocol.at_login()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.disconnect"><code class="docutils literal notranslate"><span class="pre">SshProtocol.disconnect()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.data_out"><code class="docutils literal notranslate"><span class="pre">SshProtocol.data_out()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.send_text"><code class="docutils literal notranslate"><span class="pre">SshProtocol.send_text()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.send_prompt"><code class="docutils literal notranslate"><span class="pre">SshProtocol.send_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.SshProtocol.send_default"><code class="docutils literal notranslate"><span class="pre">SshProtocol.send_default()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.ExtraInfoAuthServer"><code class="docutils literal notranslate"><span class="pre">ExtraInfoAuthServer</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.ExtraInfoAuthServer.noisy"><code class="docutils literal notranslate"><span class="pre">ExtraInfoAuthServer.noisy</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.ExtraInfoAuthServer.auth_password"><code class="docutils literal notranslate"><span class="pre">ExtraInfoAuthServer.auth_password()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.AccountDBPasswordChecker"><code class="docutils literal notranslate"><span class="pre">AccountDBPasswordChecker</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.noisy"><code class="docutils literal notranslate"><span class="pre">AccountDBPasswordChecker.noisy</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.credentialInterfaces"><code class="docutils literal notranslate"><span class="pre">AccountDBPasswordChecker.credentialInterfaces</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.__init__"><code class="docutils literal notranslate"><span class="pre">AccountDBPasswordChecker.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.AccountDBPasswordChecker.requestAvatarId"><code class="docutils literal notranslate"><span class="pre">AccountDBPasswordChecker.requestAvatarId()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.PassAvatarIdTerminalRealm"><code class="docutils literal notranslate"><span class="pre">PassAvatarIdTerminalRealm</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.PassAvatarIdTerminalRealm.noisy"><code class="docutils literal notranslate"><span class="pre">PassAvatarIdTerminalRealm.noisy</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.TerminalSessionTransport_getPeer"><code class="docutils literal notranslate"><span class="pre">TerminalSessionTransport_getPeer</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.TerminalSessionTransport_getPeer.noisy"><code class="docutils literal notranslate"><span class="pre">TerminalSessionTransport_getPeer.noisy</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.TerminalSessionTransport_getPeer.__init__"><code class="docutils literal notranslate"><span class="pre">TerminalSessionTransport_getPeer.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.getKeyPair"><code class="docutils literal notranslate"><span class="pre">getKeyPair()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.ssh.makeFactory"><code class="docutils literal notranslate"><span class="pre">makeFactory()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.server.portal.service.html"
+                          title="previous chapter">evennia.server.portal.service</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.server.portal.ssl.html"
+                          title="next chapter">evennia.server.portal.ssl</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.portal.ssh.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.ssl.html" title="evennia.server.portal.ssl"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.service.html" title="evennia.server.portal.service"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" >evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.ssh</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.server.portal.amp &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.server.portal.amp_server" href="evennia.server.portal.amp_server.html" />
+    <link rel="prev" title="evennia.server.portal" href="evennia.server.portal.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.amp_server.html" title="evennia.server.portal.amp_server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.html" title="evennia.server.portal"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" accesskey="U">evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.portal.amp">
+<span id="evennia-server-portal-amp"></span><h1>evennia.server.portal.amp<a class="headerlink" href="#module-evennia.server.portal.amp" title="Link to this heading">¶</a></h1>
+<p>The AMP (Asynchronous Message Protocol)-communication commands and constants used by Evennia.</p>
+<p>This module acts as a central place for AMP-servers and -clients to get commands to use.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.dumps">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">dumps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#dumps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.dumps" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.loads">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">loads</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#loads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.loads" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.Compressed">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">Compressed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#Compressed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.Compressed" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">String</span></code></p>
+<p>This is a custom AMP command Argument that both handles too-long
+sends as well as uses zlib for compression across the wire. The
+batch-grouping of too-long sends is borrowed from the “mediumbox”
+recipy at twisted-hacks’s ~glyph/+junk/amphacks/mediumbox.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.Compressed.fromBox">
+<span class="sig-name descname"><span class="pre">fromBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#Compressed.fromBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.Compressed.fromBox" title="Link to this definition">¶</a></dt>
+<dd><p>Converts from box string representation to python. We read back too-long batched data and
+put it back together here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.Compressed.toBox">
+<span class="sig-name descname"><span class="pre">toBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#Compressed.toBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.Compressed.toBox" title="Link to this definition">¶</a></dt>
+<dd><p>Convert from python object to string box representation.
+we break up too-long data snippets into multiple batches here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.Compressed.toString">
+<span class="sig-name descname"><span class="pre">toString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#Compressed.toString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.Compressed.toString" title="Link to this definition">¶</a></dt>
+<dd><p>Convert to send as a bytestring on the wire, with compression.</p>
+<p>Note: In Py3 this is really a byte stream.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.Compressed.fromString">
+<span class="sig-name descname"><span class="pre">fromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inString</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#Compressed.fromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.Compressed.fromString" title="Link to this definition">¶</a></dt>
+<dd><p>Convert (decompress) from the string-representation on the wire to Python.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">MsgLauncher2Portal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#MsgLauncher2Portal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Message Launcher -&gt; Portal</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MsgLauncher2Portal'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'operation',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;),</span> <span class="pre">(b'arguments',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgLauncher2Portal'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgLauncher2Portal.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgLauncher2Portal.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">MsgPortal2Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#MsgPortal2Server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Message Portal -&gt; Server</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgPortal2Server'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'packed_data',</span> <span class="pre">&lt;evennia.server.portal.amp.Compressed</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgPortal2Server'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgPortal2Server.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgPortal2Server.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">MsgServer2Portal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#MsgServer2Portal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Message Server -&gt; Portal</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MsgServer2Portal'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'packed_data',</span> <span class="pre">&lt;evennia.server.portal.amp.Compressed</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgServer2Portal'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgServer2Portal.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgServer2Portal.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">AdminPortal2Server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AdminPortal2Server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Administration Portal -&gt; Server</p>
+<p>Sent when the portal needs to perform admin operations on the
+server, such as when a new session connects or resyncs</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AdminPortal2Server'</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'packed_data',</span> <span class="pre">&lt;evennia.server.portal.amp.Compressed</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'AdminPortal2Server'</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminPortal2Server.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminPortal2Server.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">AdminServer2Portal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AdminServer2Portal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Administration Server -&gt; Portal</p>
+<p>Sent when the server needs to perform admin operations on the
+portal.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AdminServer2Portal'</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'packed_data',</span> <span class="pre">&lt;evennia.server.portal.amp.Compressed</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'AdminServer2Portal'</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AdminServer2Portal.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.AdminServer2Portal.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">MsgStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#MsgStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Check Status between AMP services</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MsgStatus'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'status',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'status',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgStatus'</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.MsgStatus.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.MsgStatus.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">FunctionCall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#FunctionCall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Bidirectional Server &lt;-&gt; Portal</p>
+<p>Sent when either process needs to call an arbitrary function in
+the other. This does not use the batch-send functionality.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FunctionCall'</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'module',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;),</span> <span class="pre">(b'function',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;),</span> <span class="pre">(b'args',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;),</span> <span class="pre">(b'kwargs',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'result',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'FunctionCall'</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.FunctionCall.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.portal.amp.FunctionCall.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.amp.</span></span><span class="sig-name descname"><span class="pre">AMPMultiConnectionProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AMP</span></code></p>
+<p>AMP protocol that safely handle multiple connections to the same
+server without dropping old ones - new clients will receive
+all server returns (broadcast). Will also correctly handle
+erroneous HTTP requests on the port and return a HTTP error response.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize protocol with some things that need to be in place
+already before connecting both on portal and server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.stringReceived">
+<span class="sig-name descname"><span class="pre">stringReceived</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.stringReceived"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.stringReceived" title="Link to this definition">¶</a></dt>
+<dd><p>Overrides the base stringReceived of twisted in order to handle
+the strange error reported in <a class="reference external" href="https://github.com/evennia/evennia/issues/2053">https://github.com/evennia/evennia/issues/2053</a>,
+which can lead to the amp connection locking up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – the data coming in.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>To test, add the following code to the beginning of
+<strong>evennia.server.amp_client.AMPServerClientProtocol.data_to_portal</strong>, then
+run multiple commands until the error trigger:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">twisted.protocols.amp</span><span class="w"> </span><span class="kn">import</span> <span class="n">AmpBox</span>
+<span class="n">always_fail</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">if</span> <span class="n">always_fail</span> <span class="ow">or</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
+    <span class="n">breaker</span> <span class="o">=</span> <span class="n">AmpBox</span><span class="p">()</span>
+    <span class="n">breaker</span><span class="p">[</span><span class="s1">&#39;_answer&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()]</span><span class="o">=</span><span class="s1">&#39;13541&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">breaker</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.dataReceived">
+<span class="sig-name descname"><span class="pre">dataReceived</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.dataReceived"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.dataReceived" title="Link to this definition">¶</a></dt>
+<dd><p>Handle non-AMP messages, such as HTTP communication.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.makeConnection">
+<span class="sig-name descname"><span class="pre">makeConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transport</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.makeConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.makeConnection" title="Link to this definition">¶</a></dt>
+<dd><p>Swallow connection log message here. Copied from original
+in the amp protocol.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.connectionMade">
+<span class="sig-name descname"><span class="pre">connectionMade</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.connectionMade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.connectionMade" title="Link to this definition">¶</a></dt>
+<dd><p>This is called when an AMP connection is (re-)established. AMP calls it on both sides.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.connectionLost">
+<span class="sig-name descname"><span class="pre">connectionLost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.connectionLost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.connectionLost" title="Link to this definition">¶</a></dt>
+<dd><p>We swallow connection errors here. The reason is that during a
+normal reload/shutdown there will almost always be cases where
+either the portal or server shuts down before a message has
+returned its (empty) return, triggering a connectionLost error
+that is irrelevant. If a true connection error happens, the
+portal will continuously try to reconnect, showing the problem
+that way.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.errback">
+<span class="sig-name descname"><span class="pre">errback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.errback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.errback" title="Link to this definition">¶</a></dt>
+<dd><p>Error callback.
+Handles errors to avoid dropping connections on server tracebacks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>err</strong> (<em>Failure</em>) – Deferred error instance.</p></li>
+<li><p><strong>info</strong> (<em>str</em>) – Error string.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.data_in">
+<span class="sig-name descname"><span class="pre">data_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">packed_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.data_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.data_in" title="Link to this definition">¶</a></dt>
+<dd><p>Process incoming packed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>packed_data</strong> (<em>bytes</em>) – Pickled data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>unpaced_data (any)</em> – Unpickled package</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.broadcast">
+<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessid</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.broadcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.broadcast" title="Link to this definition">¶</a></dt>
+<dd><p>Send data across the wire to all connections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>AMP Command</em>) – A protocol send command.</p></li>
+<li><p><strong>sessid</strong> (<em>int</em>) – A unique Session id.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>deferred (deferred or None)</em> – A deferred with an errback.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Data will be sent across the wire pickled as a tuple
+(sessid, kwargs).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.send_FunctionCall">
+<span class="sig-name descname"><span class="pre">send_FunctionCall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modulepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functionname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.send_FunctionCall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.send_FunctionCall" title="Link to this definition">¶</a></dt>
+<dd><p>Access method called by either process. This will call an arbitrary
+function on the other process (On Portal if calling from Server and
+vice versa).</p>
+<dl>
+<dt>Inputs:</dt><dd><p>modulepath (str) - python path to module holding function to call
+functionname (str) - name of function in given module
+<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs will be used as arguments/keyword args for the</p>
+<blockquote>
+<div><p>remote function call</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A deferred that fires with the return value of the remote
+function call</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.amp.AMPMultiConnectionProtocol.receive_functioncall">
+<span class="sig-name descname"><span class="pre">receive_functioncall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/amp.html#AMPMultiConnectionProtocol.receive_functioncall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.receive_functioncall" title="Link to this definition">¶</a></dt>
+<dd><p>Helper decorator</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.server.portal.amp</a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.dumps"><code class="docutils literal notranslate"><span class="pre">dumps()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.loads"><code class="docutils literal notranslate"><span class="pre">loads()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.Compressed"><code class="docutils literal notranslate"><span class="pre">Compressed</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.Compressed.fromBox"><code class="docutils literal notranslate"><span class="pre">Compressed.fromBox()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.Compressed.toBox"><code class="docutils literal notranslate"><span class="pre">Compressed.toBox()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.Compressed.toString"><code class="docutils literal notranslate"><span class="pre">Compressed.toString()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.Compressed.fromString"><code class="docutils literal notranslate"><span class="pre">Compressed.fromString()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.key"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.arguments"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.errors"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.response"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.allErrors"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.commandName"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgLauncher2Portal.reverseErrors"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.key"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.arguments"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.errors"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.response"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.allErrors"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.commandName"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgPortal2Server.reverseErrors"><code class="docutils literal notranslate"><span class="pre">MsgPortal2Server.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.key"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.arguments"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.errors"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.response"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.allErrors"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.commandName"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgServer2Portal.reverseErrors"><code class="docutils literal notranslate"><span class="pre">MsgServer2Portal.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.key"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.arguments"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.errors"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.response"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.allErrors"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.commandName"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminPortal2Server.reverseErrors"><code class="docutils literal notranslate"><span class="pre">AdminPortal2Server.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.key"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.arguments"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.errors"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.response"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.allErrors"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.commandName"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AdminServer2Portal.reverseErrors"><code class="docutils literal notranslate"><span class="pre">AdminServer2Portal.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus"><code class="docutils literal notranslate"><span class="pre">MsgStatus</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.key"><code class="docutils literal notranslate"><span class="pre">MsgStatus.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.arguments"><code class="docutils literal notranslate"><span class="pre">MsgStatus.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.errors"><code class="docutils literal notranslate"><span class="pre">MsgStatus.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.response"><code class="docutils literal notranslate"><span class="pre">MsgStatus.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.allErrors"><code class="docutils literal notranslate"><span class="pre">MsgStatus.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.commandName"><code class="docutils literal notranslate"><span class="pre">MsgStatus.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.MsgStatus.reverseErrors"><code class="docutils literal notranslate"><span class="pre">MsgStatus.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall"><code class="docutils literal notranslate"><span class="pre">FunctionCall</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.key"><code class="docutils literal notranslate"><span class="pre">FunctionCall.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.arguments"><code class="docutils literal notranslate"><span class="pre">FunctionCall.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.errors"><code class="docutils literal notranslate"><span class="pre">FunctionCall.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.response"><code class="docutils literal notranslate"><span class="pre">FunctionCall.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.allErrors"><code class="docutils literal notranslate"><span class="pre">FunctionCall.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.commandName"><code class="docutils literal notranslate"><span class="pre">FunctionCall.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.FunctionCall.reverseErrors"><code class="docutils literal notranslate"><span class="pre">FunctionCall.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.stringReceived"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.stringReceived()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.dataReceived"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.dataReceived()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.makeConnection"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.makeConnection()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.connectionMade"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.connectionMade()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.connectionLost"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.connectionLost()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.errback"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.errback()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.data_in"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.data_in()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.broadcast"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.broadcast()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.send_FunctionCall"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.send_FunctionCall()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.amp.AMPMultiConnectionProtocol.receive_functioncall"><code class="docutils literal notranslate"><span class="pre">AMPMultiConnectionProtocol.receive_functioncall()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.server.portal.html"
+                          title="previous chapter">evennia.server.portal</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.server.portal.amp_server.html"
+                          title="next chapter">evennia.server.portal.amp_server</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.portal.amp.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.amp_server.html" title="evennia.server.portal.amp_server"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.html" title="evennia.server.portal"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" >evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.amp</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.game_systems.achievements.achievements &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.game_systems.achievements.tests" href="evennia.contrib.game_systems.achievements.tests.html" />
+    <link rel="prev" title="evennia.contrib.game_systems.achievements" href="evennia.contrib.game_systems.achievements.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.achievements.tests.html" title="evennia.contrib.game_systems.achievements.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.achievements.html" title="evennia.contrib.game_systems.achievements"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.achievements.html" accesskey="U">evennia.contrib.game_systems.achievements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.achievements.achievements</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.game_systems.achievements.achievements">
+<span id="evennia-contrib-game-systems-achievements-achievements"></span><h1>evennia.contrib.game_systems.achievements.achievements<a class="headerlink" href="#module-evennia.contrib.game_systems.achievements.achievements" title="Link to this heading">¶</a></h1>
+<p>Achievements</p>
+<p>This provides a system for adding and tracking player achievements in your game.</p>
+<p>Achievements are defined as dicts, loosely similar to the prototypes system.</p>
+<p>An example of an achievement dict:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>ACHIEVE_DIRE_RATS = {</dt><dd><p>“name”: “Once More, But Bigger”,
+“desc”: “Somehow, normal rats just aren’t enough any more.”,
+“category”: “defeat”,
+“tracking”: “dire rat”,
+“count”: 10,
+“prereqs”: “ACHIEVE_TEN_RATS”,</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>The recognized fields for an achievement are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>key (str): The unique, case-insensitive key identifying this achievement. The variable name is</dt><dd><p>used by default.</p>
+</dd>
+</dl>
+</li>
+<li><p>name (str): The name of the achievement. This is not the key and does not need to be unique.</p></li>
+<li><dl class="simple">
+<dt>desc (str): The longer description of the achievement. Common uses for this would be flavor text</dt><dd><p>or hints on how to complete it.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>category (str): The category of conditions which this achievement tracks. It will most likely be</dt><dd><p>an action and you will most likely specify it based on where you’re checking from.
+e.g. killing 10 rats might have a category of “defeat”, which you’d then check from your code
+that runs when a player defeats something.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tracking (str or list): The specific condition this achievement tracks. e.g. for the above example of</dt><dd><p>10 rats, the tracking field would be “rat”.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>tracking_type: The options here are “sum” and “separate”. “sum” means that matching any tracked</dt><dd><p>item will increase the total. “separate” means all tracked items are counted individually.
+This is only useful when tracking is a list. The default is “sum”.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>count (int): The total tallies the tracked item needs for this to be completed. e.g. for the rats</dt><dd><p>example, it would be 10. The default is 1</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>prereqs (str or list): An optional achievement key or list of keys that must be completed before</dt><dd><p>this achievement is available.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>To add achievement tracking, put <strong>track_achievements</strong> in your relevant hooks.</p>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>def at_defeated(self, victor):</dt><dd><p># called when this object is defeated in combat
+# we’ll use the “mob_type” tag category as the tracked information for achievements
+mob_type = self.tags.get(category=”mob_type”)
+track_achievements(victor, category=”defeated”, tracking=mob_type, count=1)</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.track_achievements">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.achievements.achievements.</span></span><span class="sig-name descname"><span class="pre">track_achievements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">achiever</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#track_achievements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.track_achievements" title="Link to this definition">¶</a></dt>
+<dd><p>Update and check achievement progress.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>achiever</strong> (<em>Account</em><em> or </em><em>Character</em>) – The entity that’s collecting achievement progress.</p>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>category</strong> (<em>str</em><em> or </em><em>None</em>) – The category of an achievement.</p></li>
+<li><p><strong>tracking</strong> (<em>str</em><em> or </em><em>None</em>) – The specific item being tracked in the achievement.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>tuple</em> – The keys of any achievements that were completed by this update.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.get_achievement">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.achievements.achievements.</span></span><span class="sig-name descname"><span class="pre">get_achievement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#get_achievement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.get_achievement" title="Link to this definition">¶</a></dt>
+<dd><p>Get an achievement by its key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The achievement key. This is the variable name the achievement dict is assigned to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict or None</em> – The achievement data, or None if it doesn’t exist</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.all_achievements">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.achievements.achievements.</span></span><span class="sig-name descname"><span class="pre">all_achievements</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#all_achievements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.all_achievements" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a dict of all achievements in the game.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.get_achievement_progress">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.achievements.achievements.</span></span><span class="sig-name descname"><span class="pre">get_achievement_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">achiever</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#get_achievement_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.get_achievement_progress" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the progress data on a particular achievement for a particular achiever.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>achiever</strong> (<em>Account</em><em> or </em><em>Character</em>) – The entity tracking achievement progress.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The achievement key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – The progress data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.search_achievement">
+<span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.achievements.achievements.</span></span><span class="sig-name descname"><span class="pre">search_achievement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_term</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#search_achievement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.search_achievement" title="Link to this definition">¶</a></dt>
+<dd><p>Search for an achievement containing the search term. If no matches are found in the achievement names, it searches
+in the achievement descriptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>search_term</strong> (<em>str</em>) – The string to search for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>dict</em> – A dict of key:data pairs of matching achievements.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.game_systems.achievements.achievements.</span></span><span class="sig-name descname"><span class="pre">CmdAchieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#CmdAchieve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>view achievements</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>achievements[/switches] [args]</p>
+</dd>
+<dt>Switches:</dt><dd><p>all          View all achievements, including locked ones.
+completed    View achievements you’ve completed.
+progress     View achievements you have partially completed</p>
+</dd>
+</dl>
+<p>Check your achievement statuses or browse the list. Providing a command argument
+will search all your currently unlocked achievements for matches, and the switches
+will filter the list to something other than “all unlocked”. Combining a command
+argument with a switch will search only in that list.</p>
+<p class="rubric">Examples</p>
+<p>achievements apples
+achievements/all
+achievements/progress rats</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'achievements'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['achieves',</span> <span class="pre">'achievement',</span> <span class="pre">'achieve']</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.switch_options">
+<span class="sig-name descname"><span class="pre">switch_options</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('progress',</span> <span class="pre">'completed',</span> <span class="pre">'done',</span> <span class="pre">'all')</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.switch_options" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.template">
+<span class="sig-name descname"><span class="pre">template</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'|w{name}|n\n{desc}\n{status}'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.template" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.format_achievement">
+<span class="sig-name descname"><span class="pre">format_achievement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">achievement_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#CmdAchieve.format_achievement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.format_achievement" title="Link to this definition">¶</a></dt>
+<dd><p>Formats the raw achievement data for display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>achievement_data</strong> (<em>dict</em>) – The data to format.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>str: The display string to be sent to the caller.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/game_systems/achievements/achievements.html#CmdAchieve.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.game_systems.achievements.achievements.CmdAchieve.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'achieves</span> <span class="pre">achievement</span> <span class="pre">achieve',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'achievements',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">achieves</span> <span class="pre">achievement</span> <span class="pre">achieve',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nview</span> <span class="pre">achievements\n\nUsage:\n</span>&#160;&#160;&#160; <span class="pre">achievements[/switches]</span> <span class="pre">[args]\n\nSwitches:\n</span>&#160;&#160;&#160; <span class="pre">all</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">View</span> <span class="pre">all</span> <span class="pre">achievements,</span> <span class="pre">including</span> <span class="pre">locked</span> <span class="pre">ones.\n</span>&#160;&#160;&#160; <span class="pre">completed</span>&#160;&#160;&#160; <span class="pre">View</span> <span class="pre">achievements</span> <span class="pre">you\'ve</span> <span class="pre">completed.\n</span>&#160;&#160;&#160; <span class="pre">progress</span>&#160;&#160;&#160;&#160; <span class="pre">View</span> <span class="pre">achievements</span> <span class="pre">you</span> <span class="pre">have</span> <span class="pre">partially</span> <span class="pre">completed\n\nCheck</span> <span class="pre">your</span> <span class="pre">achievement</span> <span class="pre">statuses</span> <span class="pre">or</span> <span class="pre">browse</span> <span class="pre">the</span> <span class="pre">list.</span> <span class="pre">Providing</span> <span class="pre">a</span> <span class="pre">command</span> <span class="pre">argument\nwill</span> <span class="pre">search</span> <span class="pre">all</span> <span class="pre">your</span> <span class="pre">currently</span> <span class="pre">unlocked</span> <span class="pre">achievements</span> <span class="pre">for</span> <span class="pre">matches,</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">switches\nwill</span> <span class="pre">filter</span> <span class="pre">the</span> <span class="pre">list</span> <span class="pre">to</span> <span class="pre">something</span> <span class="pre">other</span> <span class="pre">than</span> <span class="pre">&quot;all</span> <span class="pre">unlocked&quot;.</span> <span class="pre">Combining</span> <span class="pre">a</span> <span class="pre">command\nargument</span> <span class="pre">with</span> <span class="pre">a</span> <span class="pre">switch</span> <span class="pre">will</span> <span class="pre">search</span> <span class="pre">only</span> <span class="pre">in</span> <span class="pre">that</span> <span class="pre">list.\n\nExamples:\n</span>&#160;&#160;&#160; <span class="pre">achievements</span> <span class="pre">apples\n</span>&#160;&#160;&#160; <span class="pre">achievements/all\n</span>&#160;&#160;&#160; <span class="pre">achievements/progress</span> <span class="pre">rats\n'}</span></em><a class="headerlink" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.game_systems.achievements.achievements</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.track_achievements"><code class="docutils literal notranslate"><span class="pre">track_achievements()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.get_achievement"><code class="docutils literal notranslate"><span class="pre">get_achievement()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.all_achievements"><code class="docutils literal notranslate"><span class="pre">all_achievements()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.get_achievement_progress"><code class="docutils literal notranslate"><span class="pre">get_achievement_progress()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.search_achievement"><code class="docutils literal notranslate"><span class="pre">search_achievement()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve"><code class="docutils literal notranslate"><span class="pre">CmdAchieve</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.key"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.aliases"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.switch_options"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.switch_options</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.template"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.template</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.format_achievement"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.format_achievement()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.func"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.help_category"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.game_systems.achievements.achievements.CmdAchieve.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdAchieve.search_index_entry</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.achievements.html"
+                          title="previous chapter">evennia.contrib.game_systems.achievements</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.game_systems.achievements.tests.html"
+                          title="next chapter">evennia.contrib.game_systems.achievements.tests</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.game_systems.achievements.achievements.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.achievements.tests.html" title="evennia.contrib.game_systems.achievements.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.game_systems.achievements.html" title="evennia.contrib.game_systems.achievements"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.game_systems.html" >evennia.contrib.game_systems</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.game_systems.achievements.html" >evennia.contrib.game_systems.achievements</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.game_systems.achievements.achievements</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

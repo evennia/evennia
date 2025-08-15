@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.server.evennia_launcher &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.server.initial_setup" href="evennia.server.initial_setup.html" />
+    <link rel="prev" title="evennia.server.deprecations" href="evennia.server.deprecations.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.initial_setup.html" title="evennia.server.initial_setup"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.deprecations.html" title="evennia.server.deprecations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" accesskey="U">evennia.server</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.evennia_launcher</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.evennia_launcher">
+<span id="evennia-server-evennia-launcher"></span><h1>evennia.server.evennia_launcher<a class="headerlink" href="#module-evennia.server.evennia_launcher" title="Link to this heading">¶</a></h1>
+<p>Evennia launcher program</p>
+<p>This is the start point for running Evennia.</p>
+<p>Sets the appropriate environmental variables for managing an Evennia game. It will start and connect
+to the Portal, through which the Server is also controlled. This pprogram</p>
+<p>Run the script with the -h flag to see usage information.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">MsgStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#MsgStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Ping between AMP services</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MsgStatus'</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'status',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'status',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgStatus'</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgStatus.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgStatus.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">MsgLauncher2Portal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#MsgLauncher2Portal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code></p>
+<p>Message Launcher -&gt; Portal</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MsgLauncher2Portal'</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.arguments">
+<span class="sig-name descname"><span class="pre">arguments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(b'operation',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;),</span> <span class="pre">(b'arguments',</span> <span class="pre">&lt;twisted.protocols.amp.String</span> <span class="pre">object&gt;)]</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.arguments" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.errors">
+<span class="sig-name descname"><span class="pre">errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.errors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.response">
+<span class="sig-name descname"><span class="pre">response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Argument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.response" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.allErrors">
+<span class="sig-name descname"><span class="pre">allErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'Exception'&gt;:</span> <span class="pre">b'EXCEPTION'}</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.allErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.commandName">
+<span class="sig-name descname"><span class="pre">commandName</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'MsgLauncher2Portal'</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.commandName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.MsgLauncher2Portal.reverseErrors">
+<span class="sig-name descname"><span class="pre">reverseErrors</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{b'EXCEPTION':</span> <span class="pre">&lt;class</span> <span class="pre">'Exception'&gt;}</span></em><a class="headerlink" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.reverseErrors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.AMPLauncherProtocol">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">AMPLauncherProtocol</span></span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AMP</span></code></p>
+<p>Defines callbacks to the launcher</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.AMPLauncherProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status">
+<span class="sig-name descname"><span class="pre">wait_for_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.wait_for_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status" title="Link to this definition">¶</a></dt>
+<dd><p>Register a waiter for a status return.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal">
+<span class="sig-name descname"><span class="pre">receive_status_from_portal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#AMPLauncherProtocol.receive_status_from_portal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal" title="Link to this definition">¶</a></dt>
+<dd><p>Get a status signal from portal - fire next queued
+callback</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.send_instruction">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">send_instruction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#send_instruction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.send_instruction" title="Link to this definition">¶</a></dt>
+<dd><p>Send instruction and handle the response.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.query_status">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">query_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#query_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.query_status" title="Link to this definition">¶</a></dt>
+<dd><p>Send status ping to portal</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.wait_for_status_reply">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">wait_for_status_reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#wait_for_status_reply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.wait_for_status_reply" title="Link to this definition">¶</a></dt>
+<dd><p>Wait for an explicit STATUS signal to be sent back from Evennia.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.wait_for_status">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">wait_for_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">portal_running</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server_running</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#wait_for_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.wait_for_status" title="Link to this definition">¶</a></dt>
+<dd><p>Repeat the status ping until the desired state combination is achieved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>portal_running</strong> (<em>bool</em><em> or </em><em>None</em>) – Desired portal run-state. If None, any state
+is accepted.</p></li>
+<li><p><strong>server_running</strong> (<em>bool</em><em> or </em><em>None</em>) – Desired server run-state. If None, any state
+is accepted. The portal must be running.</p></li>
+<li><p><strong>callback</strong> (<em>callable</em>) – Will be called with portal_state, server_state when
+condition is fulfilled.</p></li>
+<li><p><strong>errback</strong> (<em>callable</em>) – Will be called with portal_state, server_state if the
+request is timed out.</p></li>
+<li><p><strong>rate</strong> (<em>float</em>) – How often to retry.</p></li>
+<li><p><strong>retries</strong> (<em>int</em>) – How many times to retry before timing out and calling <strong>errback</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.collectstatic">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">collectstatic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#collectstatic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.collectstatic" title="Link to this definition">¶</a></dt>
+<dd><p>Run the collectstatic django command</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.start_evennia">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">start_evennia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pprofiler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sprofiler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_evennia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_evennia" title="Link to this definition">¶</a></dt>
+<dd><p>This will start Evennia anew by launching the Evennia Portal (which in turn
+will start the Server)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.reload_evennia">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">reload_evennia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sprofiler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#reload_evennia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.reload_evennia" title="Link to this definition">¶</a></dt>
+<dd><p>This will instruct the Portal to reboot the Server component. We
+do this manually by telling the server to shutdown (in reload mode)
+and wait for the portal to report back, at which point we start the
+server again. This way we control the process exactly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.stop_evennia">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">stop_evennia</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#stop_evennia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.stop_evennia" title="Link to this definition">¶</a></dt>
+<dd><p>This instructs the Portal to stop the Server and then itself.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.reboot_evennia">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">reboot_evennia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pprofiler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sprofiler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#reboot_evennia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.reboot_evennia" title="Link to this definition">¶</a></dt>
+<dd><p>This is essentially an evennia stop &amp;&amp; evennia start except we make sure
+the system has successfully shut down before starting it again.</p>
+<p>If evennia was not running, start it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.start_only_server">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">start_only_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_only_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_only_server" title="Link to this definition">¶</a></dt>
+<dd><p>Tell portal to start server (debug)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.start_server_interactive">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">start_server_interactive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_server_interactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_server_interactive" title="Link to this definition">¶</a></dt>
+<dd><p>Start the Server under control of the launcher process (foreground)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.start_portal_interactive">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">start_portal_interactive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#start_portal_interactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.start_portal_interactive" title="Link to this definition">¶</a></dt>
+<dd><p>Start the Portal under control of the launcher process (foreground)</p>
+<p class="rubric">Notes</p>
+<p>In a normal start, the launcher waits for the Portal to start, then
+tells it to start the Server. Since we can’t do this here, we instead
+start the Server first and then starts the Portal - the Server will
+auto-reconnect to the Portal. To allow the Server to be reloaded, this
+relies on a fixed server server-cmdline stored as a fallback on the
+portal application in evennia/server/portal/portal.py.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.stop_server_only">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">stop_server_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">when_stopped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interactive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#stop_server_only"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.stop_server_only" title="Link to this definition">¶</a></dt>
+<dd><p>Only stop the Server-component of Evennia (this is not useful except for debug)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>when_stopped</strong> (<em>callable</em>) – This will be called with no arguments when Server has stopped (or
+if it had already stopped when this is called).</p></li>
+<li><p><strong>interactive</strong> (<em>bool</em><em>, </em><em>optional</em>) – Set if this is called as part of the interactive reload
+mechanism.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.query_info">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">query_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#query_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.query_info" title="Link to this definition">¶</a></dt>
+<dd><p>Display the info strings from the running Evennia</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.tail_log_files">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">tail_log_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_lines1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_lines2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#tail_log_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.tail_log_files" title="Link to this definition">¶</a></dt>
+<dd><p>Tail two logfiles interactively, combining their output to stdout</p>
+<p>When first starting, this will display the tail of the log files. After
+that it will poll the log files repeatedly and display changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename1</strong> (<em>str</em>) – Path to first log file.</p></li>
+<li><p><strong>filename2</strong> (<em>str</em>) – Path to second log file.</p></li>
+<li><p><strong>start_lines1</strong> (<em>int</em>) – How many lines to show from existing first log.</p></li>
+<li><p><strong>start_lines2</strong> (<em>int</em>) – How many lines to show from existing second log.</p></li>
+<li><p><strong>rate</strong> (<em>int</em><em>, </em><em>optional</em>) – How often to poll the log file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.evennia_version">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">evennia_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#evennia_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.evennia_version" title="Link to this definition">¶</a></dt>
+<dd><p>Get the Evennia version info from the main package.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.check_main_evennia_dependencies">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">check_main_evennia_dependencies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#check_main_evennia_dependencies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.check_main_evennia_dependencies" title="Link to this definition">¶</a></dt>
+<dd><p>Checks and imports the Evennia dependencies. This must be done
+already before the paths are set up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>not_error (bool)</em> – True if no dependency error was found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.set_gamedir">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">set_gamedir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#set_gamedir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.set_gamedir" title="Link to this definition">¶</a></dt>
+<dd><p>Set GAMEDIR based on path, by figuring out where the setting file
+is inside the directory tree. This allows for running the launcher
+from elsewhere than the top of the gamedir folder.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.create_secret_key">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">create_secret_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_secret_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_secret_key" title="Link to this definition">¶</a></dt>
+<dd><p>Randomly create the secret key for the settings file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.create_settings_file">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">create_settings_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret_settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_settings_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_settings_file" title="Link to this definition">¶</a></dt>
+<dd><p>Uses the template settings file to build a working settings file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init</strong> (<em>bool</em>) – This is part of the normal evennia –init
+operation.  If false, this function will copy a fresh
+template file in (asking if it already exists).</p></li>
+<li><p><strong>secret_settings</strong> (<em>bool</em><em>, </em><em>optional</em>) – If False, create settings.py, otherwise
+create the secret_settings.py file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.create_game_directory">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">create_game_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dirname</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_game_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_game_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize a new game directory named dirname
+at the current path. This means copying the
+template directory from evennia’s root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dirname</strong> (<em>str</em>) – The directory name to create.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.create_superuser">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">create_superuser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#create_superuser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.create_superuser" title="Link to this definition">¶</a></dt>
+<dd><p>Create the superuser account</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.check_database">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">check_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">always_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#check_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.check_database" title="Link to this definition">¶</a></dt>
+<dd><p>Check so the database exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>always_return</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set, will always return True/False
+also on critical errors. No output will be printed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>exists (bool)</em> – <strong>True</strong> if the database exists, otherwise <strong>False</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.getenv">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">getenv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#getenv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.getenv" title="Link to this definition">¶</a></dt>
+<dd><p>Get current environment and add PYTHONPATH.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>env (dict)</em> – Environment global dict.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.get_pid">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">get_pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pidfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#get_pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.get_pid" title="Link to this definition">¶</a></dt>
+<dd><p>Get the PID (Process ID) by trying to access an PID file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pidfile</strong> (<em>str</em>) – The path of the pid file.</p></li>
+<li><p><strong>default</strong> (<em>int</em><em>, </em><em>optional</em>) – What to return if file does not exist.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>pid (str)</em> – The process id or <strong>default</strong>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.del_pid">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">del_pid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pidfile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#del_pid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.del_pid" title="Link to this definition">¶</a></dt>
+<dd><p>The pidfile should normally be removed after a process has
+finished, but when sending certain signals they remain, so we need
+to clean them manually.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pidfile</strong> (<em>str</em>) – The path of the pid file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.kill">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">kill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pidfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Server'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">killsignal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Signals.SIGINT</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#kill"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.kill" title="Link to this definition">¶</a></dt>
+<dd><p>Send a kill signal to a process based on PID. A customized
+success/error message will be returned. If clean=True, the system
+will attempt to manually remove the pid file. On Windows, no arguments
+are useful since Windows has no ability to direct signals except to all
+children of a console.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pidfile</strong> (<em>str</em>) – The path of the pidfile to get the PID from. This is ignored
+on Windows.</p></li>
+<li><p><strong>component</strong> (<em>str</em><em>, </em><em>optional</em>) – Usually one of ‘Server’ or ‘Portal’. This is
+ignored on Windows.</p></li>
+<li><p><strong>errback</strong> (<em>callable</em><em>, </em><em>optional</em>) – Called if signal failed to send. This
+is ignored on Windows.</p></li>
+<li><p><strong>callback</strong> (<em>callable</em><em>, </em><em>optional</em>) – Called if kill signal was sent successfully.
+This is ignored on Windows.</p></li>
+<li><p><strong>killsignal</strong> (<em>int</em><em>, </em><em>optional</em>) – Signal identifier for signal to send. This is
+ignored on Windows.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.show_version_info">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">show_version_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">about</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#show_version_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.show_version_info" title="Link to this definition">¶</a></dt>
+<dd><p>Display version info.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>about</strong> (<em>bool</em>) – Include ABOUT info as well as version numbers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>version_info (str)</em> – A complete version info string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.error_check_python_modules">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">error_check_python_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_warnings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#error_check_python_modules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.error_check_python_modules" title="Link to this definition">¶</a></dt>
+<dd><p>Import settings modules in settings. This will raise exceptions on
+pure python-syntax issues which are hard to catch gracefully with
+exceptions in the engine (since they are formatting errors in the
+python source files themselves). Best they fail already here
+before we get any further.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>show_warnings</strong> (<em>bool</em>) – If non-fatal warning messages should be shown.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.init_game_directory">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">init_game_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">need_gamedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#init_game_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.init_game_directory" title="Link to this definition">¶</a></dt>
+<dd><p>Try to analyze the given path to find settings.py - this defines
+the game directory and also sets PYTHONPATH as well as the django
+path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to new game directory, including its name.</p></li>
+<li><p><strong>check_db</strong> (<em>bool</em><em>, </em><em>optional</em>) – Check if the databae exists.</p></li>
+<li><p><strong>need_gamedir</strong> (<em>bool</em><em>, </em><em>optional</em>) – set to False if Evennia doesn’t require to
+be run in a valid game directory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.run_dummyrunner">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">run_dummyrunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number_of_dummies</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_dummyrunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_dummyrunner" title="Link to this definition">¶</a></dt>
+<dd><p>Start an instance of the dummyrunner</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>number_of_dummies</strong> (<em>int</em>) – The number of dummy accounts to start.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The dummy accounts’ behavior can be customized by adding a
+<strong>dummyrunner_settings.py</strong> config file in the game’s conf/
+directory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.run_connect_wizard">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">run_connect_wizard</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_connect_wizard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_connect_wizard" title="Link to this definition">¶</a></dt>
+<dd><p>Run the linking wizard, for adding new external connections.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.list_settings">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">list_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#list_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.list_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Display the server settings. We only display the Evennia specific
+settings here. The result will be printed to the terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em>) – Setting key or keys to inspect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.run_custom_commands">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">run_custom_commands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_custom_commands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_custom_commands" title="Link to this definition">¶</a></dt>
+<dd><p>Inject a custom option into the evennia launcher command chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> (<em>str</em>) – Incoming option - the first argument after <strong>evennia</strong> on
+the command line.</p></li>
+<li><p><strong>*args</strong> – All args will passed to a found callable.__dict__</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>bool</em> – If a custom command was found and handled the option.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Provide new commands in settings with</p>
+<blockquote>
+<div><p>CUSTOM_EVENNIA_LAUNCHER_COMMANDS = {“mycmd”: “path.to.callable”, …}</p>
+</div></blockquote>
+<p>The callable will be passed any <strong>*args</strong> given on the command line and is expected to
+handle/validate the input correctly. Use like any other evennia command option on
+in the terminal/console, for example:</p>
+<blockquote>
+<div><p>evennia mycmd foo bar</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.run_menu">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">run_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#run_menu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.run_menu" title="Link to this definition">¶</a></dt>
+<dd><p>This launches an interactive menu.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.server.evennia_launcher.main">
+<span class="sig-prename descclassname"><span class="pre">evennia.server.evennia_launcher.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/evennia_launcher.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.evennia_launcher.main" title="Link to this definition">¶</a></dt>
+<dd><p>Run the evennia launcher main program.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.server.evennia_launcher</a><ul>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus"><code class="docutils literal notranslate"><span class="pre">MsgStatus</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.key"><code class="docutils literal notranslate"><span class="pre">MsgStatus.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.arguments"><code class="docutils literal notranslate"><span class="pre">MsgStatus.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.errors"><code class="docutils literal notranslate"><span class="pre">MsgStatus.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.response"><code class="docutils literal notranslate"><span class="pre">MsgStatus.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.allErrors"><code class="docutils literal notranslate"><span class="pre">MsgStatus.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.commandName"><code class="docutils literal notranslate"><span class="pre">MsgStatus.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgStatus.reverseErrors"><code class="docutils literal notranslate"><span class="pre">MsgStatus.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.key"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.arguments"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.arguments</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.errors"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.errors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.response"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.response</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.allErrors"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.allErrors</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.commandName"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.commandName</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.MsgLauncher2Portal.reverseErrors"><code class="docutils literal notranslate"><span class="pre">MsgLauncher2Portal.reverseErrors</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.AMPLauncherProtocol"><code class="docutils literal notranslate"><span class="pre">AMPLauncherProtocol</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">AMPLauncherProtocol.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.wait_for_status"><code class="docutils literal notranslate"><span class="pre">AMPLauncherProtocol.wait_for_status()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.AMPLauncherProtocol.receive_status_from_portal"><code class="docutils literal notranslate"><span class="pre">AMPLauncherProtocol.receive_status_from_portal()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.send_instruction"><code class="docutils literal notranslate"><span class="pre">send_instruction()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.query_status"><code class="docutils literal notranslate"><span class="pre">query_status()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.wait_for_status_reply"><code class="docutils literal notranslate"><span class="pre">wait_for_status_reply()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.wait_for_status"><code class="docutils literal notranslate"><span class="pre">wait_for_status()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.collectstatic"><code class="docutils literal notranslate"><span class="pre">collectstatic()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.start_evennia"><code class="docutils literal notranslate"><span class="pre">start_evennia()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.reload_evennia"><code class="docutils literal notranslate"><span class="pre">reload_evennia()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.stop_evennia"><code class="docutils literal notranslate"><span class="pre">stop_evennia()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.reboot_evennia"><code class="docutils literal notranslate"><span class="pre">reboot_evennia()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.start_only_server"><code class="docutils literal notranslate"><span class="pre">start_only_server()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.start_server_interactive"><code class="docutils literal notranslate"><span class="pre">start_server_interactive()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.start_portal_interactive"><code class="docutils literal notranslate"><span class="pre">start_portal_interactive()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.stop_server_only"><code class="docutils literal notranslate"><span class="pre">stop_server_only()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.query_info"><code class="docutils literal notranslate"><span class="pre">query_info()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.tail_log_files"><code class="docutils literal notranslate"><span class="pre">tail_log_files()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.evennia_version"><code class="docutils literal notranslate"><span class="pre">evennia_version()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.check_main_evennia_dependencies"><code class="docutils literal notranslate"><span class="pre">check_main_evennia_dependencies()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.set_gamedir"><code class="docutils literal notranslate"><span class="pre">set_gamedir()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.create_secret_key"><code class="docutils literal notranslate"><span class="pre">create_secret_key()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.create_settings_file"><code class="docutils literal notranslate"><span class="pre">create_settings_file()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.create_game_directory"><code class="docutils literal notranslate"><span class="pre">create_game_directory()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.create_superuser"><code class="docutils literal notranslate"><span class="pre">create_superuser()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.check_database"><code class="docutils literal notranslate"><span class="pre">check_database()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.getenv"><code class="docutils literal notranslate"><span class="pre">getenv()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.get_pid"><code class="docutils literal notranslate"><span class="pre">get_pid()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.del_pid"><code class="docutils literal notranslate"><span class="pre">del_pid()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.kill"><code class="docutils literal notranslate"><span class="pre">kill()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.show_version_info"><code class="docutils literal notranslate"><span class="pre">show_version_info()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.error_check_python_modules"><code class="docutils literal notranslate"><span class="pre">error_check_python_modules()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.init_game_directory"><code class="docutils literal notranslate"><span class="pre">init_game_directory()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.run_dummyrunner"><code class="docutils literal notranslate"><span class="pre">run_dummyrunner()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.run_connect_wizard"><code class="docutils literal notranslate"><span class="pre">run_connect_wizard()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.list_settings"><code class="docutils literal notranslate"><span class="pre">list_settings()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.run_custom_commands"><code class="docutils literal notranslate"><span class="pre">run_custom_commands()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.run_menu"><code class="docutils literal notranslate"><span class="pre">run_menu()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.evennia_launcher.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.server.deprecations.html"
+                          title="previous chapter">evennia.server.deprecations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.server.initial_setup.html"
+                          title="next chapter">evennia.server.initial_setup</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.evennia_launcher.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.initial_setup.html" title="evennia.server.initial_setup"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.deprecations.html" title="evennia.server.deprecations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.evennia_launcher</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

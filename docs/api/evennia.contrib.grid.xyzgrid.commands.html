@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.grid.xyzgrid.commands &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.grid.xyzgrid.example" href="evennia.contrib.grid.xyzgrid.example.html" />
+    <link rel="prev" title="evennia.contrib.grid.xyzgrid" href="evennia.contrib.grid.xyzgrid.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.example.html" title="evennia.contrib.grid.xyzgrid.example"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.html" title="evennia.contrib.grid.xyzgrid"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.xyzgrid.html" accesskey="U">evennia.contrib.grid.xyzgrid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.commands</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.grid.xyzgrid.commands">
+<span id="evennia-contrib-grid-xyzgrid-commands"></span><h1>evennia.contrib.grid.xyzgrid.commands<a class="headerlink" href="#module-evennia.contrib.grid.xyzgrid.commands" title="Link to this heading">¶</a></h1>
+<p>XYZ-aware commands</p>
+<p>Just add the XYZGridCmdSet to the default character cmdset to override
+the commands with XYZ-aware equivalents.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.PathData">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">PathData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xymap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.PathData.directions">
+<span class="sig-name descname"><span class="pre">directions</span></span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.directions" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.PathData.step_sequence">
+<span class="sig-name descname"><span class="pre">step_sequence</span></span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.step_sequence" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.PathData.target">
+<span class="sig-name descname"><span class="pre">target</span></span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.target" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.PathData.task">
+<span class="sig-name descname"><span class="pre">task</span></span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.task" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.PathData.xymap">
+<span class="sig-name descname"><span class="pre">xymap</span></span><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.PathData.xymap" title="Link to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">CmdXYZTeleport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZTeleport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.building.html#evennia.commands.default.building.CmdTeleport" title="evennia.commands.default.building.CmdTeleport"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdTeleport</span></code></a></p>
+<p>teleport object to another location</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>tel/switch [&lt;object&gt; to||=] &lt;target location&gt;
+tel/switch [&lt;object&gt; to||=] (X,Y[,Z])</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>tel Limbo
+tel/quiet box = Limbo
+tel/tonone box
+tel (3, 3, the small cave)
+tel (4, 1)   # on the same map
+tel/map Z|mapname</p>
+<dl>
+<dt>Switches:</dt><dd><dl class="simple">
+<dt>quiet  - don’t echo leave/arrive messages to the source/target</dt><dd><p>locations for the move.</p>
+</dd>
+<dt>intoexit - if target is an exit, teleport INTO</dt><dd><p>the exit object instead of to its destination</p>
+</dd>
+<dt>tonone - if set, teleport the object to a None-location. If this</dt><dd><p>switch is set, &lt;target location&gt; is ignored.
+Note that the only way to retrieve
+an object from a None location is by direct #dbref
+reference. A puppeted object cannot be moved to None.</p>
+</dd>
+</dl>
+<p>loc - teleport object to the target’s location instead of its contents
+map - show coordinate map of given Zcoord/mapname.</p>
+</dd>
+</dl>
+<p>Teleports an object somewhere. If no object is given, you yourself are
+teleported to the target location. If (X,Y) or (X,Y,Z) coordinates
+are given, the target is a location on the XYZGrid.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZTeleport.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Breaking out searching here to make this easier to override.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['&#64;tel']</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'building'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&#64;teleport'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(teleport)</span> <span class="pre">or</span> <span class="pre">perm(Builder)'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'&#64;tel',</span> <span class="pre">'category':</span> <span class="pre">'building',</span> <span class="pre">'key':</span> <span class="pre">'&#64;teleport',</span> <span class="pre">'no_prefix':</span> <span class="pre">'teleport</span> <span class="pre">tel',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nteleport</span> <span class="pre">object</span> <span class="pre">to</span> <span class="pre">another</span> <span class="pre">location\n\nUsage:\n</span>&#160; <span class="pre">tel/switch</span> <span class="pre">[&lt;object&gt;</span> <span class="pre">to||=]</span> <span class="pre">&lt;target</span> <span class="pre">location&gt;\n</span>&#160; <span class="pre">tel/switch</span> <span class="pre">[&lt;object&gt;</span> <span class="pre">to||=]</span> <span class="pre">(X,Y[,Z])\n\nExamples:\n</span>&#160; <span class="pre">tel</span> <span class="pre">Limbo\n</span>&#160; <span class="pre">tel/quiet</span> <span class="pre">box</span> <span class="pre">=</span> <span class="pre">Limbo\n</span>&#160; <span class="pre">tel/tonone</span> <span class="pre">box\n</span>&#160; <span class="pre">tel</span> <span class="pre">(3,</span> <span class="pre">3,</span> <span class="pre">the</span> <span class="pre">small</span> <span class="pre">cave)\n</span>&#160; <span class="pre">tel</span> <span class="pre">(4,</span> <span class="pre">1)</span>&#160;&#160; <span class="pre">#</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">map\n</span>&#160; <span class="pre">tel/map</span> <span class="pre">Z|mapname\n\nSwitches:\n</span>&#160; <span class="pre">quiet</span>&#160; <span class="pre">-</span> <span class="pre">don't</span> <span class="pre">echo</span> <span class="pre">leave/arrive</span> <span class="pre">messages</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">source/target\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">locations</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">move.\n</span>&#160; <span class="pre">intoexit</span> <span class="pre">-</span> <span class="pre">if</span> <span class="pre">target</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">exit,</span> <span class="pre">teleport</span> <span class="pre">INTO\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">the</span> <span class="pre">exit</span> <span class="pre">object</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">to</span> <span class="pre">its</span> <span class="pre">destination\n</span>&#160; <span class="pre">tonone</span> <span class="pre">-</span> <span class="pre">if</span> <span class="pre">set,</span> <span class="pre">teleport</span> <span class="pre">the</span> <span class="pre">object</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">None-location.</span> <span class="pre">If</span> <span class="pre">this\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">switch</span> <span class="pre">is</span> <span class="pre">set,</span> <span class="pre">&lt;target</span> <span class="pre">location&gt;</span> <span class="pre">is</span> <span class="pre">ignored.\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Note</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">only</span> <span class="pre">way</span> <span class="pre">to</span> <span class="pre">retrieve\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">an</span> <span class="pre">object</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">None</span> <span class="pre">location</span> <span class="pre">is</span> <span class="pre">by</span> <span class="pre">direct</span> <span class="pre">#dbref\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">reference.</span> <span class="pre">A</span> <span class="pre">puppeted</span> <span class="pre">object</span> <span class="pre">cannot</span> <span class="pre">be</span> <span class="pre">moved</span> <span class="pre">to</span> <span class="pre">None.\n</span>&#160; <span class="pre">loc</span> <span class="pre">-</span> <span class="pre">teleport</span> <span class="pre">object</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">target's</span> <span class="pre">location</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">its</span> <span class="pre">contents\n</span>&#160; <span class="pre">map</span> <span class="pre">-</span> <span class="pre">show</span> <span class="pre">coordinate</span> <span class="pre">map</span> <span class="pre">of</span> <span class="pre">given</span> <span class="pre">Zcoord/mapname.\n\nTeleports</span> <span class="pre">an</span> <span class="pre">object</span> <span class="pre">somewhere.</span> <span class="pre">If</span> <span class="pre">no</span> <span class="pre">object</span> <span class="pre">is</span> <span class="pre">given,</span> <span class="pre">you</span> <span class="pre">yourself</span> <span class="pre">are\nteleported</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">target</span> <span class="pre">location.</span> <span class="pre">If</span> <span class="pre">(X,Y)</span> <span class="pre">or</span> <span class="pre">(X,Y,Z)</span> <span class="pre">coordinates\nare</span> <span class="pre">given,</span> <span class="pre">the</span> <span class="pre">target</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">location</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">XYZGrid.\n\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">CmdXYZOpen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZOpen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.building.html#evennia.commands.default.building.CmdOpen" title="evennia.commands.default.building.CmdOpen"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdOpen</span></code></a></p>
+<p>open a new exit from the current room</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = &lt;destination&gt;
+open &lt;new exit&gt;[;alias;..][:typeclass] [,&lt;return exit&gt;[;alias;..][:typeclass]]] = (X,Y,Z)</p>
+</dd>
+</dl>
+<p>Handles the creation of exits. If a destination is given, the exit
+will point there. The destination can also be given as an (X,Y,Z) coordinate on the
+XYZGrid - this command is used to link non-grid rooms to the grid and vice-versa.</p>
+<p>The &lt;return exit&gt; argument sets up an exit at the destination leading back to the current room.
+Apart from (X,Y,Z) coordinate, destination name can be given both as a #dbref and a name, if
+that name is globally unique.</p>
+<p class="rubric">Examples</p>
+<p>open kitchen = Kitchen
+open north, south = Town Center
+open cave mouth;cave = (3, 4, the small cave)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdXYZOpen.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse" title="Link to this definition">¶</a></dt>
+<dd><p>We need to expand the default parsing to get all
+the cases, see the module doc.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'building'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&#64;open'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(open)</span> <span class="pre">or</span> <span class="pre">perm(Builder)'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'building',</span> <span class="pre">'key':</span> <span class="pre">'&#64;open',</span> <span class="pre">'no_prefix':</span> <span class="pre">'open</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nopen</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">exit</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">room\n\nUsage:\n</span>&#160; <span class="pre">open</span> <span class="pre">&lt;new</span> <span class="pre">exit&gt;[;alias;..][:typeclass]</span> <span class="pre">[,&lt;return</span> <span class="pre">exit&gt;[;alias;..][:typeclass]]]</span> <span class="pre">=</span> <span class="pre">&lt;destination&gt;\n</span>&#160; <span class="pre">open</span> <span class="pre">&lt;new</span> <span class="pre">exit&gt;[;alias;..][:typeclass]</span> <span class="pre">[,&lt;return</span> <span class="pre">exit&gt;[;alias;..][:typeclass]]]</span> <span class="pre">=</span> <span class="pre">(X,Y,Z)\n\nHandles</span> <span class="pre">the</span> <span class="pre">creation</span> <span class="pre">of</span> <span class="pre">exits.</span> <span class="pre">If</span> <span class="pre">a</span> <span class="pre">destination</span> <span class="pre">is</span> <span class="pre">given,</span> <span class="pre">the</span> <span class="pre">exit\nwill</span> <span class="pre">point</span> <span class="pre">there.</span> <span class="pre">The</span> <span class="pre">destination</span> <span class="pre">can</span> <span class="pre">also</span> <span class="pre">be</span> <span class="pre">given</span> <span class="pre">as</span> <span class="pre">an</span> <span class="pre">(X,Y,Z)</span> <span class="pre">coordinate</span> <span class="pre">on</span> <span class="pre">the\nXYZGrid</span> <span class="pre">-</span> <span class="pre">this</span> <span class="pre">command</span> <span class="pre">is</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">link</span> <span class="pre">non-grid</span> <span class="pre">rooms</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">grid</span> <span class="pre">and</span> <span class="pre">vice-versa.\n\nThe</span> <span class="pre">&lt;return</span> <span class="pre">exit&gt;</span> <span class="pre">argument</span> <span class="pre">sets</span> <span class="pre">up</span> <span class="pre">an</span> <span class="pre">exit</span> <span class="pre">at</span> <span class="pre">the</span> <span class="pre">destination</span> <span class="pre">leading</span> <span class="pre">back</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">room.\nApart</span> <span class="pre">from</span> <span class="pre">(X,Y,Z)</span> <span class="pre">coordinate,</span> <span class="pre">destination</span> <span class="pre">name</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">given</span> <span class="pre">both</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">#dbref</span> <span class="pre">and</span> <span class="pre">a</span> <span class="pre">name,</span> <span class="pre">if\nthat</span> <span class="pre">name</span> <span class="pre">is</span> <span class="pre">globally</span> <span class="pre">unique.\n\nExamples:\n</span>&#160;&#160;&#160; <span class="pre">open</span> <span class="pre">kitchen</span> <span class="pre">=</span> <span class="pre">Kitchen\n</span>&#160;&#160;&#160; <span class="pre">open</span> <span class="pre">north,</span> <span class="pre">south</span> <span class="pre">=</span> <span class="pre">Town</span> <span class="pre">Center\n</span>&#160;&#160;&#160; <span class="pre">open</span> <span class="pre">cave</span> <span class="pre">mouth;cave</span> <span class="pre">=</span> <span class="pre">(3,</span> <span class="pre">4,</span> <span class="pre">the</span> <span class="pre">small</span> <span class="pre">cave)\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">CmdGoto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdGoto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Go to a named location in this area via the shortest path.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>path &lt;location&gt;      - find shortest path to target location (don’t move)
+goto &lt;location&gt;      - auto-move to target location, using shortest path
+path                 - show current target location and shortest path
+goto                 - abort current goto, otherwise show current path
+path clear           - clear current path</p>
+</dd>
+</dl>
+<p>Finds the shortest route to a location in your current area and
+can then automatically walk you there.</p>
+<p>Builders can optionally specify a specific grid coordinate (X,Y) to go to.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'goto'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['path']</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.auto_step_delay">
+<span class="sig-name descname"><span class="pre">auto_step_delay</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.auto_step_delay" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.default_xyz_path_interrupt_msg">
+<span class="sig-name descname"><span class="pre">default_xyz_path_interrupt_msg</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Pathfinding</span> <span class="pre">interrupted</span> <span class="pre">here.'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.default_xyz_path_interrupt_msg" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdGoto.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implement command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdGoto.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'path',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'goto',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">path',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">&quot;\nGo</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">named</span> <span class="pre">location</span> <span class="pre">in</span> <span class="pre">this</span> <span class="pre">area</span> <span class="pre">via</span> <span class="pre">the</span> <span class="pre">shortest</span> <span class="pre">path.\n\nUsage:\n</span>&#160;&#160;&#160; <span class="pre">path</span> <span class="pre">&lt;location&gt;</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">find</span> <span class="pre">shortest</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">target</span> <span class="pre">location</span> <span class="pre">(don't</span> <span class="pre">move)\n</span>&#160;&#160;&#160; <span class="pre">goto</span> <span class="pre">&lt;location&gt;</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">auto-move</span> <span class="pre">to</span> <span class="pre">target</span> <span class="pre">location,</span> <span class="pre">using</span> <span class="pre">shortest</span> <span class="pre">path\n</span>&#160;&#160;&#160; <span class="pre">path</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">show</span> <span class="pre">current</span> <span class="pre">target</span> <span class="pre">location</span> <span class="pre">and</span> <span class="pre">shortest</span> <span class="pre">path\n</span>&#160;&#160;&#160; <span class="pre">goto</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">abort</span> <span class="pre">current</span> <span class="pre">goto,</span> <span class="pre">otherwise</span> <span class="pre">show</span> <span class="pre">current</span> <span class="pre">path\n</span>&#160;&#160;&#160; <span class="pre">path</span> <span class="pre">clear</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-</span> <span class="pre">clear</span> <span class="pre">current</span> <span class="pre">path\n\nFinds</span> <span class="pre">the</span> <span class="pre">shortest</span> <span class="pre">route</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">location</span> <span class="pre">in</span> <span class="pre">your</span> <span class="pre">current</span> <span class="pre">area</span> <span class="pre">and\ncan</span> <span class="pre">then</span> <span class="pre">automatically</span> <span class="pre">walk</span> <span class="pre">you</span> <span class="pre">there.\n\nBuilders</span> <span class="pre">can</span> <span class="pre">optionally</span> <span class="pre">specify</span> <span class="pre">a</span> <span class="pre">specific</span> <span class="pre">grid</span> <span class="pre">coordinate</span> <span class="pre">(X,Y)</span> <span class="pre">to</span> <span class="pre">go</span> <span class="pre">to.\n\n&quot;}</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">CmdMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Show a map of an area</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>map [Zcoord]
+map list</p>
+</dd>
+</dl>
+<p>This is a builder-command.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'map'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(Builders)'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdMap.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implement command</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:perm(Builders)'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdMap.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'map',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nShow</span> <span class="pre">a</span> <span class="pre">map</span> <span class="pre">of</span> <span class="pre">an</span> <span class="pre">area\n\nUsage:\n</span>&#160;&#160;&#160; <span class="pre">map</span> <span class="pre">[Zcoord]\n</span>&#160;&#160;&#160; <span class="pre">map</span> <span class="pre">list\n\nThis</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">builder-command.\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">XYZGridCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Cmdset for easily adding the above cmds to the character cmdset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'xyzgrid_cmdset'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">CmdFlyAndDive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdFlyAndDive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Fly or Dive up and down.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>fly
+dive</p>
+</dd>
+</dl>
+<p>Will fly up one room or dive down one room at your current position. If
+there is no room above/below you, your movement will fail.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fly</span> <span class="pre">or</span> <span class="pre">dive'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['fly',</span> <span class="pre">'dive']</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#CmdFlyAndDive.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func" title="Link to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This is the hook function that actually does all the work. It is called</dt><dd><p>by the cmdhandler right after self.parser() finishes, and so has access
+to all the variables defined therein.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all();'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'fly</span> <span class="pre">dive',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'fly</span> <span class="pre">or</span> <span class="pre">dive',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">fly</span> <span class="pre">dive',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nFly</span> <span class="pre">or</span> <span class="pre">Dive</span> <span class="pre">up</span> <span class="pre">and</span> <span class="pre">down.\n\nUsage:\n</span>&#160; <span class="pre">fly\n</span>&#160; <span class="pre">dive\n\nWill</span> <span class="pre">fly</span> <span class="pre">up</span> <span class="pre">one</span> <span class="pre">room</span> <span class="pre">or</span> <span class="pre">dive</span> <span class="pre">down</span> <span class="pre">one</span> <span class="pre">room</span> <span class="pre">at</span> <span class="pre">your</span> <span class="pre">current</span> <span class="pre">position.</span> <span class="pre">If\nthere</span> <span class="pre">is</span> <span class="pre">no</span> <span class="pre">room</span> <span class="pre">above/below</span> <span class="pre">you,</span> <span class="pre">your</span> <span class="pre">movement</span> <span class="pre">will</span> <span class="pre">fail.\n\n'}</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.contrib.grid.xyzgrid.commands.</span></span><span class="sig-name descname"><span class="pre">XYZGridFlyDiveCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridFlyDiveCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Optional cmdset if you want the fly/dive commands to move in a 3D environment.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'xyzgrid_flydive_cmdset'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/contrib/grid/xyzgrid/commands.html#XYZGridFlyDiveCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet'</span></em><a class="headerlink" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.contrib.grid.xyzgrid.commands</a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.PathData"><code class="docutils literal notranslate"><span class="pre">PathData</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.PathData.directions"><code class="docutils literal notranslate"><span class="pre">PathData.directions</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.PathData.step_sequence"><code class="docutils literal notranslate"><span class="pre">PathData.step_sequence</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.PathData.target"><code class="docutils literal notranslate"><span class="pre">PathData.target</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.PathData.task"><code class="docutils literal notranslate"><span class="pre">PathData.task</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.PathData.xymap"><code class="docutils literal notranslate"><span class="pre">PathData.xymap</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.parse"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.aliases"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.help_category"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.key"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZTeleport.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdXYZTeleport.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.parse"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.aliases"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.help_category"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.key"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdXYZOpen.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdXYZOpen.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto"><code class="docutils literal notranslate"><span class="pre">CmdGoto</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.key"><code class="docutils literal notranslate"><span class="pre">CmdGoto.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.aliases"><code class="docutils literal notranslate"><span class="pre">CmdGoto.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.help_category"><code class="docutils literal notranslate"><span class="pre">CmdGoto.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.locks"><code class="docutils literal notranslate"><span class="pre">CmdGoto.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.auto_step_delay"><code class="docutils literal notranslate"><span class="pre">CmdGoto.auto_step_delay</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.default_xyz_path_interrupt_msg"><code class="docutils literal notranslate"><span class="pre">CmdGoto.default_xyz_path_interrupt_msg</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.func"><code class="docutils literal notranslate"><span class="pre">CmdGoto.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdGoto.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdGoto.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdGoto.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap"><code class="docutils literal notranslate"><span class="pre">CmdMap</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.key"><code class="docutils literal notranslate"><span class="pre">CmdMap.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.locks"><code class="docutils literal notranslate"><span class="pre">CmdMap.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.func"><code class="docutils literal notranslate"><span class="pre">CmdMap.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.aliases"><code class="docutils literal notranslate"><span class="pre">CmdMap.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.help_category"><code class="docutils literal notranslate"><span class="pre">CmdMap.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdMap.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdMap.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdMap.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.key"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridCmdSet.path"><code class="docutils literal notranslate"><span class="pre">XYZGridCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.key"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.aliases"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.func"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.help_category"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.CmdFlyAndDive.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdFlyAndDive.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.key"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.contrib.grid.xyzgrid.commands.XYZGridFlyDiveCmdSet.path"><code class="docutils literal notranslate"><span class="pre">XYZGridFlyDiveCmdSet.path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.grid.xyzgrid.html"
+                          title="previous chapter">evennia.contrib.grid.xyzgrid</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.grid.xyzgrid.example.html"
+                          title="next chapter">evennia.contrib.grid.xyzgrid.example</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.grid.xyzgrid.commands.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.example.html" title="evennia.contrib.grid.xyzgrid.example"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.grid.xyzgrid.html" title="evennia.contrib.grid.xyzgrid"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.grid.html" >evennia.contrib.grid</a> &#187;</li>
+          <li class="nav-item nav-item-6"><a href="evennia.contrib.grid.xyzgrid.html" >evennia.contrib.grid.xyzgrid</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.grid.xyzgrid.commands</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

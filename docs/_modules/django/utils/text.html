@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.utils.text &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.text</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.utils.text</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">unicodedata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gzip</span><span class="w"> </span><span class="kn">import</span> <span class="n">GzipFile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gzip</span><span class="w"> </span><span class="kn">import</span> <span class="n">compress</span> <span class="k">as</span> <span class="n">gzip_compress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">html</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">html.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTMLParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SuspiciousFileOperation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.functional</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SimpleLazyObject</span><span class="p">,</span>
+    <span class="n">cached_property</span><span class="p">,</span>
+    <span class="n">keep_lazy_text</span><span class="p">,</span>
+    <span class="n">lazy</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.regex_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">_lazy_re_compile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext_lazy</span><span class="p">,</span> <span class="n">pgettext</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">capfirst</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capitalize the first letter of a string.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+
+<span class="c1"># Set up regular expressions</span>
+<span class="n">re_newlines</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\r\n|\r&quot;</span><span class="p">)</span>  <span class="c1"># Used in normalize_newlines</span>
+<span class="n">re_camel_case</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(((?&lt;=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wrap</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A word-wrap function that preserves existing line breaks. Expects that</span>
+<span class="sd">    existing line breaks are posix newlines.</span>
+
+<span class="sd">    Preserve all white space except added line breaks consume the space on</span>
+<span class="sd">    which they break the line.</span>
+
+<span class="sd">    Don&#39;t wrap long words, thus the output text may have lines longer than</span>
+<span class="sd">    ``width``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">wrapper</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">TextWrapper</span><span class="p">(</span>
+        <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+        <span class="n">break_long_words</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">break_on_hyphens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">replace_whitespace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="n">wrapped</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wrapped</span><span class="p">:</span>
+            <span class="c1"># If `line` contains only whitespaces that are dropped, restore it.</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">wrapped</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+        <span class="c1"># If `text` ends with a newline, preserve it.</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">add_truncation_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">truncate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">truncate</span> <span class="o">=</span> <span class="n">pgettext</span><span class="p">(</span>
+            <span class="s2">&quot;String to return when truncating text&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%(truncated_text)s</span><span class="s2">…&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;</span><span class="si">%(truncated_text)s</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">truncate</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">truncate</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;truncated_text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">}</span>
+    <span class="c1"># The truncation text didn&#39;t contain the %(truncated_text)s string</span>
+    <span class="c1"># replacement argument so just append it to the text.</span>
+    <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">truncate</span><span class="p">):</span>
+        <span class="c1"># But don&#39;t append the truncation text if the current text already ends</span>
+        <span class="c1"># in this.</span>
+        <span class="k">return</span> <span class="n">text</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}{</span><span class="n">truncate</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_truncate_chars_length</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">replacement</span><span class="p">):</span>
+    <span class="n">truncate_len</span> <span class="o">=</span> <span class="n">length</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">add_truncation_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">combining</span><span class="p">(</span><span class="n">char</span><span class="p">):</span>
+            <span class="n">truncate_len</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">truncate_len</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">truncate_len</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TruncateHTMLParser</span><span class="p">(</span><span class="n">HTMLParser</span><span class="p">):</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">TruncationCompleted</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">convert_charrefs</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">convert_charrefs</span><span class="o">=</span><span class="n">convert_charrefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remaining</span> <span class="o">=</span> <span class="n">length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replacement</span> <span class="o">=</span> <span class="n">replacement</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">void_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.html</span><span class="w"> </span><span class="kn">import</span> <span class="n">VOID_ELEMENTS</span>
+
+        <span class="k">return</span> <span class="n">VOID_ELEMENTS</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_startendtag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_starttag</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">void_elements</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_endtag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_starttag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_starttag_text</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">void_elements</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_endtag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">void_elements</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">data_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remaining</span> <span class="o">&lt;</span> <span class="n">data_len</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remaining</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">+=</span> <span class="n">add_truncation_text</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">replacement</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">TruncationCompleted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remaining</span> <span class="o">-=</span> <span class="n">data_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">+=</span> <span class="n">output</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">TruncationCompleted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;&quot;</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No data was handled.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TruncateCharsHTMLParser</span><span class="p">(</span><span class="n">TruncateHTMLParser</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">convert_charrefs</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processed_chars</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">length</span><span class="o">=</span><span class="n">calculate_truncate_chars_length</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">replacement</span><span class="p">),</span>
+            <span class="n">replacement</span><span class="o">=</span><span class="n">replacement</span><span class="p">,</span>
+            <span class="n">convert_charrefs</span><span class="o">=</span><span class="n">convert_charrefs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processed_chars</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processed_chars</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rawdata</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">+=</span> <span class="n">data</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">TruncationCompleted</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">remaining</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">output</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TruncateWordsHTMLParser</span><span class="p">(</span><span class="n">TruncateHTMLParser</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;=\S)\s+(?=\S)&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">escape</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">remaining</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">output</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Truncator</span><span class="p">(</span><span class="n">SimpleLazyObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object used to truncate text, either by characters or words.</span>
+
+<span class="sd">    When truncating HTML text (either chars or words), input will be limited to</span>
+<span class="sd">    at most `MAX_LENGTH_HTML` characters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 5 million characters are approximately 4000 text pages or 3 web pages.</span>
+    <span class="n">MAX_LENGTH_HTML</span> <span class="o">=</span> <span class="mi">5_000_000</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">chars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">html</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the text truncated to be no longer than the specified number</span>
+<span class="sd">        of characters.</span>
+
+<span class="sd">        `truncate` specifies what should be used to notify that the string has</span>
+<span class="sd">        been truncated, defaulting to a translatable string of an ellipsis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFC&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">html</span><span class="p">:</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">TruncateCharsHTMLParser</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="n">truncate</span><span class="p">)</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">output</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_chars</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">truncate</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_text_chars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">truncate</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Truncate a string after a certain number of chars.&quot;&quot;&quot;</span>
+        <span class="n">truncate_len</span> <span class="o">=</span> <span class="n">calculate_truncate_chars_length</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">truncate</span><span class="p">)</span>
+        <span class="n">s_len</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">combining</span><span class="p">(</span><span class="n">char</span><span class="p">):</span>
+                <span class="c1"># Don&#39;t consider combining characters</span>
+                <span class="c1"># as adding to the string length</span>
+                <span class="k">continue</span>
+            <span class="n">s_len</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">end_index</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">s_len</span> <span class="o">&gt;</span> <span class="n">truncate_len</span><span class="p">:</span>
+                <span class="n">end_index</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">if</span> <span class="n">s_len</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
+                <span class="c1"># Return the truncated string</span>
+                <span class="k">return</span> <span class="n">add_truncation_text</span><span class="p">(</span><span class="n">text</span><span class="p">[:</span> <span class="n">end_index</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">],</span> <span class="n">truncate</span><span class="p">)</span>
+
+        <span class="c1"># Return the original string since no truncation was necessary</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">html</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Truncate a string after a certain number of words. `truncate` specifies</span>
+<span class="sd">        what should be used to notify that the string has been truncated,</span>
+<span class="sd">        defaulting to ellipsis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">html</span><span class="p">:</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">TruncateWordsHTMLParser</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="n">length</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="n">truncate</span><span class="p">)</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="p">)</span>
+            <span class="n">parser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">output</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_words</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">truncate</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_text_words</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">truncate</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Truncate a string after a certain number of words.</span>
+
+<span class="sd">        Strip newlines in the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapped</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="n">words</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">add_truncation_text</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">),</span> <span class="n">truncate</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_valid_filename</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the given string converted to a string that can be used for a clean</span>
+<span class="sd">    filename. Remove leading and trailing spaces; convert other spaces to</span>
+<span class="sd">    underscores; and remove anything that is not an alphanumeric, dash,</span>
+<span class="sd">    underscore, or dot.</span>
+<span class="sd">    &gt;&gt;&gt; get_valid_filename(&quot;john&#39;s portrait in 2004.jpg&quot;)</span>
+<span class="sd">    &#39;johns_portrait_in_2004.jpg&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?u)[^-\w.]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="n">SuspiciousFileOperation</span><span class="p">(</span><span class="s2">&quot;Could not derive file name from &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_text_list</span><span class="p">(</span><span class="n">list_</span><span class="p">,</span> <span class="n">last_word</span><span class="o">=</span><span class="n">gettext_lazy</span><span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; get_text_list([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;])</span>
+<span class="sd">    &#39;a, b, c or d&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_text_list([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], &#39;and&#39;)</span>
+<span class="sd">    &#39;a, b and c&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_text_list([&#39;a&#39;, &#39;b&#39;], &#39;and&#39;)</span>
+<span class="sd">    &#39;a and b&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_text_list([&#39;a&#39;])</span>
+<span class="sd">    &#39;a&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_text_list([])</span>
+<span class="sd">    &#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">list_</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">list_</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="c1"># Translators: This string is used as a separator between list elements</span>
+        <span class="n">_</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">last_word</span><span class="p">),</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">list_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_newlines</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalize CRLF and CR newlines to just LF.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">re_newlines</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">phone2numeric</span><span class="p">(</span><span class="n">phone</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a phone number with letters into its numeric equivalent.&quot;&quot;&quot;</span>
+    <span class="n">char2number</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;e&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;g&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;i&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;j&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;k&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;r&quot;</span><span class="p">:</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;7&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="s2">&quot;8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;u&quot;</span><span class="p">:</span> <span class="s2">&quot;8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="s2">&quot;8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;w&quot;</span><span class="p">:</span> <span class="s2">&quot;9&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="s2">&quot;9&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;9&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="s2">&quot;9&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">char2number</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">phone</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_random_filename</span><span class="p">(</span><span class="n">max_random_bytes</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="s2">&quot;a&quot;</span> <span class="o">*</span> <span class="n">secrets</span><span class="o">.</span><span class="n">randbelow</span><span class="p">(</span><span class="n">max_random_bytes</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compress_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_random_bytes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">compressed_data</span> <span class="o">=</span> <span class="n">gzip_compress</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">compresslevel</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">max_random_bytes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">compressed_data</span>
+
+    <span class="n">compressed_view</span> <span class="o">=</span> <span class="nb">memoryview</span><span class="p">(</span><span class="n">compressed_data</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">compressed_view</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+    <span class="n">header</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">FNAME</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">_get_random_filename</span><span class="p">(</span><span class="n">max_random_bytes</span><span class="p">)</span> <span class="o">+</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="n">compressed_view</span><span class="p">[</span><span class="mi">10</span><span class="p">:]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StreamingBuffer</span><span class="p">(</span><span class="n">BytesIO</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+
+<span class="c1"># Like compress_string, but for iterators of strings.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compress_sequence</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_random_bytes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">StreamingBuffer</span><span class="p">()</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">_get_random_filename</span><span class="p">(</span><span class="n">max_random_bytes</span><span class="p">)</span> <span class="k">if</span> <span class="n">max_random_bytes</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">with</span> <span class="n">GzipFile</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wb&quot;</span><span class="p">,</span> <span class="n">compresslevel</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">fileobj</span><span class="o">=</span><span class="n">buf</span><span class="p">,</span> <span class="n">mtime</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">zfile</span><span class="p">:</span>
+        <span class="c1"># Output headers...</span>
+        <span class="k">yield</span> <span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sequence</span><span class="p">:</span>
+            <span class="n">zfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">data</span>
+    <span class="k">yield</span> <span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+
+<span class="c1"># Expression to match some_token and some_token=&quot;with spaces&quot; (and similarly</span>
+<span class="c1"># for single-quoted strings).</span>
+<span class="n">smart_split_re</span> <span class="o">=</span> <span class="n">_lazy_re_compile</span><span class="p">(</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ((?:</span>
+<span class="sd">        [^\s&#39;&quot;]*</span>
+<span class="sd">        (?:</span>
+<span class="sd">            (?:&quot;(?:[^&quot;\\]|\\.)*&quot; | &#39;(?:[^&#39;\\]|\\.)*&#39;)</span>
+<span class="sd">            [^\s&#39;&quot;]*</span>
+<span class="sd">        )+</span>
+<span class="sd">    ) | \S+)</span>
+<span class="sd">&quot;&quot;&quot;</span><span class="p">,</span>
+    <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">smart_split</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generator that splits a string by spaces, leaving quoted phrases together.</span>
+<span class="sd">    Supports both single and double quotes, and supports escaping quotes with</span>
+<span class="sd">    backslashes. In the output, strings will keep their initial and trailing</span>
+<span class="sd">    quote marks and escaped quotes will remain escaped (the results can then</span>
+<span class="sd">    be further processed with unescape_string_literal()).</span>
+
+<span class="sd">    &gt;&gt;&gt; list(smart_split(r&#39;This is &quot;a person\&#39;s&quot; test.&#39;))</span>
+<span class="sd">    [&#39;This&#39;, &#39;is&#39;, &#39;&quot;a person\\\&#39;s&quot;&#39;, &#39;test.&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; list(smart_split(r&quot;Another &#39;person\&#39;s&#39; test.&quot;))</span>
+<span class="sd">    [&#39;Another&#39;, &quot;&#39;person\\&#39;s&#39;&quot;, &#39;test.&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; list(smart_split(r&#39;A &quot;\&quot;funky\&quot; style&quot; test.&#39;))</span>
+<span class="sd">    [&#39;A&#39;, &#39;&quot;\\&quot;funky\\&quot; style&quot;&#39;, &#39;test.&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">smart_split_re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)):</span>
+        <span class="k">yield</span> <span class="n">bit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unescape_string_literal</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert quoted string literals to unquoted strings with escaped quotes and</span>
+<span class="sd">    backslashes unquoted::</span>
+
+<span class="sd">        &gt;&gt;&gt; unescape_string_literal(&#39;&quot;abc&quot;&#39;)</span>
+<span class="sd">        &#39;abc&#39;</span>
+<span class="sd">        &gt;&gt;&gt; unescape_string_literal(&quot;&#39;abc&#39;&quot;)</span>
+<span class="sd">        &#39;abc&#39;</span>
+<span class="sd">        &gt;&gt;&gt; unescape_string_literal(&#39;&quot;a \&quot;bc\&quot;&quot;&#39;)</span>
+<span class="sd">        &#39;a &quot;bc&quot;&#39;</span>
+<span class="sd">        &gt;&gt;&gt; unescape_string_literal(&quot;&#39;\&#39;ab\&#39; c&#39;&quot;)</span>
+<span class="sd">        &quot;&#39;ab&#39; c&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span> <span class="ow">or</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span> <span class="ow">or</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not a string literal: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">quote</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">quote</span><span class="p">,</span> <span class="n">quote</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="slugify">
+<a class="viewcode-back" href="../../../api/evennia.typeclasses.models.html#evennia.help.models.slugify">[docs]</a>
+<span class="nd">@keep_lazy_text</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">slugify</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert to ASCII if &#39;allow_unicode&#39; is False. Convert spaces or repeated</span>
+<span class="sd">    dashes to single dashes. Remove characters that aren&#39;t alphanumerics,</span>
+<span class="sd">    underscores, or hyphens. Convert to lowercase. Also strip leading and</span>
+<span class="sd">    trailing whitespace, dashes, and underscores.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">allow_unicode</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFKC&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFKD&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-\s]+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-_&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">camel_case_to_spaces</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split CamelCase and convert to lowercase. Strip surrounding whitespace.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">re_camel_case</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot; \1&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_lazy</span><span class="p">(</span><span class="n">format_string</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply str.format() on &#39;format_string&#39; where format_string, args,</span>
+<span class="sd">    and/or kwargs might be lazy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">format_string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="n">format_lazy</span> <span class="o">=</span> <span class="n">lazy</span><span class="p">(</span><span class="n">_format_lazy</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.text</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

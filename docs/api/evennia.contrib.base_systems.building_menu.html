@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.base_systems.building_menu &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.base_systems.building_menu.building_menu" href="evennia.contrib.base_systems.building_menu.building_menu.html" />
+    <link rel="prev" title="evennia.contrib.base_systems.awsstorage.tests" href="evennia.contrib.base_systems.awsstorage.tests.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.building_menu.building_menu.html" title="evennia.contrib.base_systems.building_menu.building_menu"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.awsstorage.tests.html" title="evennia.contrib.base_systems.awsstorage.tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" accesskey="U">evennia.contrib.base_systems</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.building_menu</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.base_systems.building_menu">
+<span id="evennia-contrib-base-systems-building-menu"></span><h1>evennia.contrib.base_systems.building_menu<a class="headerlink" href="#module-evennia.contrib.base_systems.building_menu" title="Link to this heading">¶</a></h1>
+<p>Build-menu contrib - vincent-lg 2018</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html">evennia.contrib.base_systems.building_menu.building_menu</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_setattr"><code class="docutils literal notranslate"><span class="pre">menu_setattr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_quit"><code class="docutils literal notranslate"><span class="pre">menu_quit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.menu_edit"><code class="docutils literal notranslate"><span class="pre">menu_edit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput"><code class="docutils literal notranslate"><span class="pre">CmdNoInput</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.key"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.locks"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.__init__"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.func"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.aliases"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.help_category"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoInput.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdNoInput.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.key"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.locks"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.locks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.__init__"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.func"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.aliases"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.help_category"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.CmdNoMatch.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdNoMatch.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet"><code class="docutils literal notranslate"><span class="pre">BuildingMenuCmdSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.key"><code class="docutils literal notranslate"><span class="pre">BuildingMenuCmdSet.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">BuildingMenuCmdSet.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">BuildingMenuCmdSet.mergetype</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">BuildingMenuCmdSet.at_cmdset_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenuCmdSet.path"><code class="docutils literal notranslate"><span class="pre">BuildingMenuCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice"><code class="docutils literal notranslate"><span class="pre">Choice</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.__init__"><code class="docutils literal notranslate"><span class="pre">Choice.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.keys"><code class="docutils literal notranslate"><span class="pre">Choice.keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.format_text"><code class="docutils literal notranslate"><span class="pre">Choice.format_text()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.enter"><code class="docutils literal notranslate"><span class="pre">Choice.enter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.nomatch"><code class="docutils literal notranslate"><span class="pre">Choice.nomatch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.Choice.leave"><code class="docutils literal notranslate"><span class="pre">Choice.leave()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu"><code class="docutils literal notranslate"><span class="pre">BuildingMenu</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.keys_go_back"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.keys_go_back</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.sep_keys"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.sep_keys</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.joker_key"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.joker_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.min_shortcut"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.min_shortcut</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.__init__"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.current_choice"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.current_choice</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.relevant_choices"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.relevant_choices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.init"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.add_choice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice_edit"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.add_choice_edit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.add_choice_quit"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.add_choice_quit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.open()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open_parent_menu"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.open_parent_menu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.open_submenu"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.open_submenu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.move"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.close"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display_title"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.display_title()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display_choice"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.display_choice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.display"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.BuildingMenu.restore"><code class="docutils literal notranslate"><span class="pre">BuildingMenu.restore()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingMenu"><code class="docutils literal notranslate"><span class="pre">GenericBuildingMenu</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingMenu.init"><code class="docutils literal notranslate"><span class="pre">GenericBuildingMenu.init()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.key"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.help_category"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.func"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.aliases"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.lock_storage"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.building_menu.html#evennia.contrib.base_systems.building_menu.building_menu.GenericBuildingCmd.search_index_entry"><code class="docutils literal notranslate"><span class="pre">GenericBuildingCmd.search_index_entry</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html">evennia.contrib.base_systems.building_menu.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.Submenu"><code class="docutils literal notranslate"><span class="pre">Submenu</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.Submenu.init"><code class="docutils literal notranslate"><span class="pre">Submenu.init()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.setUp"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_quit"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.test_quit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_setattr"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.test_setattr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_add_choice_without_key"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.test_add_choice_without_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_callbacks"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.test_callbacks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_multi_level"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.test_multi_level()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.base_systems.building_menu.tests.html#evennia.contrib.base_systems.building_menu.tests.TestBuildingMenu.test_submenu"><code class="docutils literal notranslate"><span class="pre">TestBuildingMenu.test_submenu()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.awsstorage.tests.html"
+                          title="previous chapter">evennia.contrib.base_systems.awsstorage.tests</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.base_systems.building_menu.building_menu.html"
+                          title="next chapter">evennia.contrib.base_systems.building_menu.building_menu</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.base_systems.building_menu.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.building_menu.building_menu.html" title="evennia.contrib.base_systems.building_menu.building_menu"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.base_systems.awsstorage.tests.html" title="evennia.contrib.base_systems.awsstorage.tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.base_systems.html" >evennia.contrib.base_systems</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.base_systems.building_menu</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

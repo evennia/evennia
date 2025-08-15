@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.db.utils &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.db.utils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.db.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pkgutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_module</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.conf</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImproperlyConfigured</span>
+
+<span class="c1"># For backwards compatibility with Django &lt; 3.2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConnectionDoesNotExist</span>  <span class="c1"># NOQA: F401</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.connection</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseConnectionHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.module_loading</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_string</span>
+
+<span class="n">DEFAULT_DB_ALIAS</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+<span class="n">DJANGO_VERSION_PICKLE_KEY</span> <span class="o">=</span> <span class="s2">&quot;_django_version&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InterfaceError</span><span class="p">(</span><span class="n">Error</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseError</span><span class="p">(</span><span class="n">Error</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DataError</span><span class="p">(</span><span class="n">DatabaseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OperationalError</span><span class="p">(</span><span class="n">DatabaseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="IntegrityError">
+<a class="viewcode-back" href="../../../api/evennia.help.manager.html#evennia.help.manager.IntegrityError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IntegrityError</span><span class="p">(</span><span class="n">DatabaseError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InternalError</span><span class="p">(</span><span class="n">DatabaseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProgrammingError</span><span class="p">(</span><span class="n">DatabaseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NotSupportedError</span><span class="p">(</span><span class="n">DatabaseError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseErrorWrapper</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager and decorator that reraises backend-specific database</span>
+<span class="sd">    exceptions using Django&#39;s common wrappers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper is a database wrapper.</span>
+
+<span class="sd">        It must have a Database attribute defining PEP-249 exceptions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span> <span class="o">=</span> <span class="n">wrapper</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">dj_exc_type</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">DataError</span><span class="p">,</span>
+            <span class="n">OperationalError</span><span class="p">,</span>
+            <span class="n">IntegrityError</span><span class="p">,</span>
+            <span class="n">InternalError</span><span class="p">,</span>
+            <span class="n">ProgrammingError</span><span class="p">,</span>
+            <span class="n">NotSupportedError</span><span class="p">,</span>
+            <span class="n">DatabaseError</span><span class="p">,</span>
+            <span class="n">InterfaceError</span><span class="p">,</span>
+            <span class="n">Error</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">db_exc_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">Database</span><span class="p">,</span> <span class="n">dj_exc_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">db_exc_type</span><span class="p">):</span>
+                <span class="n">dj_exc_value</span> <span class="o">=</span> <span class="n">dj_exc_type</span><span class="p">(</span><span class="o">*</span><span class="n">exc_value</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+                <span class="c1"># Only set the &#39;errors_occurred&#39; flag for errors that may make</span>
+                <span class="c1"># the connection unusable.</span>
+                <span class="k">if</span> <span class="n">dj_exc_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">DataError</span><span class="p">,</span> <span class="n">IntegrityError</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wrapper</span><span class="o">.</span><span class="n">errors_occurred</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">raise</span> <span class="n">dj_exc_value</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">traceback</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc_value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="c1"># Note that we are intentionally not using @wraps here for performance</span>
+        <span class="c1"># reasons. Refs #21109.</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">inner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">inner</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_backend</span><span class="p">(</span><span class="n">backend_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a database backend&#39;s &quot;base&quot; module given a fully qualified database</span>
+<span class="sd">    backend name, or raise an error if it doesn&#39;t exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This backend was renamed in Django 1.9.</span>
+    <span class="k">if</span> <span class="n">backend_name</span> <span class="o">==</span> <span class="s2">&quot;django.db.backends.postgresql_psycopg2&quot;</span><span class="p">:</span>
+        <span class="n">backend_name</span> <span class="o">=</span> <span class="s2">&quot;django.db.backends.postgresql&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.base&quot;</span> <span class="o">%</span> <span class="n">backend_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e_user</span><span class="p">:</span>
+        <span class="c1"># The database backend wasn&#39;t found. Display a helpful error message</span>
+        <span class="c1"># listing all built-in database backends.</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">django.db.backends</span>
+
+        <span class="n">builtin_backends</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">name</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">__path__</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ispkg</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;dummy&quot;</span><span class="p">}</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">backend_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;django.db.backends.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">builtin_backends</span><span class="p">]:</span>
+            <span class="n">backend_reprs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">repr</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">builtin_backends</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> isn&#39;t an available database backend or couldn&#39;t be &quot;</span>
+                <span class="s2">&quot;imported. Check the above exception. To use one of the &quot;</span>
+                <span class="s2">&quot;built-in backends, use &#39;django.db.backends.XXX&#39;, where XXX &quot;</span>
+                <span class="s2">&quot;is one of:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;    </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">backend_name</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">backend_reprs</span><span class="p">))</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e_user</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If there&#39;s some other error, this must be an error in Django</span>
+            <span class="k">raise</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConnectionHandler</span><span class="p">(</span><span class="n">BaseConnectionHandler</span><span class="p">):</span>
+    <span class="n">settings_name</span> <span class="o">=</span> <span class="s2">&quot;DATABASES&quot;</span>
+    <span class="c1"># Connections needs to still be an actual thread local, as it&#39;s truly</span>
+    <span class="c1"># thread-critical. Database backends should use @async_unsafe to protect</span>
+    <span class="c1"># their code from async contexts, but this will give those contexts</span>
+    <span class="c1"># separate connections in case it&#39;s needed as well. There&#39;s no cleanup</span>
+    <span class="c1"># after async contexts, though, so we don&#39;t allow that if we can help it.</span>
+    <span class="n">thread_critical</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">databases</span><span class="p">):</span>
+        <span class="n">databases</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_settings</span><span class="p">(</span><span class="n">databases</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">databases</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="n">databases</span><span class="p">[</span><span class="n">DEFAULT_DB_ALIAS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s2">&quot;django.db.backends.dummy&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">DEFAULT_DB_ALIAS</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">databases</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ImproperlyConfigured</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You must define a &#39;</span><span class="si">{</span><span class="n">DEFAULT_DB_ALIAS</span><span class="si">}</span><span class="s2">&#39; database.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">databases</span><span class="p">[</span><span class="n">DEFAULT_DB_ALIAS</span><span class="p">]</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="n">databases</span><span class="p">[</span><span class="n">DEFAULT_DB_ALIAS</span><span class="p">][</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;django.db.backends.dummy&quot;</span>
+
+        <span class="c1"># Configure default settings.</span>
+        <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">databases</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;ATOMIC_REQUESTS&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;AUTOCOMMIT&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">,</span> <span class="s2">&quot;django.db.backends.dummy&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">conn</span><span class="p">[</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;django.db.backends.&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">conn</span><span class="p">[</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">]:</span>
+                <span class="n">conn</span><span class="p">[</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;django.db.backends.dummy&quot;</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;CONN_MAX_AGE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;CONN_HEALTH_CHECKS&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TIME_ZONE&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">setting</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;USER&quot;</span><span class="p">,</span> <span class="s2">&quot;PASSWORD&quot;</span><span class="p">,</span> <span class="s2">&quot;HOST&quot;</span><span class="p">,</span> <span class="s2">&quot;PORT&quot;</span><span class="p">]:</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">setting</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">test_settings</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="n">default_test_settings</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="s2">&quot;CHARSET&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;COLLATION&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;MIGRATE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;MIRROR&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">default_test_settings</span><span class="p">:</span>
+                <span class="n">test_settings</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">databases</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">databases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Maintained for backward compatibility as some 3rd party packages have</span>
+        <span class="c1"># made use of this private API in the past. It is no longer used within</span>
+        <span class="c1"># Django itself.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="n">load_backend</span><span class="p">(</span><span class="n">db</span><span class="p">[</span><span class="s2">&quot;ENGINE&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">backend</span><span class="o">.</span><span class="n">DatabaseWrapper</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConnectionRouter</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If routers is not specified, default to settings.DATABASE_ROUTERS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_routers</span> <span class="o">=</span> <span class="n">routers</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">routers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_routers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_routers</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">DATABASE_ROUTERS</span>
+        <span class="n">routers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_routers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">router</span> <span class="o">=</span> <span class="n">import_string</span><span class="p">(</span><span class="n">r</span><span class="p">)()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">router</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="n">routers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">routers</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_router_func</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_route_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+            <span class="n">chosen_db</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">router</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">routers</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">router</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="c1"># If the router doesn&#39;t have a method, skip to the next one.</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">chosen_db</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">chosen_db</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">chosen_db</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;instance&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">instance</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">db</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">db</span>
+            <span class="k">return</span> <span class="n">DEFAULT_DB_ALIAS</span>
+
+        <span class="k">return</span> <span class="n">_route_db</span>
+
+    <span class="n">db_for_read</span> <span class="o">=</span> <span class="n">_router_func</span><span class="p">(</span><span class="s2">&quot;db_for_read&quot;</span><span class="p">)</span>
+    <span class="n">db_for_write</span> <span class="o">=</span> <span class="n">_router_func</span><span class="p">(</span><span class="s2">&quot;db_for_write&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">allow_relation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">router</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">routers</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">router</span><span class="o">.</span><span class="n">allow_relation</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># If the router doesn&#39;t have a method, skip to the next one.</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">allow</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span> <span class="n">obj2</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">allow</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">allow</span>
+        <span class="k">return</span> <span class="n">obj1</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">db</span> <span class="o">==</span> <span class="n">obj2</span><span class="o">.</span><span class="n">_state</span><span class="o">.</span><span class="n">db</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">allow_migrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">app_label</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">router</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">routers</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">router</span><span class="o">.</span><span class="n">allow_migrate</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># If the router doesn&#39;t have a method, skip to the next one.</span>
+                <span class="k">continue</span>
+
+            <span class="n">allow</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">app_label</span><span class="p">,</span> <span class="o">**</span><span class="n">hints</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">allow</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">allow</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">allow_migrate_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_migrate</span><span class="p">(</span>
+            <span class="n">db</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">app_label</span><span class="p">,</span>
+            <span class="n">model_name</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_migratable_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">include_auto_created</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return app models allowed to be migrated on provided db.&quot;&quot;&quot;</span>
+        <span class="n">models</span> <span class="o">=</span> <span class="n">app_config</span><span class="o">.</span><span class="n">get_models</span><span class="p">(</span><span class="n">include_auto_created</span><span class="o">=</span><span class="n">include_auto_created</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">model</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_migrate_model</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">model</span><span class="p">)]</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.db.utils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

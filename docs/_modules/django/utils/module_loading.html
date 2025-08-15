@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>django.utils.module_loading &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=e4a91a55" />
+    <script src="../../../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.module_loading</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for django.utils.module_loading</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_spec</span> <span class="k">as</span> <span class="n">importlib_find</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cached_import</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">):</span>
+    <span class="c1"># Check whether module is loaded and fully initialized.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">module</span> <span class="o">:=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module_path</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">spec</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;__spec__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">spec</span><span class="p">,</span> <span class="s2">&quot;_initializing&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="import_string">
+<a class="viewcode-back" href="../../../api/evennia.accounts.accounts.html#evennia.accounts.accounts.import_string">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">import_string</span><span class="p">(</span><span class="n">dotted_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import a dotted module path and return the attribute/class designated by the</span>
+<span class="sd">    last name in the path. Raise ImportError if the import failed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">module_path</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">dotted_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> doesn&#39;t look like a module path&quot;</span> <span class="o">%</span> <span class="n">dotted_path</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cached_import</span><span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s1">&#39;Module &quot;</span><span class="si">%s</span><span class="s1">&quot; does not define a &quot;</span><span class="si">%s</span><span class="s1">&quot; attribute/class&#39;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">module_path</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">autodiscover_modules</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Auto-discover INSTALLED_APPS modules and fail silently when</span>
+<span class="sd">    not present. This forces an import on them to register any admin bits they</span>
+<span class="sd">    may want.</span>
+
+<span class="sd">    You may provide a register_to keyword parameter as a way to access a</span>
+<span class="sd">    registry. This register_to object must have a _registry instance variable</span>
+<span class="sd">    to access it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">apps</span>
+
+    <span class="n">register_to</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;register_to&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">app_config</span> <span class="ow">in</span> <span class="n">apps</span><span class="o">.</span><span class="n">get_app_configs</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">module_to_search</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="c1"># Attempt to import the app&#39;s module.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">register_to</span><span class="p">:</span>
+                    <span class="n">before_import_registry</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">register_to</span><span class="o">.</span><span class="n">_registry</span><span class="p">)</span>
+
+                <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">module_to_search</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># Reset the registry to the state before the last import</span>
+                <span class="c1"># as this import will have to reoccur on the next request and</span>
+                <span class="c1"># this could raise NotRegistered and AlreadyRegistered</span>
+                <span class="c1"># exceptions (see #8245).</span>
+                <span class="k">if</span> <span class="n">register_to</span><span class="p">:</span>
+                    <span class="n">register_to</span><span class="o">.</span><span class="n">_registry</span> <span class="o">=</span> <span class="n">before_import_registry</span>
+
+                <span class="c1"># Decide whether to bubble up this error. If the app just</span>
+                <span class="c1"># doesn&#39;t have the module in question, we can ignore the error</span>
+                <span class="c1"># attempting to import it, otherwise we want it to bubble up.</span>
+                <span class="k">if</span> <span class="n">module_has_submodule</span><span class="p">(</span><span class="n">app_config</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">module_to_search</span><span class="p">):</span>
+                    <span class="k">raise</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">module_has_submodule</span><span class="p">(</span><span class="n">package</span><span class="p">,</span> <span class="n">module_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See if &#39;module&#39; is in &#39;package&#39;.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">package_name</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">package_path</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">__path__</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="c1"># package isn&#39;t a package.</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">full_module_name</span> <span class="o">=</span> <span class="n">package_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">module_name</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">importlib_find</span><span class="p">(</span><span class="n">full_module_name</span><span class="p">,</span> <span class="n">package_path</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="c1"># When module_name is an invalid dotted path, Python raises</span>
+        <span class="c1"># ModuleNotFoundError.</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">module_dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the name of the directory that contains a module, if possible.</span>
+
+<span class="sd">    Raise ValueError otherwise, e.g. for namespace packages that are split</span>
+<span class="sd">    over several directories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert to list because __path__ may not support indexing.</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;__path__&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;__file__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot determine directory containing </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">module</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../index.html">
+              <img class="logo" src="../../../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">django.utils.module_loading</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

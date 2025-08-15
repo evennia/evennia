@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>OnDemandHandler &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="TickerHandler" href="TickerHandler.html" />
+    <link rel="prev" title="MonitorHandler" href="MonitorHandler.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="TickerHandler.html" title="TickerHandler"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MonitorHandler.html" title="MonitorHandler"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" accesskey="U">Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OnDemandHandler</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="ondemandhandler">
+<h1>OnDemandHandler<a class="headerlink" href="#ondemandhandler" title="Link to this heading">¶</a></h1>
+<p>This handler offers help for implementing on-demand state changes. On-demand means that the state won’t be computed until the player <em>actually looks for it</em>. Until they do, nothing happens. This is the most compute-efficient way to handle your systems and you should consider using this style of system whenever you can.</p>
+<p>Take for example a gardening system. A player goes to a room and plants a seed. After a certain time, that plant will then move through a set of stages; it will move from “seedling” to ‘sprout’ to ‘flowering’ and then on to ‘wilting’ and eventually ‘dead’.</p>
+<p>Now, you <em>could</em> use <code class="docutils literal notranslate"><span class="pre">utils.delay</span></code> to track each phase, or use the <a class="reference internal" href="TickerHandler.html"><span class="std std-doc">TickerHandler</span></a> to tick the flower. You could even use a <a class="reference internal" href="Scripts.html"><span class="std std-doc">Script</span></a> on the flower. This would work like this:</p>
+<ol class="arabic simple">
+<li><p>The ticker/task/Script would automatically fire at regular intervals to update the plant through its stages.</p></li>
+<li><p>Whenever a player comes to the room, the state is already updated on the flower, so they just read the state.</p></li>
+</ol>
+<p>This will work fine, but if no one comes back to that room, that’s a lot of updating that no one will see. While maybe not a big deal for a single player, what if you have flowers in thousands of rooms, all growing indepedently? Or some even more complex system requiring calculation on every state change. You should avoid spending computing on things that bring nothing extra to your player base.</p>
+<p>Using the The on-demand style, the flower would instead work like this:</p>
+<ol class="arabic simple">
+<li><p>When the player plants the seed, we register <em>the current timestamp</em> - the time the plant starts to grow. We store this with the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> (below).</p></li>
+<li><p>When a player enters the room and/or looks at the plant (or a code system needs to know the plant’s state), <em>then</em> (and only then) we check <em>the current time</em> to figure out the state the flower must now be in (the <code class="docutils literal notranslate"><span class="pre">OnDemandHandler</span></code> does the book-keeping for us). The key is that <em>until we check</em>, the flower object is completely inactive and uses no computing resources.</p></li>
+</ol>
+<section id="a-blooming-flower-using-the-ondemandhandler">
+<h2>A blooming flower using the OnDemandHandler<a class="headerlink" href="#a-blooming-flower-using-the-ondemandhandler" title="Link to this heading">¶</a></h2>
+<p>This handler is found as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>. It is meant to be integrated into your other code. Here’s an example of a flower that goes through its stages of life in 12 hours.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># e.g. in mygame/typeclasses/objects.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
+
+<span class="c1"># ... </span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Flower</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span> 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">minute</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="n">hour</span> <span class="o">=</span> <span class="n">minute</span> <span class="o">*</span> <span class="mi">60</span>
+
+        <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plantgrowth&quot;</span>
+            <span class="n">stages</span><span class="o">=</span><span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;seedling&quot;</span><span class="p">,</span>
+                <span class="mi">10</span> <span class="o">*</span> <span class="n">minute</span><span class="p">:</span> <span class="s2">&quot;sprout&quot;</span><span class="p">,</span>
+                <span class="mi">5</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;flowering&quot;</span><span class="p">,</span>
+                <span class="mi">10</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;wilting&quot;</span><span class="p">,</span>
+                <span class="mi">12</span> <span class="o">*</span> <span class="n">hour</span><span class="p">:</span> <span class="s2">&quot;dead&quot;</span>
+            <span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_desc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">looker</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Called whenever someone looks at this object</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="n">stage</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plantgrowth&quot;</span><span class="p">)</span>
+
+        <span class="k">match</span> <span class="n">stage</span><span class="p">:</span> 
+            <span class="k">case</span> <span class="s2">&quot;seedling&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="s2">&quot;There&#39;s nothing to see. Nothing has grown yet.&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;sprout&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="s2">&quot;A small delicate sprout has emerged!&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;flowering&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;A beautiful </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;wilting&quot;</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;This </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> has seen better days.&quot;</span>
+            <span class="k">case</span> <span class="s2">&quot;dead&quot;</span><span class="p">:</span> 
+                <span class="c1"># it&#39;s dead and gone. Stop and delete </span>
+                <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;plantgrowth&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_state(key,</span> <span class="pre">category=None,</span> <span class="pre">**kwargs)</span></code> methoid is used to get the current stage. The <code class="docutils literal notranslate"><span class="pre">get_dt(key,</span> <span class="pre">category=None,</span> <span class="pre">**kwargs)</span></code> method instead retrieves the currently passed time.</p>
+<p>You could now create the rose and it would figure out its state only when you are actually looking at it. It will stay a seedling for 10 minutes (of in-game real time) before it sprouts. Within 12 hours it will be dead again.</p>
+<p>If you had a <code class="docutils literal notranslate"><span class="pre">harvest</span></code> command in your game, you could equally have it check the stage of bloom and give you different results depending on if you pick the rose at the right time or not.</p>
+<p>The on-demand handler’s tasks survive a reload and will properly account for downtime.</p>
+</section>
+<section id="more-usage-examples">
+<h2>More usage examples<a class="headerlink" href="#more-usage-examples" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandHandler" title="evennia.scripts.ondemandhandler.OnDemandHandler"><span class="xref myst py py-class">OnDemandHandler API</span></a> describes how to use the handler in detail. While it’s available as <code class="docutils literal notranslate"><span class="pre">evennia.ON_DEMAND_HANDLER</span></code>, its code is located in <code class="docutils literal notranslate"><span class="pre">evennia.scripts.ondemandhandler.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span> 
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stages</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">time_passed</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_dt</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">current_state</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_stage</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># remove things </span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">clear</span><span class="p">(</span><span class="n">cateogory</span><span class="o">=</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>  <span class="c1">#clear all with category</span>
+</pre></div>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Not all stages may fire!</p>
+<p>This is important. If no-one checks in on the flower until a time when it’s  already wilting, it will simply <em>skip</em> all its previous stages, directly to the ‘wilting’ stage. So don’t write code for a stage that assumes previous stages to have made particular changes to the object - those changes may not have happened because those stages could have been skipped entirely!</p>
+</aside>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">key</span></code> can be a string, but also a typeclassed object (its string representation will be used, which normally includes its <code class="docutils literal notranslate"><span class="pre">#dbref</span></code>). You can also pass a <code class="docutils literal notranslate"><span class="pre">callable</span></code> - this will be called without arguments and is expected to return a string to use for the <code class="docutils literal notranslate"><span class="pre">key</span></code>. Finally, you can also pass <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> entities - these are the objects the handler uses under the hood to represent each task.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">category</span></code> allows you to further categorize your demandhandler  tasks to make sure they are unique. Since the handler is global, you need to make sure <code class="docutils literal notranslate"><span class="pre">key</span></code> + <code class="docutils literal notranslate"><span class="pre">category</span></code> is unique. While <code class="docutils literal notranslate"><span class="pre">category</span></code> is optional, if you use it you must also use it to retrieve your state later.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stages</span></code> is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">statename}</span></code> or <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">(statename,</span> <span class="pre">callable)}</span></code> that represents how much time (in seconds) from <em>the start of the task</em> it takes for that stage to begin. In the flower example above, it was 10 hours until the <code class="docutils literal notranslate"><span class="pre">wilting</span></code> state began. If a callable is included, it will fire the first time that stage is reached. This callable takes the current <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> as arguments; the keywords are passed on from the <code class="docutils literal notranslate"><span class="pre">get_stages/dt</span></code> methods. <a class="reference internal" href="#stage-callables">See below</a> for information about the allowed callables. Having <code class="docutils literal notranslate"><span class="pre">stages</span></code> is optional - sometimes you only want to know how much time has passed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_dt()</span></code> - get the current time (in seconds) since the task started. This is a <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.get_stage()</span></code> - get the current state name, such as “flowering” or “seedling”. If you didn’t specify any <code class="docutils literal notranslate"><span class="pre">stages</span></code>, this will return <code class="docutils literal notranslate"><span class="pre">None</span></code>, and you need to interpret the <code class="docutils literal notranslate"><span class="pre">dt</span></code> yourself to determine which state you are in.</p></li>
+</ul>
+<p>Under the hood, the handler uses  <a class="reference internal" href="../api/evennia.scripts.ondemandhandler.html#evennia.scripts.ondemandhandler.OnDemandTask" title="evennia.scripts.ondemandhandler.OnDemandTask"><span class="xref myst py py-class">OnDemandTask</span></a> objects. It can sometimes be practical to create tasks directly with these, and pass them to the handler in bulk:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+
+<span class="n">task1</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;state1&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;state2&quot;</span><span class="p">,</span> <span class="n">my_callable</span><span class="p">)})</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">OnDemandTask</span><span class="p">(</span><span class="s2">&quot;key2&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;state-category&quot;</span><span class="p">)</span>
+
+<span class="c1"># batch-start on-demand tasks</span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">batch_add</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
+
+<span class="c1"># get the tasks back later </span>
+<span class="n">task1</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">)</span>
+<span class="n">task2</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;state-category&quot;</span><span class="p">)</span>
+
+<span class="c1"># batch-deactivate tasks you have available</span>
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">batch_remove</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="stage-callables">
+<h3>Stage callables<a class="headerlink" href="#stage-callables" title="Link to this heading">¶</a></h3>
+<p>If you define one or more of your <code class="docutils literal notranslate"><span class="pre">stages</span></code> dict keys as <code class="docutils literal notranslate"><span class="pre">{dt:</span> <span class="pre">(statename,</span> <span class="pre">callable)}</span></code>, this callable will be called when that stage is checked for the first time. This ‘stage callable’ have a few requirements:</p>
+<ul class="simple">
+<li><p>The stage callable must be <a class="reference external" href="https://docs.python.org/3/library/pickle.html#pickle-picklable">possible to pickle</a> because it will be saved to the database. This basically means your callable needs to be a stand-alone function or a method decorated with <code class="docutils literal notranslate"><span class="pre">&#64;staticmethod</span></code>. You won’t be able to access the object instance as <code class="docutils literal notranslate"><span class="pre">self</span></code> directly from such a method or function - you need to pass it explicitly.</p></li>
+<li><p>The callable must always take <code class="docutils literal notranslate"><span class="pre">task</span></code> as its first element. This is the <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> object firing this callable.</p></li>
+<li><p>It may optionally take <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> . This will be passed down from your call of <code class="docutils literal notranslate"><span class="pre">get_dt</span></code> or <code class="docutils literal notranslate"><span class="pre">get_stages</span></code>.</p></li>
+</ul>
+<p>Here’s an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span> <span class="n">DefaultObject</span><span class="p">,</span> <span class="n">ON_DEMAND_HANDLER</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mycallable</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+	<span class="c1"># this function is outside the class and is pickleable just fine</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;obj&quot;</span><span class="p">)</span>
+    <span class="c1"># do something with the object</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SomeObject</span><span class="p">(</span><span class="n">DefaultObject</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">at_object_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+	        <span class="s2">&quot;key1&quot;</span><span class="p">,</span> 
+	        <span class="n">stages</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;new&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="n">mycallable</span><span class="p">)}</span>
+	    <span class="p">)</span>
+
+	<span class="k">def</span><span class="w"> </span><span class="nf">do_something</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	    <span class="c1"># pass obj=self into the handler; to be passed into</span>
+	    <span class="c1"># mycallable if we are in the &#39;old&#39; stage.</span>
+		<span class="n">state</span> <span class="o">=</span> <span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="s2">&quot;key1&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>Above, the <code class="docutils literal notranslate"><span class="pre">obj=self</span></code> will passed into <code class="docutils literal notranslate"><span class="pre">mycallable</span></code> once we reach the ‘old’ state. If we are not in the ‘old’ stage, the extra kwargs go nowhere. This way a function can be made aware of the object calling it while still being possible to pickle. You can also pass any other information into the callable this way.</p>
+<blockquote>
+<div><p>If you don’t want to deal with the complexity of callables you can also just read off the current stage and do all the logic outside of the handler. This can often be easier to read and maintain.</p>
+</div></blockquote>
+</section>
+<section id="looping-repeatedly">
+<h3>Looping repeatedly<a class="headerlink" href="#looping-repeatedly" title="Link to this heading">¶</a></h3>
+<p>Normally, when a sequence of <code class="docutils literal notranslate"><span class="pre">stages</span></code> have been cycled through, the task will just stop at the last stage indefinitely.</p>
+<p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_loop</span></code> is an included static-method stage callable you can use to make the task loop. Here’s an example of how to use it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="s2">&quot;trap_state&quot;</span><span class="p">,</span> 
+    <span class="n">stages</span><span class="o">=</span><span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;harmless&quot;</span><span class="p">,</span>
+        <span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;solvable&quot;</span><span class="p">,</span>
+        <span class="mi">100</span><span class="p">:</span> <span class="s2">&quot;primed&quot;</span><span class="p">,</span>
+        <span class="mi">200</span><span class="p">:</span> <span class="s2">&quot;deadly&quot;</span><span class="p">,</span>
+        <span class="mi">250</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;_reset&quot;</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">stagefunc_loop</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This is a trap state that loops through its states depending on timing. Note that the looping helper callable will <em>immediately</em> reset the cycle back to the first stage, so the last stage will never be visible to the player/game system. So it’s a good (if optional) idea to name it with <code class="docutils literal notranslate"><span class="pre">_*</span></code> to remember this is a ‘virtual’ stage. In the example above, the “deadly” state will cycle directly to “harmless”.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> task instance has a <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> variable that will go up by one for every loop.</p>
+<p>If the state is not checked for a long time, the looping function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property on the task it would have used so far and figure out where in the cycle it is right now.</p>
+</section>
+<section id="bouncing-back-and-forth">
+<h3>Bouncing back and forth<a class="headerlink" href="#bouncing-back-and-forth" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">evennia.OnDemandTask.stagefunc_bounce</span></code> is an included static-method callable you can use to ‘bounce’ the sequence of stages. That is, it will cycle to the end of the cycle and then reverse direction and cycle through the sequence in reverse, keeping the same time intervals between each stage.</p>
+<p>To make this repeat indefinitely, you need to put these callables at both ends of the list:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia</span><span class="w"> </span><span class="kn">import</span> <span class="n">ON_DEMAND_HANDLER</span><span class="p">,</span> <span class="n">OnDemandTask</span> 
+
+<span class="n">ON_DEMAND_HANDLER</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="s2">&quot;cycling reactor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nuclear&quot;</span><span class="p">,</span>
+    <span class="n">stages</span><span class="o">=</span><span class="p">{</span>
+        <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;cold&quot;</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">stagefunc_bounce</span><span class="p">),</span>
+        <span class="mi">150</span><span class="p">:</span> <span class="s2">&quot;luke warm&quot;</span><span class="p">,</span>
+        <span class="mi">300</span><span class="p">:</span> <span class="s2">&quot;warm&quot;</span><span class="p">,</span> 
+        <span class="mi">450</span><span class="p">:</span> <span class="s2">&quot;hot&quot;</span>
+        <span class="mi">600</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;HOT!&quot;</span><span class="p">,</span> <span class="n">OnDemandTask</span><span class="o">.</span><span class="n">stagefunc_bounce</span><span class="p">)</span>    
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This will cycle</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    cold -&gt; luke warm -&gt; warm -&gt; hot -&gt; HOT! 
+</pre></div>
+</div>
+<p>before reversing and go back (over and over):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>    HOT! -&gt; hot -&gt; warm -&gt; luke warm -&gt; cold 
+</pre></div>
+</div>
+<p>Unlike the <code class="docutils literal notranslate"><span class="pre">stagefunc_loop</span></code> callable, the bouncing one <em>will</em> visibly stay at the first and last stage until it changes to the next one in the sequence.  The <code class="docutils literal notranslate"><span class="pre">OnDemandTask</span></code> instance has an <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property that will step up by one every time the sequence reverses.</p>
+<p>If the state is not checked for a long time, the bounce function will correctly update the <code class="docutils literal notranslate"><span class="pre">.iterations</span></code> property to the amount of iterations it would have done in that time, and figure out where in the cycle it is right now.</p>
+</section>
+</section>
+<section id="when-is-it-not-suitable-to-do-things-on-demand">
+<h2>When is it not suitable to do things on-demand?<a class="headerlink" href="#when-is-it-not-suitable-to-do-things-on-demand" title="Link to this heading">¶</a></h2>
+<p>If you put your mind to it, you can probably make of your game on-demand. The player will not be the wiser.</p>
+<p>There is only really one case where on-demand doesn’t work, and that is if the player should be informed of something <em>without first providing any input</em>.</p>
+<p>If a player has to run <code class="docutils literal notranslate"><span class="pre">check</span> <span class="pre">health</span></code> command to see how much health they have, that could happen on demand. Similarly, a prompt could be set to update every time you move. But if you would an idling player to get a message popping up out of nowhere saying “You are feeling hungry” or to have some HP meter visually increasing also when standing still, then some sort of timer/ticker would be necessary to crank the wheels.</p>
+<p>Remember however, that in a text-medium (especially with traditional line-by-line MUD clients), there is only so much spam you can push on the player before they get overwhelmed.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">OnDemandHandler</a><ul>
+<li><a class="reference internal" href="#a-blooming-flower-using-the-ondemandhandler">A blooming flower using the OnDemandHandler</a></li>
+<li><a class="reference internal" href="#more-usage-examples">More usage examples</a><ul>
+<li><a class="reference internal" href="#stage-callables">Stage callables</a></li>
+<li><a class="reference internal" href="#looping-repeatedly">Looping repeatedly</a></li>
+<li><a class="reference internal" href="#bouncing-back-and-forth">Bouncing back and forth</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#when-is-it-not-suitable-to-do-things-on-demand">When is it not suitable to do things on-demand?</a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="MonitorHandler.html"
+                          title="previous chapter">MonitorHandler</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="TickerHandler.html"
+                          title="next chapter">TickerHandler</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Components/OnDemandHandler.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="TickerHandler.html" title="TickerHandler"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MonitorHandler.html" title="MonitorHandler"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Components-Overview.html" >Core Components</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">OnDemandHandler</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.help.models &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.help.utils" href="evennia.help.utils.html" />
+    <link rel="prev" title="evennia.help.manager" href="evennia.help.manager.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.help.utils.html" title="evennia.help.utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.help.manager.html" title="evennia.help.manager"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.help.html" accesskey="U">evennia.help</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.help.models">
+<span id="evennia-help-models"></span><h1>evennia.help.models<a class="headerlink" href="#module-evennia.help.models" title="Link to this heading">¶</a></h1>
+<p>Models for the help system.</p>
+<p>The database-tied help system is only half of Evennia’s help
+functionality, the other one being the auto-generated command help
+that is created on the fly from each command’s <strong>__doc__</strong> string. The
+persistent database system defined here is intended for all other
+forms of help that do not concern commands, like information about the
+game world, policy info, rules and similar.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">HelpEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.idmapper.models.html#evennia.utils.idmapper.models.SharedMemoryModel" title="evennia.utils.idmapper.models.SharedMemoryModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code></a></p>
+<p>A generic help entry.</p>
+<dl class="simple">
+<dt>An HelpEntry object has the following properties defined:</dt><dd><p>key - main name of entry
+help_category - which category entry belongs to (defaults to General)
+entrytext - the actual help text
+permissions - perm strings</p>
+</dd>
+<dt>Method:</dt><dd><p>access</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.db_key">
+<span class="sig-name descname"><span class="pre">db_key</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.db_key" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.db_help_category">
+<span class="sig-name descname"><span class="pre">db_help_category</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.db_help_category" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.db_entrytext">
+<span class="sig-name descname"><span class="pre">db_entrytext</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.db_entrytext" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.db_lock_storage">
+<span class="sig-name descname"><span class="pre">db_lock_storage</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.db_lock_storage" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.db_tags">
+<span class="sig-name descname"><span class="pre">db_tags</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.db_tags" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.db_date_created">
+<span class="sig-name descname"><span class="pre">db_date_created</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.db_date_created" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;evennia.help.manager.HelpEntryManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.help.models.HelpEntry.objects" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.locks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.tags">
+<span class="sig-name descname"><span class="pre">tags</span></span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.tags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.tags" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.aliases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.date_created">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">date_created</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.date_created" title="Link to this definition">¶</a></dt>
+<dd><p>Return the field in localized time based on settings.TIME_ZONE.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.access">
+<span class="sig-name descname"><span class="pre">access</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accessing_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'read'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.access"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.access" title="Link to this definition">¶</a></dt>
+<dd><p>Determines if another object has permission to access this help entry.</p>
+<dl class="simple">
+<dt>Accesses used by default:</dt><dd><p>‘read’ - read the help entry itself.
+‘view’ - see help entry in help index.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accessing_obj</strong> (<em>Object</em><em> or </em><em>Account</em>) – Entity trying to access this one.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em>) – type of access sought.</p></li>
+<li><p><strong>default</strong> (<em>bool</em>) – What to return if no lock of <strong>access_type</strong> was found.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.search_index_entry">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search_index_entry</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd><p>Property for easily retaining a search index entry for this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.web_get_admin_url">
+<span class="sig-name descname"><span class="pre">web_get_admin_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_admin_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_admin_url" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the URI path for the Django Admin page for this object.</p>
+<p>ex. Account#1 = ‘/admin/accounts/accountdb/1/change/’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to Django Admin page for object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.web_get_create_url">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">web_get_create_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_create_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_create_url" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the URI path for a View that allows users to create new
+instances of this object.</p>
+<p>ex. Chargen = ‘/characters/create/’</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-create’ would be referenced by this method.</p>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/create/&#39;</span><span class="p">,</span> <span class="n">ChargenView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-create&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can create new objects is the
+developer’s responsibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object creation page, if defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.web_get_detail_url">
+<span class="sig-name descname"><span class="pre">web_get_detail_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_detail_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_detail_url" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the URI path for a View that allows users to view details for
+this object.</p>
+<p>ex. Oscar (Character) = ‘/characters/oscar/1/’</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-detail’ would be referenced by this method.</p>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
+    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can view this object is the developer’s
+responsibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object detail page, if defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.web_get_update_url">
+<span class="sig-name descname"><span class="pre">web_get_update_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_update_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_update_url" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the URI path for a View that allows users to update this
+object.</p>
+<p>ex. Oscar (Character) = ‘/characters/oscar/1/change/’</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-update’ would be referenced by this method.</p>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/change/$&#39;</span><span class="p">,</span>
+    <span class="n">CharUpdateView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-update&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can modify objects is the developer’s
+responsibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object update page, if defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.web_get_delete_url">
+<span class="sig-name descname"><span class="pre">web_get_delete_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/models.html#HelpEntry.web_get_delete_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntry.web_get_delete_url" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the URI path for a View that allows users to delete this object.</p>
+<p>ex. Oscar (Character) = ‘/characters/oscar/1/delete/’</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-detail’ would be referenced by this method.</p>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/delete/$&#39;</span><span class="p">,</span>
+    <span class="n">CharDeleteView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-delete&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can delete this object is the developer’s
+responsibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object deletion page, if defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.get_absolute_url">
+<span class="sig-name descname"><span class="pre">get_absolute_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.HelpEntry.get_absolute_url" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the URI path for a View that allows users to view details for
+this object.</p>
+<p>ex. Oscar (Character) = ‘/characters/oscar/1/’</p>
+<p>For this to work, the developer must have defined a named view somewhere
+in urls.py that follows the format ‘modelname-action’, so in this case
+a named view of ‘character-detail’ would be referenced by this method.</p>
+<p>ex.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">url</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;characters/(?P&lt;slug&gt;[\w\d\-]+)/(?P&lt;pk&gt;[0-9]+)/$&#39;</span><span class="p">,</span>
+    <span class="n">CharDetailView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;character-detail&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If no View has been created and defined in urls.py, returns an
+HTML anchor.</p>
+<p>This method is naive and simply returns a path. Securing access to
+the actual view and limiting who can view this object is the developer’s
+responsibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>path (str)</em> – URI path to object detail page, if defined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.dbserialize.html#evennia.utils.dbserialize.ObjectDoesNotExist" title="django.core.exceptions.ObjectDoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.entrytext">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entrytext</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.entrytext" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_entrytext</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.get_next_by_db_date_created">
+<span class="sig-name descname"><span class="pre">get_next_by_db_date_created</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">db_date_created&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.HelpEntry.get_next_by_db_date_created" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.get_previous_by_db_date_created">
+<span class="sig-name descname"><span class="pre">get_previous_by_db_date_created</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.DateTimeField:</span> <span class="pre">db_date_created&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.HelpEntry.get_previous_by_db_date_created" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.help_category">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">help_category</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.help_category" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_help_category</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.id" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.key" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_key</strong>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.lock_storage">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lock_storage</span></span><a class="headerlink" href="#evennia.help.models.HelpEntry.lock_storage" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for getting database field <strong>db_lock_storage</strong>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.help.models.HelpEntry'</span></em><a class="headerlink" href="#evennia.help.models.HelpEntry.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntry.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SharedMemoryModelBase'</span></em><a class="headerlink" href="#evennia.help.models.HelpEntry.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.AliasHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">AliasHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#AliasHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.AliasHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.tags.html#evennia.typeclasses.tags.TagHandler" title="evennia.typeclasses.tags.TagHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagHandler</span></code></a></p>
+<p>A handler for the Alias Tag type.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">ContentType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/contrib/contenttypes/models.html#ContentType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.ContentType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.help.models.ContentType.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.dbserialize.html#evennia.utils.dbserialize.ObjectDoesNotExist" title="django.core.exceptions.ObjectDoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.help.models.ContentType.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.app_label">
+<span class="sig-name descname"><span class="pre">app_label</span></span><a class="headerlink" href="#evennia.help.models.ContentType.app_label" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.app_labeled_name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app_labeled_name</span></span><a class="headerlink" href="#evennia.help.models.ContentType.app_labeled_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.get_all_objects_for_this_type">
+<span class="sig-name descname"><span class="pre">get_all_objects_for_this_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/contrib/contenttypes/models.html#ContentType.get_all_objects_for_this_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.ContentType.get_all_objects_for_this_type" title="Link to this definition">¶</a></dt>
+<dd><p>Return all objects of this type for the keyword arguments given.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.get_object_for_this_type">
+<span class="sig-name descname"><span class="pre">get_object_for_this_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">using</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/contrib/contenttypes/models.html#ContentType.get_object_for_this_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.ContentType.get_object_for_this_type" title="Link to this definition">¶</a></dt>
+<dd><p>Return an object of this type for the keyword arguments given.
+Basically, this is a proxy around this object_type’s get_object() model
+method. The ObjectNotExist exception, if thrown, will not be caught,
+so code that calls this method should catch it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#evennia.help.models.ContentType.id" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.logentry_set">
+<span class="sig-name descname"><span class="pre">logentry_set</span></span><a class="headerlink" href="#evennia.help.models.ContentType.logentry_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#evennia.help.models.ContentType.model" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.model_class">
+<span class="sig-name descname"><span class="pre">model_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/contrib/contenttypes/models.html#ContentType.model_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.ContentType.model_class" title="Link to this definition">¶</a></dt>
+<dd><p>Return the model class for this type of content.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#evennia.help.models.ContentType.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.natural_key">
+<span class="sig-name descname"><span class="pre">natural_key</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/contrib/contenttypes/models.html#ContentType.natural_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.ContentType.natural_key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.contrib.contenttypes.models.ContentTypeManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.help.models.ContentType.objects" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.ContentType.permission_set">
+<span class="sig-name descname"><span class="pre">permission_set</span></span><a class="headerlink" href="#evennia.help.models.ContentType.permission_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the reverse side of a
+many-to-one relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Child</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Parent.children**</strong> is a <strong>**ReverseManyToOneDescriptor**</strong> instance.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">HelpEntryManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.typeclasses.managers.html#evennia.typeclasses.managers.TypedObjectManager" title="evennia.typeclasses.managers.TypedObjectManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedObjectManager</span></code></a></p>
+<p>This HelpEntryManager implements methods for searching
+and manipulating HelpEntries directly from the database.</p>
+<p>These methods will all return database objects
+(or QuerySets) directly.</p>
+<p>Evennia-specific:
+find_topicmatch
+find_apropos
+find_topicsuggestions
+find_topics_with_category
+all_to_category
+search_help (equivalent to evennia.search_helpentry)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.all_to_category">
+<span class="sig-name descname"><span class="pre">all_to_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.all_to_category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.all_to_category" title="Link to this definition">¶</a></dt>
+<dd><p>Shifts all help entries in database to default_category.  This
+action cannot be reverted. It is used primarily by the engine
+when importing a default help database, making sure this ends
+up in one easily separated category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>default_category</strong> (<em>str</em>) – Category to move entries to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.create_help">
+<span class="sig-name descname"><span class="pre">create_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrytext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'General'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.create_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.create_help" title="Link to this definition">¶</a></dt>
+<dd><p>Create a static help entry in the help database. Note that Command
+help entries are dynamic and directly taken from the __doc__
+entries of the command. The database-stored help entries are
+intended for more general help on the game, more extensive info,
+in-game setting information and so on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The name of the help entry.</p></li>
+<li><p><strong>entrytext</strong> (<em>str</em>) – The body of te help entry</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The help category of the entry.</p></li>
+<li><p><strong>locks</strong> (<em>str</em><em>, </em><em>optional</em>) – A lockstring to restrict access.</p></li>
+<li><p><strong>aliases</strong> (<em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – List of alternative (likely shorter) keynames.</p></li>
+<li><p><strong>tags</strong> (<em>lst</em><em>, </em><em>optional</em>) – List of tags or tuples <strong>(tag, category)</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>help (HelpEntry)</em> – A newly created help entry.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.find_apropos">
+<span class="sig-name descname"><span class="pre">find_apropos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topicstr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_apropos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.find_apropos" title="Link to this definition">¶</a></dt>
+<dd><p>Do a very loose search, returning all help entries containing
+the search criterion in their titles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>topicstr</strong> (<em>str</em>) – Search criterion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>matches (HelpEntries)</em> – Query results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.find_topicmatch">
+<span class="sig-name descname"><span class="pre">find_topicmatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topicstr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topicmatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.find_topicmatch" title="Link to this definition">¶</a></dt>
+<dd><p>Searches for matching topics or aliases based on player’s
+input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>topcistr</strong> (<em>str</em>) – Help topic to search for.</p></li>
+<li><p><strong>exact</strong> (<em>bool</em><em>, </em><em>optional</em>) – Require exact match
+(non-case-sensitive).  If <strong>False</strong> (default), match
+sub-parts of the string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>matches (HelpEntries)</em> – Query results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.find_topics_with_category">
+<span class="sig-name descname"><span class="pre">find_topics_with_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">help_category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topics_with_category"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.find_topics_with_category" title="Link to this definition">¶</a></dt>
+<dd><p>Search topics having a particular category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>help_category</strong> (<em>str</em>) – Category query criterion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>matches (HelpEntries)</em> – Query results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.find_topicsuggestions">
+<span class="sig-name descname"><span class="pre">find_topicsuggestions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topicstr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.find_topicsuggestions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.find_topicsuggestions" title="Link to this definition">¶</a></dt>
+<dd><p>Do a fuzzy match, preferably within the category of the
+current topic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>topicstr</strong> (<em>str</em>) – Search criterion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>matches (Helpentries)</em> – Query results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.get_all_categories">
+<span class="sig-name descname"><span class="pre">get_all_categories</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.get_all_categories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.get_all_categories" title="Link to this definition">¶</a></dt>
+<dd><p>Return all defined category names with at least one topic in
+them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><em>matches (list)</em> –</p>
+<dl class="simple">
+<dt>Unique list of category names across all</dt><dd><p>topics.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.get_all_topics">
+<span class="sig-name descname"><span class="pre">get_all_topics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.get_all_topics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.get_all_topics" title="Link to this definition">¶</a></dt>
+<dd><p>Get all topics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>all (HelpEntries)</em> – All topics.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.HelpEntryManager.search_help">
+<span class="sig-name descname"><span class="pre">search_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ostring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help_category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/help/manager.html#HelpEntryManager.search_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.HelpEntryManager.search_help" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve a search entry object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ostring</strong> (<em>str</em>) – The help topic to look for.</p></li>
+<li><p><strong>category</strong> (<em>str</em>) – Limit the search to a particular help topic</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Queryset</em> – An iterable with 0, 1 or more matches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">LockHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This handler should be attached to all objects implementing
+permission checks, under the property ‘lockhandler’.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Loads and pre-caches all relevant locks and their functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>object</em>) – The object on which the lockhandler is</p></li>
+<li><p><strong>defined.</strong></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lockstring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add a new lockstring to handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lockstring</strong> (<em>str</em><em> or </em><em>list</em>) – A string on the form
+<strong>“&lt;access_type&gt;:&lt;functions&gt;”</strong>.  Multiple access types
+should be separated by semicolon (<strong>;</strong>). Alternatively,
+a list with lockstrings.</p></li>
+<li><p><strong>validate_only</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, validate the lockstring but
+don’t actually store it.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>success (bool)</em> –</p>
+<dl class="simple">
+<dt>The outcome of the addition, <strong>False</strong> on</dt><dd><p>error. If <strong>validate_only</strong> is True, this will be a tuple
+(bool, error), for pass/fail and a string error.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.all">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.all" title="Link to this definition">¶</a></dt>
+<dd><p>Return all lockstrings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>lockstrings (list)</em> – All separate lockstrings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lockstring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'or'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.append" title="Link to this definition">¶</a></dt>
+<dd><p>Append a lock definition to access_type if it doesn’t already exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>access_type</strong> (<em>str</em>) – Access type.</p></li>
+<li><p><strong>lockstring</strong> (<em>str</em>) – A valid lockstring, without the operator to
+link it to an eventual existing lockstring.</p></li>
+<li><p><strong>op</strong> (<em>str</em>) – An operator ‘and’, ‘or’, ‘and not’, ‘or not’ used
+for appending the lockstring to an existing access-type.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The most common use of this method is for use in commands where
+the user can specify their own lockstrings. This method allows
+the system to auto-add things like Admin-override access.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.cache_lock_bypass">
+<span class="sig-name descname"><span class="pre">cache_lock_bypass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.cache_lock_bypass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.cache_lock_bypass" title="Link to this definition">¶</a></dt>
+<dd><p>We cache superuser bypass checks here for efficiency. This
+needs to be re-run when an account is assigned to a character.
+We need to grant access to superusers. We need to check both
+directly on the object (accounts), through obj.account and using
+the get_account() method (this sits on serversessions, in some
+rare cases where a check is done before the login process has
+yet been fully finalized)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>object</em>) – This is checked for the <strong>is_superuser</strong> property.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accessing_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_superuser_bypass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.check" title="Link to this definition">¶</a></dt>
+<dd><p>Checks a lock of the correct type by passing execution off to
+the lock function(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accessing_obj</strong> (<em>object</em>) – The object seeking access.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em>) – The type of access wanted.</p></li>
+<li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – If no suitable lock type is
+found, default to this result.</p></li>
+<li><p><strong>no_superuser_bypass</strong> (<em>bool</em>) – Don’t use this unless you
+really, really need to, it makes supersusers susceptible
+to the lock check.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A lock is executed in the follwoing way:</p>
+<p>Parsing the lockstring, we (during cache) extract the valid
+lock functions and store their function objects in the right
+order along with their args/kwargs. These are now executed in
+sequence, creating a list of True/False values. This is put
+into the evalstring, which is a string of AND/OR/NOT entries
+separated by placeholders where each function result should
+go. We just put those results in and evaluate the string to
+get a final, combined True/False value for the lockstring.</p>
+<p>The important bit with this solution is that the full
+lockstring is never blindly evaluated, and thus there (should
+be) no way to sneak in malign code in it. Only “safe” lock
+functions (as defined by your settings) are executed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.check_lockstring">
+<span class="sig-name descname"><span class="pre">check_lockstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">accessing_obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lockstring</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_superuser_bypass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.check_lockstring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.check_lockstring" title="Link to this definition">¶</a></dt>
+<dd><p>Do a direct check against a lockstring (‘atype:func()..’),
+without any intermediary storage on the accessed object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>accessing_obj</strong> (<em>object</em><em> or </em><em>None</em>) – The object seeking access.
+Importantly, this can be left unset if the lock functions
+don’t access it, no updating or storage of locks are made
+against this object in this method.</p></li>
+<li><p><strong>lockstring</strong> (<em>str</em>) – Lock string to check, on the form
+<strong>“access_type:lock_definition”</strong> where the <strong>access_type</strong>
+part can potentially be set to a dummy value to just check
+a lock condition.</p></li>
+<li><p><strong>no_superuser_bypass</strong> (<em>bool</em><em>, </em><em>optional</em>) – Force superusers to heed lock.</p></li>
+<li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – Fallback result to use if <strong>access_type</strong> is set
+but no such <strong>access_type</strong> is found in the given <strong>lockstring</strong>.</p></li>
+<li><p><strong>access_type</strong> (<em>str</em><em>, </em><em>bool</em>) – If set, only this access_type will be looked up
+among the locks defined by <strong>lockstring</strong>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>access (bool)</em> – If check is passed or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Remove all locks in the handler.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evennia.help.models.LockHandler.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a particular lock from the handler</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>access_type</strong> (<em>str</em>) – The type of lock to remove.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>success (bool)</em> –</p>
+<dl class="simple">
+<dt>If the access_type was not found</dt><dd><p>in the lock, this returns <strong>False</strong>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get the full lockstring or the lockstring of a particular
+access type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>access_type</strong> (<em>str</em><em>, </em><em>optional</em>)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>lockstring (str)</em> –</p>
+<dl class="simple">
+<dt>The matched lockstring, or the full</dt><dd><p>lockstring if no access_type was given.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a particular lock from the handler</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>access_type</strong> (<em>str</em>) – The type of lock to remove.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>success (bool)</em> –</p>
+<dl class="simple">
+<dt>If the access_type was not found</dt><dd><p>in the lock, this returns <strong>False</strong>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lockstring</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.replace" title="Link to this definition">¶</a></dt>
+<dd><p>Replaces the lockstring entirely.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lockstring</strong> (<em>str</em>) – The new lock definition.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>success (bool)</em> – False if an error occurred.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="evennia.commands.default.building.html#evennia.commands.default.building.LockException" title="evennia.commands.default.building.LockException"><strong>LockException</strong></a> – If a critical error occurred.
+If so, the old string is recovered.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.reset" title="Link to this definition">¶</a></dt>
+<dd><p>Set the reset flag, so the the lock will be re-cached at next
+checking.  This is usually called by &#64;reload.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.LockHandler.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lockstring</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/locks/lockhandler.html#LockHandler.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.LockHandler.validate" title="Link to this definition">¶</a></dt>
+<dd><p>Validate lockstring syntactically, without saving it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lockstring</strong> (<em>str</em>) – Lockstring to validate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>valid (bool)</em> – If validation passed or not.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">SharedMemoryModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Base class for idmapped objects. Inherit from <strong>this</strong>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.Meta">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.Meta" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.Meta.abstract">
+<span class="sig-name descname"><span class="pre">abstract</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.Meta.abstract" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.at_idmapper_flush">
+<span class="sig-name descname"><span class="pre">at_idmapper_flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.at_idmapper_flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.at_idmapper_flush" title="Link to this definition">¶</a></dt>
+<dd><p>This is called when the idmapper cache is flushed and
+allows customized actions when this happens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><em>do_flush (bool)</em> –</p>
+<dl class="simple">
+<dt>If True, flush this object as normal. If</dt><dd><p>False, don’t flush and expect this object to handle
+the flushing on its own.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.cache_instance">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.cache_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.cache_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Method to store an instance in the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>instance</strong> (<em>Class instance</em>) – the instance to cache.</p></li>
+<li><p><strong>new</strong> (<em>bool</em><em>, </em><em>optional</em>) – this is the first time this instance is
+cached (i.e. this is not an update operation like after a
+db save).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete the object, clearing cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.flush_cached_instance">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flush_cached_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.flush_cached_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.flush_cached_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Method to flush an instance from the cache. The instance will
+always be flushed from the cache, since this is most likely
+called from delete(), and we want to make sure we don’t cache
+dead objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.flush_from_cache">
+<span class="sig-name descname"><span class="pre">flush_from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.flush_from_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.flush_from_cache" title="Link to this definition">¶</a></dt>
+<dd><p>Flush this instance from the instance cache. Use
+<strong>force</strong> to override the result of at_idmapper_flush() for the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.flush_instance_cache">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flush_instance_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.flush_instance_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.flush_instance_cache" title="Link to this definition">¶</a></dt>
+<dd><p>This will clean safe objects from the cache. Use <strong>force</strong>
+keyword to remove all objects, safe or not.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.get_all_cached_instances">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all_cached_instances</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.get_all_cached_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.get_all_cached_instances" title="Link to this definition">¶</a></dt>
+<dd><p>Return the objects so far cached by idmapper for this class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.get_cached_instance">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_cached_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.get_cached_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.get_cached_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Method to retrieve a cached instance by pk value. Returns None
+when not found (which will always be the case when caching is
+disabled for this class). Please note that the lookup will be
+done even when instance caching is disabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.objects" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.utils.idmapper.models.SharedMemoryModel'</span></em><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/idmapper/models.html#SharedMemoryModel.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.save" title="Link to this definition">¶</a></dt>
+<dd><p>Central database save operation.</p>
+<p class="rubric">Notes</p>
+<p>Arguments as per Django documentation.
+Calls <strong>self.at_&lt;fieldname&gt;_postsave(new)</strong>
+(this is a wrapper set by oobhandler:
+self._oob_at_&lt;fieldname&gt;_postsave())</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.SharedMemoryModel.typename">
+<span class="sig-name descname"><span class="pre">typename</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SharedMemoryModelBase'</span></em><a class="headerlink" href="#evennia.help.models.SharedMemoryModel.typename" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.Tag">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#Tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.Tag" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<p>Tags are quick markers for objects in-game. An typeobject can have
+any number of tags, stored via its db_tags property.  Tagging
+similar objects will make it easier to quickly locate the group
+later (such as when implementing zones). The main advantage of
+tagging as opposed to using tags is speed; a tag is very
+limited in what data it can hold, and the tag key+category is
+indexed for efficient lookup in the database. Tags are shared
+between objects - a new tag is only created if the key+category
+combination did not previously exist, making them unsuitable for
+storing object-related data (for this a regular Attribute should be
+used).</p>
+<p>The ‘db_data’ field is intended as a documentation field for the
+tag itself, such as to document what this tag+category stands for
+and display that in a web interface or similar.</p>
+<p>The main default use for Tags is to implement Aliases for objects.
+this uses the ‘aliases’ tag category, which is also checked by the
+default search functions of Evennia to allow quick searches by alias.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.DoesNotExist">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#evennia.help.models.Tag.DoesNotExist" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.utils.dbserialize.html#evennia.utils.dbserialize.ObjectDoesNotExist" title="django.core.exceptions.ObjectDoesNotExist"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.MultipleObjectsReturned">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#evennia.help.models.Tag.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.accountdb_set">
+<span class="sig-name descname"><span class="pre">accountdb_set</span></span><a class="headerlink" href="#evennia.help.models.Tag.accountdb_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.channeldb_set">
+<span class="sig-name descname"><span class="pre">channeldb_set</span></span><a class="headerlink" href="#evennia.help.models.Tag.channeldb_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.db_category">
+<span class="sig-name descname"><span class="pre">db_category</span></span><a class="headerlink" href="#evennia.help.models.Tag.db_category" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.db_data">
+<span class="sig-name descname"><span class="pre">db_data</span></span><a class="headerlink" href="#evennia.help.models.Tag.db_data" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.db_key">
+<span class="sig-name descname"><span class="pre">db_key</span></span><a class="headerlink" href="#evennia.help.models.Tag.db_key" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.db_model">
+<span class="sig-name descname"><span class="pre">db_model</span></span><a class="headerlink" href="#evennia.help.models.Tag.db_model" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.db_tagtype">
+<span class="sig-name descname"><span class="pre">db_tagtype</span></span><a class="headerlink" href="#evennia.help.models.Tag.db_tagtype" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.helpentry_set">
+<span class="sig-name descname"><span class="pre">helpentry_set</span></span><a class="headerlink" href="#evennia.help.models.Tag.helpentry_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#evennia.help.models.Tag.id" title="Link to this definition">¶</a></dt>
+<dd><p>A wrapper for a deferred-loading field. When the value is read from this
+object the first time, the query is executed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.msg_set">
+<span class="sig-name descname"><span class="pre">msg_set</span></span><a class="headerlink" href="#evennia.help.models.Tag.msg_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.objectdb_set">
+<span class="sig-name descname"><span class="pre">objectdb_set</span></span><a class="headerlink" href="#evennia.help.models.Tag.objectdb_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#evennia.help.models.Tag.objects" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.help.models.Tag.scriptdb_set">
+<span class="sig-name descname"><span class="pre">scriptdb_set</span></span><a class="headerlink" href="#evennia.help.models.Tag.scriptdb_set" title="Link to this definition">¶</a></dt>
+<dd><p>Accessor to the related objects manager on the forward and reverse sides of
+a many-to-many relation.</p>
+<p>In the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pizza</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">toppings</span> <span class="o">=</span> <span class="n">ManyToManyField</span><span class="p">(</span><span class="n">Topping</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s1">&#39;pizzas&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>**Pizza.toppings**</strong> and <strong>**Topping.pizzas**</strong> are <strong>**ManyToManyDescriptor**</strong>
+instances.</p>
+<p>Most of the implementation is delegated to a dynamically defined manager
+class built by <strong>**create_forward_many_to_many_manager()**</strong> defined below.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">TagHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic tag-handler. Accessed via TypedObject.tags.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Tags are stored internally in the TypedObject.db_tags m2m
+field with an tag.db_model based on the obj the taghandler is
+stored on and with a tagtype given by self.handlertype</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>object</em>) – The object on which the handler is set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.add" title="Link to this definition">¶</a></dt>
+<dd><p>Add a new tag to the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em>) – The name of the tag to add. If a list,
+add several Tags.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – Category of Tag. <strong>None</strong> is the default category.</p></li>
+<li><p><strong>data</strong> (<em>str</em><em>, </em><em>optional</em>) – Info text about the tag(s) added.
+This can not be used to store object-unique info but only
+eventual info about the tag itself.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If the tag + category combination matches an already
+existing Tag object, this will be re-used and no new Tag
+will be created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.all">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">return_key_and_category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_objs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.all" title="Link to this definition">¶</a></dt>
+<dd><p>Get all tags in this handler, regardless of category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_key_and_category</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return a list of
+tuples <strong>[(key, category), …]</strong>.</p></li>
+<li><p><strong>return_objs</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return tag objects.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>tags (list)</em> –</p>
+<dl class="simple">
+<dt>A list of tag keys <strong>[tagkey, tagkey, …]</strong> or</dt><dd><p>a list of tuples <strong>[(key, category), …]</strong> if
+<strong>return_key_and_category</strong> is set.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.batch_add">
+<span class="sig-name descname"><span class="pre">batch_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.batch_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.batch_add" title="Link to this definition">¶</a></dt>
+<dd><p>Batch-add tags from a list of tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em><em> or </em><em>str</em>) – Each argument should be a <strong>tagstr</strong> keys or tuple
+<strong>(keystr, category)</strong> or <strong>(keystr, category, data)</strong>. It’s possible to mix input
+types.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will generate a mimimal number of self.add calls,
+based on the number of categories involved (including
+<strong>None</strong>) (data is not unique and may be overwritten by the content
+of a latter tuple with the same category).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.batch_remove">
+<span class="sig-name descname"><span class="pre">batch_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.batch_remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.batch_remove" title="Link to this definition">¶</a></dt>
+<dd><p>Batch-remove tags from a list of tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>tuple</em><em> or </em><em>str</em>) – Each argument should be a <strong>tagstr</strong> keys or tuple
+<strong>(keystr, category)</strong> or <strong>(keystr, category, data)</strong> (the <strong>data</strong> field is ignored,
+only <strong>keystr</strong>/<strong>category</strong> matters). It’s possible to mix input types.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Remove all tags from the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The Tag category to limit the
+request to. Note that <strong>None</strong> is the valid, default
+category.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_tagobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.get" title="Link to this definition">¶</a></dt>
+<dd><p>Get the tag for the given key, category or combination of the two.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The tag or tags to retrieve.</p></li>
+<li><p><strong>default</strong> (<em>any</em><em>, </em><em>optional</em>) – The value to return in case of no match.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The Tag category to limit the
+request to. Note that <strong>None</strong> is the valid, default
+category. If no <strong>key</strong> is given, all tags of this category will be
+returned.</p></li>
+<li><p><strong>return_tagobj</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return the Tag object itself
+instead of a string representation of the Tag.</p></li>
+<li><p><strong>return_list</strong> (<em>bool</em><em>, </em><em>optional</em>) – Always return a list, regardless
+of number of matches.</p></li>
+<li><p><strong>raise_exception</strong> (<em>bool</em><em>, </em><em>optional</em>) – Raise AttributeError if no matches
+are found.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>tags (list)</em> –</p>
+<dl class="simple">
+<dt>The matches, either string</dt><dd><p>representations of the tags or the Tag objects themselves
+depending on <strong>return_tagobj</strong>. If ‘default’ is set, this
+will be a list with the default value as its only element.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AttributeError</strong> – If finding no matches and <strong>raise_exception</strong> is True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.has">
+<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.has" title="Link to this definition">¶</a></dt>
+<dd><p>Checks if the given Tag (or list of Tags) exists on the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>iterable</em>) – The Tag key or tags to check for.
+If <strong>None</strong>, search by category.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – Limit the check to Tags with this
+category (note, that <strong>None</strong> is the default category).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><em>has_tag (bool or list)</em> –</p>
+<dl class="simple">
+<dt>If the Tag exists on this object or not.</dt><dd><p>If <strong>tag</strong> was given as an iterable then the return is a list of booleans.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If neither <strong>tag</strong> nor <strong>category</strong> is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.remove" title="Link to this definition">¶</a></dt>
+<dd><p>Remove a tag from the handler based ond key and/or category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em> or </em><em>list</em><em>, </em><em>optional</em>) – The tag or tags to retrieve.</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The Tag category to limit the
+request to. Note that <strong>None</strong> is the valid, default
+category</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If neither key nor category is specified, this acts
+as .clear().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.TagHandler.reset_cache">
+<span class="sig-name descname"><span class="pre">reset_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/typeclasses/tags.html#TagHandler.reset_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.TagHandler.reset_cache" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the cache from the outside.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.help.models.lazy_property">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">lazy_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TProp</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.lazy_property" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">TProp</span></code>]</p>
+<p>Delays loading of property until first access. Credit goes to the
+Implementation in the werkzeug suite:
+<a class="reference external" href="http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.cached_property">http://werkzeug.pocoo.org/docs/utils/#werkzeug.utils.cached_property</a></p>
+<p>This should be used as a decorator in a class and in Evennia is
+mainly used to lazy-load handlers:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@lazy_property</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">AttributeHandler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Once initialized, the <strong>AttributeHandler</strong> will be available as a
+property “attributes” on the object. This is read-only since
+this functionality is pretty much exclusively used by handlers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.help.models.lazy_property.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TProp</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/utils.html#lazy_property.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.lazy_property.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Store all properties for now</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.help.models.reverse">
+<span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">reverse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urlconf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_app</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/urls/base.html#reverse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.reverse" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.help.models.slugify">
+<span class="sig-prename descclassname"><span class="pre">evennia.help.models.</span></span><span class="sig-name descname"><span class="pre">slugify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unicode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/django/utils/text.html#slugify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.help.models.slugify" title="Link to this definition">¶</a></dt>
+<dd><p>Convert to ASCII if ‘allow_unicode’ is False. Convert spaces or repeated
+dashes to single dashes. Remove characters that aren’t alphanumerics,
+underscores, or hyphens. Convert to lowercase. Also strip leading and
+trailing whitespace, dashes, and underscores.</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.help.models</a><ul>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry"><code class="docutils literal notranslate"><span class="pre">HelpEntry</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.db_key"><code class="docutils literal notranslate"><span class="pre">HelpEntry.db_key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.db_help_category"><code class="docutils literal notranslate"><span class="pre">HelpEntry.db_help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.db_entrytext"><code class="docutils literal notranslate"><span class="pre">HelpEntry.db_entrytext</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.db_lock_storage"><code class="docutils literal notranslate"><span class="pre">HelpEntry.db_lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.db_tags"><code class="docutils literal notranslate"><span class="pre">HelpEntry.db_tags</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.db_date_created"><code class="docutils literal notranslate"><span class="pre">HelpEntry.db_date_created</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.objects"><code class="docutils literal notranslate"><span class="pre">HelpEntry.objects</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.locks"><code class="docutils literal notranslate"><span class="pre">HelpEntry.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.tags"><code class="docutils literal notranslate"><span class="pre">HelpEntry.tags</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.aliases"><code class="docutils literal notranslate"><span class="pre">HelpEntry.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.date_created"><code class="docutils literal notranslate"><span class="pre">HelpEntry.date_created</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.access"><code class="docutils literal notranslate"><span class="pre">HelpEntry.access()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.search_index_entry"><code class="docutils literal notranslate"><span class="pre">HelpEntry.search_index_entry</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.web_get_admin_url"><code class="docutils literal notranslate"><span class="pre">HelpEntry.web_get_admin_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.web_get_create_url"><code class="docutils literal notranslate"><span class="pre">HelpEntry.web_get_create_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.web_get_detail_url"><code class="docutils literal notranslate"><span class="pre">HelpEntry.web_get_detail_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.web_get_update_url"><code class="docutils literal notranslate"><span class="pre">HelpEntry.web_get_update_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.web_get_delete_url"><code class="docutils literal notranslate"><span class="pre">HelpEntry.web_get_delete_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.get_absolute_url"><code class="docutils literal notranslate"><span class="pre">HelpEntry.get_absolute_url()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">HelpEntry.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">HelpEntry.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.entrytext"><code class="docutils literal notranslate"><span class="pre">HelpEntry.entrytext</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.get_next_by_db_date_created"><code class="docutils literal notranslate"><span class="pre">HelpEntry.get_next_by_db_date_created()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.get_previous_by_db_date_created"><code class="docutils literal notranslate"><span class="pre">HelpEntry.get_previous_by_db_date_created()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.help_category"><code class="docutils literal notranslate"><span class="pre">HelpEntry.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.id"><code class="docutils literal notranslate"><span class="pre">HelpEntry.id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.key"><code class="docutils literal notranslate"><span class="pre">HelpEntry.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.lock_storage"><code class="docutils literal notranslate"><span class="pre">HelpEntry.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.path"><code class="docutils literal notranslate"><span class="pre">HelpEntry.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntry.typename"><code class="docutils literal notranslate"><span class="pre">HelpEntry.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.AliasHandler"><code class="docutils literal notranslate"><span class="pre">AliasHandler</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType"><code class="docutils literal notranslate"><span class="pre">ContentType</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">ContentType.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">ContentType.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.app_label"><code class="docutils literal notranslate"><span class="pre">ContentType.app_label</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.app_labeled_name"><code class="docutils literal notranslate"><span class="pre">ContentType.app_labeled_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.get_all_objects_for_this_type"><code class="docutils literal notranslate"><span class="pre">ContentType.get_all_objects_for_this_type()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.get_object_for_this_type"><code class="docutils literal notranslate"><span class="pre">ContentType.get_object_for_this_type()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.id"><code class="docutils literal notranslate"><span class="pre">ContentType.id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.logentry_set"><code class="docutils literal notranslate"><span class="pre">ContentType.logentry_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.model"><code class="docutils literal notranslate"><span class="pre">ContentType.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.model_class"><code class="docutils literal notranslate"><span class="pre">ContentType.model_class()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.name"><code class="docutils literal notranslate"><span class="pre">ContentType.name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.natural_key"><code class="docutils literal notranslate"><span class="pre">ContentType.natural_key()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.objects"><code class="docutils literal notranslate"><span class="pre">ContentType.objects</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.ContentType.permission_set"><code class="docutils literal notranslate"><span class="pre">ContentType.permission_set</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.all_to_category"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.all_to_category()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.create_help"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.create_help()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.find_apropos"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.find_apropos()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.find_topicmatch"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.find_topicmatch()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.find_topics_with_category"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.find_topics_with_category()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.find_topicsuggestions"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.find_topicsuggestions()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.get_all_categories"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.get_all_categories()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.get_all_topics"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.get_all_topics()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.HelpEntryManager.search_help"><code class="docutils literal notranslate"><span class="pre">HelpEntryManager.search_help()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler"><code class="docutils literal notranslate"><span class="pre">LockHandler</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.__init__"><code class="docutils literal notranslate"><span class="pre">LockHandler.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.add"><code class="docutils literal notranslate"><span class="pre">LockHandler.add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.all"><code class="docutils literal notranslate"><span class="pre">LockHandler.all()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.append"><code class="docutils literal notranslate"><span class="pre">LockHandler.append()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.cache_lock_bypass"><code class="docutils literal notranslate"><span class="pre">LockHandler.cache_lock_bypass()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.check"><code class="docutils literal notranslate"><span class="pre">LockHandler.check()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.check_lockstring"><code class="docutils literal notranslate"><span class="pre">LockHandler.check_lockstring()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.clear"><code class="docutils literal notranslate"><span class="pre">LockHandler.clear()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.delete"><code class="docutils literal notranslate"><span class="pre">LockHandler.delete()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.get"><code class="docutils literal notranslate"><span class="pre">LockHandler.get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.remove"><code class="docutils literal notranslate"><span class="pre">LockHandler.remove()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.replace"><code class="docutils literal notranslate"><span class="pre">LockHandler.replace()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.reset"><code class="docutils literal notranslate"><span class="pre">LockHandler.reset()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.LockHandler.validate"><code class="docutils literal notranslate"><span class="pre">LockHandler.validate()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.Meta"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.Meta.abstract"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.Meta.abstract</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.at_idmapper_flush"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.at_idmapper_flush()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.cache_instance"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.cache_instance()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.delete"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.delete()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.flush_cached_instance"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.flush_cached_instance()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.flush_from_cache"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.flush_from_cache()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.flush_instance_cache"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.flush_instance_cache()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.get_all_cached_instances"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.get_all_cached_instances()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.get_cached_instance"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.get_cached_instance()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.objects"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.objects</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.path"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.path</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.save"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.save()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.SharedMemoryModel.typename"><code class="docutils literal notranslate"><span class="pre">SharedMemoryModel.typename</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.Tag.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Tag.DoesNotExist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Tag.MultipleObjectsReturned</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.accountdb_set"><code class="docutils literal notranslate"><span class="pre">Tag.accountdb_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.channeldb_set"><code class="docutils literal notranslate"><span class="pre">Tag.channeldb_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.db_category"><code class="docutils literal notranslate"><span class="pre">Tag.db_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.db_data"><code class="docutils literal notranslate"><span class="pre">Tag.db_data</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.db_key"><code class="docutils literal notranslate"><span class="pre">Tag.db_key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.db_model"><code class="docutils literal notranslate"><span class="pre">Tag.db_model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.db_tagtype"><code class="docutils literal notranslate"><span class="pre">Tag.db_tagtype</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.helpentry_set"><code class="docutils literal notranslate"><span class="pre">Tag.helpentry_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.id"><code class="docutils literal notranslate"><span class="pre">Tag.id</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.msg_set"><code class="docutils literal notranslate"><span class="pre">Tag.msg_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.objectdb_set"><code class="docutils literal notranslate"><span class="pre">Tag.objectdb_set</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.objects"><code class="docutils literal notranslate"><span class="pre">Tag.objects</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.Tag.scriptdb_set"><code class="docutils literal notranslate"><span class="pre">Tag.scriptdb_set</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler"><code class="docutils literal notranslate"><span class="pre">TagHandler</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.__init__"><code class="docutils literal notranslate"><span class="pre">TagHandler.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.add"><code class="docutils literal notranslate"><span class="pre">TagHandler.add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.all"><code class="docutils literal notranslate"><span class="pre">TagHandler.all()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.batch_add"><code class="docutils literal notranslate"><span class="pre">TagHandler.batch_add()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.batch_remove"><code class="docutils literal notranslate"><span class="pre">TagHandler.batch_remove()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.clear"><code class="docutils literal notranslate"><span class="pre">TagHandler.clear()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.get"><code class="docutils literal notranslate"><span class="pre">TagHandler.get()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.has"><code class="docutils literal notranslate"><span class="pre">TagHandler.has()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.remove"><code class="docutils literal notranslate"><span class="pre">TagHandler.remove()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.TagHandler.reset_cache"><code class="docutils literal notranslate"><span class="pre">TagHandler.reset_cache()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.lazy_property"><code class="docutils literal notranslate"><span class="pre">lazy_property</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.help.models.lazy_property.__init__"><code class="docutils literal notranslate"><span class="pre">lazy_property.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.help.models.reverse"><code class="docutils literal notranslate"><span class="pre">reverse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.help.models.slugify"><code class="docutils literal notranslate"><span class="pre">slugify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.help.manager.html"
+                          title="previous chapter">evennia.help.manager</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.help.utils.html"
+                          title="next chapter">evennia.help.utils</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.help.models.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.help.utils.html" title="evennia.help.utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.help.manager.html" title="evennia.help.manager"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.help.html" >evennia.help</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.help.models</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

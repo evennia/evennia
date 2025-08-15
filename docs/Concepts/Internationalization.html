@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Internationalization &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Text Encodings" href="Text-Encodings.html" />
+    <link rel="prev" title="Messages varying per receiver" href="Change-Message-Per-Receiver.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Text-Encodings.html" title="Text Encodings"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Change-Message-Per-Receiver.html" title="Messages varying per receiver"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" accesskey="U">Core Concepts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Internationalization</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="internationalization">
+<h1>Internationalization<a class="headerlink" href="#internationalization" title="Link to this heading">¶</a></h1>
+<p><em>Internationalization</em> (often abbreviated <em>i18n</em> since there are 18 characters
+between the first “i” and the last “n” in that word) allows Evennia’s core
+server to return texts in other languages than English - without anyone having
+to edit the source code.</p>
+<p>Language-translations are done by volunteers, so support can vary a lot
+depending on when a given language was last updated. Below are all languages
+(besides English) with some level of support. Generally, any language not
+updated after Sept 2022 will be missing some translations.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Language Code</p></th>
+<th class="head"><p>Language</p></th>
+<th class="head"><p>Last updated</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>de</p></td>
+<td><p>German</p></td>
+<td><p>Aug 2024</p></td>
+</tr>
+<tr class="row-odd"><td><p>es</p></td>
+<td><p>Spanish</p></td>
+<td><p>Aug 2019</p></td>
+</tr>
+<tr class="row-even"><td><p>fr</p></td>
+<td><p>French</p></td>
+<td><p>Dec 2022</p></td>
+</tr>
+<tr class="row-odd"><td><p>it</p></td>
+<td><p>Italian</p></td>
+<td><p>Oct 2022</p></td>
+</tr>
+<tr class="row-even"><td><p>ko</p></td>
+<td><p>Korean (simplified)</p></td>
+<td><p>Sep 2019</p></td>
+</tr>
+<tr class="row-odd"><td><p>la</p></td>
+<td><p>Latin</p></td>
+<td><p>Feb 2021</p></td>
+</tr>
+<tr class="row-even"><td><p>pl</p></td>
+<td><p>Polish</p></td>
+<td><p>Apr 2024</p></td>
+</tr>
+<tr class="row-odd"><td><p>pt</p></td>
+<td><p>Portugese</p></td>
+<td><p>Oct 2022</p></td>
+</tr>
+<tr class="row-even"><td><p>ru</p></td>
+<td><p>Russian</p></td>
+<td><p>Apr 2020</p></td>
+</tr>
+<tr class="row-odd"><td><p>sv</p></td>
+<td><p>Swedish</p></td>
+<td><p>Sep 2022</p></td>
+</tr>
+<tr class="row-even"><td><p>zh</p></td>
+<td><p>Chinese (simplified)</p></td>
+<td><p>Oct 2024</p></td>
+</tr>
+</tbody>
+</table>
+<p>Language translations are found in the <a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia/locale/">evennia/locale</a>
+folder. Read below if you want to help improve an existing translation of
+contribute a new one.</p>
+<section id="changing-server-language">
+<h2>Changing server language<a class="headerlink" href="#changing-server-language" title="Link to this heading">¶</a></h2>
+<p>Change language by adding the following to your <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/settings.py</span></code>
+file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">USE_I18N</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s1">&#39;en&#39;</span>
+
+</pre></div>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">'en'</span></code> (the default English) should be changed to the abbreviation for one
+of the supported languages found in <code class="docutils literal notranslate"><span class="pre">locale/</span></code> (and in the list above). Restart
+the server to activate i18n.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Even for a ‘fully translated’ language you will still see English text
+in many places when you start Evennia. This is because we expect you (the
+developer) to know English (you are reading this manual after all). So we
+translate <em>hard-coded strings that the end player may see</em> - things you
+can’t easily change from your mygame/ folder. Outputs from Commands and
+Typeclasses are generally <em>not</em> translated, nor are console/log outputs.</p>
+<p>To cut down on work, you may consider only translating the player-facing commands (look, get etc) and leave the default admin commands in English. To change the language of some commands (such as <code class="docutils literal notranslate"><span class="pre">look</span></code>) you need to override the relevant hook-methods on your Typeclasses (check out the code for the default command to see what it calls).</p>
+</div>
+<aside class="sidebar">
+<p class="sidebar-title">Windows users</p>
+<p>If you get errors concerning <code class="docutils literal notranslate"><span class="pre">gettext</span></code> or <code class="docutils literal notranslate"><span class="pre">xgettext</span></code> on Windows,
+see the <a class="reference external" href="https://docs.djangoproject.com/en/4.1/topics/i18n/translation/#gettext-on-windows">Django documentation</a>.
+A self-installing and up-to-date version of gettext for Windows (32/64-bit) is
+available on Github as <a class="reference external" href="https://github.com/mlocati/gettext-iconv-windows">gettext-iconv-windows</a>.</p>
+</aside>
+</section>
+<section id="translating-evennia">
+<h2>Translating Evennia<a class="headerlink" href="#translating-evennia" title="Link to this heading">¶</a></h2>
+<p>Translations are found in the core <code class="docutils literal notranslate"><span class="pre">evennia/</span></code> library, under
+<code class="docutils literal notranslate"><span class="pre">evennia/evennia/locale/</span></code>. You must make sure to have cloned this repository
+from <a class="reference external" href="https://github.com/evennia/evennia/blob/main/evennia">Evennia’s github</a> before you can proceed.</p>
+<p>If you cannot find your language in <code class="docutils literal notranslate"><span class="pre">evennia/evennia/locale/</span></code> it’s because no one
+has translated it yet.  Alternatively you might have the language but find the
+translation bad … You are welcome to help improve the situation!</p>
+<p>To start a new translation you need to first have cloned the Evennia repository
+with GIT and activated a python virtualenv as described on the
+<a class="reference internal" href="../Setup/Installation.html"><span class="std std-doc">Setup Quickstart</span></a> page.</p>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">evennia/evennia/</span></code> - that is, not your game dir, but inside the <code class="docutils literal notranslate"><span class="pre">evennia/</span></code>
+repo itself. If you see the <code class="docutils literal notranslate"><span class="pre">locale/</span></code> folder you are in the right place.  Make
+sure your <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> is active so the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> command is available. Then run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemessages --locale &lt;language-code&gt;
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">&lt;language-code&gt;</span></code> is the <a class="reference external" href="http://www.science.co.il/Language/Codes.asp">two-letter locale code</a>
+for the language you want to translate, like ‘sv’ for Swedish or ‘es’ for
+Spanish. After a moment it will tell you the language has been processed.  For
+instance:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> evennia makemessages --locale sv
+</pre></div>
+</div>
+<p>If you started a new language, a new folder for that language will have emerged
+in the <code class="docutils literal notranslate"><span class="pre">locale/</span></code> folder. Otherwise the system will just have updated the
+existing translation with eventual new strings found in the server. Running this
+command will not overwrite any existing strings so you can run it as much as you
+want.</p>
+<p>Next head to <code class="docutils literal notranslate"><span class="pre">locale/&lt;language-code&gt;/LC_MESSAGES</span></code> and edit the <code class="docutils literal notranslate"><span class="pre">**.po</span></code> file you
+find there. You can edit this with a normal text editor but it is easiest if
+you use a special po-file editor from the web (search the web for “po editor”
+for many free alternatives), for example:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://wiki.gnome.org/Apps/Gtranslator">gtranslator</a></p></li>
+<li><p><a class="reference external" href="https://poeditor.com/">poeditor</a></p></li>
+</ul>
+<p>The concept of translating is simple, it’s just a matter of taking the english
+strings you find in the <code class="docutils literal notranslate"><span class="pre">django.po</span></code> file and add your language’s translation best
+you can. Once you are done, run</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>evennia compilemessages
+</pre></div>
+</div>
+<p>This will compile all languages. Check your language and also check back to your
+<code class="docutils literal notranslate"><span class="pre">.po</span></code> file in case the process updated it - you may need to fill in some missing
+header fields and should usually note who did the translation.</p>
+<p>When you are done, make sure that everyone can benefit from your translation!
+Make a PR against Evennia with the updated <code class="docutils literal notranslate"><span class="pre">django.po</span></code> file. Less ideally (if git is
+not your thing) you can also attach it to a new post in our forums.</p>
+<section id="hints-on-translation">
+<h3>Hints on translation<a class="headerlink" href="#hints-on-translation" title="Link to this heading">¶</a></h3>
+<p>Many of the translation strings use <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code> placeholders. This is because they
+are to be used in <code class="docutils literal notranslate"><span class="pre">.format()</span></code> python operations. While you can change the
+<em>order</em>  of these if it makes more sense in your language, you must <em>not</em>
+translate the variables in these formatting tags - Python will look for them!</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;|G{key} connected|n&quot;
+Swedish:  &quot;|G{key} anslöt|n&quot;
+</pre></div>
+</div>
+<p>You must also retain line breaks <em>at the start and end</em> of a message, if any
+(your po-editor should stop you if you don’t). Try to also end with the same
+sentence delimiter (if that makes sense in your language).</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;\n(Unsuccessfull tried &#39;{path}&#39;).&quot;
+Swedish: &quot;\nMisslyckades med att nå &#39;{path}&#39;).&quot;
+</pre></div>
+</div>
+<p>Finally, try to get a feel for who a string is for. If a special technical term
+is used it may be more confusing than helpful to translate it, even if it’s
+outside of a <code class="docutils literal notranslate"><span class="pre">{...}</span></code> tag. A mix of English and your language may be clearer
+than you forcing some ad-hoc translation for a term everyone usually reads in
+English anyway.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Original: &quot;\nError loading cmdset: No cmdset class &#39;{classname}&#39; in &#39;{path}&#39;.
+           \n(Traceback was logged {timestamp})&quot;
+Swedish:  &quot;Fel medan cmdset laddades: Ingen cmdset-klass med namn &#39;{classname}&#39; i {path}.
+           \n(Traceback loggades {timestamp})&quot;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="marking-strings-in-code-for-translation">
+<h2>Marking Strings in Code for Translation<a class="headerlink" href="#marking-strings-in-code-for-translation" title="Link to this heading">¶</a></h2>
+<p>If you modify the Python module code, you can mark strings for translation by passing them to the <code class="docutils literal notranslate"><span class="pre">gettext()</span></code> method. In Evennia, this is usually imported as <code class="docutils literal notranslate"><span class="pre">_()</span></code> for convenience:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Text to translate&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="formatting-considerations">
+<h3>Formatting Considerations<a class="headerlink" href="#formatting-considerations" title="Link to this heading">¶</a></h3>
+<p>When using formatted strings, ensure that you pass the “raw” string to <code class="docutils literal notranslate"><span class="pre">gettext</span></code> for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the <code class="docutils literal notranslate"><span class="pre">.po</span></code> file. It’s also recommended to use named placeholders (e.g., <code class="docutils literal notranslate"><span class="pre">{char}</span></code>) instead of positional ones (e.g., <code class="docutils literal notranslate"><span class="pre">{}</span></code>) for better readability and maintainability.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># incorrect:</span>
+<span class="n">string2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">{char}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">char</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="c1"># correct:</span>
+<span class="n">string2</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">{char}</span><span class="s2">!&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">char</span><span class="o">=</span><span class="n">caller</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is also why f-strings don’t work with <code class="docutils literal notranslate"><span class="pre">gettext</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will not work</span>
+<span class="n">string</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello </span><span class="si">{</span><span class="n">char</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Internationalization</a><ul>
+<li><a class="reference internal" href="#changing-server-language">Changing server language</a></li>
+<li><a class="reference internal" href="#translating-evennia">Translating Evennia</a><ul>
+<li><a class="reference internal" href="#hints-on-translation">Hints on translation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#marking-strings-in-code-for-translation">Marking Strings in Code for Translation</a><ul>
+<li><a class="reference internal" href="#formatting-considerations">Formatting Considerations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Change-Message-Per-Receiver.html"
+                          title="previous chapter">Messages varying per receiver</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Text-Encodings.html"
+                          title="next chapter">Text Encodings</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Concepts/Internationalization.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Text-Encodings.html" title="Text Encodings"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Change-Message-Per-Receiver.html" title="Messages varying per receiver"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Internationalization</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.server.portal.grapevine &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.server.portal.irc" href="evennia.server.portal.irc.html" />
+    <link rel="prev" title="evennia.server.portal.discord" href="evennia.server.portal.discord.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.irc.html" title="evennia.server.portal.irc"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.discord.html" title="evennia.server.portal.discord"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" accesskey="U">evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.grapevine</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.server.portal.grapevine">
+<span id="evennia-server-portal-grapevine"></span><h1>evennia.server.portal.grapevine<a class="headerlink" href="#module-evennia.server.portal.grapevine" title="Link to this heading">¶</a></h1>
+<p>Grapevine network connection</p>
+<p>This is an implementation of the Grapevine Websocket protocol v 1.0.0 as
+outlined here: <a class="reference external" href="https://grapevine.haus/docs">https://grapevine.haus/docs</a></p>
+<p>This will allow the linked game to transfer status as well as connects
+the grapevine client to in-game channels.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.grapevine.</span></span><span class="sig-name descname"><span class="pre">RestartingWebsocketServerFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sessionhandler</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClientFactory</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ReconnectingClientFactory</span></code></p>
+<p>A variant of the websocket-factory that auto-reconnects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.initialDelay">
+<span class="sig-name descname"><span class="pre">initialDelay</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.initialDelay" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.factor">
+<span class="sig-name descname"><span class="pre">factor</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></em><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.factor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.maxDelay">
+<span class="sig-name descname"><span class="pre">maxDelay</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.maxDelay" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sessionhandler</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.__init__" title="Link to this definition">¶</a></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In addition to all arguments to the constructor of
+:func:<strong>autobahn.websocket.interfaces.IWebSocketClientChannelFactory</strong>,
+you can supply a <strong>**reactor**</strong> keyword argument to specify the
+Twisted reactor to be used.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.buildProtocol">
+<span class="sig-name descname"><span class="pre">buildProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.buildProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.buildProtocol" title="Link to this definition">¶</a></dt>
+<dd><p>Build new instance of protocol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addr</strong> (<em>str</em>) – Not used, using factory/settings data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.startedConnecting">
+<span class="sig-name descname"><span class="pre">startedConnecting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.startedConnecting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.startedConnecting" title="Link to this definition">¶</a></dt>
+<dd><p>Tracks reconnections for debugging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connector</strong> (<em>Connector</em>) – Represents the connection.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionFailed">
+<span class="sig-name descname"><span class="pre">clientConnectionFailed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.clientConnectionFailed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionFailed" title="Link to this definition">¶</a></dt>
+<dd><p>Called when Client failed to connect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connector</strong> (<em>Connection</em>) – Represents the connection.</p></li>
+<li><p><strong>reason</strong> (<em>str</em>) – The reason for the failure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionLost">
+<span class="sig-name descname"><span class="pre">clientConnectionLost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.clientConnectionLost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionLost" title="Link to this definition">¶</a></dt>
+<dd><p>Called when Client loses connection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connector</strong> (<em>Connection</em>) – Represents the connection.</p></li>
+<li><p><strong>reason</strong> (<em>str</em>) – The reason for the failure.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.reconnect">
+<span class="sig-name descname"><span class="pre">reconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.reconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.reconnect" title="Link to this definition">¶</a></dt>
+<dd><p>Force a reconnection of the bot protocol. This requires
+de-registering the session and then reattaching a new one,
+otherwise you end up with an ever growing number of bot
+sessions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.RestartingWebsocketServerFactory.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#RestartingWebsocketServerFactory.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.start" title="Link to this definition">¶</a></dt>
+<dd><p>Connect protocol to remote server</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.server.portal.grapevine.</span></span><span class="sig-name descname"><span class="pre">GrapevineClient</span></span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClientProtocol</span></code>, <a class="reference internal" href="evennia.server.session.html#evennia.server.session.Session" title="evennia.server.session.Session"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a></p>
+<p>Implements the grapevine client</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.at_login">
+<span class="sig-name descname"><span class="pre">at_login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.at_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.at_login" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.onOpen">
+<span class="sig-name descname"><span class="pre">onOpen</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.onOpen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.onOpen" title="Link to this definition">¶</a></dt>
+<dd><p>Called when connection is established.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.onMessage">
+<span class="sig-name descname"><span class="pre">onMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">payload</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isBinary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.onMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.onMessage" title="Link to this definition">¶</a></dt>
+<dd><p>Callback fired when a complete WebSocket message was received.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payload</strong> (<em>bytes</em>) – The WebSocket message received.</p></li>
+<li><p><strong>isBinary</strong> (<em>bool</em>) – Flag indicating whether payload is binary or
+UTF-8 encoded text.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.onClose">
+<span class="sig-name descname"><span class="pre">onClose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wasClean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.onClose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.onClose" title="Link to this definition">¶</a></dt>
+<dd><p>This is executed when the connection is lost for whatever
+reason. it can also be called directly, from the disconnect
+method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wasClean</strong> (<em>bool</em>) – <strong>**True**</strong> if the WebSocket was closed cleanly.</p></li>
+<li><p><strong>code</strong> (<em>int</em><em> or </em><em>None</em>) – Close status as sent by the WebSocket peer.</p></li>
+<li><p><strong>reason</strong> (<em>str</em><em> or </em><em>None</em>) – Close reason as sent by the WebSocket peer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.disconnect">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.disconnect" title="Link to this definition">¶</a></dt>
+<dd><p>Generic hook for the engine to call in order to
+disconnect this protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reason</strong> (<em>str</em><em> or </em><em>None</em>) – Motivation for the disconnection.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.send_authenticate">
+<span class="sig-name descname"><span class="pre">send_authenticate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.send_authenticate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.send_authenticate" title="Link to this definition">¶</a></dt>
+<dd><p>Send grapevine authentication. This should be send immediately upon connection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.send_heartbeat">
+<span class="sig-name descname"><span class="pre">send_heartbeat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.send_heartbeat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.send_heartbeat" title="Link to this definition">¶</a></dt>
+<dd><p>Send heartbeat to remote grapevine server.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.send_subscribe">
+<span class="sig-name descname"><span class="pre">send_subscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channelname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.send_subscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.send_subscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Subscribe to new grapevine channel</p>
+<p>Use with session.msg(subscribe=”channelname”)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.send_unsubscribe">
+<span class="sig-name descname"><span class="pre">send_unsubscribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channelname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.send_unsubscribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.send_unsubscribe" title="Link to this definition">¶</a></dt>
+<dd><p>Un-subscribe to a grapevine channel</p>
+<p>Use with session.msg(unsubscribe=”channelname”)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.send_channel">
+<span class="sig-name descname"><span class="pre">send_channel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.send_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.send_channel" title="Link to this definition">¶</a></dt>
+<dd><p>Send text type Evennia -&gt; grapevine</p>
+<p>This is the channels/send message type</p>
+<p>Use with session.msg(channel=(message, channel, sender))</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.send_default">
+<span class="sig-name descname"><span class="pre">send_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.send_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.send_default" title="Link to this definition">¶</a></dt>
+<dd><p>Ignore other outputfuncs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.server.portal.grapevine.GrapevineClient.data_in">
+<span class="sig-name descname"><span class="pre">data_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/server/portal/grapevine.html#GrapevineClient.data_in"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.server.portal.grapevine.GrapevineClient.data_in" title="Link to this definition">¶</a></dt>
+<dd><p>Send data grapevine -&gt; Evennia</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – Converted json data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.server.portal.grapevine</a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.initialDelay"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.initialDelay</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.factor"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.factor</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.maxDelay"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.maxDelay</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.__init__"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.buildProtocol"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.buildProtocol()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.startedConnecting"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.startedConnecting()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionFailed"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.clientConnectionFailed()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.clientConnectionLost"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.clientConnectionLost()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.reconnect"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.reconnect()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.RestartingWebsocketServerFactory.start"><code class="docutils literal notranslate"><span class="pre">RestartingWebsocketServerFactory.start()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient"><code class="docutils literal notranslate"><span class="pre">GrapevineClient</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.__init__"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.at_login"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.at_login()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.onOpen"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.onOpen()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.onMessage"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.onMessage()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.onClose"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.onClose()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.disconnect"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.disconnect()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.send_authenticate"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.send_authenticate()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.send_heartbeat"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.send_heartbeat()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.send_subscribe"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.send_subscribe()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.send_unsubscribe"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.send_unsubscribe()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.send_channel"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.send_channel()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.send_default"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.send_default()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.server.portal.grapevine.GrapevineClient.data_in"><code class="docutils literal notranslate"><span class="pre">GrapevineClient.data_in()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.server.portal.discord.html"
+                          title="previous chapter">evennia.server.portal.discord</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.server.portal.irc.html"
+                          title="next chapter">evennia.server.portal.irc</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.server.portal.grapevine.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.irc.html" title="evennia.server.portal.irc"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.server.portal.discord.html" title="evennia.server.portal.discord"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.server.html" >evennia.server</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.server.portal.html" >evennia.server.portal</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.server.portal.grapevine</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

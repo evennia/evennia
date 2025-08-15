@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Evennia Server Lifecycle &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Protocols" href="Protocols.html" />
+    <link rel="prev" title="Banning" href="Banning.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Protocols.html" title="Protocols"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Banning.html" title="Banning"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" accesskey="U">Core Concepts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Server Lifecycle</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="evennia-server-lifecycle">
+<h1>Evennia Server Lifecycle<a class="headerlink" href="#evennia-server-lifecycle" title="Link to this heading">¶</a></h1>
+<p>As part of your game design you may want to change how Evennia behaves when starting or stopping. A common use case would be to start up some piece of custom code you want to always have available once the server is up.</p>
+<p>Evennia has three main life cycles, all of which you can add custom behavior for:</p>
+<ul class="simple">
+<li><p><strong>Database life cycle</strong>: Evennia uses a database. This exists in parallel to the code changes you do. The database exists until you choose to reset or delete it. Doing so doesn’t require re-downloading Evennia.</p></li>
+<li><p><strong>Reboot life cycle</strong>: From When Evennia starts to it being fully shut down, which means both Portal and Server are stopped. At the end of this cycle, all players are disconnected.</p></li>
+<li><p><strong>Reload life cycle:</strong> This is the main runtime, until a “reload” event. Reloads refreshes game code but do not kick any players.</p></li>
+</ul>
+<section id="when-evennia-starts-for-the-first-time">
+<h2>When Evennia starts for the first time<a class="headerlink" href="#when-evennia-starts-for-the-first-time" title="Link to this heading">¶</a></h2>
+<p>This is the beginning of the <strong>Database life cycle</strong>, just after the database is created and migrated for the first time (or after it was deleted and re-built). See <a class="reference internal" href="../Setup/Choosing-a-Database.html"><span class="std std-doc">Choosing a Database</span></a> for instructions on how to reset a database, should you want to re-run this sequence after the first time.</p>
+<p>Hooks called, in sequence:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">evennia.server.initial_setup.handle_setup(last_step=None)</span></code>: Evennia’s core initialization function. This is what creates the #1 Character (tied to the superuser account) and <code class="docutils literal notranslate"><span class="pre">Limbo</span></code> room. It calls the next hook below and also understands to restart at the last failed step if there was some issue. You should normally not override this function unless you <em>really</em> know what you are doing. To override, change <code class="docutils literal notranslate"><span class="pre">settings.INITIAL_SETUP_MODULE</span></code> to your own module with a <code class="docutils literal notranslate"><span class="pre">handle_setup</span></code> function in it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mygame/server/conf/at_initial_setup.py</span></code> contains a single function, <code class="docutils literal notranslate"><span class="pre">at_initial_setup()</span></code>, which will be called without arguments. It’s called last in the setup sequence by the above function. Use this to add your own custom behavior or to tweak the initialization. If you for example wanted to change the auto-generated Limbo room, you should do it from here. If you want to change where this function is found, you can do so by changing <code class="docutils literal notranslate"><span class="pre">settings.AT_INITIAL_SETUP_HOOK_MODULE</span></code>.</p></li>
+</ol>
+</section>
+<section id="when-evennia-starts-and-shutdowns">
+<h2>When Evennia starts and shutdowns<a class="headerlink" href="#when-evennia-starts-and-shutdowns" title="Link to this heading">¶</a></h2>
+<p>This is part of the <strong>Reboot life cycle</strong>. Evennia consists of two main processes, the <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="std std-doc">Portal and the Server</span></a>. On a reboot or shutdown, both Portal and Server shuts down, which means all players are disconnected.</p>
+<p>Each process call a series of hooks located in <code class="docutils literal notranslate"><span class="pre">mygame/server/conf/at_server_startstop.py</span></code>. You can customize the module used with <code class="docutils literal notranslate"><span class="pre">settings.AT_SERVER_STARTSTOP_MODULE</span></code> - this can even be a list of modules, if so, the appropriately-named functions will be called from each module, in sequence.</p>
+<p>All hooks are called without arguments.</p>
+<blockquote>
+<div><p>The use of the term ‘server’ in the hook-names indicate the whole of Evennia, not just the <code class="docutils literal notranslate"><span class="pre">Server</span></code> component.</p>
+</div></blockquote>
+<section id="server-cold-start">
+<h3>Server cold start<a class="headerlink" href="#server-cold-start" title="Link to this heading">¶</a></h3>
+<p>Starting the server from zero, after a full stop. This is done with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">start</span></code> from the terminal.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_init()</span></code> - Always called first in the startup sequence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_cold_start()</span></code> - Only called on cold starts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_start()</span></code> - Always called last in the startup sequece.</p></li>
+</ol>
+</section>
+<section id="server-cold-shutdown">
+<h3>Server cold shutdown<a class="headerlink" href="#server-cold-shutdown" title="Link to this heading">¶</a></h3>
+<p>Shutting everything down. Done with <code class="docutils literal notranslate"><span class="pre">shutdown</span></code> in-game or <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">stop</span></code> from the terminal.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_cold_stop()</span></code> - Only called on cold stops.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_stop()</span></code> - Always called last in the stopping sequence.</p></li>
+</ol>
+</section>
+<section id="server-reboots">
+<h3>Server reboots<a class="headerlink" href="#server-reboots" title="Link to this heading">¶</a></h3>
+<p>This is done with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reboot</span></code> and effectively constitutes an automatic cold shutdown followed by a cold start controlled from the <code class="docutils literal notranslate"><span class="pre">evennia</span></code> launcher. There are no special <code class="docutils literal notranslate"><span class="pre">reboot</span></code> hooks for this, instead it looks like you’d expect:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_cold_stop()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_stop()</span></code>  (after this, both <code class="docutils literal notranslate"><span class="pre">Server</span></code> + <code class="docutils literal notranslate"><span class="pre">Portal</span></code> have both shut down)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_init()</span></code>  (like a cold start)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_cold_start()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_start()</span></code></p></li>
+</ol>
+</section>
+</section>
+<section id="when-evennia-reloads-and-resets">
+<h2>When Evennia reloads and resets<a class="headerlink" href="#when-evennia-reloads-and-resets" title="Link to this heading">¶</a></h2>
+<p>This is the <strong>Reload life cycle</strong>. As mentioned above, Evennia consists of two components, the <a class="reference internal" href="../Components/Portal-And-Server.html"><span class="std std-doc">Portal and Server</span></a>. During a reload, only the <code class="docutils literal notranslate"><span class="pre">Server</span></code> component is shut down and restarted. Since the Portal stays up, players are not disconnected.</p>
+<p>All hooks are called without arguments.</p>
+<section id="server-reload">
+<h3>Server reload<a class="headerlink" href="#server-reload" title="Link to this heading">¶</a></h3>
+<p>Reloads are initiated with the <code class="docutils literal notranslate"><span class="pre">reload</span></code> command in-game, or with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reload</span></code> from the terminal.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_reload_stop()</span></code> - Only called on reload stops.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_stop</span></code> - Always called last in the stopping sequence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_init()</span></code> - Always called first in startup sequence.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_reload_start()</span></code> - Only called on a reload (re)start.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_start()</span></code> - Always called last in the startup sequence.</p></li>
+</ol>
+</section>
+<section id="server-reset">
+<h3>Server reset<a class="headerlink" href="#server-reset" title="Link to this heading">¶</a></h3>
+<p>A ‘reset’ is a hybrid reload state, where the reload is treated as a cold shutdown only for the sake of running hooks (players are not disconnected). It’s run with <code class="docutils literal notranslate"><span class="pre">reset</span></code> in-game or with <code class="docutils literal notranslate"><span class="pre">evennia</span> <span class="pre">reset</span></code> from the terminal.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_cold_stop()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_stop()</span></code>  (after this, only <code class="docutils literal notranslate"><span class="pre">Server</span></code> has shut down)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_init()</span></code>  (<code class="docutils literal notranslate"><span class="pre">Server</span></code> coming back up)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_cold_start()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">at_server_start()</span></code></p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Evennia Server Lifecycle</a><ul>
+<li><a class="reference internal" href="#when-evennia-starts-for-the-first-time">When Evennia starts for the first time</a></li>
+<li><a class="reference internal" href="#when-evennia-starts-and-shutdowns">When Evennia starts and shutdowns</a><ul>
+<li><a class="reference internal" href="#server-cold-start">Server cold start</a></li>
+<li><a class="reference internal" href="#server-cold-shutdown">Server cold shutdown</a></li>
+<li><a class="reference internal" href="#server-reboots">Server reboots</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#when-evennia-reloads-and-resets">When Evennia reloads and resets</a><ul>
+<li><a class="reference internal" href="#server-reload">Server reload</a></li>
+<li><a class="reference internal" href="#server-reset">Server reset</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Banning.html"
+                          title="previous chapter">Banning</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Protocols.html"
+                          title="next chapter">Protocols</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Concepts/Server-Lifecycle.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Protocols.html" title="Protocols"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Banning.html" title="Banning"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="Concepts-Overview.html" >Core Concepts</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Evennia Server Lifecycle</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

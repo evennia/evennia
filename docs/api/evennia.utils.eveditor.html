@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.utils.eveditor &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.utils.evform" href="evennia.utils.evform.html" />
+    <link rel="prev" title="evennia.utils.dbserialize" href="evennia.utils.dbserialize.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.evform.html" title="evennia.utils.evform"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.dbserialize.html" title="evennia.utils.dbserialize"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" accesskey="U">evennia.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.eveditor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.utils.eveditor">
+<span id="evennia-utils-eveditor"></span><h1>evennia.utils.eveditor<a class="headerlink" href="#module-evennia.utils.eveditor" title="Link to this heading">¶</a></h1>
+<p>EvEditor (Evennia Line Editor)</p>
+<p>This implements an advanced line editor for editing longer texts in-game. The
+editor mimics the command mechanisms of the “VI” editor (a famous line-by-line
+editor) as far as reasonable.</p>
+<p>Features of the editor:</p>
+<ul class="simple">
+<li><p>undo/redo.</p></li>
+<li><p>edit/replace on any line of the buffer.</p></li>
+<li><p>search&amp;replace text anywhere in buffer.</p></li>
+<li><p>formatting of buffer, or selection, to certain width + indentations.</p></li>
+<li><p>allow to echo the input or not, depending on your client.</p></li>
+<li><p>in-built help</p></li>
+</ul>
+<p>To use the editor, just import EvEditor from this module and initialize it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">evennia.utils.eveditor</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvEditor</span>
+
+<span class="c1"># set up an editor to edit the caller&#39;s &#39;desc&#39; Attribute</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_loadfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_savefunc</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">desc</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">True</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quitfunc</span><span class="p">(</span><span class="n">caller</span><span class="p">):</span>
+    <span class="n">caller</span><span class="o">.</span><span class="n">msg</span><span class="p">(</span><span class="s2">&quot;Custom quit message&quot;</span><span class="p">)</span>
+
+<span class="c1"># start the editor</span>
+<span class="n">EvEditor</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">loadfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">savefunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quitfunc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+         <span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The editor can also be used to format Python code and be made to
+survive a reload. See the <strong>EvEditor</strong> class for more details.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">CmdSaveYesNo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdSaveYesNo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Save the editor state on quit. This catches
+nomatches (defaults to Yes), and avoid saves only if
+command was given specifically as “no” or “n”.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'__nomatch_command'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['__noinput_command']</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.help_cateogory">
+<span class="sig-name descname"><span class="pre">help_cateogory</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LineEditor'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.help_cateogory" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdSaveYesNo.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.func" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the yes/no choice.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdSaveYesNo.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'__noinput_command',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'__nomatch_command',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">__noinput_command',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nSave</span> <span class="pre">the</span> <span class="pre">editor</span> <span class="pre">state</span> <span class="pre">on</span> <span class="pre">quit.</span> <span class="pre">This</span> <span class="pre">catches\nnomatches</span> <span class="pre">(defaults</span> <span class="pre">to</span> <span class="pre">Yes),</span> <span class="pre">and</span> <span class="pre">avoid</span> <span class="pre">saves</span> <span class="pre">only</span> <span class="pre">if\ncommand</span> <span class="pre">was</span> <span class="pre">given</span> <span class="pre">specifically</span> <span class="pre">as</span> <span class="pre">&quot;no&quot;</span> <span class="pre">or</span> <span class="pre">&quot;n&quot;.\n'}</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdSaveYesNo.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.SaveYesNoCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">SaveYesNoCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#SaveYesNoCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.SaveYesNoCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>Stores the yesno question</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.SaveYesNoCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'quitsave_yesno'</span></em><a class="headerlink" href="#evennia.utils.eveditor.SaveYesNoCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.SaveYesNoCmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="headerlink" href="#evennia.utils.eveditor.SaveYesNoCmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.SaveYesNoCmdSet.mergetype">
+<span class="sig-name descname"><span class="pre">mergetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Replace'</span></em><a class="headerlink" href="#evennia.utils.eveditor.SaveYesNoCmdSet.mergetype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.SaveYesNoCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#SaveYesNoCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.SaveYesNoCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>at cmdset creation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.SaveYesNoCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.utils.eveditor.SaveYesNoCmdSet'</span></em><a class="headerlink" href="#evennia.utils.eveditor.SaveYesNoCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">CmdEditorBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdEditorBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.default.muxcommand.html#evennia.commands.default.muxcommand.MuxCommand" title="evennia.commands.default.muxcommand.MuxCommand"><code class="xref py py-class docutils literal notranslate"><span class="pre">MuxCommand</span></code></a></p>
+<p>Base parent for editor commands</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.locks">
+<span class="sig-name descname"><span class="pre">locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.locks" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.help_entry">
+<span class="sig-name descname"><span class="pre">help_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LineEditor'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.help_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.editor">
+<span class="sig-name descname"><span class="pre">editor</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.editor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdEditorBase.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Handles pre-parsing. Editor commands are on the form</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">cmd</span> <span class="p">[</span><span class="n">li</span><span class="p">]</span> <span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="p">[</span><span class="n">txt</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Where all arguments are optional.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>li</strong>  - line number (int), starting from 1. This could also</dt><dd><p>be a range given as &lt;l&gt;:&lt;l&gt;.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>w</strong>  - word(s) (string), could be encased in quotes.</p></li>
+<li><p><strong>txt</strong> - extra text (string), could be encased in quotes.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.insert_raw_string_into_buffer">
+<span class="sig-name descname"><span class="pre">insert_raw_string_into_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdEditorBase.insert_raw_string_into_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.insert_raw_string_into_buffer" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a line into the buffer. Used by both CmdLineInput and CmdEditorGroup.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'command'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorBase.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'command',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nBase</span> <span class="pre">parent</span> <span class="pre">for</span> <span class="pre">editor</span> <span class="pre">commands\n'}</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorBase.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">CmdLineInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdLineInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase" title="evennia.utils.eveditor.CmdEditorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdEditorBase</span></code></a></p>
+<p>No command match - Inputs line of text into buffer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'__nomatch_command'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['__noinput_command']</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdLineInput.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.func" title="Link to this definition">¶</a></dt>
+<dd><p>Adds the line without any formatting changes.</p>
+<p>If the editor handles code, it might add automatic
+indentation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdLineInput.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">'__noinput_command',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">'__nomatch_command',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">__noinput_command',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nNo</span> <span class="pre">command</span> <span class="pre">match</span> <span class="pre">-</span> <span class="pre">Inputs</span> <span class="pre">line</span> <span class="pre">of</span> <span class="pre">text</span> <span class="pre">into</span> <span class="pre">buffer.\n\n'}</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdLineInput.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">CmdEditorGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdEditorGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase" title="evennia.utils.eveditor.CmdEditorBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdEditorBase</span></code></a></p>
+<p>Commands for the editor</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">':editor_command_group'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.aliases">
+<span class="sig-name descname"><span class="pre">aliases</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[':q!',</span> <span class="pre">':h',</span> <span class="pre">':uu',</span> <span class="pre">':w',</span> <span class="pre">':DD',</span> <span class="pre">':UU',</span> <span class="pre">':dw',</span> <span class="pre">':!',</span> <span class="pre">':u',</span> <span class="pre">'::',</span> <span class="pre">':fd',</span> <span class="pre">':A',</span> <span class="pre">':&lt;',</span> <span class="pre">':I',</span> <span class="pre">':echo',</span> <span class="pre">':S',</span> <span class="pre">':&gt;',</span> <span class="pre">':dd',</span> <span class="pre">':::',</span> <span class="pre">':',</span> <span class="pre">':r',</span> <span class="pre">':p',</span> <span class="pre">':j',</span> <span class="pre">':i',</span> <span class="pre">':x',</span> <span class="pre">':f',</span> <span class="pre">':wq',</span> <span class="pre">':=',</span> <span class="pre">':y',</span> <span class="pre">':s',</span> <span class="pre">':fi',</span> <span class="pre">':q']</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.aliases" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.arg_regex">
+<span class="sig-name descname"><span class="pre">arg_regex</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\\s.*?|$',</span> <span class="pre">re.IGNORECASE)</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.arg_regex" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.func">
+<span class="sig-name descname"><span class="pre">func</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#CmdEditorGroup.func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.func" title="Link to this definition">¶</a></dt>
+<dd><p>This command handles all the in-editor :-style commands. Since
+each command is small and very limited, this makes for a more
+efficient presentation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.help_category">
+<span class="sig-name descname"><span class="pre">help_category</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'general'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.help_category" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.lock_storage">
+<span class="sig-name descname"><span class="pre">lock_storage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cmd:all()'</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.lock_storage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.CmdEditorGroup.search_index_entry">
+<span class="sig-name descname"><span class="pre">search_index_entry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'aliases':</span> <span class="pre">':q!</span> <span class="pre">:h</span> <span class="pre">:uu</span> <span class="pre">:w</span> <span class="pre">:DD</span> <span class="pre">:UU</span> <span class="pre">:dw</span> <span class="pre">:!</span> <span class="pre">:u</span> <span class="pre">::</span> <span class="pre">:fd</span> <span class="pre">:A</span> <span class="pre">:&lt;</span> <span class="pre">:I</span> <span class="pre">:echo</span> <span class="pre">:S</span> <span class="pre">:&gt;</span> <span class="pre">:dd</span> <span class="pre">:::</span> <span class="pre">:</span> <span class="pre">:r</span> <span class="pre">:p</span> <span class="pre">:j</span> <span class="pre">:i</span> <span class="pre">:x</span> <span class="pre">:f</span> <span class="pre">:wq</span> <span class="pre">:=</span> <span class="pre">:y</span> <span class="pre">:s</span> <span class="pre">:fi</span> <span class="pre">:q',</span> <span class="pre">'category':</span> <span class="pre">'general',</span> <span class="pre">'key':</span> <span class="pre">':editor_command_group',</span> <span class="pre">'no_prefix':</span> <span class="pre">'</span> <span class="pre">:q!</span> <span class="pre">:h</span> <span class="pre">:uu</span> <span class="pre">:w</span> <span class="pre">:DD</span> <span class="pre">:UU</span> <span class="pre">:dw</span> <span class="pre">:!</span> <span class="pre">:u</span> <span class="pre">::</span> <span class="pre">:fd</span> <span class="pre">:A</span> <span class="pre">:&lt;</span> <span class="pre">:I</span> <span class="pre">:echo</span> <span class="pre">:S</span> <span class="pre">:&gt;</span> <span class="pre">:dd</span> <span class="pre">:::</span> <span class="pre">:</span> <span class="pre">:r</span> <span class="pre">:p</span> <span class="pre">:j</span> <span class="pre">:i</span> <span class="pre">:x</span> <span class="pre">:f</span> <span class="pre">:wq</span> <span class="pre">:=</span> <span class="pre">:y</span> <span class="pre">:s</span> <span class="pre">:fi</span> <span class="pre">:q',</span> <span class="pre">'tags':</span> <span class="pre">'',</span> <span class="pre">'text':</span> <span class="pre">'\nCommands</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">editor\n'}</span></em><a class="headerlink" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditorCmdSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">EvEditorCmdSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmdsetobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditorCmdSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="evennia.commands.cmdset.html#evennia.commands.cmdset.CmdSet" title="evennia.commands.cmdset.CmdSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">CmdSet</span></code></a></p>
+<p>CmdSet for the editor commands</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditorCmdSet.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'editorcmdset'</span></em><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.key" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditorCmdSet.priority">
+<span class="sig-name descname"><span class="pre">priority</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.priority" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditorCmdSet.mergetype">
+<span class="sig-name descname"><span class="pre">mergetype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Replace'</span></em><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.mergetype" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditorCmdSet.at_cmdset_creation">
+<span class="sig-name descname"><span class="pre">at_cmdset_creation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditorCmdSet.at_cmdset_creation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.at_cmdset_creation" title="Link to this definition">¶</a></dt>
+<dd><p>Hook method - this should be overloaded in the inheriting
+class, and should take care of populating the cmdset by use of
+self.add().</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditorCmdSet.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'evennia.utils.eveditor.EvEditorCmdSet'</span></em><a class="headerlink" href="#evennia.utils.eveditor.EvEditorCmdSet.path" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.eveditor.</span></span><span class="sig-name descname"><span class="pre">EvEditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadfunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitfunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codefunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This defines a line editor object. It creates all relevant commands
+and tracks the current state of the buffer. It also cleans up after
+itself.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadfunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitfunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codefunc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Launches a full in-game line editor, mimicking the functionality of VIM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>caller</strong> (<em>Object</em>) – Who is using the editor.</p></li>
+<li><p><strong>loadfunc</strong> (<em>callable</em><em>, </em><em>optional</em>) – This will be called as
+<strong>loadfunc(caller)</strong> when the editor is first started. Its
+return will be used as the editor’s starting buffer.</p></li>
+<li><p><strong>savefunc</strong> (<em>callable</em><em>, </em><em>optional</em>) – This will be called as
+<strong>savefunc(caller, buffer)</strong> when the save-command is given and
+is used to actually determine where/how result is saved.
+It should return <strong>True</strong> if save was successful and also
+handle any feedback to the user.</p></li>
+<li><p><strong>quitfunc</strong> (<em>callable</em><em>, </em><em>optional</em>) – This will optionally be
+called as <strong>quitfunc(caller)</strong> when the editor is
+exited. If defined, it should handle all wanted feedback
+to the user.</p></li>
+<li><p><strong>quitfunc_args</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Optional tuple of arguments to
+supply to <strong>quitfunc</strong>.</p></li>
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>optional</em>) – An optional key for naming this
+session and make it unique from other editing sessions.</p></li>
+<li><p><strong>persistent</strong> (<em>bool</em><em>, </em><em>optional</em>) – Make the editor survive a reboot. Note
+that if this is set, all callables must be possible to pickle</p></li>
+<li><p><strong>codefunc</strong> (<em>bool</em><em>, </em><em>optional</em>) – If given, will run the editor in code mode.
+This will be called as <strong>codefunc(caller, buf)</strong>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>In persistent mode, all the input callables (savefunc etc)
+must be possible to be <em>pickled</em>, this excludes e.g.
+callables that are class methods or functions defined
+dynamically or as part of another function. In
+non-persistent mode no such restrictions exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.load_buffer">
+<span class="sig-name descname"><span class="pre">load_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.load_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.load_buffer" title="Link to this definition">¶</a></dt>
+<dd><p>Load the buffer using the load function hook.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.get_buffer">
+<span class="sig-name descname"><span class="pre">get_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.get_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.get_buffer" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>buffer (str)</em> – The current buffer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.update_buffer">
+<span class="sig-name descname"><span class="pre">update_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.update_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.update_buffer" title="Link to this definition">¶</a></dt>
+<dd><p>This should be called when the buffer has been changed
+somehow.  It will handle unsaved flag and undo updating.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>buf</strong> (<em>str</em>) – The text to update the buffer with.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.quit">
+<span class="sig-name descname"><span class="pre">quit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.quit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.quit" title="Link to this definition">¶</a></dt>
+<dd><p>Cleanly exit the editor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.save_buffer">
+<span class="sig-name descname"><span class="pre">save_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.save_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.save_buffer" title="Link to this definition">¶</a></dt>
+<dd><p>Saves the content of the buffer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.update_undo">
+<span class="sig-name descname"><span class="pre">update_undo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.update_undo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.update_undo" title="Link to this definition">¶</a></dt>
+<dd><p>This updates the undo position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step</strong> (<em>int</em><em>, </em><em>optional</em>) – The amount of steps
+to progress the undo position to. This
+may be a negative value for undo and
+a positive value for redo.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.display_buffer">
+<span class="sig-name descname"><span class="pre">display_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linenums</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'raw':</span> <span class="pre">False}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.display_buffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.display_buffer" title="Link to this definition">¶</a></dt>
+<dd><p>This displays the line editor buffer, or selected parts of it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buf</strong> (<em>str</em><em>, </em><em>optional</em>) – The buffer or part of buffer to display.</p></li>
+<li><p><strong>offset</strong> (<em>int</em><em>, </em><em>optional</em>) – If <strong>buf</strong> is set and is not the full buffer,
+<strong>offset</strong> should define the actual starting line number, to
+get the linenum display right.</p></li>
+<li><p><strong>linenums</strong> (<em>bool</em><em>, </em><em>optional</em>) – Show line numbers in buffer.</p></li>
+<li><p><strong>options</strong> – raw (bool, optional): Tell protocol to not parse
+formatting information.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.display_help">
+<span class="sig-name descname"><span class="pre">display_help</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.display_help"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.display_help" title="Link to this definition">¶</a></dt>
+<dd><p>Shows the help entry for the editor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.deduce_indent">
+<span class="sig-name descname"><span class="pre">deduce_indent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.deduce_indent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.deduce_indent" title="Link to this definition">¶</a></dt>
+<dd><p>Try to deduce the level of indentation of the given line.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.decrease_indent">
+<span class="sig-name descname"><span class="pre">decrease_indent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.decrease_indent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.decrease_indent" title="Link to this definition">¶</a></dt>
+<dd><p>Decrease automatic indentation by 1 level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.increase_indent">
+<span class="sig-name descname"><span class="pre">increase_indent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.increase_indent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.increase_indent" title="Link to this definition">¶</a></dt>
+<dd><p>Increase automatic indentation by 1 level.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.eveditor.EvEditor.swap_autoindent">
+<span class="sig-name descname"><span class="pre">swap_autoindent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/eveditor.html#EvEditor.swap_autoindent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.eveditor.EvEditor.swap_autoindent" title="Link to this definition">¶</a></dt>
+<dd><p>Swap automatic indentation on or off.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.utils.eveditor</a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.key"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.aliases"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.locks"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.help_cateogory"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.help_cateogory</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.func"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.help_category"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdSaveYesNo.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdSaveYesNo.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.SaveYesNoCmdSet"><code class="docutils literal notranslate"><span class="pre">SaveYesNoCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.SaveYesNoCmdSet.key"><code class="docutils literal notranslate"><span class="pre">SaveYesNoCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.SaveYesNoCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">SaveYesNoCmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.SaveYesNoCmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">SaveYesNoCmdSet.mergetype</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.SaveYesNoCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">SaveYesNoCmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.SaveYesNoCmdSet.path"><code class="docutils literal notranslate"><span class="pre">SaveYesNoCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.locks"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.locks</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.help_entry"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.help_entry</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.editor"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.editor</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.parse"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.parse()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.insert_raw_string_into_buffer"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.insert_raw_string_into_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.aliases"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.help_category"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.key"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorBase.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdEditorBase.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput"><code class="docutils literal notranslate"><span class="pre">CmdLineInput</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput.key"><code class="docutils literal notranslate"><span class="pre">CmdLineInput.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput.aliases"><code class="docutils literal notranslate"><span class="pre">CmdLineInput.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput.func"><code class="docutils literal notranslate"><span class="pre">CmdLineInput.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput.help_category"><code class="docutils literal notranslate"><span class="pre">CmdLineInput.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdLineInput.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdLineInput.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdLineInput.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.key"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.aliases"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.aliases</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.arg_regex"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.arg_regex</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.func"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.func()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.help_category"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.help_category</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.lock_storage</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.CmdEditorGroup.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdEditorGroup.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditorCmdSet"><code class="docutils literal notranslate"><span class="pre">EvEditorCmdSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditorCmdSet.key"><code class="docutils literal notranslate"><span class="pre">EvEditorCmdSet.key</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditorCmdSet.priority"><code class="docutils literal notranslate"><span class="pre">EvEditorCmdSet.priority</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditorCmdSet.mergetype"><code class="docutils literal notranslate"><span class="pre">EvEditorCmdSet.mergetype</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditorCmdSet.at_cmdset_creation"><code class="docutils literal notranslate"><span class="pre">EvEditorCmdSet.at_cmdset_creation()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditorCmdSet.path"><code class="docutils literal notranslate"><span class="pre">EvEditorCmdSet.path</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor"><code class="docutils literal notranslate"><span class="pre">EvEditor</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.__init__"><code class="docutils literal notranslate"><span class="pre">EvEditor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.load_buffer"><code class="docutils literal notranslate"><span class="pre">EvEditor.load_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.get_buffer"><code class="docutils literal notranslate"><span class="pre">EvEditor.get_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.update_buffer"><code class="docutils literal notranslate"><span class="pre">EvEditor.update_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.quit"><code class="docutils literal notranslate"><span class="pre">EvEditor.quit()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.save_buffer"><code class="docutils literal notranslate"><span class="pre">EvEditor.save_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.update_undo"><code class="docutils literal notranslate"><span class="pre">EvEditor.update_undo()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.display_buffer"><code class="docutils literal notranslate"><span class="pre">EvEditor.display_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.display_help"><code class="docutils literal notranslate"><span class="pre">EvEditor.display_help()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.deduce_indent"><code class="docutils literal notranslate"><span class="pre">EvEditor.deduce_indent()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.decrease_indent"><code class="docutils literal notranslate"><span class="pre">EvEditor.decrease_indent()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.increase_indent"><code class="docutils literal notranslate"><span class="pre">EvEditor.increase_indent()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.eveditor.EvEditor.swap_autoindent"><code class="docutils literal notranslate"><span class="pre">EvEditor.swap_autoindent()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.utils.dbserialize.html"
+                          title="previous chapter">evennia.utils.dbserialize</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.utils.evform.html"
+                          title="next chapter">evennia.utils.evform</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.eveditor.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.evform.html" title="evennia.utils.evform"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.dbserialize.html" title="evennia.utils.dbserialize"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" >evennia.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.eveditor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

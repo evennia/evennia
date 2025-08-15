@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.utils.text2html &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.utils.utils" href="evennia.utils.utils.html" />
+    <link rel="prev" title="evennia.utils.test_resources" href="evennia.utils.test_resources.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.utils.html" title="evennia.utils.utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.test_resources.html" title="evennia.utils.test_resources"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" accesskey="U">evennia.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.text2html</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.utils.text2html">
+<span id="evennia-utils-text2html"></span><h1>evennia.utils.text2html<a class="headerlink" href="#module-evennia.utils.text2html" title="Link to this heading">¶</a></h1>
+<p>ANSI -&gt; html converter</p>
+<p>Credit for original idea and implementation
+goes to Muhammad Alkarouri and his
+snippet #577349 on <a class="reference external" href="http://code.activestate.com">http://code.activestate.com</a>.</p>
+<p>(extensively modified by Griatch 2010)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.utils.text2html.</span></span><span class="sig-name descname"><span class="pre">TextToHTMLparser</span></span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class describes a parser for converting from ANSI to html.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.tabstop">
+<span class="sig-name descname"><span class="pre">tabstop</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.tabstop" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.style_codes">
+<span class="sig-name descname"><span class="pre">style_codes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[0m',</span> <span class="pre">'\x1b[4m',</span> <span class="pre">'\x1b[1m',</span> <span class="pre">'\x1b[22m',</span> <span class="pre">'\x1b[7m',</span> <span class="pre">'\x1b[5m',</span> <span class="pre">'\x1b[1;7m',</span> <span class="pre">'\x1b[1;5m',</span> <span class="pre">'\x1b[7;5m',</span> <span class="pre">'\x1b[1;5;7m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.style_codes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.ansi_color_codes">
+<span class="sig-name descname"><span class="pre">ansi_color_codes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[30m',</span> <span class="pre">'\x1b[31m',</span> <span class="pre">'\x1b[32m',</span> <span class="pre">'\x1b[33m',</span> <span class="pre">'\x1b[34m',</span> <span class="pre">'\x1b[35m',</span> <span class="pre">'\x1b[36m',</span> <span class="pre">'\x1b[37m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.ansi_color_codes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.xterm_fg_codes">
+<span class="sig-name descname"><span class="pre">xterm_fg_codes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[38;5;16m',</span> <span class="pre">'\x1b[38;5;17m',</span> <span class="pre">'\x1b[38;5;18m',</span> <span class="pre">'\x1b[38;5;19m',</span> <span class="pre">'\x1b[38;5;20m',</span> <span class="pre">'\x1b[38;5;21m',</span> <span class="pre">'\x1b[38;5;22m',</span> <span class="pre">'\x1b[38;5;23m',</span> <span class="pre">'\x1b[38;5;24m',</span> <span class="pre">'\x1b[38;5;25m',</span> <span class="pre">'\x1b[38;5;26m',</span> <span class="pre">'\x1b[38;5;27m',</span> <span class="pre">'\x1b[38;5;28m',</span> <span class="pre">'\x1b[38;5;29m',</span> <span class="pre">'\x1b[38;5;30m',</span> <span class="pre">'\x1b[38;5;31m',</span> <span class="pre">'\x1b[38;5;32m',</span> <span class="pre">'\x1b[38;5;33m',</span> <span class="pre">'\x1b[38;5;34m',</span> <span class="pre">'\x1b[38;5;35m',</span> <span class="pre">'\x1b[38;5;36m',</span> <span class="pre">'\x1b[38;5;37m',</span> <span class="pre">'\x1b[38;5;38m',</span> <span class="pre">'\x1b[38;5;39m',</span> <span class="pre">'\x1b[38;5;40m',</span> <span class="pre">'\x1b[38;5;41m',</span> <span class="pre">'\x1b[38;5;42m',</span> <span class="pre">'\x1b[38;5;43m',</span> <span class="pre">'\x1b[38;5;44m',</span> <span class="pre">'\x1b[38;5;45m',</span> <span class="pre">'\x1b[38;5;46m',</span> <span class="pre">'\x1b[38;5;47m',</span> <span class="pre">'\x1b[38;5;48m',</span> <span class="pre">'\x1b[38;5;49m',</span> <span class="pre">'\x1b[38;5;50m',</span> <span class="pre">'\x1b[38;5;51m',</span> <span class="pre">'\x1b[38;5;52m',</span> <span class="pre">'\x1b[38;5;53m',</span> <span class="pre">'\x1b[38;5;54m',</span> <span class="pre">'\x1b[38;5;55m',</span> <span class="pre">'\x1b[38;5;56m',</span> <span class="pre">'\x1b[38;5;57m',</span> <span class="pre">'\x1b[38;5;58m',</span> <span class="pre">'\x1b[38;5;59m',</span> <span class="pre">'\x1b[38;5;60m',</span> <span class="pre">'\x1b[38;5;61m',</span> <span class="pre">'\x1b[38;5;62m',</span> <span class="pre">'\x1b[38;5;63m',</span> <span class="pre">'\x1b[38;5;64m',</span> <span class="pre">'\x1b[38;5;65m',</span> <span class="pre">'\x1b[38;5;66m',</span> <span class="pre">'\x1b[38;5;67m',</span> <span class="pre">'\x1b[38;5;68m',</span> <span class="pre">'\x1b[38;5;69m',</span> <span class="pre">'\x1b[38;5;70m',</span> <span class="pre">'\x1b[38;5;71m',</span> <span class="pre">'\x1b[38;5;72m',</span> <span class="pre">'\x1b[38;5;73m',</span> <span class="pre">'\x1b[38;5;74m',</span> <span class="pre">'\x1b[38;5;75m',</span> <span class="pre">'\x1b[38;5;76m',</span> <span class="pre">'\x1b[38;5;77m',</span> <span class="pre">'\x1b[38;5;78m',</span> <span class="pre">'\x1b[38;5;79m',</span> <span class="pre">'\x1b[38;5;80m',</span> <span class="pre">'\x1b[38;5;81m',</span> <span class="pre">'\x1b[38;5;82m',</span> <span class="pre">'\x1b[38;5;83m',</span> <span class="pre">'\x1b[38;5;84m',</span> <span class="pre">'\x1b[38;5;85m',</span> <span class="pre">'\x1b[38;5;86m',</span> <span class="pre">'\x1b[38;5;87m',</span> <span class="pre">'\x1b[38;5;88m',</span> <span class="pre">'\x1b[38;5;89m',</span> <span class="pre">'\x1b[38;5;90m',</span> <span class="pre">'\x1b[38;5;91m',</span> <span class="pre">'\x1b[38;5;92m',</span> <span class="pre">'\x1b[38;5;93m',</span> <span class="pre">'\x1b[38;5;94m',</span> <span class="pre">'\x1b[38;5;95m',</span> <span class="pre">'\x1b[38;5;96m',</span> <span class="pre">'\x1b[38;5;97m',</span> <span class="pre">'\x1b[38;5;98m',</span> <span class="pre">'\x1b[38;5;99m',</span> <span class="pre">'\x1b[38;5;100m',</span> <span class="pre">'\x1b[38;5;101m',</span> <span class="pre">'\x1b[38;5;102m',</span> <span class="pre">'\x1b[38;5;103m',</span> <span class="pre">'\x1b[38;5;104m',</span> <span class="pre">'\x1b[38;5;105m',</span> <span class="pre">'\x1b[38;5;106m',</span> <span class="pre">'\x1b[38;5;107m',</span> <span class="pre">'\x1b[38;5;108m',</span> <span class="pre">'\x1b[38;5;109m',</span> <span class="pre">'\x1b[38;5;110m',</span> <span class="pre">'\x1b[38;5;111m',</span> <span class="pre">'\x1b[38;5;112m',</span> <span class="pre">'\x1b[38;5;113m',</span> <span class="pre">'\x1b[38;5;114m',</span> <span class="pre">'\x1b[38;5;115m',</span> <span class="pre">'\x1b[38;5;116m',</span> <span class="pre">'\x1b[38;5;117m',</span> <span class="pre">'\x1b[38;5;118m',</span> <span class="pre">'\x1b[38;5;119m',</span> <span class="pre">'\x1b[38;5;120m',</span> <span class="pre">'\x1b[38;5;121m',</span> <span class="pre">'\x1b[38;5;122m',</span> <span class="pre">'\x1b[38;5;123m',</span> <span class="pre">'\x1b[38;5;124m',</span> <span class="pre">'\x1b[38;5;125m',</span> <span class="pre">'\x1b[38;5;126m',</span> <span class="pre">'\x1b[38;5;127m',</span> <span class="pre">'\x1b[38;5;128m',</span> <span class="pre">'\x1b[38;5;129m',</span> <span class="pre">'\x1b[38;5;130m',</span> <span class="pre">'\x1b[38;5;131m',</span> <span class="pre">'\x1b[38;5;132m',</span> <span class="pre">'\x1b[38;5;133m',</span> <span class="pre">'\x1b[38;5;134m',</span> <span class="pre">'\x1b[38;5;135m',</span> <span class="pre">'\x1b[38;5;136m',</span> <span class="pre">'\x1b[38;5;137m',</span> <span class="pre">'\x1b[38;5;138m',</span> <span class="pre">'\x1b[38;5;139m',</span> <span class="pre">'\x1b[38;5;140m',</span> <span class="pre">'\x1b[38;5;141m',</span> <span class="pre">'\x1b[38;5;142m',</span> <span class="pre">'\x1b[38;5;143m',</span> <span class="pre">'\x1b[38;5;144m',</span> <span class="pre">'\x1b[38;5;145m',</span> <span class="pre">'\x1b[38;5;146m',</span> <span class="pre">'\x1b[38;5;147m',</span> <span class="pre">'\x1b[38;5;148m',</span> <span class="pre">'\x1b[38;5;149m',</span> <span class="pre">'\x1b[38;5;150m',</span> <span class="pre">'\x1b[38;5;151m',</span> <span class="pre">'\x1b[38;5;152m',</span> <span class="pre">'\x1b[38;5;153m',</span> <span class="pre">'\x1b[38;5;154m',</span> <span class="pre">'\x1b[38;5;155m',</span> <span class="pre">'\x1b[38;5;156m',</span> <span class="pre">'\x1b[38;5;157m',</span> <span class="pre">'\x1b[38;5;158m',</span> <span class="pre">'\x1b[38;5;159m',</span> <span class="pre">'\x1b[38;5;160m',</span> <span class="pre">'\x1b[38;5;161m',</span> <span class="pre">'\x1b[38;5;162m',</span> <span class="pre">'\x1b[38;5;163m',</span> <span class="pre">'\x1b[38;5;164m',</span> <span class="pre">'\x1b[38;5;165m',</span> <span class="pre">'\x1b[38;5;166m',</span> <span class="pre">'\x1b[38;5;167m',</span> <span class="pre">'\x1b[38;5;168m',</span> <span class="pre">'\x1b[38;5;169m',</span> <span class="pre">'\x1b[38;5;170m',</span> <span class="pre">'\x1b[38;5;171m',</span> <span class="pre">'\x1b[38;5;172m',</span> <span class="pre">'\x1b[38;5;173m',</span> <span class="pre">'\x1b[38;5;174m',</span> <span class="pre">'\x1b[38;5;175m',</span> <span class="pre">'\x1b[38;5;176m',</span> <span class="pre">'\x1b[38;5;177m',</span> <span class="pre">'\x1b[38;5;178m',</span> <span class="pre">'\x1b[38;5;179m',</span> <span class="pre">'\x1b[38;5;180m',</span> <span class="pre">'\x1b[38;5;181m',</span> <span class="pre">'\x1b[38;5;182m',</span> <span class="pre">'\x1b[38;5;183m',</span> <span class="pre">'\x1b[38;5;184m',</span> <span class="pre">'\x1b[38;5;185m',</span> <span class="pre">'\x1b[38;5;186m',</span> <span class="pre">'\x1b[38;5;187m',</span> <span class="pre">'\x1b[38;5;188m',</span> <span class="pre">'\x1b[38;5;189m',</span> <span class="pre">'\x1b[38;5;190m',</span> <span class="pre">'\x1b[38;5;191m',</span> <span class="pre">'\x1b[38;5;192m',</span> <span class="pre">'\x1b[38;5;193m',</span> <span class="pre">'\x1b[38;5;194m',</span> <span class="pre">'\x1b[38;5;195m',</span> <span class="pre">'\x1b[38;5;196m',</span> <span class="pre">'\x1b[38;5;197m',</span> <span class="pre">'\x1b[38;5;198m',</span> <span class="pre">'\x1b[38;5;199m',</span> <span class="pre">'\x1b[38;5;200m',</span> <span class="pre">'\x1b[38;5;201m',</span> <span class="pre">'\x1b[38;5;202m',</span> <span class="pre">'\x1b[38;5;203m',</span> <span class="pre">'\x1b[38;5;204m',</span> <span class="pre">'\x1b[38;5;205m',</span> <span class="pre">'\x1b[38;5;206m',</span> <span class="pre">'\x1b[38;5;207m',</span> <span class="pre">'\x1b[38;5;208m',</span> <span class="pre">'\x1b[38;5;209m',</span> <span class="pre">'\x1b[38;5;210m',</span> <span class="pre">'\x1b[38;5;211m',</span> <span class="pre">'\x1b[38;5;212m',</span> <span class="pre">'\x1b[38;5;213m',</span> <span class="pre">'\x1b[38;5;214m',</span> <span class="pre">'\x1b[38;5;215m',</span> <span class="pre">'\x1b[38;5;216m',</span> <span class="pre">'\x1b[38;5;217m',</span> <span class="pre">'\x1b[38;5;218m',</span> <span class="pre">'\x1b[38;5;219m',</span> <span class="pre">'\x1b[38;5;220m',</span> <span class="pre">'\x1b[38;5;221m',</span> <span class="pre">'\x1b[38;5;222m',</span> <span class="pre">'\x1b[38;5;223m',</span> <span class="pre">'\x1b[38;5;224m',</span> <span class="pre">'\x1b[38;5;225m',</span> <span class="pre">'\x1b[38;5;226m',</span> <span class="pre">'\x1b[38;5;227m',</span> <span class="pre">'\x1b[38;5;228m',</span> <span class="pre">'\x1b[38;5;229m',</span> <span class="pre">'\x1b[38;5;230m',</span> <span class="pre">'\x1b[38;5;231m',</span> <span class="pre">'\x1b[38;5;232m',</span> <span class="pre">'\x1b[38;5;233m',</span> <span class="pre">'\x1b[38;5;234m',</span> <span class="pre">'\x1b[38;5;235m',</span> <span class="pre">'\x1b[38;5;236m',</span> <span class="pre">'\x1b[38;5;237m',</span> <span class="pre">'\x1b[38;5;238m',</span> <span class="pre">'\x1b[38;5;239m',</span> <span class="pre">'\x1b[38;5;240m',</span> <span class="pre">'\x1b[38;5;241m',</span> <span class="pre">'\x1b[38;5;242m',</span> <span class="pre">'\x1b[38;5;243m',</span> <span class="pre">'\x1b[38;5;244m',</span> <span class="pre">'\x1b[38;5;245m',</span> <span class="pre">'\x1b[38;5;246m',</span> <span class="pre">'\x1b[38;5;247m',</span> <span class="pre">'\x1b[38;5;248m',</span> <span class="pre">'\x1b[38;5;249m',</span> <span class="pre">'\x1b[38;5;250m',</span> <span class="pre">'\x1b[38;5;251m',</span> <span class="pre">'\x1b[38;5;252m',</span> <span class="pre">'\x1b[38;5;253m',</span> <span class="pre">'\x1b[38;5;254m',</span> <span class="pre">'\x1b[38;5;255m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.xterm_fg_codes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.ansi_bg_codes">
+<span class="sig-name descname"><span class="pre">ansi_bg_codes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[40m',</span> <span class="pre">'\x1b[41m',</span> <span class="pre">'\x1b[42m',</span> <span class="pre">'\x1b[43m',</span> <span class="pre">'\x1b[44m',</span> <span class="pre">'\x1b[45m',</span> <span class="pre">'\x1b[46m',</span> <span class="pre">'\x1b[47m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.ansi_bg_codes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.xterm_bg_codes">
+<span class="sig-name descname"><span class="pre">xterm_bg_codes</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[48;5;16m',</span> <span class="pre">'\x1b[48;5;17m',</span> <span class="pre">'\x1b[48;5;18m',</span> <span class="pre">'\x1b[48;5;19m',</span> <span class="pre">'\x1b[48;5;20m',</span> <span class="pre">'\x1b[48;5;21m',</span> <span class="pre">'\x1b[48;5;22m',</span> <span class="pre">'\x1b[48;5;23m',</span> <span class="pre">'\x1b[48;5;24m',</span> <span class="pre">'\x1b[48;5;25m',</span> <span class="pre">'\x1b[48;5;26m',</span> <span class="pre">'\x1b[48;5;27m',</span> <span class="pre">'\x1b[48;5;28m',</span> <span class="pre">'\x1b[48;5;29m',</span> <span class="pre">'\x1b[48;5;30m',</span> <span class="pre">'\x1b[48;5;31m',</span> <span class="pre">'\x1b[48;5;32m',</span> <span class="pre">'\x1b[48;5;33m',</span> <span class="pre">'\x1b[48;5;34m',</span> <span class="pre">'\x1b[48;5;35m',</span> <span class="pre">'\x1b[48;5;36m',</span> <span class="pre">'\x1b[48;5;37m',</span> <span class="pre">'\x1b[48;5;38m',</span> <span class="pre">'\x1b[48;5;39m',</span> <span class="pre">'\x1b[48;5;40m',</span> <span class="pre">'\x1b[48;5;41m',</span> <span class="pre">'\x1b[48;5;42m',</span> <span class="pre">'\x1b[48;5;43m',</span> <span class="pre">'\x1b[48;5;44m',</span> <span class="pre">'\x1b[48;5;45m',</span> <span class="pre">'\x1b[48;5;46m',</span> <span class="pre">'\x1b[48;5;47m',</span> <span class="pre">'\x1b[48;5;48m',</span> <span class="pre">'\x1b[48;5;49m',</span> <span class="pre">'\x1b[48;5;50m',</span> <span class="pre">'\x1b[48;5;51m',</span> <span class="pre">'\x1b[48;5;52m',</span> <span class="pre">'\x1b[48;5;53m',</span> <span class="pre">'\x1b[48;5;54m',</span> <span class="pre">'\x1b[48;5;55m',</span> <span class="pre">'\x1b[48;5;56m',</span> <span class="pre">'\x1b[48;5;57m',</span> <span class="pre">'\x1b[48;5;58m',</span> <span class="pre">'\x1b[48;5;59m',</span> <span class="pre">'\x1b[48;5;60m',</span> <span class="pre">'\x1b[48;5;61m',</span> <span class="pre">'\x1b[48;5;62m',</span> <span class="pre">'\x1b[48;5;63m',</span> <span class="pre">'\x1b[48;5;64m',</span> <span class="pre">'\x1b[48;5;65m',</span> <span class="pre">'\x1b[48;5;66m',</span> <span class="pre">'\x1b[48;5;67m',</span> <span class="pre">'\x1b[48;5;68m',</span> <span class="pre">'\x1b[48;5;69m',</span> <span class="pre">'\x1b[48;5;70m',</span> <span class="pre">'\x1b[48;5;71m',</span> <span class="pre">'\x1b[48;5;72m',</span> <span class="pre">'\x1b[48;5;73m',</span> <span class="pre">'\x1b[48;5;74m',</span> <span class="pre">'\x1b[48;5;75m',</span> <span class="pre">'\x1b[48;5;76m',</span> <span class="pre">'\x1b[48;5;77m',</span> <span class="pre">'\x1b[48;5;78m',</span> <span class="pre">'\x1b[48;5;79m',</span> <span class="pre">'\x1b[48;5;80m',</span> <span class="pre">'\x1b[48;5;81m',</span> <span class="pre">'\x1b[48;5;82m',</span> <span class="pre">'\x1b[48;5;83m',</span> <span class="pre">'\x1b[48;5;84m',</span> <span class="pre">'\x1b[48;5;85m',</span> <span class="pre">'\x1b[48;5;86m',</span> <span class="pre">'\x1b[48;5;87m',</span> <span class="pre">'\x1b[48;5;88m',</span> <span class="pre">'\x1b[48;5;89m',</span> <span class="pre">'\x1b[48;5;90m',</span> <span class="pre">'\x1b[48;5;91m',</span> <span class="pre">'\x1b[48;5;92m',</span> <span class="pre">'\x1b[48;5;93m',</span> <span class="pre">'\x1b[48;5;94m',</span> <span class="pre">'\x1b[48;5;95m',</span> <span class="pre">'\x1b[48;5;96m',</span> <span class="pre">'\x1b[48;5;97m',</span> <span class="pre">'\x1b[48;5;98m',</span> <span class="pre">'\x1b[48;5;99m',</span> <span class="pre">'\x1b[48;5;100m',</span> <span class="pre">'\x1b[48;5;101m',</span> <span class="pre">'\x1b[48;5;102m',</span> <span class="pre">'\x1b[48;5;103m',</span> <span class="pre">'\x1b[48;5;104m',</span> <span class="pre">'\x1b[48;5;105m',</span> <span class="pre">'\x1b[48;5;106m',</span> <span class="pre">'\x1b[48;5;107m',</span> <span class="pre">'\x1b[48;5;108m',</span> <span class="pre">'\x1b[48;5;109m',</span> <span class="pre">'\x1b[48;5;110m',</span> <span class="pre">'\x1b[48;5;111m',</span> <span class="pre">'\x1b[48;5;112m',</span> <span class="pre">'\x1b[48;5;113m',</span> <span class="pre">'\x1b[48;5;114m',</span> <span class="pre">'\x1b[48;5;115m',</span> <span class="pre">'\x1b[48;5;116m',</span> <span class="pre">'\x1b[48;5;117m',</span> <span class="pre">'\x1b[48;5;118m',</span> <span class="pre">'\x1b[48;5;119m',</span> <span class="pre">'\x1b[48;5;120m',</span> <span class="pre">'\x1b[48;5;121m',</span> <span class="pre">'\x1b[48;5;122m',</span> <span class="pre">'\x1b[48;5;123m',</span> <span class="pre">'\x1b[48;5;124m',</span> <span class="pre">'\x1b[48;5;125m',</span> <span class="pre">'\x1b[48;5;126m',</span> <span class="pre">'\x1b[48;5;127m',</span> <span class="pre">'\x1b[48;5;128m',</span> <span class="pre">'\x1b[48;5;129m',</span> <span class="pre">'\x1b[48;5;130m',</span> <span class="pre">'\x1b[48;5;131m',</span> <span class="pre">'\x1b[48;5;132m',</span> <span class="pre">'\x1b[48;5;133m',</span> <span class="pre">'\x1b[48;5;134m',</span> <span class="pre">'\x1b[48;5;135m',</span> <span class="pre">'\x1b[48;5;136m',</span> <span class="pre">'\x1b[48;5;137m',</span> <span class="pre">'\x1b[48;5;138m',</span> <span class="pre">'\x1b[48;5;139m',</span> <span class="pre">'\x1b[48;5;140m',</span> <span class="pre">'\x1b[48;5;141m',</span> <span class="pre">'\x1b[48;5;142m',</span> <span class="pre">'\x1b[48;5;143m',</span> <span class="pre">'\x1b[48;5;144m',</span> <span class="pre">'\x1b[48;5;145m',</span> <span class="pre">'\x1b[48;5;146m',</span> <span class="pre">'\x1b[48;5;147m',</span> <span class="pre">'\x1b[48;5;148m',</span> <span class="pre">'\x1b[48;5;149m',</span> <span class="pre">'\x1b[48;5;150m',</span> <span class="pre">'\x1b[48;5;151m',</span> <span class="pre">'\x1b[48;5;152m',</span> <span class="pre">'\x1b[48;5;153m',</span> <span class="pre">'\x1b[48;5;154m',</span> <span class="pre">'\x1b[48;5;155m',</span> <span class="pre">'\x1b[48;5;156m',</span> <span class="pre">'\x1b[48;5;157m',</span> <span class="pre">'\x1b[48;5;158m',</span> <span class="pre">'\x1b[48;5;159m',</span> <span class="pre">'\x1b[48;5;160m',</span> <span class="pre">'\x1b[48;5;161m',</span> <span class="pre">'\x1b[48;5;162m',</span> <span class="pre">'\x1b[48;5;163m',</span> <span class="pre">'\x1b[48;5;164m',</span> <span class="pre">'\x1b[48;5;165m',</span> <span class="pre">'\x1b[48;5;166m',</span> <span class="pre">'\x1b[48;5;167m',</span> <span class="pre">'\x1b[48;5;168m',</span> <span class="pre">'\x1b[48;5;169m',</span> <span class="pre">'\x1b[48;5;170m',</span> <span class="pre">'\x1b[48;5;171m',</span> <span class="pre">'\x1b[48;5;172m',</span> <span class="pre">'\x1b[48;5;173m',</span> <span class="pre">'\x1b[48;5;174m',</span> <span class="pre">'\x1b[48;5;175m',</span> <span class="pre">'\x1b[48;5;176m',</span> <span class="pre">'\x1b[48;5;177m',</span> <span class="pre">'\x1b[48;5;178m',</span> <span class="pre">'\x1b[48;5;179m',</span> <span class="pre">'\x1b[48;5;180m',</span> <span class="pre">'\x1b[48;5;181m',</span> <span class="pre">'\x1b[48;5;182m',</span> <span class="pre">'\x1b[48;5;183m',</span> <span class="pre">'\x1b[48;5;184m',</span> <span class="pre">'\x1b[48;5;185m',</span> <span class="pre">'\x1b[48;5;186m',</span> <span class="pre">'\x1b[48;5;187m',</span> <span class="pre">'\x1b[48;5;188m',</span> <span class="pre">'\x1b[48;5;189m',</span> <span class="pre">'\x1b[48;5;190m',</span> <span class="pre">'\x1b[48;5;191m',</span> <span class="pre">'\x1b[48;5;192m',</span> <span class="pre">'\x1b[48;5;193m',</span> <span class="pre">'\x1b[48;5;194m',</span> <span class="pre">'\x1b[48;5;195m',</span> <span class="pre">'\x1b[48;5;196m',</span> <span class="pre">'\x1b[48;5;197m',</span> <span class="pre">'\x1b[48;5;198m',</span> <span class="pre">'\x1b[48;5;199m',</span> <span class="pre">'\x1b[48;5;200m',</span> <span class="pre">'\x1b[48;5;201m',</span> <span class="pre">'\x1b[48;5;202m',</span> <span class="pre">'\x1b[48;5;203m',</span> <span class="pre">'\x1b[48;5;204m',</span> <span class="pre">'\x1b[48;5;205m',</span> <span class="pre">'\x1b[48;5;206m',</span> <span class="pre">'\x1b[48;5;207m',</span> <span class="pre">'\x1b[48;5;208m',</span> <span class="pre">'\x1b[48;5;209m',</span> <span class="pre">'\x1b[48;5;210m',</span> <span class="pre">'\x1b[48;5;211m',</span> <span class="pre">'\x1b[48;5;212m',</span> <span class="pre">'\x1b[48;5;213m',</span> <span class="pre">'\x1b[48;5;214m',</span> <span class="pre">'\x1b[48;5;215m',</span> <span class="pre">'\x1b[48;5;216m',</span> <span class="pre">'\x1b[48;5;217m',</span> <span class="pre">'\x1b[48;5;218m',</span> <span class="pre">'\x1b[48;5;219m',</span> <span class="pre">'\x1b[48;5;220m',</span> <span class="pre">'\x1b[48;5;221m',</span> <span class="pre">'\x1b[48;5;222m',</span> <span class="pre">'\x1b[48;5;223m',</span> <span class="pre">'\x1b[48;5;224m',</span> <span class="pre">'\x1b[48;5;225m',</span> <span class="pre">'\x1b[48;5;226m',</span> <span class="pre">'\x1b[48;5;227m',</span> <span class="pre">'\x1b[48;5;228m',</span> <span class="pre">'\x1b[48;5;229m',</span> <span class="pre">'\x1b[48;5;230m',</span> <span class="pre">'\x1b[48;5;231m',</span> <span class="pre">'\x1b[48;5;232m',</span> <span class="pre">'\x1b[48;5;233m',</span> <span class="pre">'\x1b[48;5;234m',</span> <span class="pre">'\x1b[48;5;235m',</span> <span class="pre">'\x1b[48;5;236m',</span> <span class="pre">'\x1b[48;5;237m',</span> <span class="pre">'\x1b[48;5;238m',</span> <span class="pre">'\x1b[48;5;239m',</span> <span class="pre">'\x1b[48;5;240m',</span> <span class="pre">'\x1b[48;5;241m',</span> <span class="pre">'\x1b[48;5;242m',</span> <span class="pre">'\x1b[48;5;243m',</span> <span class="pre">'\x1b[48;5;244m',</span> <span class="pre">'\x1b[48;5;245m',</span> <span class="pre">'\x1b[48;5;246m',</span> <span class="pre">'\x1b[48;5;247m',</span> <span class="pre">'\x1b[48;5;248m',</span> <span class="pre">'\x1b[48;5;249m',</span> <span class="pre">'\x1b[48;5;250m',</span> <span class="pre">'\x1b[48;5;251m',</span> <span class="pre">'\x1b[48;5;252m',</span> <span class="pre">'\x1b[48;5;253m',</span> <span class="pre">'\x1b[48;5;254m',</span> <span class="pre">'\x1b[48;5;255m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.xterm_bg_codes" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_style">
+<span class="sig-name descname"><span class="pre">re_style</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(\x1b\\[0m|\x1b\\[4m|\x1b\\[1m|\x1b\\[22m|\x1b\\[7m|\x1b\\[5m|\x1b\\[1;7m|\x1b\\[1;5m|\x1b\\[7;5m|\x1b\\[1;5;7m|\x1b\\[30m|\x1b\\[31m|\x1b\\[32m|\x1b\\[33m|\x1b\\[34m|\x1b\\[35m|\x1b\\[36m|\x1b\\[37m)</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_style" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.colorlist">
+<span class="sig-name descname"><span class="pre">colorlist</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[22m\x1b[30m',</span> <span class="pre">'\x1b[22m\x1b[31m',</span> <span class="pre">'\x1b[22m\x1b[32m',</span> <span class="pre">'\x1b[22m\x1b[33m',</span> <span class="pre">'\x1b[22m\x1b[34m',</span> <span class="pre">'\x1b[22m\x1b[35m',</span> <span class="pre">'\x1b[22m\x1b[36m',</span> <span class="pre">'\x1b[22m\x1b[37m',</span> <span class="pre">'\x1b[1m\x1b[30m',</span> <span class="pre">'\x1b[1m\x1b[31m',</span> <span class="pre">'\x1b[1m\x1b[32m',</span> <span class="pre">'\x1b[1m\x1b[33m',</span> <span class="pre">'\x1b[1m\x1b[34m',</span> <span class="pre">'\x1b[1m\x1b[35m',</span> <span class="pre">'\x1b[1m\x1b[36m',</span> <span class="pre">'\x1b[1m\x1b[37m',</span> <span class="pre">'\x1b[38;5;16m',</span> <span class="pre">'\x1b[38;5;17m',</span> <span class="pre">'\x1b[38;5;18m',</span> <span class="pre">'\x1b[38;5;19m',</span> <span class="pre">'\x1b[38;5;20m',</span> <span class="pre">'\x1b[38;5;21m',</span> <span class="pre">'\x1b[38;5;22m',</span> <span class="pre">'\x1b[38;5;23m',</span> <span class="pre">'\x1b[38;5;24m',</span> <span class="pre">'\x1b[38;5;25m',</span> <span class="pre">'\x1b[38;5;26m',</span> <span class="pre">'\x1b[38;5;27m',</span> <span class="pre">'\x1b[38;5;28m',</span> <span class="pre">'\x1b[38;5;29m',</span> <span class="pre">'\x1b[38;5;30m',</span> <span class="pre">'\x1b[38;5;31m',</span> <span class="pre">'\x1b[38;5;32m',</span> <span class="pre">'\x1b[38;5;33m',</span> <span class="pre">'\x1b[38;5;34m',</span> <span class="pre">'\x1b[38;5;35m',</span> <span class="pre">'\x1b[38;5;36m',</span> <span class="pre">'\x1b[38;5;37m',</span> <span class="pre">'\x1b[38;5;38m',</span> <span class="pre">'\x1b[38;5;39m',</span> <span class="pre">'\x1b[38;5;40m',</span> <span class="pre">'\x1b[38;5;41m',</span> <span class="pre">'\x1b[38;5;42m',</span> <span class="pre">'\x1b[38;5;43m',</span> <span class="pre">'\x1b[38;5;44m',</span> <span class="pre">'\x1b[38;5;45m',</span> <span class="pre">'\x1b[38;5;46m',</span> <span class="pre">'\x1b[38;5;47m',</span> <span class="pre">'\x1b[38;5;48m',</span> <span class="pre">'\x1b[38;5;49m',</span> <span class="pre">'\x1b[38;5;50m',</span> <span class="pre">'\x1b[38;5;51m',</span> <span class="pre">'\x1b[38;5;52m',</span> <span class="pre">'\x1b[38;5;53m',</span> <span class="pre">'\x1b[38;5;54m',</span> <span class="pre">'\x1b[38;5;55m',</span> <span class="pre">'\x1b[38;5;56m',</span> <span class="pre">'\x1b[38;5;57m',</span> <span class="pre">'\x1b[38;5;58m',</span> <span class="pre">'\x1b[38;5;59m',</span> <span class="pre">'\x1b[38;5;60m',</span> <span class="pre">'\x1b[38;5;61m',</span> <span class="pre">'\x1b[38;5;62m',</span> <span class="pre">'\x1b[38;5;63m',</span> <span class="pre">'\x1b[38;5;64m',</span> <span class="pre">'\x1b[38;5;65m',</span> <span class="pre">'\x1b[38;5;66m',</span> <span class="pre">'\x1b[38;5;67m',</span> <span class="pre">'\x1b[38;5;68m',</span> <span class="pre">'\x1b[38;5;69m',</span> <span class="pre">'\x1b[38;5;70m',</span> <span class="pre">'\x1b[38;5;71m',</span> <span class="pre">'\x1b[38;5;72m',</span> <span class="pre">'\x1b[38;5;73m',</span> <span class="pre">'\x1b[38;5;74m',</span> <span class="pre">'\x1b[38;5;75m',</span> <span class="pre">'\x1b[38;5;76m',</span> <span class="pre">'\x1b[38;5;77m',</span> <span class="pre">'\x1b[38;5;78m',</span> <span class="pre">'\x1b[38;5;79m',</span> <span class="pre">'\x1b[38;5;80m',</span> <span class="pre">'\x1b[38;5;81m',</span> <span class="pre">'\x1b[38;5;82m',</span> <span class="pre">'\x1b[38;5;83m',</span> <span class="pre">'\x1b[38;5;84m',</span> <span class="pre">'\x1b[38;5;85m',</span> <span class="pre">'\x1b[38;5;86m',</span> <span class="pre">'\x1b[38;5;87m',</span> <span class="pre">'\x1b[38;5;88m',</span> <span class="pre">'\x1b[38;5;89m',</span> <span class="pre">'\x1b[38;5;90m',</span> <span class="pre">'\x1b[38;5;91m',</span> <span class="pre">'\x1b[38;5;92m',</span> <span class="pre">'\x1b[38;5;93m',</span> <span class="pre">'\x1b[38;5;94m',</span> <span class="pre">'\x1b[38;5;95m',</span> <span class="pre">'\x1b[38;5;96m',</span> <span class="pre">'\x1b[38;5;97m',</span> <span class="pre">'\x1b[38;5;98m',</span> <span class="pre">'\x1b[38;5;99m',</span> <span class="pre">'\x1b[38;5;100m',</span> <span class="pre">'\x1b[38;5;101m',</span> <span class="pre">'\x1b[38;5;102m',</span> <span class="pre">'\x1b[38;5;103m',</span> <span class="pre">'\x1b[38;5;104m',</span> <span class="pre">'\x1b[38;5;105m',</span> <span class="pre">'\x1b[38;5;106m',</span> <span class="pre">'\x1b[38;5;107m',</span> <span class="pre">'\x1b[38;5;108m',</span> <span class="pre">'\x1b[38;5;109m',</span> <span class="pre">'\x1b[38;5;110m',</span> <span class="pre">'\x1b[38;5;111m',</span> <span class="pre">'\x1b[38;5;112m',</span> <span class="pre">'\x1b[38;5;113m',</span> <span class="pre">'\x1b[38;5;114m',</span> <span class="pre">'\x1b[38;5;115m',</span> <span class="pre">'\x1b[38;5;116m',</span> <span class="pre">'\x1b[38;5;117m',</span> <span class="pre">'\x1b[38;5;118m',</span> <span class="pre">'\x1b[38;5;119m',</span> <span class="pre">'\x1b[38;5;120m',</span> <span class="pre">'\x1b[38;5;121m',</span> <span class="pre">'\x1b[38;5;122m',</span> <span class="pre">'\x1b[38;5;123m',</span> <span class="pre">'\x1b[38;5;124m',</span> <span class="pre">'\x1b[38;5;125m',</span> <span class="pre">'\x1b[38;5;126m',</span> <span class="pre">'\x1b[38;5;127m',</span> <span class="pre">'\x1b[38;5;128m',</span> <span class="pre">'\x1b[38;5;129m',</span> <span class="pre">'\x1b[38;5;130m',</span> <span class="pre">'\x1b[38;5;131m',</span> <span class="pre">'\x1b[38;5;132m',</span> <span class="pre">'\x1b[38;5;133m',</span> <span class="pre">'\x1b[38;5;134m',</span> <span class="pre">'\x1b[38;5;135m',</span> <span class="pre">'\x1b[38;5;136m',</span> <span class="pre">'\x1b[38;5;137m',</span> <span class="pre">'\x1b[38;5;138m',</span> <span class="pre">'\x1b[38;5;139m',</span> <span class="pre">'\x1b[38;5;140m',</span> <span class="pre">'\x1b[38;5;141m',</span> <span class="pre">'\x1b[38;5;142m',</span> <span class="pre">'\x1b[38;5;143m',</span> <span class="pre">'\x1b[38;5;144m',</span> <span class="pre">'\x1b[38;5;145m',</span> <span class="pre">'\x1b[38;5;146m',</span> <span class="pre">'\x1b[38;5;147m',</span> <span class="pre">'\x1b[38;5;148m',</span> <span class="pre">'\x1b[38;5;149m',</span> <span class="pre">'\x1b[38;5;150m',</span> <span class="pre">'\x1b[38;5;151m',</span> <span class="pre">'\x1b[38;5;152m',</span> <span class="pre">'\x1b[38;5;153m',</span> <span class="pre">'\x1b[38;5;154m',</span> <span class="pre">'\x1b[38;5;155m',</span> <span class="pre">'\x1b[38;5;156m',</span> <span class="pre">'\x1b[38;5;157m',</span> <span class="pre">'\x1b[38;5;158m',</span> <span class="pre">'\x1b[38;5;159m',</span> <span class="pre">'\x1b[38;5;160m',</span> <span class="pre">'\x1b[38;5;161m',</span> <span class="pre">'\x1b[38;5;162m',</span> <span class="pre">'\x1b[38;5;163m',</span> <span class="pre">'\x1b[38;5;164m',</span> <span class="pre">'\x1b[38;5;165m',</span> <span class="pre">'\x1b[38;5;166m',</span> <span class="pre">'\x1b[38;5;167m',</span> <span class="pre">'\x1b[38;5;168m',</span> <span class="pre">'\x1b[38;5;169m',</span> <span class="pre">'\x1b[38;5;170m',</span> <span class="pre">'\x1b[38;5;171m',</span> <span class="pre">'\x1b[38;5;172m',</span> <span class="pre">'\x1b[38;5;173m',</span> <span class="pre">'\x1b[38;5;174m',</span> <span class="pre">'\x1b[38;5;175m',</span> <span class="pre">'\x1b[38;5;176m',</span> <span class="pre">'\x1b[38;5;177m',</span> <span class="pre">'\x1b[38;5;178m',</span> <span class="pre">'\x1b[38;5;179m',</span> <span class="pre">'\x1b[38;5;180m',</span> <span class="pre">'\x1b[38;5;181m',</span> <span class="pre">'\x1b[38;5;182m',</span> <span class="pre">'\x1b[38;5;183m',</span> <span class="pre">'\x1b[38;5;184m',</span> <span class="pre">'\x1b[38;5;185m',</span> <span class="pre">'\x1b[38;5;186m',</span> <span class="pre">'\x1b[38;5;187m',</span> <span class="pre">'\x1b[38;5;188m',</span> <span class="pre">'\x1b[38;5;189m',</span> <span class="pre">'\x1b[38;5;190m',</span> <span class="pre">'\x1b[38;5;191m',</span> <span class="pre">'\x1b[38;5;192m',</span> <span class="pre">'\x1b[38;5;193m',</span> <span class="pre">'\x1b[38;5;194m',</span> <span class="pre">'\x1b[38;5;195m',</span> <span class="pre">'\x1b[38;5;196m',</span> <span class="pre">'\x1b[38;5;197m',</span> <span class="pre">'\x1b[38;5;198m',</span> <span class="pre">'\x1b[38;5;199m',</span> <span class="pre">'\x1b[38;5;200m',</span> <span class="pre">'\x1b[38;5;201m',</span> <span class="pre">'\x1b[38;5;202m',</span> <span class="pre">'\x1b[38;5;203m',</span> <span class="pre">'\x1b[38;5;204m',</span> <span class="pre">'\x1b[38;5;205m',</span> <span class="pre">'\x1b[38;5;206m',</span> <span class="pre">'\x1b[38;5;207m',</span> <span class="pre">'\x1b[38;5;208m',</span> <span class="pre">'\x1b[38;5;209m',</span> <span class="pre">'\x1b[38;5;210m',</span> <span class="pre">'\x1b[38;5;211m',</span> <span class="pre">'\x1b[38;5;212m',</span> <span class="pre">'\x1b[38;5;213m',</span> <span class="pre">'\x1b[38;5;214m',</span> <span class="pre">'\x1b[38;5;215m',</span> <span class="pre">'\x1b[38;5;216m',</span> <span class="pre">'\x1b[38;5;217m',</span> <span class="pre">'\x1b[38;5;218m',</span> <span class="pre">'\x1b[38;5;219m',</span> <span class="pre">'\x1b[38;5;220m',</span> <span class="pre">'\x1b[38;5;221m',</span> <span class="pre">'\x1b[38;5;222m',</span> <span class="pre">'\x1b[38;5;223m',</span> <span class="pre">'\x1b[38;5;224m',</span> <span class="pre">'\x1b[38;5;225m',</span> <span class="pre">'\x1b[38;5;226m',</span> <span class="pre">'\x1b[38;5;227m',</span> <span class="pre">'\x1b[38;5;228m',</span> <span class="pre">'\x1b[38;5;229m',</span> <span class="pre">'\x1b[38;5;230m',</span> <span class="pre">'\x1b[38;5;231m',</span> <span class="pre">'\x1b[38;5;232m',</span> <span class="pre">'\x1b[38;5;233m',</span> <span class="pre">'\x1b[38;5;234m',</span> <span class="pre">'\x1b[38;5;235m',</span> <span class="pre">'\x1b[38;5;236m',</span> <span class="pre">'\x1b[38;5;237m',</span> <span class="pre">'\x1b[38;5;238m',</span> <span class="pre">'\x1b[38;5;239m',</span> <span class="pre">'\x1b[38;5;240m',</span> <span class="pre">'\x1b[38;5;241m',</span> <span class="pre">'\x1b[38;5;242m',</span> <span class="pre">'\x1b[38;5;243m',</span> <span class="pre">'\x1b[38;5;244m',</span> <span class="pre">'\x1b[38;5;245m',</span> <span class="pre">'\x1b[38;5;246m',</span> <span class="pre">'\x1b[38;5;247m',</span> <span class="pre">'\x1b[38;5;248m',</span> <span class="pre">'\x1b[38;5;249m',</span> <span class="pre">'\x1b[38;5;250m',</span> <span class="pre">'\x1b[38;5;251m',</span> <span class="pre">'\x1b[38;5;252m',</span> <span class="pre">'\x1b[38;5;253m',</span> <span class="pre">'\x1b[38;5;254m',</span> <span class="pre">'\x1b[38;5;255m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.colorlist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.bglist">
+<span class="sig-name descname"><span class="pre">bglist</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['\x1b[40m',</span> <span class="pre">'\x1b[41m',</span> <span class="pre">'\x1b[42m',</span> <span class="pre">'\x1b[43m',</span> <span class="pre">'\x1b[44m',</span> <span class="pre">'\x1b[45m',</span> <span class="pre">'\x1b[46m',</span> <span class="pre">'\x1b[47m',</span> <span class="pre">'\x1b[1m\x1b[40m',</span> <span class="pre">'\x1b[1m\x1b[41m',</span> <span class="pre">'\x1b[1m\x1b[42m',</span> <span class="pre">'\x1b[1m\x1b[43m',</span> <span class="pre">'\x1b[1m\x1b[44m',</span> <span class="pre">'\x1b[1m\x1b[45m',</span> <span class="pre">'\x1b[1m\x1b[46m',</span> <span class="pre">'\x1b[1m\x1b[47m',</span> <span class="pre">'\x1b[48;5;16m',</span> <span class="pre">'\x1b[48;5;17m',</span> <span class="pre">'\x1b[48;5;18m',</span> <span class="pre">'\x1b[48;5;19m',</span> <span class="pre">'\x1b[48;5;20m',</span> <span class="pre">'\x1b[48;5;21m',</span> <span class="pre">'\x1b[48;5;22m',</span> <span class="pre">'\x1b[48;5;23m',</span> <span class="pre">'\x1b[48;5;24m',</span> <span class="pre">'\x1b[48;5;25m',</span> <span class="pre">'\x1b[48;5;26m',</span> <span class="pre">'\x1b[48;5;27m',</span> <span class="pre">'\x1b[48;5;28m',</span> <span class="pre">'\x1b[48;5;29m',</span> <span class="pre">'\x1b[48;5;30m',</span> <span class="pre">'\x1b[48;5;31m',</span> <span class="pre">'\x1b[48;5;32m',</span> <span class="pre">'\x1b[48;5;33m',</span> <span class="pre">'\x1b[48;5;34m',</span> <span class="pre">'\x1b[48;5;35m',</span> <span class="pre">'\x1b[48;5;36m',</span> <span class="pre">'\x1b[48;5;37m',</span> <span class="pre">'\x1b[48;5;38m',</span> <span class="pre">'\x1b[48;5;39m',</span> <span class="pre">'\x1b[48;5;40m',</span> <span class="pre">'\x1b[48;5;41m',</span> <span class="pre">'\x1b[48;5;42m',</span> <span class="pre">'\x1b[48;5;43m',</span> <span class="pre">'\x1b[48;5;44m',</span> <span class="pre">'\x1b[48;5;45m',</span> <span class="pre">'\x1b[48;5;46m',</span> <span class="pre">'\x1b[48;5;47m',</span> <span class="pre">'\x1b[48;5;48m',</span> <span class="pre">'\x1b[48;5;49m',</span> <span class="pre">'\x1b[48;5;50m',</span> <span class="pre">'\x1b[48;5;51m',</span> <span class="pre">'\x1b[48;5;52m',</span> <span class="pre">'\x1b[48;5;53m',</span> <span class="pre">'\x1b[48;5;54m',</span> <span class="pre">'\x1b[48;5;55m',</span> <span class="pre">'\x1b[48;5;56m',</span> <span class="pre">'\x1b[48;5;57m',</span> <span class="pre">'\x1b[48;5;58m',</span> <span class="pre">'\x1b[48;5;59m',</span> <span class="pre">'\x1b[48;5;60m',</span> <span class="pre">'\x1b[48;5;61m',</span> <span class="pre">'\x1b[48;5;62m',</span> <span class="pre">'\x1b[48;5;63m',</span> <span class="pre">'\x1b[48;5;64m',</span> <span class="pre">'\x1b[48;5;65m',</span> <span class="pre">'\x1b[48;5;66m',</span> <span class="pre">'\x1b[48;5;67m',</span> <span class="pre">'\x1b[48;5;68m',</span> <span class="pre">'\x1b[48;5;69m',</span> <span class="pre">'\x1b[48;5;70m',</span> <span class="pre">'\x1b[48;5;71m',</span> <span class="pre">'\x1b[48;5;72m',</span> <span class="pre">'\x1b[48;5;73m',</span> <span class="pre">'\x1b[48;5;74m',</span> <span class="pre">'\x1b[48;5;75m',</span> <span class="pre">'\x1b[48;5;76m',</span> <span class="pre">'\x1b[48;5;77m',</span> <span class="pre">'\x1b[48;5;78m',</span> <span class="pre">'\x1b[48;5;79m',</span> <span class="pre">'\x1b[48;5;80m',</span> <span class="pre">'\x1b[48;5;81m',</span> <span class="pre">'\x1b[48;5;82m',</span> <span class="pre">'\x1b[48;5;83m',</span> <span class="pre">'\x1b[48;5;84m',</span> <span class="pre">'\x1b[48;5;85m',</span> <span class="pre">'\x1b[48;5;86m',</span> <span class="pre">'\x1b[48;5;87m',</span> <span class="pre">'\x1b[48;5;88m',</span> <span class="pre">'\x1b[48;5;89m',</span> <span class="pre">'\x1b[48;5;90m',</span> <span class="pre">'\x1b[48;5;91m',</span> <span class="pre">'\x1b[48;5;92m',</span> <span class="pre">'\x1b[48;5;93m',</span> <span class="pre">'\x1b[48;5;94m',</span> <span class="pre">'\x1b[48;5;95m',</span> <span class="pre">'\x1b[48;5;96m',</span> <span class="pre">'\x1b[48;5;97m',</span> <span class="pre">'\x1b[48;5;98m',</span> <span class="pre">'\x1b[48;5;99m',</span> <span class="pre">'\x1b[48;5;100m',</span> <span class="pre">'\x1b[48;5;101m',</span> <span class="pre">'\x1b[48;5;102m',</span> <span class="pre">'\x1b[48;5;103m',</span> <span class="pre">'\x1b[48;5;104m',</span> <span class="pre">'\x1b[48;5;105m',</span> <span class="pre">'\x1b[48;5;106m',</span> <span class="pre">'\x1b[48;5;107m',</span> <span class="pre">'\x1b[48;5;108m',</span> <span class="pre">'\x1b[48;5;109m',</span> <span class="pre">'\x1b[48;5;110m',</span> <span class="pre">'\x1b[48;5;111m',</span> <span class="pre">'\x1b[48;5;112m',</span> <span class="pre">'\x1b[48;5;113m',</span> <span class="pre">'\x1b[48;5;114m',</span> <span class="pre">'\x1b[48;5;115m',</span> <span class="pre">'\x1b[48;5;116m',</span> <span class="pre">'\x1b[48;5;117m',</span> <span class="pre">'\x1b[48;5;118m',</span> <span class="pre">'\x1b[48;5;119m',</span> <span class="pre">'\x1b[48;5;120m',</span> <span class="pre">'\x1b[48;5;121m',</span> <span class="pre">'\x1b[48;5;122m',</span> <span class="pre">'\x1b[48;5;123m',</span> <span class="pre">'\x1b[48;5;124m',</span> <span class="pre">'\x1b[48;5;125m',</span> <span class="pre">'\x1b[48;5;126m',</span> <span class="pre">'\x1b[48;5;127m',</span> <span class="pre">'\x1b[48;5;128m',</span> <span class="pre">'\x1b[48;5;129m',</span> <span class="pre">'\x1b[48;5;130m',</span> <span class="pre">'\x1b[48;5;131m',</span> <span class="pre">'\x1b[48;5;132m',</span> <span class="pre">'\x1b[48;5;133m',</span> <span class="pre">'\x1b[48;5;134m',</span> <span class="pre">'\x1b[48;5;135m',</span> <span class="pre">'\x1b[48;5;136m',</span> <span class="pre">'\x1b[48;5;137m',</span> <span class="pre">'\x1b[48;5;138m',</span> <span class="pre">'\x1b[48;5;139m',</span> <span class="pre">'\x1b[48;5;140m',</span> <span class="pre">'\x1b[48;5;141m',</span> <span class="pre">'\x1b[48;5;142m',</span> <span class="pre">'\x1b[48;5;143m',</span> <span class="pre">'\x1b[48;5;144m',</span> <span class="pre">'\x1b[48;5;145m',</span> <span class="pre">'\x1b[48;5;146m',</span> <span class="pre">'\x1b[48;5;147m',</span> <span class="pre">'\x1b[48;5;148m',</span> <span class="pre">'\x1b[48;5;149m',</span> <span class="pre">'\x1b[48;5;150m',</span> <span class="pre">'\x1b[48;5;151m',</span> <span class="pre">'\x1b[48;5;152m',</span> <span class="pre">'\x1b[48;5;153m',</span> <span class="pre">'\x1b[48;5;154m',</span> <span class="pre">'\x1b[48;5;155m',</span> <span class="pre">'\x1b[48;5;156m',</span> <span class="pre">'\x1b[48;5;157m',</span> <span class="pre">'\x1b[48;5;158m',</span> <span class="pre">'\x1b[48;5;159m',</span> <span class="pre">'\x1b[48;5;160m',</span> <span class="pre">'\x1b[48;5;161m',</span> <span class="pre">'\x1b[48;5;162m',</span> <span class="pre">'\x1b[48;5;163m',</span> <span class="pre">'\x1b[48;5;164m',</span> <span class="pre">'\x1b[48;5;165m',</span> <span class="pre">'\x1b[48;5;166m',</span> <span class="pre">'\x1b[48;5;167m',</span> <span class="pre">'\x1b[48;5;168m',</span> <span class="pre">'\x1b[48;5;169m',</span> <span class="pre">'\x1b[48;5;170m',</span> <span class="pre">'\x1b[48;5;171m',</span> <span class="pre">'\x1b[48;5;172m',</span> <span class="pre">'\x1b[48;5;173m',</span> <span class="pre">'\x1b[48;5;174m',</span> <span class="pre">'\x1b[48;5;175m',</span> <span class="pre">'\x1b[48;5;176m',</span> <span class="pre">'\x1b[48;5;177m',</span> <span class="pre">'\x1b[48;5;178m',</span> <span class="pre">'\x1b[48;5;179m',</span> <span class="pre">'\x1b[48;5;180m',</span> <span class="pre">'\x1b[48;5;181m',</span> <span class="pre">'\x1b[48;5;182m',</span> <span class="pre">'\x1b[48;5;183m',</span> <span class="pre">'\x1b[48;5;184m',</span> <span class="pre">'\x1b[48;5;185m',</span> <span class="pre">'\x1b[48;5;186m',</span> <span class="pre">'\x1b[48;5;187m',</span> <span class="pre">'\x1b[48;5;188m',</span> <span class="pre">'\x1b[48;5;189m',</span> <span class="pre">'\x1b[48;5;190m',</span> <span class="pre">'\x1b[48;5;191m',</span> <span class="pre">'\x1b[48;5;192m',</span> <span class="pre">'\x1b[48;5;193m',</span> <span class="pre">'\x1b[48;5;194m',</span> <span class="pre">'\x1b[48;5;195m',</span> <span class="pre">'\x1b[48;5;196m',</span> <span class="pre">'\x1b[48;5;197m',</span> <span class="pre">'\x1b[48;5;198m',</span> <span class="pre">'\x1b[48;5;199m',</span> <span class="pre">'\x1b[48;5;200m',</span> <span class="pre">'\x1b[48;5;201m',</span> <span class="pre">'\x1b[48;5;202m',</span> <span class="pre">'\x1b[48;5;203m',</span> <span class="pre">'\x1b[48;5;204m',</span> <span class="pre">'\x1b[48;5;205m',</span> <span class="pre">'\x1b[48;5;206m',</span> <span class="pre">'\x1b[48;5;207m',</span> <span class="pre">'\x1b[48;5;208m',</span> <span class="pre">'\x1b[48;5;209m',</span> <span class="pre">'\x1b[48;5;210m',</span> <span class="pre">'\x1b[48;5;211m',</span> <span class="pre">'\x1b[48;5;212m',</span> <span class="pre">'\x1b[48;5;213m',</span> <span class="pre">'\x1b[48;5;214m',</span> <span class="pre">'\x1b[48;5;215m',</span> <span class="pre">'\x1b[48;5;216m',</span> <span class="pre">'\x1b[48;5;217m',</span> <span class="pre">'\x1b[48;5;218m',</span> <span class="pre">'\x1b[48;5;219m',</span> <span class="pre">'\x1b[48;5;220m',</span> <span class="pre">'\x1b[48;5;221m',</span> <span class="pre">'\x1b[48;5;222m',</span> <span class="pre">'\x1b[48;5;223m',</span> <span class="pre">'\x1b[48;5;224m',</span> <span class="pre">'\x1b[48;5;225m',</span> <span class="pre">'\x1b[48;5;226m',</span> <span class="pre">'\x1b[48;5;227m',</span> <span class="pre">'\x1b[48;5;228m',</span> <span class="pre">'\x1b[48;5;229m',</span> <span class="pre">'\x1b[48;5;230m',</span> <span class="pre">'\x1b[48;5;231m',</span> <span class="pre">'\x1b[48;5;232m',</span> <span class="pre">'\x1b[48;5;233m',</span> <span class="pre">'\x1b[48;5;234m',</span> <span class="pre">'\x1b[48;5;235m',</span> <span class="pre">'\x1b[48;5;236m',</span> <span class="pre">'\x1b[48;5;237m',</span> <span class="pre">'\x1b[48;5;238m',</span> <span class="pre">'\x1b[48;5;239m',</span> <span class="pre">'\x1b[48;5;240m',</span> <span class="pre">'\x1b[48;5;241m',</span> <span class="pre">'\x1b[48;5;242m',</span> <span class="pre">'\x1b[48;5;243m',</span> <span class="pre">'\x1b[48;5;244m',</span> <span class="pre">'\x1b[48;5;245m',</span> <span class="pre">'\x1b[48;5;246m',</span> <span class="pre">'\x1b[48;5;247m',</span> <span class="pre">'\x1b[48;5;248m',</span> <span class="pre">'\x1b[48;5;249m',</span> <span class="pre">'\x1b[48;5;250m',</span> <span class="pre">'\x1b[48;5;251m',</span> <span class="pre">'\x1b[48;5;252m',</span> <span class="pre">'\x1b[48;5;253m',</span> <span class="pre">'\x1b[48;5;254m',</span> <span class="pre">'\x1b[48;5;255m']</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.bglist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_string">
+<span class="sig-name descname"><span class="pre">re_string</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(?P&lt;htmlchars&gt;[&lt;&amp;&gt;])|(?P&lt;tab&gt;[\\t]+)|(?P&lt;lineend&gt;\\r\\n|\\r|\\n)',</span> <span class="pre">re.IGNORECASE|re.MULTILINE|re.DOTALL)</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_string" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_url">
+<span class="sig-name descname"><span class="pre">re_url</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(?&lt;!=&quot;)(\\b(?:ftp|www|https?)\\W+(?:(?!\\.(?:\\s|$)|&amp;\\w+;)[^&quot;\\\',;$*^\\\\(){}&lt;&gt;\\[\\]\\s])+)(\\.(?:\\s|$)|&amp;\\w+;|)')</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_url" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_protocol">
+<span class="sig-name descname"><span class="pre">re_protocol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:ftp|https?)://')</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_protocol" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_valid_no_protocol">
+<span class="sig-name descname"><span class="pre">re_valid_no_protocol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('^(?:www|ftp)\\.[-a-zA-Z0-9&#64;:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b[-a-zA-Z0-9&#64;:%_\\+.~#?&amp;//=]*')</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_valid_no_protocol" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_mxplink">
+<span class="sig-name descname"><span class="pre">re_mxplink</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\\|lc(.*?)\\|lt(.*?)\\|le',</span> <span class="pre">re.DOTALL)</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_mxplink" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.re_mxpurl">
+<span class="sig-name descname"><span class="pre">re_mxpurl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('\\|lu(.*?)\\|lt(.*?)\\|le',</span> <span class="pre">re.DOTALL)</span></em><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.re_mxpurl" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.remove_bells">
+<span class="sig-name descname"><span class="pre">remove_bells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.remove_bells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.remove_bells" title="Link to this definition">¶</a></dt>
+<dd><p>Remove ansi specials</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.remove_backspaces">
+<span class="sig-name descname"><span class="pre">remove_backspaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.remove_backspaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.remove_backspaces" title="Link to this definition">¶</a></dt>
+<dd><p>Removes special escape sequences</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.convert_linebreaks">
+<span class="sig-name descname"><span class="pre">convert_linebreaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.convert_linebreaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.convert_linebreaks" title="Link to this definition">¶</a></dt>
+<dd><p>Extra method for cleaning linebreaks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.convert_urls">
+<span class="sig-name descname"><span class="pre">convert_urls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.convert_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.convert_urls" title="Link to this definition">¶</a></dt>
+<dd><p>Replace urls (<a class="reference external" href="http://">http://</a>…) by valid HTML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.sub_mxp_links">
+<span class="sig-name descname"><span class="pre">sub_mxp_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_mxp_links"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_mxp_links" title="Link to this definition">¶</a></dt>
+<dd><p>Helper method to be passed to re.sub,
+replaces MXP links with HTML code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>match</strong> (<em>re.Matchobject</em>) – Match for substitution.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls">
+<span class="sig-name descname"><span class="pre">sub_mxp_urls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_mxp_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls" title="Link to this definition">¶</a></dt>
+<dd><p>Helper method to be passed to re.sub,
+replaces MXP links with HTML code.
+:param match: Match for substitution.
+:type match: re.Matchobject</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.sub_text">
+<span class="sig-name descname"><span class="pre">sub_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.sub_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.sub_text" title="Link to this definition">¶</a></dt>
+<dd><p>Helper method to be passed to re.sub,
+for handling all substitutions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>match</strong> (<em>re.Matchobject</em>) – Match for substitution.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.format_styles">
+<span class="sig-name descname"><span class="pre">format_styles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.format_styles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.format_styles" title="Link to this definition">¶</a></dt>
+<dd><p>Takes a string with parsed ANSI codes and replaces them with
+HTML spans and CSS classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The string to process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Processed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.utils.text2html.TextToHTMLparser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_ansi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#TextToHTMLparser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.TextToHTMLparser.parse" title="Link to this definition">¶</a></dt>
+<dd><p>Main access function, converts a text containing ANSI codes
+into html statements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Text to process.</p></li>
+<li><p><strong>strip_ansi</strong> (<em>bool</em><em>, </em><em>optional</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>text (str)</em> – Parsed text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evennia.utils.text2html.parse_html">
+<span class="sig-prename descclassname"><span class="pre">evennia.utils.text2html.</span></span><span class="sig-name descname"><span class="pre">parse_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_ansi=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser=&lt;evennia.utils.text2html.TextToHTMLparser</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/utils/text2html.html#parse_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.utils.text2html.parse_html" title="Link to this definition">¶</a></dt>
+<dd><p>Parses a string, replace ANSI markup with html</p>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.utils.text2html</a><ul>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.tabstop"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.tabstop</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.style_codes"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.style_codes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.ansi_color_codes"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.ansi_color_codes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.xterm_fg_codes"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.xterm_fg_codes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.ansi_bg_codes"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.ansi_bg_codes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.xterm_bg_codes"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.xterm_bg_codes</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_style"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_style</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.colorlist"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.colorlist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.bglist"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.bglist</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_string"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_string</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_url"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_url</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_protocol"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_protocol</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_valid_no_protocol"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_valid_no_protocol</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_mxplink"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_mxplink</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.re_mxpurl"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.re_mxpurl</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.remove_bells"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.remove_bells()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.remove_backspaces"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.remove_backspaces()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.convert_linebreaks"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.convert_linebreaks()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.convert_urls"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.convert_urls()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.sub_mxp_links"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.sub_mxp_links()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.sub_mxp_urls"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.sub_mxp_urls()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.sub_text"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.sub_text()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.format_styles"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.format_styles()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.utils.text2html.TextToHTMLparser.parse"><code class="docutils literal notranslate"><span class="pre">TextToHTMLparser.parse()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.utils.text2html.parse_html"><code class="docutils literal notranslate"><span class="pre">parse_html()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.utils.test_resources.html"
+                          title="previous chapter">evennia.utils.test_resources</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.utils.utils.html"
+                          title="next chapter">evennia.utils.utils</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.utils.text2html.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.utils.html" title="evennia.utils.utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.utils.test_resources.html" title="evennia.utils.test_resources"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.utils.html" >evennia.utils</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.utils.text2html</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

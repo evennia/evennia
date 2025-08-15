@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.objects &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.objects.manager" href="evennia.objects.manager.html" />
+    <link rel="prev" title="evennia.locks.lockhandler" href="evennia.locks.lockhandler.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.objects.manager.html" title="evennia.objects.manager"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.locks.lockhandler.html" title="evennia.locks.lockhandler"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" accesskey="U">evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.objects</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.objects">
+<span id="evennia-objects"></span><h1>evennia.objects<a class="headerlink" href="#module-evennia.objects" title="Link to this heading">¶</a></h1>
+<p>This sub-package defines the basic in-game “Object”. All in-game
+objects inherit from classes in this package.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.objects.manager.html">evennia.objects.manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectManager"><code class="docutils literal notranslate"><span class="pre">ObjectManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_object_with_account"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_object_with_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_key_and_typeclass"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_objs_with_key_and_typeclass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_attr"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_objs_with_attr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_attr_value"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_objs_with_attr_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_db_property"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_objs_with_db_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_db_property_value"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_objs_with_db_property_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_contents"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_contents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.get_objs_with_key_or_alias"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.get_objs_with_key_or_alias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.search_object"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.search_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.object_search"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.object_search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.search"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.copy_object"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.copy_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.clear_all_sessids"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.clear_all_sessids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.ObjectDBManager.create_object"><code class="docutils literal notranslate"><span class="pre">ObjectDBManager.create_object()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q"><code class="docutils literal notranslate"><span class="pre">Q</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.AND"><code class="docutils literal notranslate"><span class="pre">Q.AND</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.OR"><code class="docutils literal notranslate"><span class="pre">Q.OR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.XOR"><code class="docutils literal notranslate"><span class="pre">Q.XOR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.__init__"><code class="docutils literal notranslate"><span class="pre">Q.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.check"><code class="docutils literal notranslate"><span class="pre">Q.check()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.conditional"><code class="docutils literal notranslate"><span class="pre">Q.conditional</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.deconstruct"><code class="docutils literal notranslate"><span class="pre">Q.deconstruct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.default"><code class="docutils literal notranslate"><span class="pre">Q.default</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.flatten"><code class="docutils literal notranslate"><span class="pre">Q.flatten()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.identity"><code class="docutils literal notranslate"><span class="pre">Q.identity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.referenced_base_fields"><code class="docutils literal notranslate"><span class="pre">Q.referenced_base_fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.replace_expressions"><code class="docutils literal notranslate"><span class="pre">Q.replace_expressions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.Q.resolve_expression"><code class="docutils literal notranslate"><span class="pre">Q.resolve_expression()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager"><code class="docutils literal notranslate"><span class="pre">TypeclassManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.all"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.all_family"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.all_family()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.annotate"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.annotate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.count"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.filter"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.filter_family"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.filter_family()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.first"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.first()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.get"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.get_family"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.get_family()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.last"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.last()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.smart_search"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.smart_search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.values"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypeclassManager.values_list"><code class="docutils literal notranslate"><span class="pre">TypeclassManager.values_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.create_tag"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.create_tag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.dbref"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.dbref()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.dbref_search"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.dbref_search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_alias"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_alias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_attribute"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_by_alias"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_by_alias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_by_attribute"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_by_attribute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_by_nick"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_by_nick()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_by_permission"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_by_permission()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_by_tag"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_by_tag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_dbref_range"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_dbref_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_id"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_nick"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_nick()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_permission"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_permission()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_tag"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_tag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.get_typeclass_totals"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.get_typeclass_totals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.object_totals"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.object_totals()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.search_dbref"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.search_dbref()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.TypedObjectManager.typeclass_search"><code class="docutils literal notranslate"><span class="pre">TypedObjectManager.typeclass_search()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.class_from_module"><code class="docutils literal notranslate"><span class="pre">class_from_module()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.dbid_to_obj"><code class="docutils literal notranslate"><span class="pre">dbid_to_obj()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.is_iter"><code class="docutils literal notranslate"><span class="pre">is_iter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.make_iter"><code class="docutils literal notranslate"><span class="pre">make_iter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.manager.html#evennia.objects.manager.string_partial_matching"><code class="docutils literal notranslate"><span class="pre">string_partial_matching()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.objects.models.html">evennia.objects.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler"><code class="docutils literal notranslate"><span class="pre">ContentsHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.__init__"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.load"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.init"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.get"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.add"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.remove"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ContentsHandler.clear"><code class="docutils literal notranslate"><span class="pre">ContentsHandler.clear()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB"><code class="docutils literal notranslate"><span class="pre">ObjectDB</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_account"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_account</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_sessid"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_sessid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_location"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_location</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_home"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_home</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_destination"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_destination</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_cmdset_storage"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_cmdset_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.objects"><code class="docutils literal notranslate"><span class="pre">ObjectDB.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.contents_cache"><code class="docutils literal notranslate"><span class="pre">ObjectDB.contents_cache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.cmdset_storage"><code class="docutils literal notranslate"><span class="pre">ObjectDB.cmdset_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.location"><code class="docutils literal notranslate"><span class="pre">ObjectDB.location</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.at_db_location_postsave"><code class="docutils literal notranslate"><span class="pre">ObjectDB.at_db_location_postsave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">ObjectDB.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">ObjectDB.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.account"><code class="docutils literal notranslate"><span class="pre">ObjectDB.account</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_account_id"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_account_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_attributes"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_attributes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_date_created"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_date_created</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_destination_id"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_destination_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_home_id"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_home_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_key"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_location_id"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_location_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_lock_storage"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_tags"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.db_typeclass_path"><code class="docutils literal notranslate"><span class="pre">ObjectDB.db_typeclass_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.destination"><code class="docutils literal notranslate"><span class="pre">ObjectDB.destination</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.destinations_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.destinations_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.get_next_by_db_date_created"><code class="docutils literal notranslate"><span class="pre">ObjectDB.get_next_by_db_date_created()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.get_previous_by_db_date_created"><code class="docutils literal notranslate"><span class="pre">ObjectDB.get_previous_by_db_date_created()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.hide_from_objects_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.hide_from_objects_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.home"><code class="docutils literal notranslate"><span class="pre">ObjectDB.home</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.homes_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.homes_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.id"><code class="docutils literal notranslate"><span class="pre">ObjectDB.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.locations_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.locations_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.object_subscription_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.object_subscription_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.path"><code class="docutils literal notranslate"><span class="pre">ObjectDB.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.receiver_object_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.receiver_object_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.scriptdb_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.scriptdb_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.sender_object_set"><code class="docutils literal notranslate"><span class="pre">ObjectDB.sender_object_set</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.sessid"><code class="docutils literal notranslate"><span class="pre">ObjectDB.sessid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.models.html#evennia.objects.models.ObjectDB.typename"><code class="docutils literal notranslate"><span class="pre">ObjectDB.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.objects.objects.html">evennia.objects.objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.__init__"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.get"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.all"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.add"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.remove"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.clear"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ObjectSessionHandler.count"><code class="docutils literal notranslate"><span class="pre">ObjectSessionHandler.count()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject"><code class="docutils literal notranslate"><span class="pre">DefaultObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset_provider_order"><code class="docutils literal notranslate"><span class="pre">DefaultObject.cmdset_provider_order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset_provider_error_order"><code class="docutils literal notranslate"><span class="pre">DefaultObject.cmdset_provider_error_order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset_provider_type"><code class="docutils literal notranslate"><span class="pre">DefaultObject.cmdset_provider_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.objects"><code class="docutils literal notranslate"><span class="pre">DefaultObject.objects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.default_description"><code class="docutils literal notranslate"><span class="pre">DefaultObject.default_description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.appearance_template"><code class="docutils literal notranslate"><span class="pre">DefaultObject.appearance_template</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.plural_category"><code class="docutils literal notranslate"><span class="pre">DefaultObject.plural_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.cmdset"><code class="docutils literal notranslate"><span class="pre">DefaultObject.cmdset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.scripts"><code class="docutils literal notranslate"><span class="pre">DefaultObject.scripts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.nicks"><code class="docutils literal notranslate"><span class="pre">DefaultObject.nicks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.sessions"><code class="docutils literal notranslate"><span class="pre">DefaultObject.sessions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.is_connected"><code class="docutils literal notranslate"><span class="pre">DefaultObject.is_connected</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.has_account"><code class="docutils literal notranslate"><span class="pre">DefaultObject.has_account</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_cmdset_providers"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_cmdset_providers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.is_superuser"><code class="docutils literal notranslate"><span class="pre">DefaultObject.is_superuser</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_get"><code class="docutils literal notranslate"><span class="pre">DefaultObject.contents_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents_set"><code class="docutils literal notranslate"><span class="pre">DefaultObject.contents_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.contents"><code class="docutils literal notranslate"><span class="pre">DefaultObject.contents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.exits"><code class="docutils literal notranslate"><span class="pre">DefaultObject.exits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_query_replacement"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_search_query_replacement()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_direct_match"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_search_direct_match()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_candidates"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_search_candidates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_search_result"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_search_result()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_stacked_results"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_stacked_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.handle_search_results"><code class="docutils literal notranslate"><span class="pre">DefaultObject.handle_search_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.search"><code class="docutils literal notranslate"><span class="pre">DefaultObject.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.search_account"><code class="docutils literal notranslate"><span class="pre">DefaultObject.search_account()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.execute_cmd"><code class="docutils literal notranslate"><span class="pre">DefaultObject.execute_cmd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg"><code class="docutils literal notranslate"><span class="pre">DefaultObject.msg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.for_contents"><code class="docutils literal notranslate"><span class="pre">DefaultObject.for_contents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.msg_contents"><code class="docutils literal notranslate"><span class="pre">DefaultObject.msg_contents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.move_to"><code class="docutils literal notranslate"><span class="pre">DefaultObject.move_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.clear_exits"><code class="docutils literal notranslate"><span class="pre">DefaultObject.clear_exits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.clear_contents"><code class="docutils literal notranslate"><span class="pre">DefaultObject.clear_contents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_default_lockstring"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_default_lockstring()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.create"><code class="docutils literal notranslate"><span class="pre">DefaultObject.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.copy"><code class="docutils literal notranslate"><span class="pre">DefaultObject.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_copy"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_post_copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.delete"><code class="docutils literal notranslate"><span class="pre">DefaultObject.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.access"><code class="docutils literal notranslate"><span class="pre">DefaultObject.access()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.filter_visible"><code class="docutils literal notranslate"><span class="pre">DefaultObject.filter_visible()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_name"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_extra_display_name_info"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_extra_display_name_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_numbered_name"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_numbered_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_header"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_header()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_desc"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_desc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_exits"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_exits()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_characters"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_characters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_things"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_things()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_display_footer"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_display_footer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.format_appearance"><code class="docutils literal notranslate"><span class="pre">DefaultObject.format_appearance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.return_appearance"><code class="docutils literal notranslate"><span class="pre">DefaultObject.return_appearance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_first_save"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_first_save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.basetype_setup"><code class="docutils literal notranslate"><span class="pre">DefaultObject.basetype_setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.basetype_posthook_setup"><code class="docutils literal notranslate"><span class="pre">DefaultObject.basetype_posthook_setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_creation"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_creation"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_post_creation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_delete"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_post_spawn"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_post_spawn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_init"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_cmdset_get"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_cmdset_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_cmdsets"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_cmdsets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_puppet"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_puppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_puppet"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_post_puppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_unpuppet"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_unpuppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_unpuppet"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_post_unpuppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_server_reload"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_server_reload()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_server_shutdown"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_server_shutdown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_access"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_access()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_move"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_object_leave"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_object_leave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_object_receive"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_move"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_before_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_from"><code class="docutils literal notranslate"><span class="pre">DefaultObject.announce_move_from()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.announce_move_to"><code class="docutils literal notranslate"><span class="pre">DefaultObject.announce_move_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_move"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_post_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_after_move"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_after_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_leave"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_leave()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_object_receive"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_object_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_traverse"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_post_traverse"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_post_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_after_traverse"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_after_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_failed_traverse"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_failed_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_msg_receive"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_msg_receive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_msg_send"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_msg_send()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_visible_contents"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_visible_contents()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.get_content_names"><code class="docutils literal notranslate"><span class="pre">DefaultObject.get_content_names()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_look"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_look()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_desc"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_desc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_get"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_get"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_before_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_get"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_give"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_give"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_before_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_give"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_give()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_drop"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_drop"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_before_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_drop"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_drop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_pre_say"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_pre_say()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_before_say"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_before_say()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_say"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_say()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.at_rename"><code class="docutils literal notranslate"><span class="pre">DefaultObject.at_rename()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DefaultObject.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">DefaultObject.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.path"><code class="docutils literal notranslate"><span class="pre">DefaultObject.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultObject.typename"><code class="docutils literal notranslate"><span class="pre">DefaultObject.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.lockstring"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.lockstring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.default_description"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.default_description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.get_default_lockstring"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.get_default_lockstring()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.create"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.normalize_name"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.normalize_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.validate_name"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.validate_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.basetype_setup"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.basetype_setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_move"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.at_post_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_after_move"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.at_after_move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_pre_puppet"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.at_pre_puppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_puppet"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.at_post_puppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.at_post_unpuppet"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.at_post_unpuppet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.idle_time"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.idle_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.connection_time"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.connection_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.path"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultCharacter.typename"><code class="docutils literal notranslate"><span class="pre">DefaultCharacter.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom"><code class="docutils literal notranslate"><span class="pre">DefaultRoom</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.default_description"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.default_description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.create"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.basetype_setup"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.basetype_setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.path"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultRoom.typename"><code class="docutils literal notranslate"><span class="pre">DefaultRoom.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand"><code class="docutils literal notranslate"><span class="pre">ExitCommand</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.obj"><code class="docutils literal notranslate"><span class="pre">ExitCommand.obj</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.func"><code class="docutils literal notranslate"><span class="pre">ExitCommand.func()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.get_extra_info"><code class="docutils literal notranslate"><span class="pre">ExitCommand.get_extra_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.aliases"><code class="docutils literal notranslate"><span class="pre">ExitCommand.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.help_category"><code class="docutils literal notranslate"><span class="pre">ExitCommand.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.key"><code class="docutils literal notranslate"><span class="pre">ExitCommand.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.lock_storage"><code class="docutils literal notranslate"><span class="pre">ExitCommand.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.ExitCommand.search_index_entry"><code class="docutils literal notranslate"><span class="pre">ExitCommand.search_index_entry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit"><code class="docutils literal notranslate"><span class="pre">DefaultExit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.exit_command"><code class="docutils literal notranslate"><span class="pre">DefaultExit.exit_command</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.priority"><code class="docutils literal notranslate"><span class="pre">DefaultExit.priority</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.default_description"><code class="docutils literal notranslate"><span class="pre">DefaultExit.default_description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.create_exit_cmdset"><code class="docutils literal notranslate"><span class="pre">DefaultExit.create_exit_cmdset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.create"><code class="docutils literal notranslate"><span class="pre">DefaultExit.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.basetype_setup"><code class="docutils literal notranslate"><span class="pre">DefaultExit.basetype_setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_cmdset_get"><code class="docutils literal notranslate"><span class="pre">DefaultExit.at_cmdset_get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_init"><code class="docutils literal notranslate"><span class="pre">DefaultExit.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_traverse"><code class="docutils literal notranslate"><span class="pre">DefaultExit.at_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.at_failed_traverse"><code class="docutils literal notranslate"><span class="pre">DefaultExit.at_failed_traverse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.get_return_exit"><code class="docutils literal notranslate"><span class="pre">DefaultExit.get_return_exit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DefaultExit.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">DefaultExit.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.path"><code class="docutils literal notranslate"><span class="pre">DefaultExit.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.objects.objects.html#evennia.objects.objects.DefaultExit.typename"><code class="docutils literal notranslate"><span class="pre">DefaultExit.typename</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.locks.lockhandler.html"
+                          title="previous chapter">evennia.locks.lockhandler</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.objects.manager.html"
+                          title="next chapter">evennia.objects.manager</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.objects.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.objects.manager.html" title="evennia.objects.manager"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.locks.lockhandler.html" title="evennia.locks.lockhandler"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.objects</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.contrib.rpg.buffs &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.contrib.rpg.buffs.buff" href="evennia.contrib.rpg.buffs.buff.html" />
+    <link rel="prev" title="evennia.contrib.rpg" href="evennia.contrib.rpg.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.buffs.buff.html" title="evennia.contrib.rpg.buffs.buff"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.html" title="evennia.contrib.rpg"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" accesskey="U">evennia.contrib.rpg</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.buffs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.contrib.rpg.buffs">
+<span id="evennia-contrib-rpg-buffs"></span><h1>evennia.contrib.rpg.buffs<a class="headerlink" href="#module-evennia.contrib.rpg.buffs" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html">evennia.contrib.rpg.buffs.buff</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#using-the-handler">Using the Handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#applying-a-buff">Applying a Buff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#modify">Modify</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#trigger">Trigger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#tick">Tick</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#buffs">Buffs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.random"><code class="docutils literal notranslate"><span class="pre">random()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff"><code class="docutils literal notranslate"><span class="pre">BaseBuff</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.key"><code class="docutils literal notranslate"><span class="pre">BaseBuff.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.name"><code class="docutils literal notranslate"><span class="pre">BaseBuff.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.flavor"><code class="docutils literal notranslate"><span class="pre">BaseBuff.flavor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.visible"><code class="docutils literal notranslate"><span class="pre">BaseBuff.visible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.triggers"><code class="docutils literal notranslate"><span class="pre">BaseBuff.triggers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.handler"><code class="docutils literal notranslate"><span class="pre">BaseBuff.handler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.start"><code class="docutils literal notranslate"><span class="pre">BaseBuff.start</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.duration"><code class="docutils literal notranslate"><span class="pre">BaseBuff.duration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.playtime"><code class="docutils literal notranslate"><span class="pre">BaseBuff.playtime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.refresh"><code class="docutils literal notranslate"><span class="pre">BaseBuff.refresh</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.unique"><code class="docutils literal notranslate"><span class="pre">BaseBuff.unique</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.maxstacks"><code class="docutils literal notranslate"><span class="pre">BaseBuff.maxstacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.stacks"><code class="docutils literal notranslate"><span class="pre">BaseBuff.stacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.tickrate"><code class="docutils literal notranslate"><span class="pre">BaseBuff.tickrate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.mods"><code class="docutils literal notranslate"><span class="pre">BaseBuff.mods</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.cache"><code class="docutils literal notranslate"><span class="pre">BaseBuff.cache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.ticknum"><code class="docutils literal notranslate"><span class="pre">BaseBuff.ticknum</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.owner"><code class="docutils literal notranslate"><span class="pre">BaseBuff.owner</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.timeleft"><code class="docutils literal notranslate"><span class="pre">BaseBuff.timeleft</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.ticking"><code class="docutils literal notranslate"><span class="pre">BaseBuff.ticking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.stacking"><code class="docutils literal notranslate"><span class="pre">BaseBuff.stacking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.__init__"><code class="docutils literal notranslate"><span class="pre">BaseBuff.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.conditional"><code class="docutils literal notranslate"><span class="pre">BaseBuff.conditional()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.remove"><code class="docutils literal notranslate"><span class="pre">BaseBuff.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.dispel"><code class="docutils literal notranslate"><span class="pre">BaseBuff.dispel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.pause"><code class="docutils literal notranslate"><span class="pre">BaseBuff.pause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.unpause"><code class="docutils literal notranslate"><span class="pre">BaseBuff.unpause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.reset"><code class="docutils literal notranslate"><span class="pre">BaseBuff.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.update_cache"><code class="docutils literal notranslate"><span class="pre">BaseBuff.update_cache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_init"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_apply"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_apply()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_remove"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_dispel"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_dispel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_expire"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_expire()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_pre_check"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_pre_check()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_post_check"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_post_check()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_trigger"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_trigger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_tick"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_tick()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_pause"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_pause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BaseBuff.at_unpause"><code class="docutils literal notranslate"><span class="pre">BaseBuff.at_unpause()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod"><code class="docutils literal notranslate"><span class="pre">Mod</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod.__init__"><code class="docutils literal notranslate"><span class="pre">Mod.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod.stat"><code class="docutils literal notranslate"><span class="pre">Mod.stat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod.modifier"><code class="docutils literal notranslate"><span class="pre">Mod.modifier</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod.value"><code class="docutils literal notranslate"><span class="pre">Mod.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.Mod.perstack"><code class="docutils literal notranslate"><span class="pre">Mod.perstack</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler"><code class="docutils literal notranslate"><span class="pre">BuffHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.__init__"><code class="docutils literal notranslate"><span class="pre">BuffHandler.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.ownerref"><code class="docutils literal notranslate"><span class="pre">BuffHandler.ownerref</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.dbkey"><code class="docutils literal notranslate"><span class="pre">BuffHandler.dbkey</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.autopause"><code class="docutils literal notranslate"><span class="pre">BuffHandler.autopause</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.owner"><code class="docutils literal notranslate"><span class="pre">BuffHandler.owner</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.buffcache"><code class="docutils literal notranslate"><span class="pre">BuffHandler.buffcache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.traits"><code class="docutils literal notranslate"><span class="pre">BuffHandler.traits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.effects"><code class="docutils literal notranslate"><span class="pre">BuffHandler.effects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.playtime"><code class="docutils literal notranslate"><span class="pre">BuffHandler.playtime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.paused"><code class="docutils literal notranslate"><span class="pre">BuffHandler.paused</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.expired"><code class="docutils literal notranslate"><span class="pre">BuffHandler.expired</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.visible"><code class="docutils literal notranslate"><span class="pre">BuffHandler.visible</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.all"><code class="docutils literal notranslate"><span class="pre">BuffHandler.all</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.add"><code class="docutils literal notranslate"><span class="pre">BuffHandler.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove"><code class="docutils literal notranslate"><span class="pre">BuffHandler.remove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove_by_type"><code class="docutils literal notranslate"><span class="pre">BuffHandler.remove_by_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove_by_stat"><code class="docutils literal notranslate"><span class="pre">BuffHandler.remove_by_stat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove_by_trigger"><code class="docutils literal notranslate"><span class="pre">BuffHandler.remove_by_trigger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove_by_source"><code class="docutils literal notranslate"><span class="pre">BuffHandler.remove_by_source()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.remove_by_cachevalue"><code class="docutils literal notranslate"><span class="pre">BuffHandler.remove_by_cachevalue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.clear"><code class="docutils literal notranslate"><span class="pre">BuffHandler.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_all"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_type"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get_by_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_stat"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get_by_stat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_trigger"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get_by_trigger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_source"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get_by_source()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.get_by_cachevalue"><code class="docutils literal notranslate"><span class="pre">BuffHandler.get_by_cachevalue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.has"><code class="docutils literal notranslate"><span class="pre">BuffHandler.has()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.check"><code class="docutils literal notranslate"><span class="pre">BuffHandler.check()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.trigger"><code class="docutils literal notranslate"><span class="pre">BuffHandler.trigger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.pause"><code class="docutils literal notranslate"><span class="pre">BuffHandler.pause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.unpause"><code class="docutils literal notranslate"><span class="pre">BuffHandler.unpause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view"><code class="docutils literal notranslate"><span class="pre">BuffHandler.view()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.view_modifiers"><code class="docutils literal notranslate"><span class="pre">BuffHandler.view_modifiers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffHandler.cleanup"><code class="docutils literal notranslate"><span class="pre">BuffHandler.cleanup()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffableProperty"><code class="docutils literal notranslate"><span class="pre">BuffableProperty</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.BuffableProperty.at_get"><code class="docutils literal notranslate"><span class="pre">BuffableProperty.at_get()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff"><code class="docutils literal notranslate"><span class="pre">CmdBuff</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.key"><code class="docutils literal notranslate"><span class="pre">CmdBuff.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.aliases"><code class="docutils literal notranslate"><span class="pre">CmdBuff.aliases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.lock_storage"><code class="docutils literal notranslate"><span class="pre">CmdBuff.lock_storage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.search_index_entry"><code class="docutils literal notranslate"><span class="pre">CmdBuff.search_index_entry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.help_category"><code class="docutils literal notranslate"><span class="pre">CmdBuff.help_category</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.bufflist"><code class="docutils literal notranslate"><span class="pre">CmdBuff.bufflist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.parse"><code class="docutils literal notranslate"><span class="pre">CmdBuff.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.CmdBuff.func"><code class="docutils literal notranslate"><span class="pre">CmdBuff.func()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.cleanup_buffs"><code class="docutils literal notranslate"><span class="pre">cleanup_buffs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.buff.html#evennia.contrib.rpg.buffs.buff.tick_buff"><code class="docutils literal notranslate"><span class="pre">tick_buff()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html">evennia.contrib.rpg.buffs.samplebuffs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit"><code class="docutils literal notranslate"><span class="pre">Exploit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.key"><code class="docutils literal notranslate"><span class="pre">Exploit.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.name"><code class="docutils literal notranslate"><span class="pre">Exploit.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.flavor"><code class="docutils literal notranslate"><span class="pre">Exploit.flavor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.duration"><code class="docutils literal notranslate"><span class="pre">Exploit.duration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.maxstacks"><code class="docutils literal notranslate"><span class="pre">Exploit.maxstacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.triggers"><code class="docutils literal notranslate"><span class="pre">Exploit.triggers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.stack_msg"><code class="docutils literal notranslate"><span class="pre">Exploit.stack_msg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.conditional"><code class="docutils literal notranslate"><span class="pre">Exploit.conditional()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploit.at_trigger"><code class="docutils literal notranslate"><span class="pre">Exploit.at_trigger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited"><code class="docutils literal notranslate"><span class="pre">Exploited</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.key"><code class="docutils literal notranslate"><span class="pre">Exploited.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.name"><code class="docutils literal notranslate"><span class="pre">Exploited.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.flavor"><code class="docutils literal notranslate"><span class="pre">Exploited.flavor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.duration"><code class="docutils literal notranslate"><span class="pre">Exploited.duration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.mods"><code class="docutils literal notranslate"><span class="pre">Exploited.mods</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.at_post_check"><code class="docutils literal notranslate"><span class="pre">Exploited.at_post_check()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Exploited.at_remove"><code class="docutils literal notranslate"><span class="pre">Exploited.at_remove()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching"><code class="docutils literal notranslate"><span class="pre">Leeching</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching.key"><code class="docutils literal notranslate"><span class="pre">Leeching.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching.name"><code class="docutils literal notranslate"><span class="pre">Leeching.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching.flavor"><code class="docutils literal notranslate"><span class="pre">Leeching.flavor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching.duration"><code class="docutils literal notranslate"><span class="pre">Leeching.duration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching.triggers"><code class="docutils literal notranslate"><span class="pre">Leeching.triggers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Leeching.at_trigger"><code class="docutils literal notranslate"><span class="pre">Leeching.at_trigger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison"><code class="docutils literal notranslate"><span class="pre">Poison</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.key"><code class="docutils literal notranslate"><span class="pre">Poison.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.name"><code class="docutils literal notranslate"><span class="pre">Poison.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.flavor"><code class="docutils literal notranslate"><span class="pre">Poison.flavor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.duration"><code class="docutils literal notranslate"><span class="pre">Poison.duration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.maxstacks"><code class="docutils literal notranslate"><span class="pre">Poison.maxstacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.tickrate"><code class="docutils literal notranslate"><span class="pre">Poison.tickrate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.dmg"><code class="docutils literal notranslate"><span class="pre">Poison.dmg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.playtime"><code class="docutils literal notranslate"><span class="pre">Poison.playtime</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_pause"><code class="docutils literal notranslate"><span class="pre">Poison.at_pause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_unpause"><code class="docutils literal notranslate"><span class="pre">Poison.at_unpause()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Poison.at_tick"><code class="docutils literal notranslate"><span class="pre">Poison.at_tick()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated"><code class="docutils literal notranslate"><span class="pre">Sated</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated.key"><code class="docutils literal notranslate"><span class="pre">Sated.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated.name"><code class="docutils literal notranslate"><span class="pre">Sated.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated.flavor"><code class="docutils literal notranslate"><span class="pre">Sated.flavor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated.duration"><code class="docutils literal notranslate"><span class="pre">Sated.duration</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated.maxstacks"><code class="docutils literal notranslate"><span class="pre">Sated.maxstacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.Sated.mods"><code class="docutils literal notranslate"><span class="pre">Sated.mods</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff"><code class="docutils literal notranslate"><span class="pre">StatBuff</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.key"><code class="docutils literal notranslate"><span class="pre">StatBuff.key</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.name"><code class="docutils literal notranslate"><span class="pre">StatBuff.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.maxstacks"><code class="docutils literal notranslate"><span class="pre">StatBuff.maxstacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.refresh"><code class="docutils literal notranslate"><span class="pre">StatBuff.refresh</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.unique"><code class="docutils literal notranslate"><span class="pre">StatBuff.unique</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.cache"><code class="docutils literal notranslate"><span class="pre">StatBuff.cache</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.__init__"><code class="docutils literal notranslate"><span class="pre">StatBuff.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.samplebuffs.html#evennia.contrib.rpg.buffs.samplebuffs.StatBuff.flavor"><code class="docutils literal notranslate"><span class="pre">StatBuff.flavor</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html">evennia.contrib.rpg.buffs.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject"><code class="docutils literal notranslate"><span class="pre">BuffableObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.stat1"><code class="docutils literal notranslate"><span class="pre">BuffableObject.stat1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.buffs"><code class="docutils literal notranslate"><span class="pre">BuffableObject.buffs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.at_init"><code class="docutils literal notranslate"><span class="pre">BuffableObject.at_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">BuffableObject.DoesNotExist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">BuffableObject.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.path"><code class="docutils literal notranslate"><span class="pre">BuffableObject.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.BuffableObject.typename"><code class="docutils literal notranslate"><span class="pre">BuffableObject.typename</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.setUp"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.setUp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.tearDown"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.tearDown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_addremove"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_addremove()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_getters"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_getters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_details"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_details()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modify"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_modify()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_trigger"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_trigger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_context_conditional"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_context_conditional()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_complex"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_complex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_timing"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_timing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_cacheattrlink"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_cacheattrlink()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_buffableproperty"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_buffableproperty()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_stresstest"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_stresstest()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="evennia.contrib.rpg.buffs.tests.html#evennia.contrib.rpg.buffs.tests.TestBuffsAndHandler.test_modgen"><code class="docutils literal notranslate"><span class="pre">TestBuffsAndHandler.test_modgen()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.contrib.rpg.html"
+                          title="previous chapter">evennia.contrib.rpg</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.contrib.rpg.buffs.buff.html"
+                          title="next chapter">evennia.contrib.rpg.buffs.buff</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.contrib.rpg.buffs.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.buffs.buff.html" title="evennia.contrib.rpg.buffs.buff"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.contrib.rpg.html" title="evennia.contrib.rpg"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.contrib.html" >evennia.contrib</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.contrib.rpg.html" >evennia.contrib.rpg</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.contrib.rpg.buffs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

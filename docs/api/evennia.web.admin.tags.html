@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>evennia.web.admin.tags &#8212; Evennia latest documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d75fae25" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=e4a91a55" />
+    <script src="../_static/documentation_options.js?v=c6e86fd7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="evennia.web.admin.urls" href="evennia.web.admin.urls.html" />
+    <link rel="prev" title="evennia.web.admin.server" href="evennia.web.admin.server.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.urls.html" title="evennia.web.admin.urls"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.server.html" title="evennia.web.admin.server"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.admin.html" accesskey="U">evennia.web.admin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.admin.tags</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-evennia.web.admin.tags">
+<span id="evennia-web-admin-tags"></span><h1>evennia.web.admin.tags<a class="headerlink" href="#module-evennia.web.admin.tags" title="Link to this heading">¶</a></h1>
+<p>Tag admin</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagForm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.tags.</span></span><span class="sig-name descname"><span class="pre">TagForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagForm" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Form to display fields in the stand-alone Tag display.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagForm.Meta">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagForm.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagForm.Meta" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('tag_key',</span> <span class="pre">'tag_category',</span> <span class="pre">'tag_data',</span> <span class="pre">'tag_type')</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagForm.Meta.fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'db_category':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_data':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_model':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_tagtype':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagForm.base_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'db_category':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_data':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_model':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;,</span> <span class="pre">'db_tagtype':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagForm.declared_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagForm.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.tags.TagForm.media" title="Link to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.tags.</span></span><span class="sig-name descname"><span class="pre">InlineTagForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#InlineTagForm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+<p>Form for displaying tags inline together with other entities.</p>
+<p>This form overrides the base behavior of the ModelForm that would be used for a
+Tag-through-model.  Since the through-models only have access to the foreignkeys of the Tag and
+the Object that they’re attached to, we need to spoof the behavior of it being a form that would
+correspond to its tag, or the creation of a tag. Instead of being saved, we’ll call to the
+Object’s handler, which will handle the creation, change, or deletion of a tag for us, as well
+as updating the handler’s cache so that all changes are instantly updated in-game.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.Meta">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#InlineTagForm.Meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.Meta" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.Meta.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('tag_key',</span> <span class="pre">'tag_category',</span> <span class="pre">'tag_data',</span> <span class="pre">'tag_type')</span></em><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.Meta.fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#InlineTagForm.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>If we have a tag, then we’ll prepopulate our instance with the fields we’d expect it
+to have based on the tag. tag_key, tag_category, tag_type, and tag_data all refer to
+the corresponding tag fields. The initial data of the form fields will similarly be
+populated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#InlineTagForm.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.save" title="Link to this definition">¶</a></dt>
+<dd><p>One thing we want to do here is the or None checks, because forms are saved with an empty
+string rather than null from forms, usually, and the Handlers may handle empty strings
+differently than None objects. So for consistency with how things are handled in game,
+we’ll try to make sure that empty form fields will be None, rather than ‘’.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.base_fields">
+<span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'tag_category':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tag_data':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tag_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tag_type':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.base_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.declared_fields">
+<span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'tag_category':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tag_data':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tag_key':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;,</span> <span class="pre">'tag_type':</span> <span class="pre">&lt;django.forms.fields.ChoiceField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.declared_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.InlineTagForm.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.tags.InlineTagForm.media" title="Link to this definition">¶</a></dt>
+<dd><p>Return all media required to render the widgets on this form.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagFormSet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.tags.</span></span><span class="sig-name descname"><span class="pre">TagFormSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as_new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queryset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagFormSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagFormSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInlineFormSet</span></code></p>
+<p>The Formset handles all the inline forms that are grouped together on the change page of the
+corresponding object. All the tags will appear here, and we’ll save them by overriding the
+formset’s save method. The forms will similarly spoof their save methods to return an instance
+which hasn’t been saved to the database, but have the relevant fields filled out based on the
+contents of the cleaned form. We’ll then use that to call to the handler of the corresponding
+Object, where the handler is an AliasHandler, PermissionsHandler, or TagHandler, based on the
+type of tag.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagFormSet.verbose_name">
+<span class="sig-name descname"><span class="pre">verbose_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Tag'</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagFormSet.verbose_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagFormSet.verbose_name_plural">
+<span class="sig-name descname"><span class="pre">verbose_name_plural</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Tags'</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagFormSet.verbose_name_plural" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagFormSet.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagFormSet.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagFormSet.save" title="Link to this definition">¶</a></dt>
+<dd><p>Save model instances for every form, adding and changing instances
+as necessary, and return the list of instances.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.tags.</span></span><span class="sig-name descname"><span class="pre">TagInline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagInline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagInline" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TabularInline</span></code></p>
+<p>A handler for inline Tags. This class should be subclassed in the admin of your models,
+and the ‘model’ and ‘related_field’ class attributes must be set. model should be the
+through model (ObjectDB_db_tag’, for example), while related field should be the name
+of the field on that through model which points to the model being used: ‘objectdb’,
+‘msg’, ‘accountdb’, etc.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagInline.model" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.verbose_name">
+<span class="sig-name descname"><span class="pre">verbose_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Tag'</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagInline.verbose_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.verbose_name_plural">
+<span class="sig-name descname"><span class="pre">verbose_name_plural</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Tags'</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagInline.verbose_name_plural" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.form">
+<span class="sig-name descname"><span class="pre">form</span></span><a class="headerlink" href="#evennia.web.admin.tags.TagInline.form" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm" title="evennia.web.admin.tags.InlineTagForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">InlineTagForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.formset">
+<span class="sig-name descname"><span class="pre">formset</span></span><a class="headerlink" href="#evennia.web.admin.tags.TagInline.formset" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.tags.TagFormSet" title="evennia.web.admin.tags.TagFormSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagFormSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.related_field">
+<span class="sig-name descname"><span class="pre">related_field</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagInline.related_field" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagInline.extra" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.get_formset">
+<span class="sig-name descname"><span class="pre">get_formset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagInline.get_formset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagInline.get_formset" title="Link to this definition">¶</a></dt>
+<dd><p>get_formset has to return a class, but we need to make the class that we return
+know about the related_field that we’ll use. Returning the class itself rather than
+a proxy isn’t threadsafe, since it’d be the base class and would change if multiple
+people used the admin at the same time</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagInline.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.tags.TagInline.media" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">evennia.web.admin.tags.</span></span><span class="sig-name descname"><span class="pre">TagAdmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">admin_site</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/evennia/web/admin/tags.html#TagAdmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelAdmin</span></code></p>
+<p>A django Admin wrapper for Tags.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.search_fields">
+<span class="sig-name descname"><span class="pre">search_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('db_key',</span> <span class="pre">'db_category',</span> <span class="pre">'db_tagtype')</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.search_fields" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.list_display">
+<span class="sig-name descname"><span class="pre">list_display</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('db_key',</span> <span class="pre">'db_category',</span> <span class="pre">'db_tagtype',</span> <span class="pre">'db_model',</span> <span class="pre">'db_data')</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.list_display" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.list_filter">
+<span class="sig-name descname"><span class="pre">list_filter</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('db_tagtype',</span> <span class="pre">'db_category',</span> <span class="pre">'db_model')</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.list_filter" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.form">
+<span class="sig-name descname"><span class="pre">form</span></span><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.form" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#evennia.web.admin.tags.TagForm" title="evennia.web.admin.tags.TagForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">TagForm</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.view_on_site">
+<span class="sig-name descname"><span class="pre">view_on_site</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.view_on_site" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.fieldsets">
+<span class="sig-name descname"><span class="pre">fieldsets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">((None,</span> <span class="pre">{'fields':</span> <span class="pre">(('db_key',</span> <span class="pre">'db_category'),</span> <span class="pre">('db_tagtype',</span> <span class="pre">'db_model'),</span> <span class="pre">'db_data')}),)</span></em><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.fieldsets" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="evennia.web.admin.tags.TagAdmin.media">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#evennia.web.admin.tags.TagAdmin.media" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/evennia_logo.png" alt="Logo of Evennia"/>
+            </a></p>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evennia.web.admin.tags</a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagForm"><code class="docutils literal notranslate"><span class="pre">TagForm</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagForm.Meta"><code class="docutils literal notranslate"><span class="pre">TagForm.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagForm.Meta.fields"><code class="docutils literal notranslate"><span class="pre">TagForm.Meta.fields</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagForm.base_fields"><code class="docutils literal notranslate"><span class="pre">TagForm.base_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">TagForm.declared_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagForm.media"><code class="docutils literal notranslate"><span class="pre">TagForm.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm"><code class="docutils literal notranslate"><span class="pre">InlineTagForm</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.Meta"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.Meta</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.Meta.fields"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.Meta.fields</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.__init__"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.save"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.save()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.base_fields"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.base_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.declared_fields"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.declared_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.InlineTagForm.media"><code class="docutils literal notranslate"><span class="pre">InlineTagForm.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagFormSet"><code class="docutils literal notranslate"><span class="pre">TagFormSet</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagFormSet.verbose_name"><code class="docutils literal notranslate"><span class="pre">TagFormSet.verbose_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagFormSet.verbose_name_plural"><code class="docutils literal notranslate"><span class="pre">TagFormSet.verbose_name_plural</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagFormSet.save"><code class="docutils literal notranslate"><span class="pre">TagFormSet.save()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline"><code class="docutils literal notranslate"><span class="pre">TagInline</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.model"><code class="docutils literal notranslate"><span class="pre">TagInline.model</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.verbose_name"><code class="docutils literal notranslate"><span class="pre">TagInline.verbose_name</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.verbose_name_plural"><code class="docutils literal notranslate"><span class="pre">TagInline.verbose_name_plural</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.form"><code class="docutils literal notranslate"><span class="pre">TagInline.form</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.formset"><code class="docutils literal notranslate"><span class="pre">TagInline.formset</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.related_field"><code class="docutils literal notranslate"><span class="pre">TagInline.related_field</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.extra"><code class="docutils literal notranslate"><span class="pre">TagInline.extra</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.get_formset"><code class="docutils literal notranslate"><span class="pre">TagInline.get_formset()</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagInline.media"><code class="docutils literal notranslate"><span class="pre">TagInline.media</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin"><code class="docutils literal notranslate"><span class="pre">TagAdmin</span></code></a><ul>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.search_fields"><code class="docutils literal notranslate"><span class="pre">TagAdmin.search_fields</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.list_display"><code class="docutils literal notranslate"><span class="pre">TagAdmin.list_display</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.list_filter"><code class="docutils literal notranslate"><span class="pre">TagAdmin.list_filter</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.form"><code class="docutils literal notranslate"><span class="pre">TagAdmin.form</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.view_on_site"><code class="docutils literal notranslate"><span class="pre">TagAdmin.view_on_site</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.fieldsets"><code class="docutils literal notranslate"><span class="pre">TagAdmin.fieldsets</span></code></a></li>
+<li><a class="reference internal" href="#evennia.web.admin.tags.TagAdmin.media"><code class="docutils literal notranslate"><span class="pre">TagAdmin.media</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="evennia.web.admin.server.html"
+                          title="previous chapter">evennia.web.admin.server</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="evennia.web.admin.urls.html"
+                          title="next chapter">evennia.web.admin.urls</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <!--h3>This Page</h3-->
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/evennia.web.admin.tags.md.txt"
+            rel="nofollow">Show Page Source</a></li>
+    </ul>
+   </div><h3>Links</h3>
+<ul>
+  <li><a href="https://www.evennia.com/docs/latest/index.html">Documentation Top</a> </li>
+  <li><a href="https://www.evennia.com">Evennia Home</a> </li>
+  <li><a href="https://github.com/evennia/evennia">Github</a> </li>
+  <li><a href="http://games.evennia.com">Game Index</a> </li>
+  <li>
+    <a href="https://discord.gg/AJJpcRUhtF">Discord</a> -
+     <a href="https://github.com/evennia/evennia/discussions">Discussions</a> -
+      <a href="https://evennia.blogspot.com/">Blog</a>
+  </li>
+</ul>
+<h3>Doc Versions</h3>
+<ul>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/latest/index.html">latest (main branch)</a>
+    </li>
+  
+  
+    <li>
+      <a href="https://www.evennia.com/docs/5.x/index.html">v5.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/4.x/index.html">v4.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/3.x/index.html">v3.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/2.x/index.html">v2.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/1.x/index.html">v1.0.0 branch (outdated)</a>
+    </li>
+  
+    <li>
+      <a href="https://www.evennia.com/docs/0.x/index.html">v0.9.5 branch (outdated)</a>
+    </li>
+  
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.urls.html" title="evennia.web.admin.urls"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evennia.web.admin.server.html" title="evennia.web.admin.server"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Evennia</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../Evennia-API.html" >API Summary</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="evennia-api.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-3"><a href="evennia.html" >evennia</a> &#187;</li>
+          <li class="nav-item nav-item-4"><a href="evennia.web.html" >evennia.web</a> &#187;</li>
+          <li class="nav-item nav-item-5"><a href="evennia.web.admin.html" >evennia.web.admin</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">evennia.web.admin.tags</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, The Evennia developer community.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
