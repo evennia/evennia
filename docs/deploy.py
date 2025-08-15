@@ -66,7 +66,7 @@ def deploy():
 
     os.system(f"mkdir {latest_version}")
 
-    os.system("cp -Rf build/html/* {latest_version}/")
+    os.system(f"cp -Rf build/html/* {latest_version}/")
 
     os.system("ls")
 
