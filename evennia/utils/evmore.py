@@ -121,7 +121,7 @@ class CmdMoreExit(Command):
         more.page_quit()
 
         # re-fire the command (in new cmdset)
-        self.caller.execute_cmd(self.raw_string)
+        self.caller.execute_cmd(self.raw_string, session=self.session)
 
 
 class CmdSetMore(CmdSet):
