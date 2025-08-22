@@ -3,6 +3,7 @@
 ## Main branch
 
 - [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
+- [Fix][pull3806]: EvMore wouldn't pass Session to next cmd when exiting (gas-public-wooden-clean)
 - [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
   (PowershellNinja, also honorary mention to electroglyph)
 - [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
@@ -10,6 +11,7 @@
 [pull3799]: https://github.com/evennia/evennia/issues/3799
 [pull3800]: https://github.com/evennia/evennia/issues/3800
 [pull3801]: https://github.com/evennia/evennia/issues/3801
+[pull3806]: https://github.com/evennia/evennia/issues/3806
 
 
 ## Evennia 5.0.1
