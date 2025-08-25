@@ -1,4 +1,4 @@
-{% load static sekizai_tags %}
+{% load static sekizai_tags cachebuster %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,13 +16,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
     <!-- Base CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static "website/css/website.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/website.css" as css_url %}{{ css_url|cachebust }}">
 
     {% comment %}
     Allows for loading custom styles without overriding the base site styles
     {% endcomment %}
     <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static "website/css/custom.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "website/css/custom.css" as custom_css %}{{ custom_css|cachebust }}">
 
     {% block header_ext %}
     {% endblock %}

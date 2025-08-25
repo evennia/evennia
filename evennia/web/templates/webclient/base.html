@@ -6,7 +6,7 @@ with evennia set up automatically and get the Evennia JS lib and
 JQuery available.
 -->
 
-{% load static %}
+{% load static cachebuster %}
 <html dir="ltr" lang="en">
   <head>
     <title> {{game_name}} </title>
@@ -17,13 +17,13 @@ JQuery available.
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" %}>
+    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/webclient.css" as webclient_css %}{{ webclient_css|cachebust }}>
 
     {% comment %}
     Allows for loading custom styles without overriding the base site stylesheet
     {% endcomment %}
     <!-- Custom CSS -->
-    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/custom.css" %}>
+    <link rel='stylesheet' type="text/css" media="screen" href={% static "webclient/css/custom.css" as custom_css %}{{ custom_css|cachebust }}>
 
     <link rel="icon" type="image/x-icon" href="/static/website/images/evennia_logo.png" />
 
@@ -76,7 +76,7 @@ JQuery available.
             var wsurl = "ws://" + this.location.hostname + ":{{websocket_port}}";
         {% endif %}
     </script>
-    <script src={% static "webclient/js/evennia.js" %} language="javascript" type="text/javascript" charset="utf-8"/></script>
+    <script src={% static "webclient/js/evennia.js" as webclient_js %}{{ webclient_js|cachebust }} language="javascript" type="text/javascript" charset="utf-8"/></script>
 
     <!-- set up splits before loading the GUI -->
 <!--
