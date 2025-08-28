@@ -32,7 +32,6 @@ from collections import defaultdict
 from copy import copy
 from itertools import chain
 from traceback import format_exc
-from weakref import WeakValueDictionary
 
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -49,7 +48,7 @@ _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
 __all__ = ("cmdhandler", "InterruptCommand")
 _GA = object.__getattribute__
-_CMDSET_MERGE_CACHE = WeakValueDictionary()
+_CMDSET_MERGE_CACHE = {}
 
 # tracks recursive calls by each caller
 # to avoid infinite loops (commands calling themselves)
