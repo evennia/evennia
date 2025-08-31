@@ -12,6 +12,7 @@ from evennia.utils.utils import crop, datetime_format, is_iter, iter_to_str
 # the number of reports displayed on each page
 _REPORTS_PER_PAGE = 10
 
+# the fallback standard tags
 _REPORT_STATUS_TAGS = ("in progress", "rejected")
 # the tag, used to mark a report as 'closed'
 _REPORT_STATUS_CLOSED_TAG = _("closed")
@@ -23,8 +24,9 @@ if hasattr(settings, "INGAME_REPORT_STATUS_TAGS"):
         logger.log_warn(
             "The 'INGAME_REPORT_STATUS_TAGS' setting must be an iterable of strings; falling back to defaults."
         )
-# add the tag to the tag tupel
-_REPORT_STATUS_TAGS = _REPORT_STATUS_TAGS + (_REPORT_STATUS_CLOSED_TAG,)
+# add the 'closed' tag to the tupel of tags
+if _REPORT_STATUS_CLOSED_TAG not in _REPORT_STATUS_TAGS:
+    _REPORT_STATUS_TAGS = _REPORT_STATUS_TAGS + (_REPORT_STATUS_CLOSED_TAG,)
 
 
 def menunode_list_reports(caller, raw_string, **kwargs):
@@ -164,15 +166,14 @@ def menunode_manage_report(caller, raw_string, report, **kwargs):
     options = []
     for tag in _REPORT_STATUS_TAGS:
         if tag in report.tags.all():
-            if tag in report.tags.all():
-                desc = _("Unmark as {tag}").format(tag=tag)
-            else:
-                desc = _("Mark as {tag}").format(tag=tag)
-            options.append(
-                {
-                    "desc": desc,
-                    "goto": (_report_toggle_tag, {"report": report, "tag": tag}),
-                }
-            )
+            desc = _("Unmark as {tag}").format(tag=tag)
+        else:
+            desc = _("Mark as {tag}").format(tag=tag)
+        options.append(
+            {
+                "desc": desc,
+                "goto": (_report_toggle_tag, {"report": report, "tag": tag}),
+            }
+        )
     options.append({"desc": _("Manage another report"), "goto": "menunode_list_reports"})
     return text, options

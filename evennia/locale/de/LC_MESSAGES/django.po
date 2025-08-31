@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-31 09:56+0000\n"
+"POT-Creation-Date: 2025-08-31 10:23+0000\n"
 "PO-Revision-Date: 2025-03-28 10:21+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -353,8 +353,7 @@ msgstr "{hub_name} verwalten"
 msgid ""
 "(No {status} reports)\n"
 "{text}"
-msgstr "Keine {status} Berichte"
-"{text}"
+msgstr "Keine {status} Berichte{text}"
 
 #: contrib/base_systems/ingame_reports/menu.py:52
 #, python-brace-format
@@ -411,7 +410,7 @@ msgstr "Alle offenen Berichte"
 #: contrib/base_systems/ingame_reports/menu.py:148
 #, python-brace-format
 msgid " about {receivers}"
-msgstr "über {receivers}"
+msgstr " über {receivers}"
 
 #: contrib/base_systems/ingame_reports/menu.py:153
 #, python-brace-format
@@ -424,17 +423,17 @@ msgstr ""
 "{timestamp} von {senders}{about_clause}\n"
 "{tags}"
 
-#: contrib/base_systems/ingame_reports/menu.py:168
+#: contrib/base_systems/ingame_reports/menu.py:167
 #, python-brace-format
 msgid "Unmark as {tag}"
 msgstr "Markierung als {tag} entfernen"
 
-#: contrib/base_systems/ingame_reports/menu.py:170
+#: contrib/base_systems/ingame_reports/menu.py:169
 #, python-brace-format
 msgid "Mark as {tag}"
 msgstr "Als {tag} markieren"
 
-#: contrib/base_systems/ingame_reports/menu.py:177
+#: contrib/base_systems/ingame_reports/menu.py:176
 msgid "Manage another report"
 msgstr "Einen anderen Bericht verwalten."
 
