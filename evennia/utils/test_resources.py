@@ -452,12 +452,13 @@ class EvenniaCommandTestMixin:
             unmocked_msg_methods[receiver] = receiver.msg
             # replace normal `.msg` with a mock
             receiver.msg = Mock()
+
         # Run the methods of the Command. This mimics what happens in the
         # cmdhandler. This will have the mocked .msg be called as part of the
         # execution. Mocks remembers what was sent to them so we will be able
         # to retrieve what was sent later.
-        try:
-            if not cmdobj.at_pre_cmd():
+        if not cmdobj.at_pre_cmd():
+            try:
                 cmdobj.parse()
                 ret = cmdobj.func()
                 # handle func's with yield in them (making them generators)
@@ -480,16 +481,16 @@ class EvenniaCommandTestMixin:
                             break
 
                 cmdobj.at_post_cmd()
-        except StopIteration:
-            pass
-        except InterruptCommand:
-            pass
+            except StopIteration:
+                pass
+            except InterruptCommand:
+                pass
 
-        for inp in inputs:
-            # if there are any inputs left, we may have a non-generator
-            # input to handle (get_input/ask_yes_no that uses a separate
-            # cmdset rather than a yield
-            caller.execute_cmd(inp)
+            for inp in inputs:
+                # if there are any inputs left, we may have a non-generator
+                # input to handle (get_input/ask_yes_no that uses a separate
+                # cmdset rather than a yield
+                caller.execute_cmd(inp)
 
         # At this point the mocked .msg methods on each receiver will have
         # stored all calls made to them (that's a basic function of the Mock

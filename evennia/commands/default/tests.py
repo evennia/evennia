@@ -2263,3 +2263,16 @@ class TestSystemCommands(BaseEvenniaCommandTest):
         multimatch.matches = matches
 
         self.call(multimatch, "look", "")
+
+class TestPreCmdOutputTestable(BaseEvenniaCommandTest):
+    def test_pre_cmd(self):
+        class CmdTest(Command):
+            def at_pre_cmd(self):
+                self.msg("This should be testable")
+                return True
+
+            def func(self):
+                self.msg("This should never be executed")
+                return
+
+        self.call(CmdTest(), "test", "This should be testable")
