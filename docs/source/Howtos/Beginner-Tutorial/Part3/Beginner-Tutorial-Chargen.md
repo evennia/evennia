@@ -171,11 +171,20 @@ class TemporaryCharacterSheet:
         self.level = 1
 
         # random equipment
-        self.armor = dice.roll_random_table("1d20", chargen_tables["armor"])
+        _armor = dice.roll_random_table("1d20", chargen_tables["armor"])
+        self.armor = None if "no armor" in _armor else _armor
 
         _helmet_and_shield = dice.roll_random_table("1d20", chargen_tables["helmets and shields"])
-        self.helmet = "helmet" if "helmet" in _helmet_and_shield else "none"
-        self.shield = "shield" if "shield" in _helmet_and_shield else "none"
+        self.helmet = (
+            None
+            if "no" in _helmet_and_shield
+            else ("helmet" if "helmet" in _helmet_and_shield else None)
+        )
+        self.shield = (
+            None
+            if "no" in _helmet_and_shield
+            else ("shield" if "shield" in _helmet_and_shield else None)
+        )
 
         self.weapon = dice.roll_random_table("1d20", chargen_tables["starting weapon"])
 

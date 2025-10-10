@@ -25,12 +25,25 @@ class EvAdventureCharacterGenerationTest(BaseEvenniaTest):
         mock_randint.return_value = 10
         self.chargen = chargen.TemporaryCharacterSheet()
 
-    def test_base_chargen(self):
-        self.assertEqual(self.chargen.strength, 10)  # not realistic, due to mock
-        self.assertEqual(self.chargen.armor, "gambeson")
+    @patch("evennia.contrib.tutorials.evadventure.rules.randint")
+    def test_base_chargen(self, mock_randint):
+        mock_randint.return_value = 17
+        self.assertEqual(self.chargen.strength, 17)  # not realistic, due to mock
+        self.assertEqual(self.chargen.armor, "brigandine")
         self.assertEqual(self.chargen.shield, "shield")
         self.assertEqual(
-            self.chargen.backpack, ["ration", "ration", "waterskin", "waterskin", "drill", "twine"]
+            self.chargen.backpack, ["ration", "ration", "tent", "tent", "lockpicks", "soap"]
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.rules.randint")
+    def test_base_chargen_armor_and_shield_None(self, mock_randint):
+        mock_randint.return_value = 3
+        self.chargen = chargen.TemporaryCharacterSheet()
+        self.assertEqual(self.chargen.strength, 3)
+        self.assertEqual(self.chargen.armor, None)
+        self.assertEqual(self.chargen.shield, None)
+        self.assertEqual(
+            self.chargen.backpack, ["ration", "ration", "chain, 10ft", "chain, 10ft", "shovel", "lens"]
         )
 
     def test_build_desc(self):
