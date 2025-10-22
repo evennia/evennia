@@ -248,7 +248,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in cmdset_a])
+            existing_commands = set(cmdset_a.commands)
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in existing_commands])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
