@@ -804,7 +804,7 @@ def batch_update_objects_with_prototype(
             changed += 1
             obj.save()
             if spawn_hook := getattr(obj, "at_object_post_spawn", None):
-                spawn_hook(prototype=prototype)
+                spawn_hook(prototype=new_prototype)
 
     return changed
 
