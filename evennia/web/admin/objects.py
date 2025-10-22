@@ -287,7 +287,7 @@ class ObjectAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         custom_urls = [
             path(
-                "account-object-link/<int:pk>",
+                "account-object-link/<int:object_id>",
                 self.admin_site.admin_view(self.link_object_to_account),
                 name="object-account-link",
             )
