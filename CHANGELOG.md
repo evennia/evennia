@@ -6,6 +6,7 @@
 - [Fix][pull3806]: EvMore wouldn't pass Session to next cmd when exiting (gas-public-wooden-clean)
 - [Fix][pull3817]: `ingame_reports` i18n fix (peddn)
 - [Fix][pull3818]: Update spawn hook to use `new_prototype` (InspectorCaracal)
+- [Fix][pull3815]: Performance improvement in large cmdset mergers (blongden)
 - [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
   (PowershellNinja, also honorary mention to electroglyph)
 - [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
@@ -17,6 +18,7 @@
 [pull3800]: https://github.com/evennia/evennia/issues/3800
 [pull3801]: https://github.com/evennia/evennia/issues/3801
 [pull3806]: https://github.com/evennia/evennia/issues/3806
+[pull3815]: https://github.com/evennia/evennia/issues/3815
 [pull3817]: https://github.com/evennia/evennia/issues/3817
 [pull3818]: https://github.com/evennia/evennia/issues/3818
 [pull3825]: https://github.com/evennia/evennia/issues/3825
