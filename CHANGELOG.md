@@ -4,6 +4,8 @@
 
 - [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
 - [Fix][pull3806]: EvMore wouldn't pass Session to next cmd when exiting (gas-public-wooden-clean)
+- [Fix][pull3809]: Admin page - Repair link to Account button (UserlandAlchemist)
+- [Fix][pull3811]: Website login banner shows before login attempt (UserlandAlchemist)
 - [Fix][pull3817]: `ingame_reports` i18n fix (peddn)
 - [Fix][pull3818]: Update spawn hook to use `new_prototype` (InspectorCaracal)
 - [Fix][pull3815]: Performance improvement in large cmdset mergers (blongden)
@@ -18,6 +20,8 @@
 [pull3800]: https://github.com/evennia/evennia/issues/3800
 [pull3801]: https://github.com/evennia/evennia/issues/3801
 [pull3806]: https://github.com/evennia/evennia/issues/3806
+[pull3809]: https://github.com/evennia/evennia/issues/3809
+[pull3811]: https://github.com/evennia/evennia/issues/3811
 [pull3815]: https://github.com/evennia/evennia/issues/3815
 [pull3817]: https://github.com/evennia/evennia/issues/3817
 [pull3818]: https://github.com/evennia/evennia/issues/3818
