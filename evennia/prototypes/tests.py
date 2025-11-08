@@ -402,6 +402,39 @@ class TestProtLib(BaseEvenniaTest):
         match = protlib.search_prototype(self.prot["prototype_key"].upper())
         self.assertEqual(match, [self.prot])
 
+    def test_homogenize_prototype_locks_preserved(self):
+        """Test that homogenize_prototype preserves custom prototype_locks. (Bug 3828)"""
+        from evennia.prototypes.prototypes import _PROTOTYPE_FALLBACK_LOCK
+
+        prot_with_locks = {
+            "prototype_key": "test_prot_with_locks",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "prototype_locks": "spawn:perm(Builder);edit:perm(Admin)",
+        }
+        homogenized = protlib.homogenize_prototype(prot_with_locks)
+        self.assertEqual(
+            homogenized["prototype_locks"],
+            "spawn:perm(Builder);edit:perm(Admin)",
+        )
+        self.assertNotEqual(
+            homogenized["prototype_locks"],
+            _PROTOTYPE_FALLBACK_LOCK,
+        )
+
+    def test_homogenize_prototype_locks_default_fallback(self):
+        """Test that homogenize_prototype uses default when prototype_locks not provided."""
+        from evennia.prototypes.prototypes import _PROTOTYPE_FALLBACK_LOCK
+
+        prot_without_locks = {
+            "prototype_key": "test_prot_without_locks",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+        }
+        homogenized = protlib.homogenize_prototype(prot_without_locks)
+        self.assertEqual(
+            homogenized["prototype_locks"],
+            _PROTOTYPE_FALLBACK_LOCK,
+        )
+
 
 class TestProtFuncs(BaseEvenniaTest):
     @override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"])
