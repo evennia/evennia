@@ -65,7 +65,7 @@ class TestANSIString(TestCase):
         self.assertEqual(split1, split3, "Split 1 and 3 differ")
 
     def test_getitem_index_access(self):
-        """Test individual character access via indexing (tests optimized __getitem__)"""
+        """Test individual character access via indexing"""
         # Test accessing individual characters
         self.assertEqual(self.example_ansi[0].clean(), "e")
         self.assertEqual(self.example_ansi[9].clean(), "b")
@@ -85,7 +85,7 @@ class TestANSIString(TestCase):
         self.assertIn(ANSI_CYAN, ninth_char.raw())
 
     def test_getitem_slice_access(self):
-        """Test slice access (tests optimized __getitem__ via _slice)"""
+        """Test slice access"""
         # Test basic slicing
         substring = self.example_ansi[0:8]
         self.assertEqual(substring.clean(), "electric")
@@ -120,7 +120,7 @@ class TestANSIString(TestCase):
             _ = self.example_ansi[100]
 
     def test_upper_method(self):
-        """Test upper() method (uses optimized _transform)"""
+        """Test upper() method"""
         # Test basic upper with ANSI codes
         result = self.example_ansi.upper()
         self.assertEqual(result.clean(), "ELECTRIC BOOGALOO")
@@ -135,7 +135,7 @@ class TestANSIString(TestCase):
         self.assertEqual(mixed.upper().clean(), "HELLO WORLD")
 
     def test_lower_method(self):
-        """Test lower() method (uses optimized _transform)"""
+        """Test lower() method"""
         # Test basic lower with ANSI codes
         upper_ansi = AN("|rELECTRIC |cBOOGALOO|n")
         result = upper_ansi.lower()
@@ -147,7 +147,7 @@ class TestANSIString(TestCase):
         self.assertIn(ANSI_CYAN, result.raw())
 
     def test_capitalize_method(self):
-        """Test capitalize() method (uses optimized _transform)"""
+        """Test capitalize() method"""
         # Test basic capitalize with ANSI codes
         lower_ansi = AN("|relectric |cboogaloo|n")
         result = lower_ansi.capitalize()
@@ -158,7 +158,7 @@ class TestANSIString(TestCase):
         self.assertIn(ANSI_RED, result.raw())
 
     def test_swapcase_method(self):
-        """Test swapcase() method (uses optimized _transform)"""
+        """Test swapcase() method"""
         # Test basic swapcase with ANSI codes
         mixed = AN("|rElEcTrIc |cBoOgAlOo|n")
         result = mixed.swapcase()
