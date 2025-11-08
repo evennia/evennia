@@ -60,3 +60,13 @@ Welcome!
 [evenniapictures]: https://www.evennia.com/docs/latest/Evennia-In-Pictures.html
 [beginnertutorial]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.html
 [installation]: https://www.evennia.com/docs/latest/Setup/Setup-Overview.html#installation-and-running
+
+
+## Quick Start Example
+
+To quickly try Evennia locally, you can run:
+```bash
+pip install evennia
+evennia --init mygame
+cd mygame
+evennia start
