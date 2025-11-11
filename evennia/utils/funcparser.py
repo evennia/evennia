@@ -1131,12 +1131,12 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         - "$search(beach, category=outdoors, type=tag)
 
     """
-    # clean out funcparser-specific kwargs so we can use the kwargs for
+    # clean out funcparser and protfunc_parser-specific kwargs so we can use the kwargs for
     # searching
     search_kwargs = {
         key: value
         for key, value in kwargs.items()
-        if key not in ("funcparser", "raise_errors", "type", "return_list")
+        if key not in ("funcparser", "raise_errors", "type", "return_list", "prototype")
     }
     return_list = str(kwargs.pop("return_list", "false")).lower() == "true"
 
