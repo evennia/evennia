@@ -19,6 +19,7 @@ with [discussion forums][group] and a [discord server][chat] to help and support
 
     pip install evennia
         (windows users once: py -m evennia)
+        (note: Windows users with multiple Python versions should prefer `py -3.11` instead of `python` when creating virtual environments)
     evennia --init mygame
     cd mygame
     evennia migrate
