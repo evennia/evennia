@@ -685,6 +685,11 @@ class ObjectDBManager(TypedObjectManager):
                     "or the setting is malformed."
                 )
 
+        # db_key has NOT NULL constraint, convert None to empty string.
+        # at_first_save() will convert empty string to #dbref
+        if key is None:
+            key = ""
+
         # create new instance
         new_object = typeclass(
             db_key=key,
