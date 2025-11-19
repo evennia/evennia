@@ -9,12 +9,18 @@
 - [Fix][pull3817]: `ingame_reports` i18n fix (peddn)
 - [Fix][pull3818]: Update spawn hook to use `new_prototype` (InspectorCaracal)
 - [Fix][pull3815]: Performance improvement in large cmdset mergers (blongden)
+- [Fix][pull3831]: Performance optimization in ANSIString, performance boost for large colored
+  strings (count-infinity)
+- [Fix][pull3832]: Fix typo in prototype causing homogenized locks to use
+  fallbacks incorrectly (count-infinity)
+- [Fix][pull3834]: Fix so `$obj(#123)` inline function works in prototype spawning (count-infinity)
+- [Fix][pull3836]: Correctly handling calling `create_object` with `key=None` (count-infinity)
 - [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
   (PowershellNinja, also honorary mention to electroglyph)
 - [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
 - [Doc][pull3825]: Update Portuguese translation (marado)
 - [Doc][pull3826]: Fix broken links in README (marado)
-- Docs: marado, Griatch
+- Docs: marado, Griatch, Hasna878
 
 [pull3799]: https://github.com/evennia/evennia/issues/3799
 [pull3800]: https://github.com/evennia/evennia/issues/3800
@@ -27,6 +33,10 @@
 [pull3818]: https://github.com/evennia/evennia/issues/3818
 [pull3825]: https://github.com/evennia/evennia/issues/3825
 [pull3826]: https://github.com/evennia/evennia/issues/3826
+[pull3831]: https://github.com/evennia/evennia/issues/3831
+[pull3832]: https://github.com/evennia/evennia/issues/3832
+[pull3834]: https://github.com/evennia/evennia/issues/3834
+[pull3836]: https://github.com/evennia/evennia/issues/3836
 
 
 ## Evennia 5.0.1
