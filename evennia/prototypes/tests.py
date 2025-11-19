@@ -1078,6 +1078,47 @@ class TestIssue2908(BaseEvenniaTest):
         self.assertEqual(obj[0].location, self.room1)
 
 
+class TestIssue3824(BaseEvenniaTest):
+    """
+    Test that $obj, $objlist, $search, and $dbref callables work correctly when spawning prototypes.
+
+    Regression test for bug where 'prototype' kwarg was passed to search functions causing TypeError.
+    """
+
+    def test_spawn_with_search_callables(self):
+        """Test spawning prototype with $obj, $objlist, $search, and $dbref callables."""
+        # Setup: tag some objects for searching
+        self.room1.tags.add("test_location", category="zone")
+        self.room2.tags.add("test_location", category="zone")
+        self.obj1.tags.add("test_item", category="item_type")
+
+        # Create prototype using all search callables
+        prot = {
+            "prototype_key": "test_search_callables",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "test object",
+            "attr_obj": f"$obj({self.obj1.dbref})",
+            "attr_search": "$search(Char)",
+            "attr_objlist": "$objlist(test_location, category=zone, type=tag)",
+            "attr_dbref": f"$dbref({self.obj1.dbref})",
+        }
+
+        # This should not raise TypeError about 'prototype' kwarg
+        objs = spawner.spawn(prot, caller=self.char1)
+
+        self.assertEqual(len(objs), 1)
+        obj = objs[0]
+
+        # Verify all search callables worked correctly
+        self.assertEqual(obj.db.attr_obj, self.obj1)
+        self.assertEqual(obj.db.attr_search, self.char1)
+        self.assertEqual(obj.db.attr_dbref, self.obj1)
+        # attr_objlist should be a list or list-like object with 2 rooms
+        objlist = obj.db.attr_objlist
+        self.assertEqual(len(objlist), 2)
+        self.assertIn(self.room1, objlist)
+        self.assertIn(self.room2, objlist)
+
 class TestIssue3101(EvenniaCommandTest):
     """
     Spawning and using create_object should store the same `typeclass_path` if using
