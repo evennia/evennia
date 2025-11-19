@@ -58,7 +58,7 @@ class TypeclassViewSetMixin(GeneralViewSetMixin):
     # for example: mygame.com/api/objects?db_key=bob to find matches based on objects having a db_key of bob
     filter_backends = [DjangoFilterBackend]
 
-    @action(detail=True, methods=["put", "post"])
+    @action(detail=True, methods=["put"])
     def set_attribute(self, request, pk=None):
         """
         This action will set an attribute if the db_value is defined, or remove
