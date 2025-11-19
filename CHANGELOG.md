@@ -3,6 +3,8 @@
 ## Main branch
 
 - Security dependency updates: Django >5.2.8 (<5.3), Django RestFramework 3.16
+- [Fix]: API /openapi/setattribute endpoints were both POST and PUT, causing schema
+  errors; now changed to PUT only. (Griatch)
 - [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
 - [Fix][pull3806]: EvMore wouldn't pass Session to next cmd when exiting (gas-public-wooden-clean)
 - [Fix][pull3809]: Admin page - Repair link to Account button (UserlandAlchemist)
