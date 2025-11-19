@@ -65,7 +65,7 @@ classifiers = [
 dependencies = [
   # core dependencies
   "legacy-cgi;python_version >= '3.13'",
-  "django >= 5.2, < 5.3",
+  "django >= 5.2.8, < 5.3",
   "twisted >= 24.11.0, < 25",
   "pytz >= 2022.6",
   "djangorestframework >= 3.14, < 3.15",
