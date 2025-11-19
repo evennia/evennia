@@ -703,12 +703,17 @@ def _transform(func_name):
 
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
+
+        # Convert to sets for O(1) membership testing
+        code_indexes_set = set(self._code_indexes)
+        char_indexes_set = set(self._char_indexes)
+
         to_string = []
         char_counter = 0
         for index in range(0, len(self._raw_string)):
-            if index in self._code_indexes:
+            if index in code_indexes_set:
                 to_string.append(self._raw_string[index])
-            elif index in self._char_indexes:
+            elif index in char_indexes_set:
                 to_string.append(replacement_string[char_counter])
                 char_counter += 1
         return ANSIString(
@@ -1028,10 +1033,12 @@ class ANSIString(str, metaclass=ANSIMeta):
             return ANSIString("")
         last_mark = slice_indexes[0]
         # Check between the slice intervals for escape sequences.
+        # Convert to set for O(1) membership testing
+        code_indexes_set = set(self._code_indexes)
         i = None
         for i in slice_indexes[1:]:
             for index in range(last_mark, i):
-                if index in self._code_indexes:
+                if index in code_indexes_set:
                     string += self._raw_string[index]
             last_mark = i
             try:
@@ -1065,15 +1072,18 @@ class ANSIString(str, metaclass=ANSIMeta):
             append_tail = self._get_interleving(item + 1)
         else:
             append_tail = ""
-        item = self._char_indexes[item]
 
-        clean = self._raw_string[item]
-        result = ""
-        # Get the character they're after, and replay all escape sequences
-        # previous to it.
-        for index in range(0, item + 1):
-            if index in self._code_indexes:
-                result += self._raw_string[index]
+        char_pos = self._char_indexes[item]
+        clean = self._raw_string[char_pos]
+
+        code_indexes_set = set(self._code_indexes)
+
+        result_chars = [
+            self._raw_string[index] for index in range(0, char_pos + 1) if index in code_indexes_set
+        ]
+
+        result = "".join(result_chars)
+
         return ANSIString(result + clean + append_tail, decoded=True)
 
     def clean(self):
@@ -1153,7 +1163,9 @@ class ANSIString(str, metaclass=ANSIMeta):
             # Plain string, no ANSI codes.
             return code_indexes, list(range(0, len(self._raw_string)))
         # all indexes not occupied by ansi codes are normal characters
-        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes]
+        code_indexes_set = set(code_indexes)
+        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes_set]
+
         return code_indexes, char_indexes
 
     def _get_interleving(self, index):
@@ -1166,12 +1178,17 @@ class ANSIString(str, metaclass=ANSIMeta):
             index = self._char_indexes[index - 1]
         except IndexError:
             return ""
+
+        # Convert to sets for O(1) membership testing
+        char_indexes_set = set(self._char_indexes)
+        code_indexes_set = set(self._code_indexes)
+
         s = ""
         while True:
             index += 1
-            if index in self._char_indexes:
+            if index in char_indexes_set:
                 break
-            elif index in self._code_indexes:
+            elif index in code_indexes_set:
                 s += self._raw_string[index]
             else:
                 break
