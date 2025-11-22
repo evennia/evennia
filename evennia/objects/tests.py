@@ -244,6 +244,20 @@ class DefaultObjectTest(BaseEvenniaTest):
 class TestObjectManager(BaseEvenniaTest):
     "Test object manager methods"
 
+    def test_create_object_with_none_key(self):
+        """Test that create_object() handles key=None and key="" correctly."""
+        # Test with key=None - should convert to "" and then to #dbref
+        obj_none = ObjectDB.objects.create_object(key=None, location=self.room1)
+        self.assertIsNotNone(obj_none)
+        self.assertEqual(obj_none.key, f"#{obj_none.id}")
+        obj_none.delete()
+
+        # Test with key="" - should convert to #dbref
+        obj_empty = ObjectDB.objects.create_object(key="", location=self.room1)
+        self.assertIsNotNone(obj_empty)
+        self.assertEqual(obj_empty.key, f"#{obj_empty.id}")
+        obj_empty.delete()
+
     def test_get_object_with_account(self):
         query = ObjectDB.objects.get_object_with_account("TestAccount").first()
         self.assertEqual(query, self.char1)

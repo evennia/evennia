@@ -187,7 +187,7 @@ def homogenize_prototype(prototype, custom_keys=None):
         "prototype-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:7]),
     )
     homogenized["prototype_tags"] = homogenized.get("prototype_tags", [])
-    homogenized["prototype_locks"] = homogenized.get("prototype_lock", _PROTOTYPE_FALLBACK_LOCK)
+    homogenized["prototype_locks"] = homogenized.get("prototype_locks", _PROTOTYPE_FALLBACK_LOCK)
     homogenized["prototype_desc"] = homogenized.get("prototype_desc", "")
     if "typeclass" not in prototype and "prototype_parent" not in prototype:
         homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS
