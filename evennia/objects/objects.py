@@ -3467,12 +3467,13 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
 
     """
 
-    obj = None
-
     def func(self):
         """
         Default exit traverse if no syscommand is defined.
         """
+        if not hasattr(self, "obj") or self.obj is None:
+            return
+        self.obj = typing.cast(DefaultExit, self.obj)
 
         if self.obj.access(self.caller, "traverse"):
             # we may traverse the exit.
@@ -3486,6 +3487,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
             else:
                 # No shorthand error message. Call hook.
                 self.obj.at_failed_traverse(self.caller)
+
+    def get_display_name(self, looker=None, **kwargs):
+        return self.obj.get_display_name(looker, **kwargs)
 
     def get_extra_info(self, caller, **kwargs):
         """
@@ -3506,7 +3510,7 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
                 destination=self.obj.destination.get_display_name(caller, **kwargs)
             )
         else:
-            return " (%s)" % self.obj.get_display_name(caller, **kwargs)
+            return _(" (exit)")
 
 
 #
