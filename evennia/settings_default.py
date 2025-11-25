@@ -441,7 +441,11 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs")
 # Module holding handlers for managing incoming data from the client. These
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
-INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
+INPUT_FUNC_MODULES = [
+    "evennia.server.inputfuncs",
+    "server.conf.inputfuncs",
+    "evennia.server.is_typing",
+]
 # Modules that contain prototypes for use with the spawner mechanism.
 PROTOTYPE_MODULES = ["world.prototypes"]
 # Modules containining Prototype functions able to be embedded in prototype
