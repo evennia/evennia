@@ -94,11 +94,12 @@ class ANSIStringTestCase(TestCase):
     def test_split(self):
         """
         Verifies that re.split and .split behave similarly and that color
-        codes end up where they should.
+        codes end up where they should, including across newlines.
         """
-        target = ANSIString("|gThis is |nA split string|g")
-        first = ("\x1b[1m\x1b[32mThis is \x1b[0m", "This is ")
-        second = ("\x1b[1m\x1b[32m\x1b[0m split string\x1b[1m\x1b[32m", " split string")
+        target = ANSIString("|gThis is \nA split string|g")
+        first = ("\x1b[1m\x1b[32mThis is \n", "This is \n")
+        # Color codes carry through the newline
+        second = ("\x1b[1m\x1b[32m split string\x1b[1m\x1b[32m", " split string")
         re_split = re.split("A", target)
         normal_split = target.split("A")
         self.assertEqual(re_split, normal_split)
@@ -219,19 +220,19 @@ class ANSIStringTestCase(TestCase):
 
     def test_slice_insert_longer(self):
         """
-        The ANSIString replays the color code before the split in order to
-        produce a *visually* identical result. The result is a longer string in
-        raw characters, but one which correctly represents the color output.
+        Test that slicing and inserting produces correct ANSI output,
+        with color codes preserved across newlines.
         """
-        string = ANSIString("A bigger |rTest|n of things |bwith more color|n")
-        # from evennia import set_trace;set_trace()
+        string = ANSIString("A bigger |rTest\n of things |bwith more color|n")
         split_string = string[:9] + "Test" + string[13:]
+        # string[:9] includes trailing red code since position 9 is in red region
+        # string[13:] carries red through the newline
         self.assertEqual(
             repr(
                 (
                     ANSIString("A bigger ")
-                    + ANSIString("|rTest")  # note that the |r|n is replayed together on next line
-                    + ANSIString("|r|n of things |bwith more color|n")
+                    + ANSIString("|rTest")
+                    + ANSIString("|r\n of things |bwith more color|n")
                 ).raw()
             ),
             repr(split_string.raw()),
