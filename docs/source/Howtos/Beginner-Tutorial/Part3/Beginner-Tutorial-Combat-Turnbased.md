@@ -218,7 +218,7 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 We use the `advantage/disadvantage_matrix` Attributes to track who has advantage against whom.
 
 ```{sidebar} .pop()
-The Python `.pop()` method exists on lists and dicts as well as some other iterables. It 'pops' and returns an element from the container. For a list, it's either popped by index or by popping the last element. For a dict (like here), a specific key must be given to pop. If you don't provide a default value as a second element, an error will be raised if the key you try to pop is not found.
+The Python `.pop()` method removes an element from a list or dict and returns it. For a list, it removes by index (or the last element by default). For a dict (like here), you specify which key to remove. Providing a default value as a second argument prevents an error if the key doesn't exist.
 ```
 In the `has dis/advantage` methods we `pop` the target from the matrix which will result either in the value `True` or `False` (the default value we give to `pop` if the target is not in the matrix). This means that the advantage, once gained, can only be used once.
 
