@@ -416,7 +416,7 @@ from evennia import InterruptCommand
 
 class _BaseTwitchCombatCommand(Command):
     """
-    Parent class for all twitch-combat commnads.
+    Parent class for all twitch-combat commands.
 
     """
 
@@ -641,7 +641,7 @@ class CmdStunt(_BaseTwitchCombatCommand):
             # something like `boost str target`
             target = recipient if advantage else "me"
             recipient = "me" if advantage else recipient
- we still have None:s at this point, we can't continue
+        # if any values are still None at this point, we can't continue
         if None in (stunt_type, recipient, target):
             self.msg("Both ability, recipient and  target of stunt must be given.")
             raise InterruptCommand()
@@ -677,7 +677,7 @@ class CmdStunt(_BaseTwitchCombatCommand):
 
 ```
 
-This looks much longer, but that is only because the stunt command should understand many different input structures depending on if you are trying to create a advantage or disadvantage, and if an ally or enemy should receive the effect of the stunt. 
+This looks much longer, but that is only because the stunt command should understand many different input structures depending on if you are trying to create an advantage or disadvantage, and if an ally or enemy should receive the effect of the stunt. 
 
 Note the `enums.ABILITY_REVERSE_MAP` (created in the [Utilities lesson](./Beginner-Tutorial-Utilities.md)) being useful to convert your input of 'str' into `Ability.STR` needed by the action dict.
 
@@ -754,8 +754,8 @@ To use an item, we need to make sure we are carrying it. Luckily our work in the
 
 class CmdWield(_BaseTwitchCombatCommand):
     """
-    Wield a weapon or spell-rune. You will the wield the item, 
-        swapping with any other item(s) you were wielded before.
+    Wield a weapon or spell-rune. You wield the item,
+        swapping with any other item(s) you were wielding before.
 
     Usage:
       wield <weapon or spell>
@@ -893,7 +893,7 @@ from .. import combat_twitch
 
 # ...
 
-class TestEvAdventureTwitchCombat(EvenniaCommandTestMixin)
+class TestEvAdventureTwitchCombat(EvenniaCommandTestMixin):
 
     def setUp(self): 
         self.combathandler = (
@@ -904,12 +904,12 @@ class TestEvAdventureTwitchCombat(EvenniaCommandTestMixin)
     @patch("evadventure.combat_twitch.unrepeat", new=Mock())
     @patch("evadventure.combat_twitch.repeat", new=Mock())
     def test_hold_command(self): 
-        self.call(combat_twitch, CmdHold(), "", "You hold back, doing nothing")
+        self.call(combat_twitch, CmdHold(), "", "You hold back, doing nothing.")
         self.assertEqual(self.combathandler.action_dict, {"key": "hold"})
             
 ```
 
-The `EvenniaCommandTestMixin` as a few default objects, including `self.char1`, which we make use of here. 
+The `EvenniaCommandTestMixin` has a few default objects, including `self.char1`, which we make use of here. 
 
 The two `@patch` lines are Python [decorators](https://realpython.com/primer-on-python-decorators/) that 'patch' the `test_hold_command` method. What they do is basically saying "in the following method, whenever any code tries to access `evadventure.combat_twitch.un/repeat`, just return a Mocked object instead".
 
