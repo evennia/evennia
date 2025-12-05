@@ -79,6 +79,10 @@ is an example of a character class structure.
 ```
 Above, the `LivingMixin` class cannot work on its own - it just 'patches' the other classes with some  extra functionality all living things should be able to do. This is an example of  _multiple inheritance_. It's useful to know about, but one should not over-do multiple inheritance since it can also get confusing to follow the code.
 
+When using _multiple inheritance_ keep in mind that in your final classes, `DefaultObject` **MUST** be last in the method-resolution order:
+`class MyThing(fooMixin, MyObject)` is fine, `class MyThing(MyObject, fooMixin)` is not.
+
+
 ## Living mixin class
 
 > Create a new module `mygame/evadventure/characters.py`
