@@ -1511,7 +1511,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             key = self.key
             num = 1
             if self.location:
-                num = max(0, *[
+                num = max([0]+[
                     int(obj.key.lstrip(key))
                     for obj in self.location.contents
                     if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()
