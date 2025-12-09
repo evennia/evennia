@@ -399,9 +399,9 @@ class TestObjectManager(BaseEvenniaTest):
         # reset key to avoid overlap with other tests
         self.obj1.key = "CopyMe"
         copied = self.obj1.copy()
-        self.assertEqual(copied.key, "CopyMe001")  # original was Obj
+        self.assertEqual(copied.key, "CopyMe001")
         copied2 = self.obj1.copy()
-        self.assertEqual(copied2.key, "CopyMe002")  # next clone
+        self.assertEqual(copied2.key, "CopyMe002")
         # verify that it increments based on max existing identifier
         # both for skipped numbers...
         copied.key = "CopyMe003"
