@@ -1223,6 +1223,38 @@ class TestCmdParser(TestCase):
         self.assertEqual(cmdparser.try_num_differentiators("look me-3"), (3, "look me"))
         self.assertEqual(cmdparser.try_num_differentiators("look me-567"), (567, "look me"))
 
+    def test_num_differentiators_hyphenated_names(self):
+        """Test that hyphenated object names like 't-shirt-1' are parsed correctly.
+
+        This tests the default SEARCH_MULTIMATCH_REGEX which uses the format 'name-number'.
+        Objects with hyphens in their names (e.g., 't-shirt') should be correctly parsed
+        when disambiguated (e.g., 't-shirt-1' should return (1, 't-shirt')).
+
+        See: https://github.com/evennia/evennia/issues/3691
+        """
+        # Simple name without hyphen - should work
+        self.assertEqual(cmdparser.try_num_differentiators("ball-1"), (1, "ball"))
+        self.assertEqual(cmdparser.try_num_differentiators("ball-23"), (23, "ball"))
+
+        # Hyphenated name - this is the bug case
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt-1"), (1, "t-shirt"))
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt-2"), (2, "t-shirt"))
+
+        # Multiple hyphens in name
+        self.assertEqual(
+            cmdparser.try_num_differentiators("some-long-name-3"), (3, "some-long-name")
+        )
+
+        # No number suffix - should return (None, None)
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt"), (None, None))
+        self.assertEqual(cmdparser.try_num_differentiators("ball"), (None, None))
+
+        # With trailing args (space after the number)
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt-1 arg"), (1, "t-shirt arg"))
+        self.assertEqual(
+            cmdparser.try_num_differentiators("ball-2 some args"), (2, "ball some args")
+        )
+
     @override_settings(
         SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)", CMD_IGNORE_PREFIXES="@&/+"
     )
