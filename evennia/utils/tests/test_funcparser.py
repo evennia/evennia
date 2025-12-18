@@ -5,6 +5,7 @@ Test the funcparser module.
 """
 
 import time
+import inflect
 import unittest
 from ast import literal_eval
 from unittest.mock import MagicMock, patch
@@ -395,6 +396,7 @@ class TestFuncParser(TestCase):
         ret = parser.parse("This is a $foo(foo=moo) string", foo="bar")
         self.assertEqual("This is a _test(test=foo, foo=bar) string", ret)
 
+_INFLECT = inflect.engine()
 
 class _DummyObj:
     def __init__(self, name):
@@ -403,6 +405,8 @@ class _DummyObj:
     def get_display_name(self, looker=None):
         return self.name
 
+    def get_numbered_name(self, *args, **kwargs):
+        return _INFLECT.an(self.name)
 
 class TestDefaultCallables(TestCase):
     """
@@ -621,7 +625,102 @@ class TestDefaultCallables(TestCase):
         """
         ret = self.parser.parse(string, raise_errors=True)
         self.assertEqual(expected, ret)
+    def test_you_article(self):
+        """
+        Test article kwarg passed to $You/$you
 
+        """
+
+        self.obj1.name = "mouse"
+        string = "$You() $conj(run) around"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, raise_errors=True
+        )
+        self.assertEqual("mouse runs around", ret)
+
+        self.obj1.name = "mouse"
+        string = "$You(article=True) $conj(run) around"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, raise_errors=True
+        )
+        self.assertEqual("a mouse runs around", ret)
+
+    def test_you_format(self):
+        """
+        Test format kwarg passed to $You/$you
+
+        """
+
+        mapping = {"char2": self.obj2}
+        self.obj1.name = "char One"
+
+        string = "$You() $conj(smile) at $you(char2)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("char One smiles at you", ret)
+
+        string = "$You(format=upper) $conj(smile) at $you(char2, format=upper)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("CHAR ONE smiles at YOU", ret)
+
+        string = "$You(format=lower) $conj(smile) at $you(char2, format=lower)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("char one smiles at you", ret)
+
+        string = "$You(format=title) $conj(smile) at $you(char2, format=title)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("Char One smiles at You", ret)
+
+        string = "$You(format=capital) $conj(smile) at $you(char2, format=capital)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("Char one smiles at You", ret)
+    def test_your_format(self):
+        """
+        Test format kwarg passed to $Your/$your
+
+        """
+
+        self.obj1.name = "char One"
+        mapping = {"char2": self.obj2}
+
+        string = "$Your() attack hits $you(char2)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("char One's attack hits you", ret)
+
+        string = "$Your(format=upper) attack hits $you(char2, format=upper)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("CHAR ONE's attack hits YOU", ret)
+
+        string = "$Your(format=lower) attack hits $you(char2, format=lower)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("char one's attack hits you", ret)
+
+        string = "$Your(format=title) attack hits $you(char2, format=title)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("Char One's attack hits You", ret)
+
+        string = "$Your(format=capital) attack hits $you(char2, format=capital)"
+        ret = self.parser.parse(
+            string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
+        )
+        self.assertEqual("Char one's attack hits You", ret)
     def test_random(self):
         """
         Test random callable, with ranges of expected values.
