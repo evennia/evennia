@@ -357,16 +357,16 @@ WEBCLIENT_OPTIONS = {
 # The command parser module to use. See the default module for which
 # functions it must implement
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
-# On a multi-match when search objects or commands, the user has the
+# On a multi-match when searching objects or commands, the user has the
 # ability to search again with an index marker that differentiates
-# the results. If multiple "box" objects
-# are found, they can by default be separated as 1-box, 2-box. Below you
-# can change the regular expression used. The regex must have one
-# have two capturing groups (?P<number>...) and (?P<name>...) - the default
-# parser expects this. It should also involve a number starting from 1.
-# When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
+# the results. If multiple "box" objects are found, they can by default
+# be separated as box-1, box-2. Below you can change the regular expression
+# used. The regex must have two capturing groups (?P<number>...) and
+# (?P<name>...) - the default parser expects this. It may also have an
+# optional (?P<args>...) group. It should also involve a number starting
+# from 1. When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
 # to properly describe the syntax.
-SEARCH_MULTIMATCH_REGEX = r"(?P<name>[^-]*)-(?P<number>[0-9]+)(?P<args>.*)"
+SEARCH_MULTIMATCH_REGEX = r"^(?P<name>.*?)-(?P<number>[0-9]+)(?P<args>(?:\s.*)?)$"
 # To display multimatch errors in various listings we must display
 # the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.
 # The template will be populated with data and expects the following markup:
