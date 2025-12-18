@@ -21,30 +21,36 @@
 - [Fix][pull3836]: Correctly handling calling `create_object` with `key=None` (count-infinity)
 - [Fix][pull3852]: Django 5.2+ was not properly detected. Fixing distutils being
   removed in py3.12 for new installs (count-infinity)
+- [Fix][pull3845]: Fix exponential ANSI markup explosions when slicing
+  ANSIString after reset (speeds up EvForm other string ops, fixes compatibility) (count-infinity)
+- [Fix][pull3853]: Properly handle multimatch separations with native dashes, like
+  't-shirt-1' (count-infinity)
 - [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
   (PowershellNinja, also honorary mention to electroglyph)
 - [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
 - [Doc][pull3825]: Update Portuguese translation (marado)
 - [Doc][pull3826]: Fix broken links in README (marado)
-- Docs: marado, Griatch, Hasna878
+- Docs: marado, Griatch, Hasna878, count-infinity
 
-[pull3799]: https://github.com/evennia/evennia/issues/3799
-[pull3800]: https://github.com/evennia/evennia/issues/3800
-[pull3801]: https://github.com/evennia/evennia/issues/3801
-[pull3806]: https://github.com/evennia/evennia/issues/3806
-[pull3809]: https://github.com/evennia/evennia/issues/3809
-[pull3811]: https://github.com/evennia/evennia/issues/3811
-[pull3815]: https://github.com/evennia/evennia/issues/3815
-[pull3817]: https://github.com/evennia/evennia/issues/3817
-[pull3818]: https://github.com/evennia/evennia/issues/3818
-[pull3825]: https://github.com/evennia/evennia/issues/3825
-[pull3826]: https://github.com/evennia/evennia/issues/3826
-[pull3831]: https://github.com/evennia/evennia/issues/3831
-[pull3832]: https://github.com/evennia/evennia/issues/3832
-[pull3834]: https://github.com/evennia/evennia/issues/3834
-[pull3836]: https://github.com/evennia/evennia/issues/3836
-[pull3599]: https://github.com/evennia/evennia/issues/3599
-[pull3852]: https://github.com/evennia/evennia/issues/3852
+[pull3799]: https://github.com/evennia/evennia/pull/3799
+[pull3800]: https://github.com/evennia/evennia/pull/3800
+[pull3801]: https://github.com/evennia/evennia/pull/3801
+[pull3806]: https://github.com/evennia/evennia/pull/3806
+[pull3809]: https://github.com/evennia/evennia/pull/3809
+[pull3811]: https://github.com/evennia/evennia/pull/3811
+[pull3815]: https://github.com/evennia/evennia/pull/3815
+[pull3817]: https://github.com/evennia/evennia/pull/3817
+[pull3818]: https://github.com/evennia/evennia/pull/3818
+[pull3825]: https://github.com/evennia/evennia/pull/3825
+[pull3826]: https://github.com/evennia/evennia/pull/3826
+[pull3831]: https://github.com/evennia/evennia/pull/3831
+[pull3832]: https://github.com/evennia/evennia/pull/3832
+[pull3834]: https://github.com/evennia/evennia/pull/3834
+[pull3836]: https://github.com/evennia/evennia/pull/3836
+[pull3599]: https://github.com/evennia/evennia/pull/3599
+[pull3852]: https://github.com/evennia/evennia/pull/3852
+[pull3853]: https://github.com/evennia/evennia/pull/3853
+[pull3854]: https://github.com/evennia/evennia/pull/3853
 
 
 ## Evennia 5.0.1
