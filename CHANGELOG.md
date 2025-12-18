@@ -3,6 +3,7 @@
 ## Main branch
 
 - Security dependency updates: Django >5.2.8 (<5.3), Django RestFramework 3.16
+- [Feat][pull3599]: Make at_pre_cmd
 - [Fix]: API /openapi/setattribute endpoints were both POST and PUT, causing schema
   errors; now changed to PUT only. (Griatch)
 - [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
@@ -18,6 +19,8 @@
   fallbacks incorrectly (count-infinity)
 - [Fix][pull3834]: Fix so `$obj(#123)` inline function works in prototype spawning (count-infinity)
 - [Fix][pull3836]: Correctly handling calling `create_object` with `key=None` (count-infinity)
+- [Fix][pull3852]: Django 5.2+ was not properly detected. Fixing distutils being
+  removed in py3.12 for new installs (count-infinity)
 - [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
   (PowershellNinja, also honorary mention to electroglyph)
 - [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
@@ -40,6 +43,8 @@
 [pull3832]: https://github.com/evennia/evennia/issues/3832
 [pull3834]: https://github.com/evennia/evennia/issues/3834
 [pull3836]: https://github.com/evennia/evennia/issues/3836
+[pull3599]: https://github.com/evennia/evennia/issues/3599
+[pull3852]: https://github.com/evennia/evennia/issues/3852
 
 
 ## Evennia 5.0.1
