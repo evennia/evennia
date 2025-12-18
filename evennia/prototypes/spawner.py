@@ -653,7 +653,8 @@ def batch_update_objects_with_prototype(
             if it's not set in the prototype. With `exact=True`, all un-specified properties of the
             objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
             between the  object and the prototype but is usually impractical.
-        caller (Object or Account, optional): This may be used by protfuncs to do permission checks.
+        caller (Object or Account, optional): The object requesting the update. Required when using
+            protofuncs that perform searches. For example ($obj, $objlist, $dbref, $search).
         protfunc_raise_errors (bool): Have protfuncs raise explicit errors if malformed/not found.
             This is highly recommended.
     Returns:
@@ -890,7 +891,8 @@ def spawn(*prototypes, caller=None, **kwargs):
             prototype_key (will be used to find the prototype) or a full prototype
             dictionary. These will be batched-spawned as one object each.
     Keyword Args:
-        caller (Object or Account, optional): This may be used by protfuncs to do access checks.
+        caller (Object or Account, optional): The object requesting the update. Required when using
+            protofuncs that perform searches. For example ($obj, $objlist, $dbref, $search).
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
             the global protparents dictionary accessible by the input
