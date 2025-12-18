@@ -93,6 +93,34 @@ class TestBatchCommandProcessor(TestCase):
             [mock.call("foopath", file_ending=".ev"), mock.call("x", file_ending=".ev")],
         )
 
+class TestReadBatchFile(TestCase):
+    """Test read_batchfile line ending normalization."""
+
+    @mock.patch.object(utils, "pypath_to_realpath", return_value=["testpath"])
+    @mock.patch.object(codecs, "open")
+    def test_normalizes_crlf_to_lf(self, mocked_open, _):
+        """Test that CRLF line endings are normalized to LF.
+
+        See: https://github.com/evennia/evennia/issues/3847
+        """
+        mocked_file = mock.MagicMock()
+        mocked_file.read.return_value = "@create sky\r\n#INSERT another.ev\r\n"
+        mocked_open.return_value.__enter__.return_value = mocked_file
+
+        result = batchprocessors.read_batchfile("foopath")
+        self.assertEqual(result, "@create sky\n#INSERT another.ev\n")
+
+    @mock.patch.object(utils, "pypath_to_realpath", return_value=["testpath"])
+    @mock.patch.object(codecs, "open")
+    def test_normalizes_cr_to_lf(self, mocked_open, _):
+        """Test that old Mac CR line endings are normalized to LF."""
+        mocked_file = mock.MagicMock()
+        mocked_file.read.return_value = "@create sky\r#INSERT another.ev\r"
+        mocked_open.return_value.__enter__.return_value = mocked_file
+
+        result = batchprocessors.read_batchfile("foopath")
+        self.assertEqual(result, "@create sky\n#INSERT another.ev\n")
+
 
 class TestBatchCodeProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
