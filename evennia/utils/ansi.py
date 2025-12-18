@@ -1078,8 +1078,14 @@ class ANSIString(str, metaclass=ANSIMeta):
 
         code_indexes_set = set(self._code_indexes)
 
+        # Only collect codes after the last reset to avoid accumulating
+        # cancelled codes when slicing
+        start_pos = self._find_last_reset_before(char_pos)
+
         result_chars = [
-            self._raw_string[index] for index in range(0, char_pos + 1) if index in code_indexes_set
+            self._raw_string[index]
+            for index in range(start_pos, char_pos + 1)
+            if index in code_indexes_set
         ]
 
         result = "".join(result_chars)
@@ -1167,6 +1173,23 @@ class ANSIString(str, metaclass=ANSIMeta):
         char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes_set]
 
         return code_indexes, char_indexes
+
+    def _find_last_reset_before(self, pos):
+        """
+        Find the end position of the last ANSI reset sequence
+        that occurs before the given position.
+
+        Args:
+            pos (int): Position in _raw_string to search before.
+
+        Returns:
+            int: The index immediately after the last reset sequence,
+                 or 0 if no reset was found before pos.
+        """
+        reset_pos = self._raw_string.rfind(ANSI_NORMAL, 0, pos)
+        if reset_pos == -1:
+            return 0
+        return reset_pos + len(ANSI_NORMAL)
 
     def _get_interleving(self, index):
         """
