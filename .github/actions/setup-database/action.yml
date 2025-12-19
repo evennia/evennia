@@ -43,35 +43,21 @@ runs:
         echo "MySQL is ready"
       shell: bash
 
-    - name: Set up MySQL Privileges and Character Set
+    - name: Set up MySQL Privileges
       if: ${{ inputs.database == 'mysql' }}
       run: |
-        # Set global character set and collation
-        mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
-          SET GLOBAL character_set_server = 'utf8mb4';
-          SET GLOBAL collation_server = 'utf8mb4_unicode_ci';
-        EOF
-        # Set InnoDB settings for utf8mb4 support (allows longer keys)
-        # Note: innodb_large_prefix is ON by default in MySQL 8.0
-        # Ensure default row format is DYNAMIC (default in MySQL 8.0, but explicit for clarity)
-        mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
-          SET GLOBAL innodb_default_row_format = 'DYNAMIC';
-        EOF
+        # Note: MySQL server configuration (character set, collation, row format) is set
+        # at container startup via the mysql.cnf config file mounted in the workflow
         # Ensure user exists and has proper privileges
         mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
           CREATE USER IF NOT EXISTS 'evennia'@'%' IDENTIFIED BY 'password';
           GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'%';
           GRANT PROCESS ON *.* TO 'evennia'@'%';
-          GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'%';
           FLUSH PRIVILEGES;
         EOF
-        # Set database character set
+        # Set database character set (server defaults are set via config file, but ensure DB matches)
         mysql -u root -proot_password -h 127.0.0.1 evennia <<EOF
           ALTER DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-        EOF
-        # Verify settings are correct
-        mysql -u root -proot_password -h 127.0.0.1 evennia <<EOF
-          SELECT @@innodb_default_row_format, @@character_set_server, @@collation_server;
         EOF
       shell: bash
 

@@ -71,6 +71,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+          --mount type=bind,source=${{ github.workspace }}/.github/workflows/mysql.cnf,target=/etc/mysql/conf.d/custom.cnf,readonly
 
     steps:
       - uses: actions/checkout@v4

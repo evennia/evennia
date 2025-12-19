@@ -48,8 +48,7 @@ DATABASES = {
         "PORT": "",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
-            # Note: innodb_default_row_format is set globally in setup-database action
-            # This ensures all new tables use DYNAMIC format for utf8mb4 long keys
+            # Note: MySQL server is configured with utf8mb4 and DYNAMIC row format at startup
             "init_command": (
                 "SET collation_connection=utf8mb4_unicode_ci, "
                 "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1"
