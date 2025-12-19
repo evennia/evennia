@@ -71,6 +71,9 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+          --entrypoint="/bin/bash"
+          -c
+          "printf '#!/bin/bash\nexec /usr/local/bin/docker-entrypoint.sh mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-default-row-format=DYNAMIC \"\$@\"\n' > /tmp/mysql-entrypoint.sh && chmod +x /tmp/mysql-entrypoint.sh && exec /tmp/mysql-entrypoint.sh"
     steps:
       - uses: actions/checkout@v4
 
