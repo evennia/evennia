@@ -58,6 +58,7 @@ runs:
           CREATE USER IF NOT EXISTS 'evennia'@'%' IDENTIFIED BY 'password';
           GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'%';
           GRANT PROCESS ON *.* TO 'evennia'@'%';
+          GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'%';
           FLUSH PRIVILEGES;
         EOF
         # Set database character set and collation
