@@ -71,11 +71,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
-          --entrypoint="
-          sh
-          -c
-          "printf '[mysqld]\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\ninnodb-default-row-format=DYNAMIC\n' > /etc/mysql/conf.d/custom.cnf && exec docker-entrypoint.sh mysqld"
-
+          --entrypoint="/bin/sh -c \"printf '[mysqld]\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\ninnodb-default-row-format=DYNAMIC\n' > /etc/mysql/conf.d/custom.cnf && exec /usr/local/bin/docker-entrypoint.sh mysqld\""
     steps:
       - uses: actions/checkout@v4
 
