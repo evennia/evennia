@@ -64,41 +64,31 @@ runs:
         evennia --init testing_mygame
         cp .github/workflows/${{ inputs.testing-db }}_settings.py testing_mygame/server/conf/settings.py
         cd testing_mygame
-        # For MySQL, ensure default row format is set before migrations
-        if [ "${{ inputs.testing-db }}" == "mysql" ]; then
-          python -c "
-          import os
-          import django
-          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings')
-          django.setup()
-          from django.db import connection
-          with connection.cursor() as cursor:
-              cursor.execute('SET GLOBAL innodb_default_row_format = \"DYNAMIC\"')
-              cursor.execute('SELECT @@innodb_default_row_format')
-              result = cursor.fetchone()
-              print(f'MySQL default row format: {result[0]}')
-          "
-        fi
+      shell: bash
+
+    - name: Set MySQL row format before migrations
+      if: ${{ inputs.testing-db == 'mysql' }}
+      working-directory: testing_mygame
+      run: |
+        python -c "import os; import django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings'); django.setup(); from django.db import connection; cursor = connection.cursor(); cursor.execute('SET GLOBAL innodb_default_row_format = \"DYNAMIC\"'); cursor.execute('SELECT @@innodb_default_row_format'); result = cursor.fetchone(); print(f'MySQL default row format: {result[0]}')"
+      shell: bash
+
+    - name: Run migrations
+      working-directory: testing_mygame
+      run: |
         evennia migrate
-        # For MySQL, ensure all existing tables use DYNAMIC row format
-        if [ "${{ inputs.testing-db }}" == "mysql" ]; then
-          python -c "
-          import os
-          import django
-          os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings')
-          django.setup()
-          from django.db import connection
-          with connection.cursor() as cursor:
-              cursor.execute(\"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND ENGINE = 'InnoDB'\")
-              tables = [row[0] for row in cursor.fetchall()]
-              for table in tables:
-                  try:
-                      cursor.execute(f'ALTER TABLE \`{table}\` ROW_FORMAT=DYNAMIC')
-                      print(f'Set ROW_FORMAT=DYNAMIC for table {table}')
-                  except Exception as e:
-                      print(f'Warning: Could not set ROW_FORMAT for {table}: {e}')
-          "
-        fi
+      shell: bash
+
+    - name: Set MySQL table row format after migrations
+      if: ${{ inputs.testing-db == 'mysql' }}
+      working-directory: testing_mygame
+      run: |
+        python -c "import os; import django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings'); django.setup(); from django.db import connection; cursor = connection.cursor(); cursor.execute(\"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND ENGINE = 'InnoDB'\"); tables = [row[0] for row in cursor.fetchall()]; [cursor.execute(f'ALTER TABLE \`{table}\` ROW_FORMAT=DYNAMIC') or print(f'Set ROW_FORMAT=DYNAMIC for table {table}') for table in tables]"
+      shell: bash
+
+    - name: Collect static files
+      working-directory: testing_mygame
+      run: |
         evennia collectstatic --noinput
       shell: bash
 
