@@ -43,15 +43,24 @@ runs:
         echo "MySQL is ready"
       shell: bash
 
-    - name: Set up MySQL Privileges
+    - name: Set up MySQL Privileges and Character Set
       if: ${{ inputs.database == 'mysql' }}
       run: |
+        # Set global character set and collation
+        mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
+          SET GLOBAL character_set_server = 'utf8mb4';
+          SET GLOBAL collation_server = 'utf8mb4_unicode_ci';
+        EOF
         # Ensure user exists and has proper privileges
         mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
           CREATE USER IF NOT EXISTS 'evennia'@'%' IDENTIFIED BY 'password';
           GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'%';
           GRANT PROCESS ON *.* TO 'evennia'@'%';
           FLUSH PRIVILEGES;
+        EOF
+        # Set database character set
+        mysql -u root -proot_password -h 127.0.0.1 evennia <<EOF
+          ALTER DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
         EOF
       shell: bash
 
