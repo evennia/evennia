@@ -26,6 +26,10 @@ inputs:
     description: "Whether to install psycopg2-binary package (true/false)."
     required: false
     default: "false"
+  coveralls-token:
+    description: "Coveralls repository token (optional, only needed for coverage tests)."
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -89,10 +93,10 @@ runs:
     # it's also not critical if pushing to either service fails (happens for PRs since env is not
     # available outside of the evennia org)
     - name: Send data to Coveralls
-      if: ${{ inputs.coverage-test == 'true' && github.ref == 'refs/heads/main' }}
+      if: ${{ inputs.coverage-test == 'true' && github.ref == 'refs/heads/main' && inputs.coveralls-token != '' }}
       continue-on-error: true
       env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        COVERALLS_REPO_TOKEN: ${{ inputs.coveralls-token }}
       working-directory: testing_mygame
       run: |
         coveralls
