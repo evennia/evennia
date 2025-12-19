@@ -48,7 +48,9 @@ DATABASES = {
         "PORT": "",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
-            # Note: MySQL server is configured with utf8mb4 and DYNAMIC row format at startup
+            # Note: MySQL server global settings (character set, collation, row format) are set
+            # in setup-database action before migrations run. The init_command sets per-connection
+            # variables that don't require special privileges.
             "init_command": (
                 "SET collation_connection=utf8mb4_unicode_ci, "
                 "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1"
