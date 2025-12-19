@@ -66,11 +66,11 @@ runs:
         cd testing_mygame
       shell: bash
 
-    - name: Set MySQL row format before migrations
+    - name: Verify MySQL row format before migrations
       if: ${{ inputs.testing-db == 'mysql' }}
       working-directory: testing_mygame
       run: |
-        python -c "import os; import django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings'); django.setup(); from django.db import connection; cursor = connection.cursor(); cursor.execute('SET GLOBAL innodb_default_row_format = \"DYNAMIC\"'); cursor.execute('SELECT @@innodb_default_row_format'); result = cursor.fetchone(); print(f'MySQL default row format: {result[0]}')"
+        python -c "import os; import django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings'); django.setup(); from django.db import connection; cursor = connection.cursor(); cursor.execute('SELECT @@innodb_default_row_format'); result = cursor.fetchone(); print(f'MySQL default row format (must be DYNAMIC): {result[0]}'); assert result[0] == 'dynamic' or result[0] == 'DYNAMIC', f'Expected DYNAMIC, got {result[0]}'"
       shell: bash
 
     - name: Run migrations
@@ -79,7 +79,7 @@ runs:
         evennia migrate
       shell: bash
 
-    - name: Set MySQL table row format after migrations
+    - name: Set MySQL table row format after migrations (safety check)
       if: ${{ inputs.testing-db == 'mysql' }}
       working-directory: testing_mygame
       run: |

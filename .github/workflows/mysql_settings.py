@@ -48,13 +48,21 @@ DATABASES = {
         "PORT": "",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
-            "init_command": "SET collation_connection=utf8mb4_unicode_ci, sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
+            # Note: innodb_default_row_format is set globally in setup-database action
+            # This ensures all new tables use DYNAMIC format for utf8mb4 long keys
+            "init_command": (
+                "SET collation_connection=utf8mb4_unicode_ci, "
+                "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1"
+            ),
         },
         "TEST": {
             "NAME": "evennia",
             "OPTIONS": {
                 "charset": "utf8mb4",
-                "init_command": "SET collation_connection=utf8mb4_unicode_ci, sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
+                "init_command": (
+                    "SET collation_connection=utf8mb4_unicode_ci, "
+                    "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1"
+                ),
             },
         },
     }
