@@ -1,4 +1,4 @@
-"""
+r"""
 Pseudo-random generator and registry
 
 Evennia contribution - Vincent Le Goff 2017

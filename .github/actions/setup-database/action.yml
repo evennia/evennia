@@ -19,59 +19,39 @@ runs:
   using: "composite"
 
   steps:
-    - name: Set up PostgreSQL server
-      if: ${{ inputs.database == 'postgresql' }}
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: "13"
-        postgresql db: "evennia"
-        postgresql user: "evennia"
-        postgresql password: "password"
-
-    - name: Wait for PostgreSQL to activate
+    - name: Wait for PostgreSQL to be ready
       if: ${{ inputs.database == 'postgresql' }}
       run: |
-        while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
-        do
+        # Wait for PostgreSQL service container to be healthy
+        until pg_isready -h localhost -U evennia -d evennia; do
           sleep 1
           echo -n .
         done
-        echo
+        echo "PostgreSQL is ready"
       shell: bash
+      env:
+        PGPASSWORD: password
 
-    - name: Set up MySQL server
-      if: ${{ inputs.database == 'mysql' }}
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        host port: 3306
-        # character set server: "utf8mb4"
-        # collation server: "utf8mb4_unicode_ci"
-        character set server: "utf8"
-        collation server: "utf8_general_ci"
-        mysql database: "evennia"
-        mysql user: "evennia"
-        mysql password: "password"
-        mysql root password: root_password
-
-    - name: Wait for MySQL to activate
+    - name: Wait for MySQL to be ready
       if: ${{ inputs.database == 'mysql' }}
       run: |
-        while ! mysqladmin ping -h 127.0.0.1 -u root -proot_password -s >/dev/null 2>&1
-        do
+        # Wait for MySQL service container to be healthy
+        until mysqladmin ping -h 127.0.0.1 -u root -proot_password --silent; do
           sleep 1
           echo -n .
         done
-        echo
+        echo "MySQL is ready"
       shell: bash
 
     - name: Set up MySQL Privileges
       if: ${{ inputs.database == 'mysql' }}
       run: |
-        cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
-          create user 'evennia'@'%' identified by 'password';
-          grant all on \`evennia%\`.* to 'evennia'@'%';
-          grant process on *.* to 'evennia'@'%';
-          flush privileges
+        # Ensure user exists and has proper privileges
+        mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
+          CREATE USER IF NOT EXISTS 'evennia'@'%' IDENTIFIED BY 'password';
+          GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'%';
+          GRANT PROCESS ON *.* TO 'evennia'@'%';
+          FLUSH PRIVILEGES;
         EOF
       shell: bash
 
