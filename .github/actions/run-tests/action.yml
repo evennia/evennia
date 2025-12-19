@@ -66,11 +66,10 @@ runs:
         cd testing_mygame
       shell: bash
 
-    - name: Verify MySQL row format before migrations
+    - name: Verify MySQL settings before migrations
       if: ${{ inputs.testing-db == 'mysql' }}
-      working-directory: testing_mygame
       run: |
-        python -c "import os; import django; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.conf.settings'); django.setup(); from django.db import connection; cursor = connection.cursor(); cursor.execute('SELECT @@innodb_default_row_format'); result = cursor.fetchone(); print(f'MySQL default row format (must be DYNAMIC): {result[0]}'); assert result[0] == 'dynamic' or result[0] == 'DYNAMIC', f'Expected DYNAMIC, got {result[0]}'"
+        mysql -h 127.0.0.1 -u evennia -ppassword evennia -e "SELECT @@innodb_default_row_format as row_format, @@innodb_large_prefix as large_prefix;"
       shell: bash
 
     - name: Run migrations
