@@ -48,13 +48,13 @@ DATABASES = {
         "PORT": "",  # use default port
         "OPTIONS": {
             "charset": "utf8mb4",
-            "init_command": "SET collation_connection=utf8mb4_unicode_ci, sql_mode='STRICT_TRANS_TABLES'",
+            "init_command": "SET collation_connection=utf8mb4_unicode_ci, sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
         },
         "TEST": {
             "NAME": "evennia",
             "OPTIONS": {
                 "charset": "utf8mb4",
-                "init_command": "SET collation_connection=utf8mb4_unicode_ci, sql_mode='STRICT_TRANS_TABLES'",
+                "init_command": "SET collation_connection=utf8mb4_unicode_ci, sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
             },
         },
     }

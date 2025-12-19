@@ -64,13 +64,13 @@ runs:
           GRANT PROCESS ON *.* TO 'evennia'@'%';
           FLUSH PRIVILEGES;
         EOF
-        # Set database character set and default row format
+        # Set database character set
         mysql -u root -proot_password -h 127.0.0.1 evennia <<EOF
           ALTER DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
         EOF
-        # Set default row format for new tables (needed for long keys with utf8mb4)
+        # Verify settings are correct
         mysql -u root -proot_password -h 127.0.0.1 evennia <<EOF
-          SET GLOBAL default_storage_engine = 'InnoDB';
+          SELECT @@innodb_default_row_format, @@character_set_server, @@collation_server;
         EOF
       shell: bash
 
