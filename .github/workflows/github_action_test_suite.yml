@@ -71,6 +71,7 @@ jobs:
             character-set-server=utf8mb4
             collation-server=utf8mb4_unicode_ci
             innodb_default_row_format=DYNAMIC
+            innodb_file_per_table=1
 
       - name: Set up database (mysql)
         uses: ./.github/actions/setup-database
