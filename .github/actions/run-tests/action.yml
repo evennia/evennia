@@ -70,7 +70,7 @@ runs:
       if: ${{ inputs.testing-db == 'mysql' }}
       run: |
         echo "Verifying MySQL server settings:"
-        mysql -u evennia -ppassword evennia -e "SELECT @@innodb_default_row_format as row_format, @@character_set_server as charset, @@collation_server as collation, @@innodb_large_prefix as large_prefix;"
+        mysql -u evennia -ppassword evennia -e "SELECT @@innodb_default_row_format as row_format, @@character_set_server as charset, @@collation_server as collation;"
       shell: bash
 
     - name: Run migrations
