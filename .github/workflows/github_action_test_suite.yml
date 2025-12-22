@@ -56,32 +56,21 @@ jobs:
 
     timeout-minutes: 35
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: evennia
-          MYSQL_USER: evennia
-          MYSQL_PASSWORD: password
-          MYSQL_ROOT_PASSWORD: root_password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-          --entrypoint="/bin/bash"
-          -c
-          "printf '#!/bin/bash\nexec /usr/local/bin/docker-entrypoint.sh mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-default-row-format=DYNAMIC \"\$@\"\n' > /tmp/mysql-entrypoint.sh && chmod +x /tmp/mysql-entrypoint.sh && exec /tmp/mysql-entrypoint.sh"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install MySQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y default-mysql-client
-        timeout-minutes: 2
+      - name: Set up MySQL
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: "8.0"
+          root-password: root_password
+          user: evennia
+          password: password
+          my-cnf: |
+            [mysqld]
+            character-set-server=utf8mb4
+            collation-server=utf8mb4_unicode_ci
+            innodb-default-row-format=DYNAMIC
 
       - name: Set up database (mysql)
         uses: ./.github/actions/setup-database

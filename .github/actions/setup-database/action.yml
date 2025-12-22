@@ -35,40 +35,36 @@ runs:
     - name: Wait for MySQL to be ready
       if: ${{ inputs.database == 'mysql' }}
       run: |
-        # Wait for MySQL service container to be healthy
-        until mysqladmin ping -h 127.0.0.1 -u root -proot_password --silent; do
+        # Wait for MySQL server to be ready
+        until mysqladmin ping -u root -proot_password --silent; do
           sleep 1
           echo -n .
         done
         echo "MySQL is ready"
       shell: bash
 
-    - name: Set up MySQL Privileges
+    - name: Set up MySQL Database and Privileges
       if: ${{ inputs.database == 'mysql' }}
       run: |
         # Note: MySQL server configuration (character set, collation, row format) is set
-        # at container startup via custom entrypoint script that passes command-line arguments
-        # to mysqld, similar to how mirromutth/mysql-action works.
-        # Ensure user exists and has proper privileges
-        mysql -u root -proot_password -h 127.0.0.1 mysql <<EOF
-        CREATE USER IF NOT EXISTS 'evennia'@'%' IDENTIFIED BY 'password';
+        # via my-cnf in the shogo82148/actions-setup-mysql action.
+        # The user 'evennia' is already created by the action, but we need to create the database
+        # and grant privileges.
+        mysql -u root -proot_password mysql <<EOF
+        CREATE DATABASE IF NOT EXISTS evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
         GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'%';
         GRANT PROCESS ON *.* TO 'evennia'@'%';
         GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'%';
         FLUSH PRIVILEGES;
         EOF
-        # Set database character set and collation
-        mysql -u root -proot_password -h 127.0.0.1 evennia <<EOF
-        ALTER DATABASE evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-        EOF
       shell: bash
 
     # get logs from db start
     - name: Database container logs
-      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
+      if: ${{ inputs.database == 'postgresql'}}
       uses: jwalton/gh-docker-logs@v2
 
     - name: Check running containers
-      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
+      if: ${{ inputs.database == 'postgresql'}}
       run: docker ps -a
       shell: bash
