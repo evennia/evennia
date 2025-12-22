@@ -64,6 +64,9 @@ runs:
         GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'::1';
         FLUSH PRIVILEGES;
         EOF
+        # Verify MySQL settings are applied correctly
+        echo "Verifying MySQL configuration:"
+        mysql -u root -proot_password -e "SELECT @@innodb_default_row_format as row_format, @@character_set_server as charset, @@collation_server as collation;" || true
       shell: bash
 
     # get logs from db start

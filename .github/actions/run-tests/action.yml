@@ -69,7 +69,8 @@ runs:
     - name: Verify MySQL settings before migrations
       if: ${{ inputs.testing-db == 'mysql' }}
       run: |
-        mysql -h 127.0.0.1 -u evennia -ppassword evennia -e "SELECT @@innodb_default_row_format as row_format;"
+        echo "Verifying MySQL server settings:"
+        mysql -u evennia -ppassword evennia -e "SELECT @@innodb_default_row_format as row_format, @@character_set_server as charset, @@collation_server as collation, @@innodb_large_prefix as large_prefix;"
       shell: bash
 
     - name: Run migrations
