@@ -48,13 +48,20 @@ runs:
       run: |
         # Note: MySQL server configuration (character set, collation, row format) is set
         # via my-cnf in the shogo82148/actions-setup-mysql action.
-        # The user 'evennia' is already created by the action, but we need to create the database
-        # and grant privileges.
+        # The user 'evennia' is already created by the action for hosts: localhost, 127.0.0.1, and ::1
+        # We just need to create the database and grant additional privileges.
         mysql -u root -proot_password mysql <<EOF
         CREATE DATABASE IF NOT EXISTS evennia CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'%';
-        GRANT PROCESS ON *.* TO 'evennia'@'%';
-        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'%';
+        -- Grant privileges to existing user hosts (action creates: localhost, 127.0.0.1, ::1)
+        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'localhost';
+        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'127.0.0.1';
+        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'::1';
+        GRANT PROCESS ON *.* TO 'evennia'@'localhost';
+        GRANT PROCESS ON *.* TO 'evennia'@'127.0.0.1';
+        GRANT PROCESS ON *.* TO 'evennia'@'::1';
+        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'localhost';
+        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'127.0.0.1';
+        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'::1';
         FLUSH PRIVILEGES;
         EOF
       shell: bash
