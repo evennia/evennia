@@ -477,18 +477,6 @@ def tag(accessing_obj, accessed_obj, *args, **kwargs):
     return bool(accessing_obj.tags.get(tagkey, category=category))
 
 
-def objtag(accessing_obj, accessed_obj, *args, **kwargs):
-    """
-    Usage:
-        objtag(tagkey)
-        objtag(tagkey, category):
-
-    Only true if `accessed_obj` has the given tag and optional category.
-
-    """
-    return tag(accessed_obj, None, *args, **kwargs)
-
-
 def objloctag(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
@@ -514,25 +502,10 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     only when out of character. When not logged in at all, this
     function will still return True.
     """
-    obj = accessed_obj.obj if hasattr(accessed_obj, "obj") else accessed_obj
-    account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
-    if not account:
-        return True
-    try:
-        session = accessed_obj.session
-    except AttributeError:
-        # note-this doesn't work well
-        # for high multisession mode. We may need
-        # to change to sessiondb to resolve this
-        sessions = session = account.sessions.get()
-        session = sessions[0] if sessions else None
-    if not session:
-        # this suggests we are not even logged in; treat as ooc.
-        return True
-    try:
-        return not account.get_puppet(session)
-    except TypeError:
-        return not session.get_puppet()
+    if hasattr(accessing_obj, "sessid"):
+        return False
+
+    return True
 
 
 def objtag(accessing_obj, accessed_obj, *args, **kwargs):
