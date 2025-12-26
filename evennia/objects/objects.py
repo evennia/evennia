@@ -1509,11 +1509,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             returns the new clone name on the form keyXX
             """
             key = self.key
-            num = sum(
-                1
-                for obj in self.location.contents
-                if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()
-            )
+            num = 1
+            if self.location:
+                num = max([0]+[
+                    int(obj.key.lstrip(key))
+                    for obj in self.location.contents
+                    if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()
+                ])+1
             return "%s%03i" % (key, num)
 
         new_key = new_key or find_clone_key()
