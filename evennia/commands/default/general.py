@@ -69,7 +69,7 @@ class CmdLook(COMMAND_DEFAULT_CLASS):
     """
 
     key = "look"
-    aliases = ["l", "ls"]
+    aliases = ["l", "ls", "look at"]
     locks = "cmd:all()"
     arg_regex = r"\s|$"
 
