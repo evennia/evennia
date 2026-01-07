@@ -53,8 +53,8 @@ DATABASES = {
             # variables that don't require special privileges.
             "init_command": (
                 "SET collation_connection=utf8mb4_unicode_ci, "
-                "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
-                "innodb_default_row_format=DYNAMIC",
+                "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1, "
+                "innodb_default_row_format=DYNAMIC"
             ),
         },
         "TEST": {
@@ -63,8 +63,8 @@ DATABASES = {
                 "charset": "utf8mb4",
                 "init_command": (
                     "SET collation_connection=utf8mb4_unicode_ci, "
-                    "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
-                    "innodb_default_row_format=DYNAMIC",
+                    "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1, "
+                    "innodb_default_row_format=DYNAMIC"
                 ),
             },
         },
