@@ -395,6 +395,30 @@ class TestObjectManager(BaseEvenniaTest):
         self.assertEqual(self.obj1.attributes.get(key="phrase", category="adventure"), "plugh")
         self.assertEqual(obj2.attributes.get(key="phrase", category="adventure"), "plugh")
 
+    def test_copy_object_clone_key(self):
+        # reset key to avoid overlap with other tests
+        self.obj1.key = "CopyMe"
+        copied = self.obj1.copy()
+        self.assertEqual(copied.key, "CopyMe001")
+        copied2 = self.obj1.copy()
+        self.assertEqual(copied2.key, "CopyMe002")
+        # verify that it increments based on max existing identifier
+        # both for skipped numbers...
+        copied.key = "CopyMe003"
+        copied3 = self.obj1.copy()
+        self.assertEqual(copied3.key, "CopyMe004")
+        copied3.delete()
+        # ...and for duplicate numbers
+        copied.key = "CopyMe001"
+        copied2.key = "CopyMe001"
+        copied3 = self.obj1.copy()
+        self.assertEqual(copied3.key, "CopyMe002")
+
+    def test_copy_object_no_location(self):
+        self.obj1.location = None
+        # we just want to make sure this doesn't error
+        self.assertIsNotNone(self.obj1.copy())
+
 
 class TestContentHandler(BaseEvenniaTest):
     "Test the ContentHandler (obj.contents)"
