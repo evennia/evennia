@@ -24,14 +24,16 @@ This implements the following telnet OOB communication protocols:
 
 """
 
-import json
 import re
 import weakref
 
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
 
-from evennia.utils.utils import is_iter
+from .gmcp_utils import (
+    decode_gmcp as _decode_gmcp,
+    encode_gmcp as _encode_gmcp_str,
+)
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = bytes([69])
@@ -58,14 +60,6 @@ msdp_regex_array = re.compile(
 )
 msdp_regex_var = re.compile(rb"%s" % MSDP_VAR)
 msdp_regex_val = re.compile(rb"%s" % MSDP_VAL)
-
-EVENNIA_TO_GMCP = {
-    "client_options": "Core.Supports.Get",
-    "get_inputfuncs": "Core.Commands.Get",
-    "get_value": "Char.Value.Get",
-    "repeat": "Char.Repeat.Update",
-    "monitor": "Char.Monitor.Update",
-}
 
 
 # MSDP/GMCP communication handler
@@ -224,61 +218,16 @@ class TelnetOOB:
             cmdname (str): GMCP OOB command name.
             args, kwargs (any): Arguments to OOB command.
 
-        Notes:
-            GMCP messages will be outgoing on the following
-            form (the non-JSON cmdname at the start is what
-            IRE games use, supposedly, and what clients appear
-            to have adopted). A cmdname without Package will end
-            up in the Core package, while Core package names will
-            be stripped on the Evennia side.
-            ::
-
-                [cmd_name, [], {}]          -> Cmd.Name
-                [cmd_name, [arg], {}]       -> Cmd.Name arg
-                [cmd_name, [args],{}]       -> Cmd.Name [args]
-                [cmd_name, [], {kwargs}]    -> Cmd.Name {kwargs}
-                [cmdname, [args, {kwargs}]  -> Core.Cmdname [[args],{kwargs}]
-
-            For more flexibility with certain clients, if `cmd_name` is capitalized,
-            Evennia will leave its current capitalization (So CMD_nAmE would be sent
-            as CMD.nAmE but cMD_Name would be Cmd.Name)
+        Returns:
+            bytes: GMCP-encoded byte string for telnet subnegotiation.
 
         Notes:
-            There are also a few default mappings between evennia outputcmds and GMCP:
-            ::
-
-                client_options -> Core.Supports.Get
-                get_inputfuncs -> Core.Commands.Get
-                get_value      -> Char.Value.Get
-                repeat         -> Char.Repeat.Update
-                monitor        -> Char.Monitor.Update
+            Delegates to the shared ``gmcp_utils.encode_gmcp`` and encodes
+            the resulting string to bytes for telnet transport. See
+            ``gmcp_utils.encode_gmcp`` for full format documentation.
 
         """
-
-        if cmdname in EVENNIA_TO_GMCP:
-            gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
-        elif "_" in cmdname:
-            # enforce initial capitalization of each command part, leaving fully-capitalized sections intact
-            gmcp_cmdname = ".".join(
-                word.capitalize() if not word.isupper() else word for word in cmdname.split("_")
-            )
-        else:
-            gmcp_cmdname = "Core.%s" % (cmdname if cmdname.istitle() else cmdname.capitalize())
-
-        if not (args or kwargs):
-            gmcp_string = gmcp_cmdname
-        elif args:
-            if len(args) == 1:
-                args = args[0]
-            if kwargs:
-                gmcp_string = "%s %s" % (gmcp_cmdname, json.dumps([args, kwargs]))
-            else:
-                gmcp_string = "%s %s" % (gmcp_cmdname, json.dumps(args))
-        else:  # only kwargs
-            gmcp_string = "%s %s" % (gmcp_cmdname, json.dumps(kwargs))
-
-        # print("gmcp string", gmcp_string)  # DEBUG
-        return gmcp_string.encode()
+        return _encode_gmcp_str(cmdname, *args, **kwargs).encode()
 
     def decode_msdp(self, data):
         """
@@ -386,46 +335,18 @@ class TelnetOOB:
             data (str or list): GMCP data.
 
         Notes:
-            Clients send data on the form "Module.Submodule.Cmdname <structure>".
-            We assume the structure is valid JSON.
-
-            The following is parsed into Evennia's formal structure:
-            ::
-
-                Core.Name                         -> [name, [], {}]
-                Core.Name string                  -> [name, [string], {}]
-                Core.Name [arg, arg,...]          -> [name, [args], {}]
-                Core.Name {key:arg, key:arg, ...} -> [name, [], {kwargs}]
-                Core.Name [[args], {kwargs}]      -> [name, [args], {kwargs}]
+            Delegates to ``gmcp_utils.decode_gmcp`` for parsing, then
+            passes the result to ``self.protocol().data_in()``.
+            See ``gmcp_utils.decode_gmcp`` for full format documentation.
 
         """
         if isinstance(data, list):
             data = b"".join(data)
 
-        # print("decode_gmcp in:", data)  # DEBUG
         if data:
-            try:
-                cmdname, structure = data.split(None, 1)
-            except ValueError:
-                cmdname, structure = data, b""
-            cmdname = cmdname.replace(b".", b"_")
-            try:
-                structure = json.loads(structure)
-            except ValueError:
-                # maybe the structure is not json-serialized at all
-                pass
-            args, kwargs = [], {}
-            if is_iter(structure):
-                if isinstance(structure, dict):
-                    kwargs = {key: value for key, value in structure.items() if key}
-                else:
-                    args = list(structure)
-            else:
-                args = (structure,)
-            if cmdname.lower().startswith(b"core_"):
-                # if Core.cmdname, then use cmdname
-                cmdname = cmdname[5:]
-            self.protocol().data_in(**{cmdname.lower().decode(): [args, kwargs]})
+            cmds = _decode_gmcp(data)
+            if cmds:
+                self.protocol().data_in(**cmds)
 
     # access methods
 

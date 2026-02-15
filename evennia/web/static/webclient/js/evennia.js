@@ -228,7 +228,9 @@ An "emitter" object must have a function
                 return;
             }
             // Important - we pass csessid tacked on the url
-            websocket = new WebSocket(wsurl + '?' + csessid + '&' + cuid + '&' + browser);
+            var wsquery = wsurl + '?' + csessid + '&' + cuid + '&' + browser;
+            var protocols = ["v1.evennia.com"];
+            websocket = new WebSocket(wsquery, protocols);
 
             // Handle Websocket open event
             websocket.onopen = function (event) {
