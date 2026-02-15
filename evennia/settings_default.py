@@ -121,6 +121,26 @@ WEBSOCKET_CLIENT_INTERFACE = "0.0.0.0"
 # the client will itself figure out this url based on the server's hostname.
 # e.g. ws://external.example.com or wss://external.example.com:443
 WEBSOCKET_CLIENT_URL = None
+# Ordered list of WebSocket subprotocols the server will accept during
+# RFC 6455 Sec-WebSocket-Protocol negotiation with third-party clients.
+# The first protocol in this list that matches a client's offered protocols
+# will be selected. Removing a subprotocol from this list disables it for
+# clients that explicitly negotiate via Sec-WebSocket-Protocol.
+# Set to None to accept all built-in formats. Set to [] to disable all
+# subprotocol negotiation (only legacy no-header clients will connect).
+# Note: Evennia's built-in webclient sends Sec-WebSocket-Protocol:
+# v1.evennia.com, so "v1.evennia.com" must remain in this list for the
+# built-in webclient to connect successfully. Legacy clients that send
+# no Sec-WebSocket-Protocol header always receive v1.evennia.com format
+# regardless of this setting.
+# See https://mudstandards.org/websocket/ for details on the standard
+# subprotocols.
+WEBSOCKET_SUBPROTOCOLS = [
+    "json.mudstandards.org",
+    "gmcp.mudstandards.org",
+    "terminal.mudstandards.org",
+    "v1.evennia.com",
+]
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True

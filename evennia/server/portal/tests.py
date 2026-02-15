@@ -330,7 +330,12 @@ class TestWebSocket(BaseEvenniaTest):
     @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_data_out(self):
         self.proto.onOpen()
-        self.proto.sendLine = MagicMock()
-        msg = json.dumps(["logged_in", (), {}])
+        self.proto.sendEncoded = MagicMock()
         self.proto.sessionhandler.data_out(self.proto, text=[["Excepting Alice"], {}])
-        self.proto.sendLine.assert_called_with(json.dumps(["text", ["Excepting Alice"], {}]))
+        self.proto.sendEncoded.assert_called_once()
+        call_args = self.proto.sendEncoded.call_args
+        data = call_args[0][0]
+        # EvenniaV1Format encodes as JSON TEXT frame
+        parsed = json.loads(data)
+        self.assertEqual(parsed[0], "text")
+        self.assertEqual(parsed[1], ["Excepting Alice"])
