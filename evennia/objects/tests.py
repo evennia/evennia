@@ -419,6 +419,10 @@ class TestObjectManager(BaseEvenniaTest):
         copied2.key = "CopyMe01"
         copied3 = self.obj1.copy()
         self.assertEqual(copied3.key, "CopyMe02")
+        # and that nothing breaks if something in the room doesn't share the prefix
+        copied3.key = "NotACopy"
+        copied4 = self.obj1.copy()
+        self.assertEqual(copied4.key, "CopyMe02")
 
 
     def test_copy_object_no_location(self):
