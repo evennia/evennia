@@ -1506,17 +1506,20 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             Append 01, 02 etc to obj.key. Checks next higher number in the
             same location, then adds the next number available
 
-            returns the new clone name on the form keyXX
+            Returns the new clone name on the form keyXX
             """
             key = self.key
+            if not self.location:
+                # no location means no clone numbering
+                return key
+            suffixes = [
+                obj.key.removeprefix(key)
+                for obj in self.location.contents
+            ]
             num = 1
-            if self.location:
-                num = max([0]+[
-                    int(obj.key.lstrip(key))
-                    for obj in self.location.contents
-                    if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()
-                ])+1
-            return "%s%03i" % (key, num)
+            if nums := [int(suffix) for suffix in suffixes if suffix.isdigit()]:
+                num = max(nums) + 1
+            return f"{key}{num:02d}"
 
         new_key = new_key or find_clone_key()
         new_obj = ObjectDB.objects.copy_object(self, new_key=new_key, **kwargs)

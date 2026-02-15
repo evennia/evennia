@@ -399,20 +399,27 @@ class TestObjectManager(BaseEvenniaTest):
         # reset key to avoid overlap with other tests
         self.obj1.key = "CopyMe"
         copied = self.obj1.copy()
-        self.assertEqual(copied.key, "CopyMe001")
+        self.assertEqual(copied.key, "CopyMe01")
         copied2 = self.obj1.copy()
-        self.assertEqual(copied2.key, "CopyMe002")
+        self.assertEqual(copied2.key, "CopyMe02")
         # verify that it increments based on max existing identifier
         # both for skipped numbers...
-        copied.key = "CopyMe003"
+        copied.key = "CopyMe03"
         copied3 = self.obj1.copy()
-        self.assertEqual(copied3.key, "CopyMe004")
+        self.assertEqual(copied3.key, "CopyMe04")
         copied3.delete()
         # ...and for duplicate numbers
-        copied.key = "CopyMe001"
-        copied2.key = "CopyMe001"
+        copied.key = "CopyMe01"
+        copied2.key = "CopyMe01"
         copied3 = self.obj1.copy()
-        self.assertEqual(copied3.key, "CopyMe002")
+        self.assertEqual(copied3.key, "CopyMe02")
+        # and that sharing a partial prefix doesn't count
+        copied3.delete()
+        copied.key = "CopyMeMe02"
+        copied2.key = "CopyMe01"
+        copied3 = self.obj1.copy()
+        self.assertEqual(copied3.key, "CopyMe02")
+
 
     def test_copy_object_no_location(self):
         self.obj1.location = None
