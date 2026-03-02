@@ -891,6 +891,17 @@ More than one match for 'obj' (please narrow target):
  obj2-2"""
         caller.msg.assert_called_once_with(multimatch_msg)
 
+    def test_mixed_case_multimatch(self):
+        """multiple matches with different case should increment index by case-insensitive name"""
+        matches = [self.MockObject("obj1"), self.MockObject("Obj1")]
+        caller = mock.MagicMock()
+        self.assertIsNone(utils.at_search_result(matches, caller, "obj1"))
+        multimatch_msg = """\
+More than one match for 'obj1' (please narrow target):
+ obj1-1
+ Obj1-2"""
+        caller.msg.assert_called_once_with(multimatch_msg)
+
 
 class TestGroupObjectsByKeyAndDesc(TestCase):
     """
