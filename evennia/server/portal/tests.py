@@ -237,6 +237,22 @@ class TestTelnet(TwistedTestCase):
         self.addCleanup(factory.sessionhandler.disconnect_all)
 
     @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+    def test_command_stacking_no_type_error(self):
+        self.transport.client = ["localhost"]
+        self.transport.setTcpKeepAlive = Mock()
+        d = self.proto.makeConnection(self.transport)
+        # Mudlet sends multiple commands in one packet when command stacking
+        data = b"wave\r\nsay hi\r\n"
+        try:
+            self.proto.dataReceived(data)
+        except TypeError:
+            self.fail("dataReceived raised TypeError on stacked commands")
+        # clean up to prevent Unclean reactor
+        self.proto.nop_keep_alive.stop()
+        self.proto._handshake_delay.cancel()
+        return d
+
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_mudlet_ttype(self):
         self.transport.client = ["localhost"]
         self.transport.setTcpKeepAlive = Mock()

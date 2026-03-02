@@ -44,7 +44,7 @@ _IDLE_COMMAND = str.encode(settings.IDLE_COMMAND + "\n")
 
 # identify HTTP indata
 _HTTP_REGEX = re.compile(
-    r"(GET|HEAD|POST|PUT|DELETE|TRACE|OPTIONS|CONNECT|PATCH) (.*? HTTP/[0-9]\.[0-9])", re.I
+    rb"(GET|HEAD|POST|PUT|DELETE|TRACE|OPTIONS|CONNECT|PATCH) (.*? HTTP/[0-9]\.[0-9])", re.I
 )
 
 _HTTP_WARNING = bytes(
@@ -330,8 +330,10 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
-
-            if len(data) > 2 and _HTTP_REGEX.match(data[0]):
+            # Normalize to bytes for regex match if needed.
+            if len(data) > 2 and _HTTP_REGEX.match(
+                data[0].encode("utf-8", errors="replace") if isinstance(data[0], str) else data[0]
+            ):
                 # guard against HTTP request on the Telnet port; we
                 # block and kill the connection.
                 self.transport.write(_HTTP_WARNING)
