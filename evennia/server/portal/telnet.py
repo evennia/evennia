@@ -44,7 +44,7 @@ _IDLE_COMMAND = str.encode(settings.IDLE_COMMAND + "\n")
 
 # identify HTTP indata
 _HTTP_REGEX = re.compile(
-    r"(GET|HEAD|POST|PUT|DELETE|TRACE|OPTIONS|CONNECT|PATCH) (.*? HTTP/[0-9]\.[0-9])", re.I
+    rb"(GET|HEAD|POST|PUT|DELETE|TRACE|OPTIONS|CONNECT|PATCH) (.*? HTTP/[0-9]\.[0-9])", re.I
 )
 
 _HTTP_WARNING = bytes(
