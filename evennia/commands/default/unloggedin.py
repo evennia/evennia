@@ -8,11 +8,11 @@ import re
 from codecs import lookup as codecs_lookup
 
 from django.conf import settings
+from twisted.internet import threads
 
 import evennia
 from evennia.commands.cmdhandler import CMD_LOGINSTART
-from evennia.comms.models import ChannelDB
-from evennia.utils import class_from_module, create, gametime, logger, utils
+from evennia.utils import class_from_module, gametime, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
 
@@ -146,8 +146,8 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
         name, password = parts
-        account, errors = Account.authenticate(
-            username=name, password=password, ip=address, session=session
+        account, errors = yield threads.deferToThread(
+            Account.authenticate, username=name, password=password, ip=address, session=session
         )
         if account:
             session.sessionhandler.login(session, account)
@@ -227,8 +227,8 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             return
 
         # everything's ok. Create the new player account.
-        account, errors = Account.create(
-            username=username, password=password, ip=address, session=session
+        account, errors = yield threads.deferToThread(
+            Account.create, username=username, password=password, ip=address, session=session
         )
         if account:
             # tell the caller everything went well.
