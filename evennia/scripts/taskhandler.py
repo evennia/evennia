@@ -440,11 +440,8 @@ class TaskHandler:
 
         # some tasks may complete before the deferred can be added
         if task_id in self.tasks:
-            task = self.tasks.get(task_id)
-            task = list(task)
-            task[4] = persistent
-            task[5] = d
-            self.tasks[task_id] = task
+            comp_time, cb, args, kwargs, _, _ = self.tasks[task_id]
+            self.tasks[task_id] = (comp_time, cb, args, kwargs, persistent, d)
         else:  # the task already completed
             return False
         if self.stale_timeout > 0:
