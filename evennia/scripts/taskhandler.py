@@ -388,9 +388,8 @@ class TaskHandler:
         delta = timedelta(seconds=timedelay)
         comp_time = now + delta
         # get an open task id
-        used_ids = list(self.tasks.keys())
         task_id = 1
-        while task_id in used_ids:
+        while task_id in self.tasks:
             task_id += 1
 
         # record the task to the tasks dictionary
