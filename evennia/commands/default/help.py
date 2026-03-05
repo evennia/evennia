@@ -421,7 +421,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
         # retrieve all available commands and database / file-help topics.
         # also check the 'cmd:' lock here
-        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd")]
+        cmd_help_topics = [
+            cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd", session=self.session)
+        ]
         # get all file-based help entries, checking perms
         file_help_topics = {topic.key.lower().strip(): topic for topic in FILE_HELP_ENTRIES.all()}
         # get db-based help entries, checking perms

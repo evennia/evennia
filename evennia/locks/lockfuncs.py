@@ -518,14 +518,13 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
     if not account:
         return True
-    try:
-        session = accessed_obj.session
-    except AttributeError:
-        # note-this doesn't work well
-        # for high multisession mode. We may need
-        # to change to sessiondb to resolve this
-        sessions = session = account.sessions.get()
-        session = sessions[0] if sessions else None
+    session = kwargs.get("session", None)
+    if session is None:
+        try:
+            session = accessed_obj.session
+        except AttributeError:
+            sessions = account.sessions.get()
+            session = sessions[0] if sessions else None
     if not session:
         # this suggests we are not even logged in; treat as ooc.
         return True
