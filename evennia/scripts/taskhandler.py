@@ -303,11 +303,11 @@ class TaskHandler:
 
         """
         clean_ids = []
+        # if a now time is provided use it (intended for unit testing)
+        now = self._now if self._now else datetime.now()
         for task_id, (date, callback, args, kwargs, persistent, _) in self.tasks.items():
             if not self.active(task_id):
                 stale_date = date + timedelta(seconds=self.stale_timeout)
-                # if a now time is provided use it (intended for unit testing)
-                now = self._now if self._now else datetime.now()
                 # the task was canceled more than stale_timeout seconds ago
                 if now > stale_date:
                     clean_ids.append(task_id)
