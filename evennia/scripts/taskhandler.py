@@ -52,6 +52,24 @@ class TaskHandlerTask:
         self.task_id = task_id
         self.deferred = TASK_HANDLER.get_deferred(task_id)
 
+    def _is_valid(self):
+        """Check if this task reference still points to the original task.
+
+        A task reference becomes invalid when the original task is completed or
+        removed and its ID is reassigned to a new, unrelated task. This prevents
+        accidentally operating on the wrong task.
+
+        Returns:
+            bool: True if this reference still points to its original task.
+
+        """
+        # task data is stored as (comp_time, callback, args, kwargs, persistent, deferred);
+        # compare the deferred (index 5) by identity to detect ID reuse
+        task_data = TASK_HANDLER.tasks.get(self.task_id)
+        if task_data is None:
+            return False
+        return task_data[5] is self.deferred
+
     def get_deferred(self):
         """Return the instance of the deferred the task id is using.
 
@@ -60,6 +78,8 @@ class TaskHandlerTask:
                 None is returned if there is no deferred affiliated with this id.
 
         """
+        if not self._is_valid():
+            return None
         return TASK_HANDLER.get_deferred(self.task_id)
 
     def pause(self):
@@ -111,6 +131,8 @@ class TaskHandlerTask:
             handler. Otherwise it will be the return of the task's callback.
 
         """
+        if not self._is_valid():
+            return False
         return TASK_HANDLER.do_task(self.task_id)
 
     def call(self):
@@ -125,19 +147,21 @@ class TaskHandlerTask:
             handler. Otherwise it will be the return of the task's callback.
 
         """
+        if not self._is_valid():
+            return False
         return TASK_HANDLER.call_task(self.task_id)
 
     def remove(self):
         """Remove a task without executing it.
         Deletes the instance of the task's deferred.
 
-        Args:
-            task_id (int): an existing task ID.
-
         Returns:
             bool: True if the removal completed successfully.
+                False if the task reference is no longer valid.
 
         """
+        if not self._is_valid():
+            return False
         return TASK_HANDLER.remove(self.task_id)
 
     def cancel(self):
@@ -149,6 +173,8 @@ class TaskHandlerTask:
                 False if the cancel did not complete successfully.
 
         """
+        if not self._is_valid():
+            return False
         return TASK_HANDLER.cancel(self.task_id)
 
     def active(self):
@@ -159,6 +185,8 @@ class TaskHandlerTask:
                 it is not (has been called) or if the task does not exist.
 
         """
+        if not self._is_valid():
+            return False
         return TASK_HANDLER.active(self.task_id)
 
     @property
@@ -190,6 +218,8 @@ class TaskHandlerTask:
             bool: True the task exists False if it does not.
 
         """
+        if not self._is_valid():
+            return False
         return TASK_HANDLER.exists(self.task_id)
 
     def get_id(self):
