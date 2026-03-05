@@ -432,10 +432,7 @@ class TaskHandler:
             self.tasks[task_id] = (comp_time, callback, args, kwargs, persistent, None)
 
         # defer the task
-        callback = self.do_task
-        args = [task_id]
-        kwargs = {}
-        d = deferLater(self.clock, timedelay, callback, *args, **kwargs)
+        d = deferLater(self.clock, timedelay, self.do_task, task_id)
         d.addErrback(handle_error)
 
         # some tasks may complete before the deferred can be added
