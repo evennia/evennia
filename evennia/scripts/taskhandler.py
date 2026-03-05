@@ -519,19 +519,14 @@ class TaskHandler:
             bool: True if the removal completed successfully.
 
         """
-        d = None
         # delete the task from the tasks dictionary
         if task_id in self.tasks:
-            # if the task has not been run, cancel it
             self.cancel(task_id)
-            del self.tasks[task_id]  # delete the task from the tasks dictionary
+            del self.tasks[task_id]
         # remove the task from the persistent dictionary and ServerConfig
         if task_id in self.to_save:
             del self.to_save[task_id]
-            self.save()  # remove from ServerConfig.objects
-        # delete the instance of the deferred
-        if d:
-            del d
+            self.save()
         return True
 
     def clear(self, save=True, cancel=True):
