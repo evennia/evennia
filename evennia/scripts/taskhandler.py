@@ -460,10 +460,7 @@ class TaskHandler:
             bool: True the task exists False if it does not.
 
         """
-        if task_id in self.tasks:
-            return True
-        else:
-            return False
+        return task_id in self.tasks
 
     def active(self, task_id):
         """
