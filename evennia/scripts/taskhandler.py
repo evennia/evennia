@@ -311,8 +311,15 @@ class TaskHandler:
                 # the task was canceled more than stale_timeout seconds ago
                 if now > stale_date:
                     clean_ids.append(task_id)
+        needs_save = False
         for task_id in clean_ids:
-            self.remove(task_id)
+            self.cancel(task_id)
+            del self.tasks[task_id]
+            if task_id in self.to_save:
+                del self.to_save[task_id]
+                needs_save = True
+        if needs_save:
+            self.save()
         return True
 
     def save(self):
