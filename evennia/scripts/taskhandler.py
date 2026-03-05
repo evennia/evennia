@@ -475,7 +475,6 @@ class TaskHandler:
 
         """
         if task_id in self.tasks:
-            # if the task has not been run, cancel it
             deferred = self.get_deferred(task_id)
             return not (deferred is not None and deferred.called)
         else:
@@ -495,7 +494,6 @@ class TaskHandler:
 
         """
         if task_id in self.tasks:
-            # if the task has not been run, cancel it
             d = self.get_deferred(task_id)
             if d is not None:  # it is remotely possible for a task to not have a deferred
                 if d.called:
