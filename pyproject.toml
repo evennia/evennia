@@ -75,7 +75,7 @@ dependencies = [
   "inflect >= 5.2.0",
   "autobahn >= 20.7.1, < 21.0.0",
   "lunr == 0.7.0.post1",
-  "simpleeval == 1.0.3",
+  "simpleeval == 1.0.5",
   "uritemplate == 4.1.1",
   "tzdata >= 2022.6",
   "inflection == 0.5.1",
