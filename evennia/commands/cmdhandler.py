@@ -36,7 +36,7 @@ from traceback import format_exc
 from django.conf import settings
 from django.utils.translation import gettext as _
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet.task import deferLater
 
 from evennia.commands.cmdset import CmdSet
@@ -251,6 +251,9 @@ def _progressive_cmd_run(cmd, generator, response=None):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
         elif isinstance(value, str):
             _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
+        elif isinstance(value, Deferred):
+            value.addCallback(lambda result: _progressive_cmd_run(cmd, generator, response=result))
+            value.addErrback(lambda fail: generator.throw(fail.type, fail.value, fail.tb))
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
 
