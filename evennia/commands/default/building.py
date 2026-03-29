@@ -3856,13 +3856,18 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
         self.obj_to_teleport = self.caller
         self.destination = None
         if self.rhs:
-            self.obj_to_teleport = self.caller.search(self.lhs, global_search=True)
+            self.obj_to_teleport = self.caller.search(self.lhs, global_search=True, quiet=True)
             if not self.obj_to_teleport:
                 self.msg("Did not find object to teleport.")
                 raise InterruptCommand
-            self.destination = self.caller.search(self.rhs, global_search=True)
+            self.obj_to_teleport = self.obj_to_teleport[0]
+            self.destination = self.caller.search(self.rhs, global_search=True, quiet=True)
+            if self.destination:
+                self.destination = self.destination[0]
         elif self.lhs:
-            self.destination = self.caller.search(self.lhs, global_search=True)
+            self.destination = self.caller.search(self.lhs, global_search=True, quiet=True)
+            if self.destination:
+                self.destination = self.destination[0]
 
     def func(self):
         """Performs the teleport"""
