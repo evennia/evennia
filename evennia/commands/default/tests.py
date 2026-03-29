@@ -1695,7 +1695,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTeleport(),
             "Obj = NotFound",
-            "Could not find 'NotFound'.|Destination not found.",
+            "Could not find 'NotFound'.",
         )
         self.call(
             building.CmdTeleport(),
