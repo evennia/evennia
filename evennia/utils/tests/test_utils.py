@@ -17,6 +17,7 @@ from twisted.internet import task
 from evennia.utils import utils
 from evennia.utils.ansi import ANSIString
 from evennia.utils.test_resources import BaseEvenniaTest
+from evennia.utils.utils import class_from_module
 
 
 class TestIsIter(TestCase):
@@ -52,6 +53,95 @@ class TestDedent(TestCase):
         input_string = "  hello\n  world"
         expected_string = "hello\nworld"
         self.assertEqual(expected_string, utils.dedent(input_string))
+
+
+from django.test import TestCase
+from evennia.utils.utils import class_from_module
+
+
+class TestClassFromModule(TestCase):
+    def test_valid_class_import(self):
+        """
+        Should successfully import a valid class from a module.
+        """
+        cls = class_from_module("evennia.utils.utils.class_from_module")
+        self.assertEqual(cls, class_from_module)
+
+    def test_invalid_module(self):
+        """
+        Should raise ImportError if module does not exist.
+        """
+        with self.assertRaises(ImportError):
+            class_from_module("fake.module.ClassName")
+
+    def test_invalid_class_in_valid_module(self):
+        """
+        Should raise ImportError if class does not exist in module.
+        """
+        with self.assertRaises(ImportError):
+            class_from_module("evennia.utils.utils.FakeClass")
+
+    def test_missing_class_in_path(self):
+        """
+        Should raise ImportError if no class is specified in path.
+        """
+        with self.assertRaises(ImportError):
+            class_from_module("evennia.utils.utils")
+
+    def test_empty_string(self):
+        """
+        Should raise ImportError for empty string input.
+        """
+        with self.assertRaises(ImportError):
+            class_from_module("")
+
+    def test_none_input(self):
+        """
+        Should raise an exception for None input.
+        (TypeError is likely due to string operations)
+        """
+        with self.assertRaises(Exception):
+            class_from_module(None)
+
+    def test_defaultpaths_success(self):
+        """
+        Should find class using defaultpaths if not found directly.
+        """
+        cls = class_from_module(
+            "utils.class_from_module",
+            defaultpaths=["evennia.utils"]
+        )
+        self.assertEqual(cls, class_from_module)
+
+    def test_defaultpaths_failure(self):
+        """
+        Should raise ImportError if defaultpaths don't help.
+        """
+        with self.assertRaises(ImportError):
+            class_from_module(
+                "nonexistent.Class",
+                defaultpaths=["evennia.utils"]
+            )
+
+    def test_fallback_success(self):
+        """
+        Should return fallback class if primary path fails.
+        """
+        cls = class_from_module(
+            "fake.module.ClassName",
+            fallback="evennia.utils.utils.class_from_module"
+        )
+        self.assertEqual(cls, class_from_module)
+
+    def test_fallback_failure(self):
+        """
+        Should raise ImportError if both primary and fallback fail.
+        """
+        with self.assertRaises(ImportError):
+            class_from_module(
+                "fake.module.ClassName",
+                fallback="fake.module.OtherFake"
+            )
 
 
 class TestCompressWhitespace(TestCase):
