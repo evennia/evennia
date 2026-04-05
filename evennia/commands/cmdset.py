@@ -243,17 +243,13 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         cmdset_c = cmdset_a._duplicate()
-        # Exclude system commands; __add__ re-adds them after merging.
-        cmdset_c.commands = [c for c in cmdset_a.commands if not c.key.startswith("__")]
+        # we make copies, not refs by use of [:]
+        cmdset_c.commands = cmdset_a.commands[:]
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
-            cmdset_c.commands.extend(
-                [c for c in cmdset_b.commands if not c.key.startswith("__")]
-            )
+            cmdset_c.commands.extend(cmdset_b.commands)
         else:
             existing_commands = set(cmdset_a.commands)
-            cmdset_c.commands.extend(
-                [cmd for cmd in cmdset_b if cmd not in existing_commands and not cmd.key.startswith("__")]
-            )
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in existing_commands])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -299,8 +295,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         cmdset_c = cmdset_a._duplicate()
-        # Exclude system commands; __add__ re-adds them after merging.
-        cmdset_c.commands = [c for c in cmdset_a.commands if not c.key.startswith("__")]
+        cmdset_c.commands = cmdset_a.commands[:]
         return cmdset_c
 
     def _remove(self, cmdset_a, cmdset_b):
@@ -493,7 +488,11 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
         # cmdset_a.key, cmdset_a.priority)
 
-        # return the system commands to the cmdset
+        # Re-add the merged system commands. First strip any that were carried
+        # through via the raw commands[:] copy in the merge methods, so they
+        # don't appear twice.
+        sys_set = set(sys_commands)
+        cmdset_c.commands = [c for c in cmdset_c.commands if c not in sys_set]
         cmdset_c.add(sys_commands, allow_duplicates=True)
         return cmdset_c
 
