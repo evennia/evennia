@@ -243,13 +243,17 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         cmdset_c = cmdset_a._duplicate()
-        # we make copies, not refs by use of [:]
-        cmdset_c.commands = cmdset_a.commands[:]
+        # Exclude system commands; __add__ re-adds them after merging.
+        cmdset_c.commands = [c for c in cmdset_a.commands if not c.key.startswith("__")]
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
-            cmdset_c.commands.extend(cmdset_b.commands)
+            cmdset_c.commands.extend(
+                [c for c in cmdset_b.commands if not c.key.startswith("__")]
+            )
         else:
             existing_commands = set(cmdset_a.commands)
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in existing_commands])
+            cmdset_c.commands.extend(
+                [cmd for cmd in cmdset_b if cmd not in existing_commands and not cmd.key.startswith("__")]
+            )
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -295,7 +299,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
 
         """
         cmdset_c = cmdset_a._duplicate()
-        cmdset_c.commands = cmdset_a.commands[:]
+        # Exclude system commands; __add__ re-adds them after merging.
+        cmdset_c.commands = [c for c in cmdset_a.commands if not c.key.startswith("__")]
         return cmdset_c
 
     def _remove(self, cmdset_a, cmdset_b):
