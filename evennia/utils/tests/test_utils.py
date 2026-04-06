@@ -18,6 +18,8 @@ from evennia.utils import utils
 from evennia.utils.ansi import ANSIString
 from evennia.utils.test_resources import BaseEvenniaTest
 from evennia.utils.utils import class_from_module
+from evennia.utils.utils import time_format
+    
 
 
 class TestIsIter(TestCase):
@@ -1065,3 +1067,23 @@ class TestMatchIP(TestCase):
         self.assertTrue(utils.match_ip("192.168.0.1", "192.168.0.0/24"))
         self.assertTrue(utils.match_ip("192.168.0.1", "192.168.0.1"))
         self.assertFalse(utils.match_ip("192.168.0.1", "10.0.0.1"))
+
+
+class TestTimeFormat(TestCase):
+    """
+    Test the time_format utility function.
+    """
+    def test_time_format_seconds(self):
+        """Test formatting standard seconds into digital clock format."""
+        # 60 seconds should format to 00:01
+        self.assertEqual(time_format(60), "00:01")
+        
+        # 120 seconds should format to 00:02
+        self.assertEqual(time_format(120), "00:02")
+
+    def test_time_format_complex(self):
+        """Test formatting larger, complex times."""
+        # 3660 seconds (1 hour, 1 min) should format to 01:01
+        self.assertEqual(time_format(3660), "01:01")
+        
+
