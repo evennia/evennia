@@ -25,6 +25,31 @@ class TestIsIter(TestCase):
         self.assertEqual(True, utils.is_iter([1, 2, 3, 4]))
         self.assertEqual(False, utils.is_iter("This is not an iterable"))
 
+class TestMakeIter(TestCase):
+    def test_non_iterable_to_list(self):
+        """ Single non-iterable val should be wrapped in list """
+        self.assertEqual([1], utils.make_iter(1))
+
+    def test_string_to_list(self):
+        """ Strings are non-iterable so should be wrapped in list """
+        self.assertEqual(["string"], utils.make_iter("string"))
+
+    def test_list(self):
+        """ List is iterable so should return as is """
+        self.assertEqual([1, 2, 3], utils.make_iter([1, 2, 3]))
+
+    def test_tuple(self):
+        """ Tuple is iterable so should return as is """
+        self.assertEqual((1, 2, 3), utils.make_iter((1, 2, 3)))
+
+    def test_none_to_list(self):
+        """ None is non-iterable so should be wrapped in list """
+        self.assertEqual([None], utils.make_iter(None))
+
+    def test_dict(self):
+        """ Dict is iterable so should return as is """
+        d = {"a": 1}
+        self.assertEqual(d, utils.make_iter(d))
 
 class TestCrop(TestCase):
     def test_crop(self):
