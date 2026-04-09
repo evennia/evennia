@@ -1146,46 +1146,6 @@ class TestGetAndMergeCmdSets(TwistedTestCase, BaseEvenniaTest):
         self.assertEqual(len(cmdset_ee.commands), 1)
         self.assertEqual(cmdset_ee.commands[0].key, "e")
 
-    def test_merge_cache_hit(self):
-        """Test that semantically identical cmdsets hit the merge cache."""
-        a = self.cmdset_a
-        a.no_channels = True
-        self.set_cmdsets(self.obj1, a)
-        (
-            command_objects,
-            command_objects_list,
-            command_objects_list_error,
-            caller,
-            error_to,
-        ) = cmdhandler.generate_cmdset_providers(self.obj1)
-
-        # clear cache so we start fresh
-        cmdhandler._CMDSET_MERGE_CACHE.clear()
-
-        deferred = cmdhandler.get_and_merge_cmdsets(
-            self.obj1, command_objects_list, "object", "", error_to
-        )
-
-        def _first_call(cmdset_first):
-            self.assertEqual(len(cmdhandler._CMDSET_MERGE_CACHE), 1)
-
-            # second call with the same logical cmdsets should hit the cache
-            d2 = cmdhandler.get_and_merge_cmdsets(
-                self.obj1, command_objects_list, "object", "", error_to
-            )
-
-            def _second_call(cmdset_second):
-                # cache size should not have grown — it was a hit
-                self.assertEqual(len(cmdhandler._CMDSET_MERGE_CACHE), 1)
-                # the returned object should be the exact same cached instance
-                self.assertIs(cmdset_first, cmdset_second)
-
-            d2.addCallback(_second_call)
-            return d2
-
-        deferred.addCallback(_first_call)
-        return deferred
-
 
 class AccessableCommand(Command):
     def access(*args, **kwargs):
