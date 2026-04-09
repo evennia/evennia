@@ -52,33 +52,6 @@ _CMDSET_MERGE_CACHE = OrderedDict()
 _CMDSET_MERGE_CACHE_MAXSIZE = 1000
 
 
-def _cmdset_fingerprint(cmdset):
-    """
-    Build a hashable fingerprint from a cmdset's semantic content. Two cmdsets
-    with identical commands and merge properties will produce the same fingerprint,
-    regardless of Python object identity.
-
-    Args:
-        cmdset (CmdSet): The cmdset to fingerprint.
-
-    Returns:
-        tuple: A hashable fingerprint.
-
-    """
-    cmd_ids = tuple(sorted(tuple(sorted(cmd._matchset)) for cmd in cmdset.commands))
-    sys_cmd_ids = tuple(sorted(tuple(sorted(cmd._matchset)) for cmd in cmdset.system_commands))
-    return (
-        cmdset.key,
-        cmdset.priority,
-        cmdset.mergetype,
-        cmdset.duplicates,
-        cmdset.no_exits,
-        cmdset.no_objs,
-        cmdset.no_channels,
-        tuple(sorted(cmdset.key_mergetypes.items())) if cmdset.key_mergetypes else (),
-        cmd_ids,
-        sys_cmd_ids,
-    )
 
 # tracks recursive calls by each caller
 # to avoid infinite loops (commands calling themselves)
@@ -476,9 +449,8 @@ def get_and_merge_cmdsets(
             ]
 
         if cmdsets:
-            # build a content-based fingerprint so that semantically identical
-            # cmdset combinations hit the cache even if the Python objects differ
-            mergehash = tuple(_cmdset_fingerprint(cmdset) for cmdset in cmdsets)
+            # each cmdset caches its own fingerprint, so this is just a tuple lookup
+            mergehash = tuple(cmdset.fingerprint for cmdset in cmdsets)
             if mergehash in _CMDSET_MERGE_CACHE:
                 # cached merge exists; move to end for LRU tracking
                 _CMDSET_MERGE_CACHE.move_to_end(mergehash)

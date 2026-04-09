@@ -224,6 +224,35 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # initialize system
         self.at_cmdset_creation()
         self._contains_cache = WeakKeyDictionary()  # {}
+        self._cached_fingerprint = None
+
+    @property
+    def fingerprint(self):
+        """
+        A hashable, content-based fingerprint of this cmdset. Two cmdsets with
+        identical commands and merge properties produce the same fingerprint.
+        Lazily computed and cached; invalidated when commands are added or removed.
+        """
+        if self._cached_fingerprint is None:
+            cmd_ids = tuple(
+                sorted(tuple(sorted(cmd._matchset)) for cmd in self.commands)
+            )
+            sys_cmd_ids = tuple(
+                sorted(tuple(sorted(cmd._matchset)) for cmd in self.system_commands)
+            )
+            self._cached_fingerprint = (
+                self.key,
+                self.priority,
+                self.mergetype,
+                self.duplicates,
+                self.no_exits,
+                self.no_objs,
+                self.no_channels,
+                tuple(sorted(self.key_mergetypes.items())) if self.key_mergetypes else (),
+                cmd_ids,
+                sys_cmd_ids,
+            )
+        return self._cached_fingerprint
 
     # Priority-sensitive merge operations for cmdsets
 
@@ -568,6 +597,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             # extra run to make sure to avoid doublets
             commands = list(set(commands))
         self.commands = commands
+        self._cached_fingerprint = None
 
     def remove(self, cmd):
         """
@@ -597,6 +627,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 pass
         else:
             self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
+        self._cached_fingerprint = None
 
     def get(self, cmd):
         """
