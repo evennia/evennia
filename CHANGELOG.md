@@ -2,6 +2,8 @@
 
 ## Main branch
 
+Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
+Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
 Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
 Docs: Griatch
 
