@@ -2,24 +2,37 @@
 
 ## Running Tests
 
-Tests require a temporary game directory with migrations applied:
+Tests require a temporary game directory with migrations applied. Tests use Django's test runner, not pytest.
+
+### Using `uv run` (preferred)
+
+The `make` targets call bare `evennia`, which only works if evennia is installed in the active shell environment. With `uv run`, you must run the init/migrate/test steps yourself, and **run the test command from inside the game directory**:
 
 ```bash
-# Full test suite
-make test
+# One-time setup (creates .test_game_dir/ and applies migrations):
+uv run evennia --init .test_game_dir
+cd .test_game_dir
+uv run evennia migrate
 
-# Parallel tests (4 cores)
-make testp
-
-# Specific module (TESTS variable)
-make tests=evennia.objects.tests test
-make tests=evennia.commands.tests.test_command test
-
-# Manual equivalent (from inside a game dir)
-evennia test --keepdb evennia.objects.tests
+# Run tests (from inside .test_game_dir/):
+uv run evennia test --keepdb evennia.server.tests          # specific module
+uv run evennia test --keepdb evennia                        # full suite
 ```
 
-The Makefile creates a `.test_game_dir/`, runs `evennia migrate`, then `evennia test --keepdb`. Tests use Django's test runner, not pytest.
+If `.test_game_dir/` already exists with migrations applied, skip straight to the test command.
+
+### Using `make` (requires `evennia` on PATH)
+
+These targets handle init/migrate automatically but require `evennia` installed in the current environment (e.g., via `pip install -e .` or an activated virtualenv):
+
+```bash
+make test                                        # full suite
+make testp                                       # parallel (4 cores)
+make tests=evennia.objects.tests test             # specific module
+make tests=evennia.commands.tests.test_command test  # specific test file
+```
+
+The Makefile creates `.test_game_dir/`, runs `evennia migrate`, then `evennia test --keepdb`.
 
 ## Test Base Classes
 

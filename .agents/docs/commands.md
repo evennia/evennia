@@ -21,7 +21,14 @@ evennia istart           # interactive mode (for debugging with set_trace)
 
 ## Testing
 
+The `make` targets call bare `evennia` and require it installed in the active environment. With `uv run`, init the test game dir yourself first (see [Testing](testing.md) for full details):
+
 ```bash
+# uv run (preferred — works without global install):
+uv run evennia --init .test_game_dir && cd .test_game_dir && uv run evennia migrate
+uv run evennia test --keepdb evennia.server.tests   # from inside .test_game_dir/
+
+# make (requires `evennia` on PATH):
 make test                                        # full suite
 make testp                                       # parallel (4 cores)
 make tests=evennia.objects.tests test             # specific module

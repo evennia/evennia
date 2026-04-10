@@ -9,14 +9,14 @@ Evennia is a Python (>= 3.12) framework for building text-based multiplayer onli
 Use `uv run` to execute commands in the project venv. Prefer `uv` over `pip`.
 
 ```bash
-make test                                    # full test suite (Evennia/Django)
-make tests=evennia.objects.tests test        # specific module
+uv pip install -e .                          # dev install
 make format                                  # black + isort
 make lint                                    # black --check
 make cleanrot                                # check agent context for rot
-uv pip install -e .                          # dev install
 uv run pytest .agents/tools/tests/ -v        # agent tooling tests (pytest)
 ```
+
+**Running Evennia tests**: `make test` requires `evennia` on PATH. With `uv run`, you must init a test game dir first and run from inside it — see [Testing](.agents/docs/testing.md).
 
 ## Key Rules
 
