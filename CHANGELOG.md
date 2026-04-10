@@ -2,6 +2,7 @@
 
 ## Main branch
 
+Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
 Docs: Griatch
 
 ## Evennia 6.0.0

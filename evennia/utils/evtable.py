@@ -197,6 +197,42 @@ class ANSITextWrapper(TextWrapper):
                 chunks.append(" ")
         return chunks
 
+    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+        """Handle a chunk of text that is too long to fit in any line.
+
+        Overrides the standard library version to use display-width
+        (``d_len``) instead of ``len`` so that east-asian (CJK) characters
+        that occupy two terminal columns are measured correctly.
+        """
+        if width < 1:
+            space_left = 1
+        else:
+            space_left = width - cur_len
+
+        if self.break_long_words:
+            chunk = reversed_chunks[-1]
+            # Walk forward character-by-character, accumulating display
+            # width, because a single CJK char may be width 2.
+            end = 0
+            consumed_width = 0
+            for i, char in enumerate(chunk):
+                char_width = d_len(char)
+                if consumed_width + char_width > space_left:
+                    break
+                consumed_width += char_width
+                end = i + 1
+
+            if self.break_on_hyphens and d_len(chunk) > space_left:
+                hyphen = chunk.rfind("-", 0, end)
+                if hyphen > 0 and any(c != "-" for c in chunk[:hyphen]):
+                    end = hyphen + 1
+
+            cur_line.append(chunk[:end])
+            reversed_chunks[-1] = chunk[end:]
+
+        elif not cur_line:
+            cur_line.append(reversed_chunks.pop())
+
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
 

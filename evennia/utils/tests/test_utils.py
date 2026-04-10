@@ -135,8 +135,9 @@ class TestListToString(TestCase):
 
 class TestMLen(TestCase):
     """
-    Verifies that m_len behaves like len in all situations except those
-    where MXP may be involved.
+    Verifies that m_len returns the visible display width for strings
+    (accounting for MXP and east-asian characters) and falls back to
+    normal len for non-strings.
     """
 
     def test_non_mxp_string(self):
@@ -156,6 +157,9 @@ class TestMLen(TestCase):
 
     def test_dict(self):
         self.assertEqual(utils.m_len({"hello": True, "Goodbye": False}), 2)
+
+    def test_east_asian(self):
+        self.assertEqual(utils.m_len("서서서"), 6)
 
 
 class TestDisplayLen(TestCase):

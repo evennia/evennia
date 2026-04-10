@@ -2323,22 +2323,21 @@ def calledby(callerdepth=1):
 
 def m_len(target):
     """
-    Provides length checking for strings with MXP patterns, and falls
-    back to normal len for other objects.
+    Provides display-width length checking for strings, taking into account
+    MXP patterns and east-asian character widths.  Falls back to normal
+    ``len`` for non-string objects.
 
     Args:
         target (str): A string with potential MXP components
             to search.
 
     Returns:
-        length (int): The length of `target`, ignoring MXP components.
+        length (int): The visible width of `target`, ignoring MXP components
+            and counting east-asian characters as width 2.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
-
-    if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
+    if inherits_from(target, str):
+        return display_len(target)
     return len(target)
 
 
