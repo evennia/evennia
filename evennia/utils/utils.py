@@ -2421,13 +2421,14 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         # group results by display name to properly disambiguate
         grouped_matches = defaultdict(list)
         for item in matches:
-            group_key = (
+            item_key = (
                 item.get_display_name(caller) if hasattr(item, "get_display_name") else query
             )
-            grouped_matches[group_key].append(item)
+            # the actual searching is case-insensitive, so we force grouping keys to lower
+            grouped_matches[item_key.lower()].append( (item_key, item) )
 
         for key, match_list in grouped_matches.items():
-            for num, result in enumerate(match_list):
+            for num, (result_key, result) in enumerate(match_list):
                 # we need to consider that result could be a Command, where .aliases
                 # is a list of strings
                 if hasattr(result.aliases, "all"):
@@ -2443,7 +2444,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
 
                 error += _MULTIMATCH_TEMPLATE.format(
                     number=num + 1,
-                    name=key,
+                    name=result_key,
                     aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
                     info=result.get_extra_info(caller),
                 )
