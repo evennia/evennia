@@ -281,6 +281,8 @@ class GetLogObserver:
         log_msg = twisted_logger.formatEventAsClassicLogText(
             event, formatTime=lambda e: twisted_logger.formatTime(e, _TIME_FORMAT)
         )
+        if log_msg is None:
+            return None
         return f"{component_prefix}{log_msg}"
 
     def __call__(self, outfile):
