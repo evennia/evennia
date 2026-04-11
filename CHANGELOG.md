@@ -16,7 +16,11 @@
 - [Fix][pull3888]: Close stale DB connections before first query (jaborsh)
 - [Fix][pull3898]: Pass caller to purge_processor in CmdStateCC cc command (saschabuehrle)
 - [Fix][pull3899]: Fix @teleport showing double error message on failed search (blongden)
+- [Fix][pull3900]: Fix TypeError in MSDP encode when args contain non-string values (blongden)
 - [Fix][pull3901]: Fix O(N²) cmdset merge by hashing commands on key instead of constant (blongden)
+- [Fix][pull3905]: Fix system commands duplicated in merged CmdSets (kvmet)
+- [Fix][pull3909]: Fix funcparser treating $" as malformed function call (aMiss-aWry)
+- [Fix][pull3910]: Fix MXP parse to not escape surrounding text as HTML entities (aMiss-aWry)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -29,7 +33,11 @@
 [pull3888]: https://github.com/evennia/evennia/pull/3888
 [pull3898]: https://github.com/evennia/evennia/pull/3898
 [pull3899]: https://github.com/evennia/evennia/pull/3899
+[pull3900]: https://github.com/evennia/evennia/pull/3900
 [pull3901]: https://github.com/evennia/evennia/pull/3901
+[pull3905]: https://github.com/evennia/evennia/pull/3905
+[pull3909]: https://github.com/evennia/evennia/pull/3909
+[pull3910]: https://github.com/evennia/evennia/pull/3910
 
 ## Evennia 6.0.0
 

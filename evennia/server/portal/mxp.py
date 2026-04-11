@@ -36,9 +36,9 @@ def mxp_parse(text):
     sending to MXP-enabled clients.
 
     Converts ``|lc<cmd>|lt<label>|le`` to a clickable SEND tag and
-    ``|lu<url>|lt<label>|le`` to a clickable URL tag. Non-MXP content
-    has ``&``, ``<``, and ``>`` HTML-escaped to prevent them from being
-    interpreted as MXP tags by the client.
+    ``|lu<url>|lt<label>|le`` to a clickable URL tag. Non-MXP text
+    is left unchanged — MXP clients only interpret tags inside
+    secure-mode markers, so surrounding text is treated as literal.
 
     Messages containing no MXP markup are returned unchanged.
 
@@ -46,9 +46,8 @@ def mxp_parse(text):
         text (str): The text to parse.
 
     Returns:
-        str: The parsed text with MXP sequences substituted and non-MXP
-            angle brackets escaped, or the original text if no MXP markup
-            was found.
+        str: The parsed text with MXP sequences substituted, or the
+            original text if no MXP markup was found.
 
     Examples:
         ``|lchelp overview|lthelp overview|le`` becomes
@@ -58,22 +57,8 @@ def mxp_parse(text):
     if "|lc" not in text and "|lu" not in text:
         return text
 
-    def replace_with_escape(pattern, template, text):
-        result = ""
-        last = 0
-        found = False
-        for match in pattern.finditer(text):
-            found = True
-            result += text[last : match.start()]
-            result += template.replace("\\1", match.group(1)).replace("\\2", match.group(2))
-            last = match.end()
-        if not found:
-            return text
-        result += text[last:]
-        return result
-
-    text = replace_with_escape(LINKS_SUB, MXP_SEND, text)
-    text = replace_with_escape(URL_SUB, MXP_URL, text)
+    text = LINKS_SUB.sub(MXP_SEND, text)
+    text = URL_SUB.sub(MXP_URL, text)
     return text
 
 
