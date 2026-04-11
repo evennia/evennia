@@ -8,11 +8,20 @@
 - [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
 - Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
 - [Fix][pull3875]: Fix TypeError in telnet HTTP check when command stacking sends bytes (aMiss-aWry)
+- [Fix][pull3877]: Fixes multimatch numbering display to be case insensitive (InspectorCaracal)
+- [Fix][pull3883]: Taskhandler: Fix TaskHandlerTask stale references & clean up (jaborsh)
+- [Feat][pull3884]: Formally support PostgreSQL with psycopg3 (jaborsh)
+- [Fix][pull3885]: Is_ooc(): Thread session through lock system in multi-session mode (jaborsh)
+- Fix: Add deprecation warning for custom cmdparsers missing `session` kwarg (Griatch)
 - Docs: Griatch
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
 [pull3869]: https://github.com/evennia/evennia/pull/3869
 [pull3875]: https://github.com/evennia/evennia/pull/3875
+[pull3877]: https://github.com/evennia/evennia/pull/3877
+[pull3883]: https://github.com/evennia/evennia/pull/3883
+[pull3884]: https://github.com/evennia/evennia/pull/3884
+[pull3885]: https://github.com/evennia/evennia/pull/3885
 
 ## Evennia 6.0.0
 

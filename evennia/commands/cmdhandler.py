@@ -703,6 +703,13 @@ def cmdhandler(
                 try:
                     matches = yield _COMMAND_PARSER(raw_string, cmdset, caller, session=session)
                 except TypeError:
+                    logger.log_dep(
+                        "Custom cmdparser does not accept 'session' kwarg. "
+                        "Update its signature to cmdparser(raw_string, cmdset, caller, "
+                        "match_index=None, session=None, **kwargs). "
+                        "Session-aware lock functions like is_ooc() will not "
+                        "work correctly until this is fixed."
+                    )
                     matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
 
                 # Deal with matches
