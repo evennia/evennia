@@ -117,6 +117,9 @@ extra = [
 
   # Git contrib
   "gitpython >= 3.1.27",
+
+  # PostgreSQL support
+  "psycopg[binary] >= 3.1.12",
 ]
 
 [project.urls]

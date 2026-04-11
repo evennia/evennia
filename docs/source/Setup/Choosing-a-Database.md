@@ -51,8 +51,7 @@ If you want to reset your SQLite3 database, see [here](./Updating-Evennia.md#sql
 
 First, install the posgresql server. Version `9.6` is tested with Evennia. Packages are readily available for all distributions. You need to also get the `psql` client (this is called `postgresql- client` on debian-derived systems). Windows/Mac users can [find what they need on the postgresql download page](https://www.postgresql.org/download/). You should be setting up a password for your database-superuser (always called `postgres`) when you install. 
 
-For interaction with Evennia you need to also install `psycopg2` to your Evennia install 
-(`pip install psycopg2-binary` in your virtualenv). This acts as the python bridge to the database server.
+For interaction with Evennia you need to also install `psycopg` (psycopg3) to your Evennia install (`pip install psycopg[binary]` in your virtualenv). This acts as the python bridge to the database server.
 
 Next, start the postgres client:
 
@@ -102,7 +101,7 @@ Edit `mygame/server/conf/secret_settings.py` and add the following section:
 #
 DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'evennia',
             'USER': 'evennia',
             'PASSWORD': 'somepassword',
