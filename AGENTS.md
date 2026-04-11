@@ -25,6 +25,10 @@ uv run pytest .agents/tools/tests/ -v        # agent tooling tests (pytest)
 - **All code must have Google-style docstrings.** See [Code Style](.agents/docs/code-style.md).
 - **After editing agent context files** (anything under `.agents/` or `AGENTS.md`), run `make cleanrot` and fix all warnings before reporting done.
 
+## Skills
+
+Vendor-agnostic skills live in `.agents/skills/`. Vendor directories (`.claude/skills/`, `.codex/skills/`) symlink there.
+
 ## Docs
 
 - [Core Beliefs](.agents/docs/core-beliefs.md) — design principles that guide tradeoffs (toolkit not game, think in Python not SQL, hooks not patches, compose don't branch)
