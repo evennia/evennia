@@ -250,7 +250,9 @@ def _progressive_cmd_run(cmd, generator, response=None):
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
         elif isinstance(value, str):
-            _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
+            _GET_INPUT(
+                cmd.caller, value, _process_input, session=cmd.session, cmd=cmd, generator=generator
+            )
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
 
@@ -698,7 +700,10 @@ def cmdhandler(
                 # Parse the input string and match to available cmdset.
                 # This also checks for permissions, so all commands in match
                 # are commands the caller is allowed to call.
-                matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
+                try:
+                    matches = yield _COMMAND_PARSER(raw_string, cmdset, caller, session=session)
+                except TypeError:
+                    matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
 
                 # Deal with matches
 
