@@ -317,6 +317,75 @@ class TestDateTimeFormat(TestCase):
         self.assertEqual(utils.datetime_format(dtobj), "21:32:00")
 
 
+class TestUtcToLocal(TestCase):
+    """Tests for utc_to_local timezone conversion."""
+
+    def test_none_timezone_returns_unchanged(self):
+        dt = datetime(2026, 1, 1, 12, 0, 0)
+        self.assertEqual(utils.utc_to_local(dt, None), dt)
+
+    def test_naive_datetime_assumed_utc(self):
+        """Naive datetimes should be treated as UTC and converted."""
+        import pytz
+
+        eastern = pytz.timezone("US/Eastern")
+        naive_utc = datetime(2026, 6, 15, 18, 0, 0)  # 6pm UTC
+        result = utils.utc_to_local(naive_utc, eastern)
+        # US/Eastern is UTC-4 in summer (EDT)
+        self.assertEqual(result.hour, 14)
+        self.assertIsNotNone(result.tzinfo)
+
+    def test_aware_utc_datetime(self):
+        """Aware UTC datetimes should convert correctly."""
+        import pytz
+
+        eastern = pytz.timezone("US/Eastern")
+        aware_utc = pytz.utc.localize(datetime(2026, 6, 15, 18, 0, 0))
+        result = utils.utc_to_local(aware_utc, eastern)
+        self.assertEqual(result.hour, 14)
+
+    def test_aware_nonutc_datetime(self):
+        """Aware non-UTC datetimes should still convert correctly."""
+        import pytz
+
+        eastern = pytz.timezone("US/Eastern")
+        pacific = pytz.timezone("US/Pacific")
+        # 2pm Eastern
+        eastern_time = eastern.localize(datetime(2026, 6, 15, 14, 0, 0))
+        result = utils.utc_to_local(eastern_time, pacific)
+        # Eastern is UTC-4, Pacific is UTC-7, so 2pm Eastern = 11am Pacific
+        self.assertEqual(result.hour, 11)
+
+
+@mock.patch(
+    "evennia.utils.utils.timezone.now",
+    new=mock.MagicMock(return_value=datetime(2019, 8, 28, 21, 56)),
+)
+class TestDateTimeFormatWithTimezone(TestCase):
+    """Tests for datetime_format with the time_zone parameter."""
+
+    def test_timezone_changes_formatting(self):
+        """The time_zone parameter changes how 'now' is compared to dtobj.
+
+        Mock now is 2019-08-28 21:56 UTC = 17:56 US/Eastern.
+        dtobj is 16:00. Against UTC now (21:56) that's >1 hour ago -> "16:00".
+        Against Eastern now (17:56) that's <2 hours ago -> "16:00:00" (with seconds).
+        """
+        import pytz
+
+        eastern = pytz.timezone("US/Eastern")
+        dtobj = datetime(2019, 8, 28, 16, 0, 0)
+        self.assertEqual(utils.datetime_format(dtobj), "16:00")
+        self.assertEqual(utils.datetime_format(dtobj, time_zone=eastern), "16:00:00")
+
+    def test_none_timezone_same_as_default(self):
+        dtobj = datetime(2017, 7, 26, 22, 54)
+        self.assertEqual(
+            utils.datetime_format(dtobj, time_zone=None),
+            utils.datetime_format(dtobj),
+        )
+
+
 class TestImportFunctions(TestCase):
     def _path_to_file(self, filename):
         testdir = os.path.dirname(os.path.abspath(__file__))

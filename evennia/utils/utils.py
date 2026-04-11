@@ -688,15 +688,15 @@ def datetime_format(dtobj, time_zone=None):
     Pretty-prints the time since a given time.
 
     Args:
-        dtobj (datetime): An datetime object, e.g. from Django's
-            `DateTimeField`.
-        time_zone (tzfile): If provided, the current date/time is
-             adjusted to the given time zone for the elapsed time
-             calculations. This should be used if `dtobj` is not UTC.
+        dtobj (datetime): A datetime object, e.g. from Django's
+            ``DateTimeField``.
+        time_zone (pytz.timezone, optional): If provided, the current
+            time is converted to this time zone before comparing
+            against ``dtobj``. Use this when ``dtobj`` has already been
+            converted to a local time zone via ``utc_to_local``.
 
     Returns:
-        deltatime (str): A string describing how long ago `dtobj`
-            took place.
+        str: A string describing how long ago ``dtobj`` took place.
 
     """
 
@@ -3132,21 +3132,26 @@ def value_is_integer(value):
     return True
 
 
-def utc_to_local(utc_time, time_zone):
+def utc_to_local(dtobj, time_zone):
     """
-    Convert a date/time from UTC to a local date/time based on `timezone`.
+    Convert a datetime to a local time zone.
+
+    Handles both aware (with tzinfo) and naive datetimes. Naive
+    datetimes are assumed to be UTC (Evennia's default with
+    ``USE_TZ=True``).
 
     Args:
-        utc_time (datetime): The time to convert.
-        time_zone (tzfile): The time zone to convert to.
+        dtobj (datetime): The datetime to convert.
+        time_zone (pytz.timezone): The target time zone.
 
-    Returns
-        result (datetime): The converted time.
+    Returns:
+        datetime: The converted datetime, or the original if
+            ``time_zone`` is falsy.
+
     """
     if not time_zone:
-        return utc_time
-    # don't convert a time that's not UTC
-    if utc_time.utcoffset().total_seconds() != 0:
-        return utc_time
-
-    return utc_time.replace(tzinfo=pytz.utc).astimezone(time_zone)
+        return dtobj
+    if dtobj.tzinfo is None:
+        # naive datetime — assume UTC
+        dtobj = pytz.utc.localize(dtobj)
+    return dtobj.astimezone(time_zone)

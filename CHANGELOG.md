@@ -25,6 +25,7 @@
 - [Fix][pull3905]: Fix system commands duplicated in merged CmdSets (kvmet)
 - [Fix][pull3909]: Fix funcparser treating $" as malformed function call (aMiss-aWry)
 - [Fix][pull3910]: Fix MXP parse to not escape surrounding text as HTML entities (aMiss-aWry)
+- [Fix][pull3504]: Mail contrib now displays date/times in the player's local timezone (chiizujin)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -43,6 +44,7 @@
 [pull3905]: https://github.com/evennia/evennia/pull/3905
 [pull3909]: https://github.com/evennia/evennia/pull/3909
 [pull3910]: https://github.com/evennia/evennia/pull/3910
+[pull3504]: https://github.com/evennia/evennia/pull/3504
 [mudstandards-ws]: https://mudstandards.org/websocket/
 
 ## Evennia 6.0.0
