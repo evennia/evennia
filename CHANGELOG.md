@@ -35,6 +35,7 @@
   game template placeholder (Griatch)
 - [Fix][issue3890]: Log RuntimeErrors during auto-puppet on login instead of silently
   swallowing them (Griatch)
+- Fix: MSSP game name now uses settings.SERVERNAME instead of hardcoded "Mygame" default (Griatch)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866

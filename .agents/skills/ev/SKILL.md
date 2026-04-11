@@ -12,6 +12,7 @@ Route based on the first argument:
 - `issues` → [List issues needing triage](#issues)
 - `issues all` → [List all actionable open issues](#issues)
 - `clog #NNN` → [Add changelog entry for a PR or issue](#clog)
+- `clog <text>` → [Add freeform changelog entry](#clog)
 - `clog validate` → [Validate CHANGELOG.md structure](#clog-validate)
 
 If no argument or unrecognized subcommand, show available subcommands.
@@ -73,12 +74,20 @@ oldest-first.
 
 ## clog
 
-**Usage:** `/ev clog #NNN`
+**Usage:** `/ev clog #NNN` or `/ev clog <freeform text>`
 
-Add a changelog entry to `CHANGELOG.md` for a merged PR or resolved issue,
-crediting the contributor.
+Add a changelog entry to `CHANGELOG.md`.
 
-### Steps
+### Routing
+
+- If the argument is a number (with or without `#`), treat it as a **PR/issue
+  number** and follow the [linked entry](#clog-linked) steps.
+- Otherwise, treat the entire argument string as **freeform text** and follow
+  the [freeform entry](#clog-freeform) steps.
+
+### clog-linked
+
+For PR/issue numbers.
 
 1. Run the helper script to fetch metadata and generate the entry:
    ```
@@ -98,6 +107,27 @@ crediting the contributor.
      precedes the link references.
    - The **link reference** into the link-reference block at the bottom of
      the `## Main branch` section (before the next `## ` heading).
+4. Show the user the final diff for confirmation.
+
+### clog-freeform
+
+For entries not tied to a specific PR or issue (local fixes, minor tweaks,
+etc.). These produce unlinked entries with no link-reference line.
+
+1. Parse the freeform text into a changelog entry. The text may already be
+   a well-formed entry or just a rough description. Produce a line matching
+   the format: `- <Cat>: <Description> (<Author>)` where:
+   - **Cat** — guess from the text: `Feat`, `Fix`, `Doc`, or `Security`.
+     Default to `Fix` if unclear.
+   - **Description** — clean up the text: capitalize the first letter, trim
+     trailing periods, keep it concise (one line preferred, wrap with
+     two-space indent if truly needed).
+   - **Author** — use the git user name (`git config user.name`). If the
+     text already contains a parenthesised author, keep it.
+2. Show the generated entry to the user for approval.
+3. Read `CHANGELOG.md` and insert the entry line into the `## Main branch`
+   section, ordered by category (same rules as linked entries). No link
+   reference is needed.
 4. Show the user the final diff for confirmation.
 
 ---
