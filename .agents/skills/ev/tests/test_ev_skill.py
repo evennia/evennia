@@ -1,9 +1,9 @@
 """
-Tests for the /ev skill shell scripts (ev-prs.sh, ev-issues.sh).
+Tests for the /ev skill shell scripts (ev-prs.sh, ev-issues.sh, ev-clog.sh).
 
 Runs each script with a fake `gh` CLI that returns canned JSON,
-then asserts on filtering, ordering, overlap detection, and PR
-cross-referencing.
+then asserts on filtering, ordering, overlap detection, PR
+cross-referencing, and changelog entry generation.
 
 Run with:
     python -m pytest .agents/skills/ev/tests/ -v
@@ -53,7 +53,7 @@ def _write_mock_gh(tmp_path, responses):
         case "$args" in
         {body}
           *)
-            echo "[]"
+            exit 1
             ;;
         esac
     """)
@@ -369,3 +369,200 @@ class TestIssuesFormat:
         out = _run_script("ev-issues.sh", tmp_path,
                           {"issue list": issues, "pr list": []})
         assert "comment" not in out
+
+
+# ---------------------------------------------------------------------------
+# ev-clog.sh tests
+# ---------------------------------------------------------------------------
+
+
+def _gh_item(num, title, author="dev", url=None, labels=None, state=None):
+    """Build a single PR or issue JSON object for gh view mocking."""
+    item = {
+        "number": num,
+        "title": title,
+        "author": {"login": author},
+        "url": url or f"https://github.com/evennia/evennia/pull/{num}",
+    }
+    if labels is not None:
+        item["labels"] = [{"name": l} for l in labels]
+    if state is not None:
+        item["state"] = state
+    return item
+
+
+class TestClogCategoryDetection:
+    """The script guesses Fix/Feat/Doc/Security from title and labels."""
+
+    def test_bug_pr_is_fix(self, tmp_path):
+        item = _gh_item(100, "fix: Handle crash on startup", author="alice")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["100"])
+        assert "[Fix][pull100]" in out
+
+    def test_feature_request_issue_is_feat(self, tmp_path):
+        item = _gh_item(200, "[Feature Request] Add widgets",
+                        author="bob",
+                        url="https://github.com/evennia/evennia/issues/200",
+                        labels=["feature-request", "needs-triage"])
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["200"])
+        assert "[Feat][issue200]" in out
+
+    def test_docs_pr_is_doc(self, tmp_path):
+        item = _gh_item(300, "docs: Update installation guide", author="carol")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["300"])
+        assert "[Doc][pull300]" in out
+
+    def test_documentation_label_is_doc(self, tmp_path):
+        item = _gh_item(301, "Fix typo in tutorial",
+                        author="carol",
+                        url="https://github.com/evennia/evennia/issues/301",
+                        labels=["documentation"])
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["301"])
+        assert "[Doc][issue301]" in out
+
+    def test_security_label(self, tmp_path):
+        item = _gh_item(400, "Patch XSS vulnerability",
+                        author="dave",
+                        url="https://github.com/evennia/evennia/issues/400",
+                        labels=["security"])
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["400"])
+        assert "[Security][issue400]" in out
+
+    def test_default_is_fix(self, tmp_path):
+        item = _gh_item(500, "Handle edge case in parser", author="eve")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["500"])
+        assert "[Fix][pull500]" in out
+
+
+class TestClogTitleCleaning:
+    """Common title prefixes are stripped from the entry description."""
+
+    def test_bug_prefix_stripped(self, tmp_path):
+        item = _gh_item(100, "[BUG] Crash on startup", author="alice",
+                        url="https://github.com/evennia/evennia/issues/100",
+                        labels=["bug"])
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["100"])
+        assert "Crash on startup" in out
+        assert "[BUG]" not in out
+
+    def test_fix_colon_prefix_stripped(self, tmp_path):
+        item = _gh_item(200, "fix: close stale DB connections", author="bob")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["200"])
+        assert "Close stale DB connections" in out
+        assert "fix:" not in out
+
+    def test_nit_prefix_stripped(self, tmp_path):
+        item = _gh_item(300, "nit: Remove None print", author="carol")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["300"])
+        assert "Remove None print" in out
+
+    def test_first_letter_capitalised(self, tmp_path):
+        item = _gh_item(400, "fix: lowercase start", author="dave")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["400"])
+        assert "Lowercase start" in out
+
+
+class TestClogOutput:
+    """Output has correct entry + link ref format."""
+
+    def test_two_lines_output_when_merged(self, tmp_path):
+        item = _gh_item(42, "Fix a thing", author="alice", state="MERGED")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["42"])
+        lines = out.strip().split("\n")
+        assert len(lines) == 2
+
+    def test_entry_line_format(self, tmp_path):
+        item = _gh_item(42, "Fix a thing", author="alice", state="MERGED")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["42"])
+        lines = out.strip().split("\n")
+        assert lines[0] == "- [Fix][pull42]: Fix a thing (alice)"
+
+    def test_link_ref_format(self, tmp_path):
+        item = _gh_item(42, "Fix a thing", author="alice", state="MERGED",
+                        url="https://github.com/evennia/evennia/pull/42")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["42"])
+        lines = out.strip().split("\n")
+        assert lines[1] == "[pull42]: https://github.com/evennia/evennia/pull/42"
+
+    def test_issue_uses_issue_prefix(self, tmp_path):
+        item = _gh_item(99, "[BUG] Something broke", author="bob",
+                        url="https://github.com/evennia/evennia/issues/99",
+                        labels=["bug"])
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["99"])
+        assert "[issue99]" in out
+        assert "issue99]: https://github.com/evennia/evennia/issues/99" in out
+
+    def test_hash_prefix_stripped_from_arg(self, tmp_path):
+        item = _gh_item(42, "Fix a thing", author="alice")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["#42"])
+        assert "[pull42]" in out
+
+    def test_pr_tried_before_issue(self, tmp_path):
+        """When both PR and issue exist, PR wins."""
+        pr_item = _gh_item(42, "Fix PR", author="alice", state="MERGED")
+        issue_item = _gh_item(42, "Fix issue", author="alice",
+                              url="https://github.com/evennia/evennia/issues/42",
+                              labels=["bug"], state="CLOSED")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": pr_item, "issue view": issue_item},
+                          args=["42"])
+        assert "[pull42]" in out
+
+
+class TestClogStateWarning:
+    """Warns when PR is not merged or issue is not closed."""
+
+    def test_open_pr_warns(self, tmp_path):
+        item = _gh_item(42, "Fix a thing", author="alice", state="OPEN")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["42"])
+        assert "WARNING" in out
+        assert "not yet merged" in out
+        # Entry is still produced after the warning
+        assert "- [Fix][pull42]" in out
+
+    def test_merged_pr_no_warning(self, tmp_path):
+        item = _gh_item(42, "Fix a thing", author="alice", state="MERGED")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["42"])
+        assert "WARNING" not in out
+
+    def test_open_issue_warns(self, tmp_path):
+        item = _gh_item(99, "[BUG] Something broke", author="bob",
+                        url="https://github.com/evennia/evennia/issues/99",
+                        labels=["bug"], state="OPEN")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["99"])
+        assert "WARNING" in out
+        assert "not closed" in out
+        assert "- [Fix][issue99]" in out
+
+    def test_closed_issue_no_warning(self, tmp_path):
+        item = _gh_item(99, "[BUG] Something broke", author="bob",
+                        url="https://github.com/evennia/evennia/issues/99",
+                        labels=["bug"], state="CLOSED")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"issue view": item}, args=["99"])
+        assert "WARNING" not in out
+
+    def test_closed_unmerged_pr_warns(self, tmp_path):
+        item = _gh_item(42, "Abandoned PR", author="alice", state="CLOSED")
+        out = _run_script("ev-clog.sh", tmp_path,
+                          {"pr view": item}, args=["42"])
+        assert "WARNING" in out
+        assert "closed without merging" in out

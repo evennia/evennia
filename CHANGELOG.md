@@ -2,12 +2,12 @@
 
 ## Main branch
 
-Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
-Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
-[Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
-[Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
-Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
-Docs: Griatch
+- Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
+- Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
+- [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
+- [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
+- Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
+- Docs: Griatch
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
 [pull3869]: https://github.com/evennia/evennia/pull/3869
