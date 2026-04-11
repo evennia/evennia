@@ -12,6 +12,7 @@ Route based on the first argument:
 - `issues` → [List issues needing triage](#issues)
 - `issues all` → [List all actionable open issues](#issues)
 - `clog #NNN` → [Add changelog entry for a PR or issue](#clog)
+- `clog validate` → [Validate CHANGELOG.md structure](#clog-validate)
 
 If no argument or unrecognized subcommand, show available subcommands.
 
@@ -95,3 +96,26 @@ crediting the contributor.
    - The **link reference** into the link-reference block at the bottom of
      the `## Main branch` section (before the next `## ` heading).
 4. Show the user the final diff for confirmation.
+
+---
+
+## clog-validate
+
+**Usage:** `/ev clog validate`
+
+Validate `CHANGELOG.md` structure. Checks each section for:
+
+- **Mismatched URLs** — `[pull100]` must point to `/pull/100`, not a different number
+  or `/issues/...`
+- **Missing link refs** — entry references `[pull100]` but no `[pull100]: ...` defined
+- **Orphan link refs** — `[pull100]: ...` defined but no entry uses `[pull100]`
+- **Duplicate link refs** — same `[pull100]: ...` defined more than once
+
+### Steps
+
+1. Run the validator:
+   ```
+   python3 <skill_dir>/clog_validate.py CHANGELOG.md
+   ```
+2. Present the output directly to the user. If errors are found, offer to
+   fix them.
