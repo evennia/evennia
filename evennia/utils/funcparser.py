@@ -352,8 +352,16 @@ class FuncParser:
                 continue
 
             if char == start_char:
+                # peek ahead - if next char can't start a funcname, treat $ as literal
+                next_char = string[ichar + 1 : ichar + 2]
+                if next_char and not (next_char.isalpha() or next_char == "_"):
+                    # can't be a valid funcname, treat as literal
+                    if curr_func:
+                        infuncstr += char
+                    else:
+                        fullstr += char
+                    continue
                 # start a new function definition (not escaped as $$)
-
                 if curr_func:
                     # we are starting a nested funcdef
                     if len(callstack) >= _MAX_NESTING - 1:

@@ -323,6 +323,14 @@ class TestFuncParser(TestCase):
         ret = self.parser.parse(string)
         self.assertEqual("The ('testing',){'bar': '$dum(b = \"test2\" , a)'} $pass(", ret)
 
+    def test_parse_malformed(self):
+        """
+        Test the parser ignoring non-funcs like $"x"
+        """
+        string = '$"x"'
+        ret = self.parser.parse(string)
+        self.assertEqual('$"x"', ret)
+
     def test_parse_escape(self):
         """
         Test the parser's escape functionality.
