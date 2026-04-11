@@ -638,20 +638,21 @@ class TestDefaultCallables(TestCase):
         Test article kwarg passed to $You/$you
 
         """
-
         self.obj1.name = "mouse"
         string = "$You() $conj(run) around"
         ret = self.parser.parse(
             string, caller=self.obj1, receiver=self.obj2, raise_errors=True
         )
-        self.assertEqual("mouse runs around", ret)
+        # $You() auto-capitalizes for third-person receivers
+        self.assertEqual("Mouse runs around", ret)
 
         self.obj1.name = "mouse"
         string = "$You(article=True) $conj(run) around"
         ret = self.parser.parse(
             string, caller=self.obj1, receiver=self.obj2, raise_errors=True
         )
-        self.assertEqual("a mouse runs around", ret)
+        # $You() with article auto-capitalizes: "a mouse" -> "A mouse"
+        self.assertEqual("A mouse runs around", ret)
 
     def test_you_format(self):
         """
@@ -666,7 +667,8 @@ class TestDefaultCallables(TestCase):
         ret = self.parser.parse(
             string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
         )
-        self.assertEqual("char One smiles at you", ret)
+        # $You() auto-capitalizes for third-person receivers
+        self.assertEqual("Char One smiles at you", ret)
 
         string = "$You(format=upper) $conj(smile) at $you(char2, format=upper)"
         ret = self.parser.parse(
@@ -690,7 +692,9 @@ class TestDefaultCallables(TestCase):
         ret = self.parser.parse(
             string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
         )
-        self.assertEqual("Char one smiles at You", ret)
+        # capital only uppercases the first char, preserves the rest
+        self.assertEqual("Char One smiles at You", ret)
+
     def test_your_format(self):
         """
         Test format kwarg passed to $Your/$your
@@ -704,7 +708,8 @@ class TestDefaultCallables(TestCase):
         ret = self.parser.parse(
             string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
         )
-        self.assertEqual("char One's attack hits you", ret)
+        # $Your() auto-capitalizes for third-person receivers
+        self.assertEqual("Char One's attack hits you", ret)
 
         string = "$Your(format=upper) attack hits $you(char2, format=upper)"
         ret = self.parser.parse(
@@ -728,7 +733,9 @@ class TestDefaultCallables(TestCase):
         ret = self.parser.parse(
             string, caller=self.obj1, receiver=self.obj2, mapping=mapping, raise_errors=True
         )
-        self.assertEqual("Char one's attack hits You", ret)
+        # capital only uppercases the first char, preserves the rest
+        self.assertEqual("Char One's attack hits You", ret)
+
     def test_random(self):
         """
         Test random callable, with ranges of expected values.

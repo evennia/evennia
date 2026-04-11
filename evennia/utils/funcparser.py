@@ -73,7 +73,7 @@ _ESCAPE_CHAR = settings.FUNCPARSER_ESCAPE_CHAR
 _YOU_FORMAT_FUNCS = {
     "upper": str.upper,
     "lower": str.lower,
-    "capital": str.capitalize,
+    "capital": lambda s: s[:1].upper() + s[1:],
     "title": str.title,
 }
 
@@ -1263,12 +1263,16 @@ def funcparser_callable_you(
             )
 
     # a specified format overrides 'capitalize' and also applies to "you"
-    if (fmt := kwargs.get('format')):
+    fmt = kwargs.get('format')
+    if fmt:
         try:
             name = _YOU_FORMAT_FUNCS[fmt](name)
         except KeyError:
             callable_name = "$You" if capitalize else "$you"
             raise ParsingError(f"Unsupported format supplied to {callable_name} callable: {fmt}.")
+    elif capitalize and caller != receiver:
+        # $You() auto-capitalizes the name for third-person receivers
+        name = name[:1].upper() + name[1:]
 
     return name
 
@@ -1348,12 +1352,16 @@ def funcparser_callable_your(
             )
 
     # a specified format overrides 'capitalize' and also applies to "your"
-    if (fmt := kwargs.get('format')):
+    fmt = kwargs.get('format')
+    if fmt:
         try:
             name = _YOU_FORMAT_FUNCS[fmt](name)
         except KeyError:
             callable_name = "$Your" if capitalize else "$your"
             raise ParsingError(f"Unsupported format supplied to {callable_name} callable: {fmt}.")
+    elif capitalize and caller != receiver:
+        # $Your() auto-capitalizes the name for third-person receivers
+        name = name[:1].upper() + name[1:]
 
     if caller != receiver:
         name += "'s"

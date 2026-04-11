@@ -8,6 +8,8 @@
   Supports `json.mudstandards.org`, `gmcp.mudstandards.org`, `terminal.mudstandards.org` and
   `v1.evennia.com` (evennia's own webclient). New `WEBSOCKET_SUBPROTOCOLS` setting.
   Existing clients are unaffected. (daiimus)
+- [Feat][pull3511]: Add `article` and `format` kwargs to `$You()`/`$you()`/`$Your()`/`$your()`.
+  `$You()` now auto-capitalizes names for third-person receivers. (chiizujin)
 - [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
 - [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
 - Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
@@ -45,6 +47,7 @@
 [pull3909]: https://github.com/evennia/evennia/pull/3909
 [pull3910]: https://github.com/evennia/evennia/pull/3910
 [pull3504]: https://github.com/evennia/evennia/pull/3504
+[pull3511]: https://github.com/evennia/evennia/pull/3511
 [mudstandards-ws]: https://mudstandards.org/websocket/
 
 ## Evennia 6.0.0
