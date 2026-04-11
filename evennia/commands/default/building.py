@@ -3897,7 +3897,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             return
 
         if not destination:
-            caller.msg("Destination not found.")
+            # Search already reported the error to the caller in parse().
             return
 
         if "loc" in self.switches:
