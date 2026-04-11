@@ -162,8 +162,6 @@ class TestWireFormatBase(TestCase):
         with self.assertRaises(NotImplementedError):
             fmt.decode_incoming(b"", False)
         with self.assertRaises(NotImplementedError):
-            fmt.encode_text("hello")
-        with self.assertRaises(NotImplementedError):
             fmt.encode_default("cmd")
 
     def test_encode_prompt_delegates_to_encode_text(self):

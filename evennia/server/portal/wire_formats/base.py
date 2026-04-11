@@ -146,6 +146,9 @@ class WireFormat:
         Encode text output for sending to the client.
 
         This handles the "text" outputfunc — the primary game output.
+        The default implementation processes ANSI markup and returns a
+        UTF-8 encoded BINARY frame. Subclasses that need a different
+        encoding (e.g. HTML conversion) should override this method.
 
         Args:
             *args: Text arguments. args[0] is typically the text string.
@@ -160,9 +163,12 @@ class WireFormat:
                 or None if nothing should be sent.
 
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement encode_text()"
-        )
+        extracted = self._extract_text_and_flags(args, kwargs, protocol_flags)
+        if extracted is None:
+            return None
+        text, raw, nocolor, screenreader = extracted
+        text = self._process_ansi(text, raw, nocolor, screenreader)
+        return (text.encode("utf-8"), True)
 
     def encode_prompt(self, *args, protocol_flags=None, **kwargs):
         """

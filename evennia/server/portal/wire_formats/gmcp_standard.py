@@ -73,35 +73,6 @@ class GmcpStandardFormat(WireFormat):
                 return None
             return decode_gmcp(gmcp_data)
 
-    def encode_text(self, *args, protocol_flags=None, **kwargs):
-        """
-        Encode text output as raw ANSI in a BINARY frame.
-
-        Returns:
-            tuple or None: (ansi_bytes, True) where True means BINARY frame.
-
-        """
-        extracted = self._extract_text_and_flags(args, kwargs, protocol_flags)
-        if extracted is None:
-            return None
-        text, raw, nocolor, screenreader = extracted
-        text = self._process_ansi(text, raw, nocolor, screenreader)
-        return (text.encode("utf-8"), True)
-
-    def encode_prompt(self, *args, protocol_flags=None, **kwargs):
-        """
-        Encode a prompt.
-
-        For GMCP format, prompts are sent as BINARY frames (raw ANSI)
-        just like regular text — the client can detect prompts via
-        GMCP if needed.
-
-        Returns:
-            tuple or None: (ansi_bytes, True) for BINARY frame.
-
-        """
-        return self.encode_text(*args, protocol_flags=protocol_flags, **kwargs)
-
     def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
         """
         Encode an OOB command as a GMCP message in a TEXT frame.

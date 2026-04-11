@@ -61,37 +61,6 @@ class TerminalFormat(WireFormat):
 
         return {"text": [[text], {}]}
 
-    def encode_text(self, *args, protocol_flags=None, **kwargs):
-        """
-        Encode text output as raw ANSI in a BINARY frame.
-
-        No HTML conversion is performed. ANSI color codes are preserved
-        for the client to render.
-
-        Returns:
-            tuple or None: (ansi_bytes, True) where True means BINARY frame.
-
-        """
-        extracted = self._extract_text_and_flags(args, kwargs, protocol_flags)
-        if extracted is None:
-            return None
-        text, raw, nocolor, screenreader = extracted
-        text = self._process_ansi(text, raw, nocolor, screenreader)
-        return (text.encode("utf-8"), True)
-
-    def encode_prompt(self, *args, protocol_flags=None, **kwargs):
-        """
-        Encode a prompt as raw ANSI.
-
-        For terminal mode, prompts are just text — there's no way
-        to distinguish them from regular output at the wire level.
-
-        Returns:
-            tuple or None: (ansi_bytes, True) for BINARY frame.
-
-        """
-        return self.encode_text(*args, protocol_flags=protocol_flags, **kwargs)
-
     def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
         """
         OOB commands are not supported in terminal mode.

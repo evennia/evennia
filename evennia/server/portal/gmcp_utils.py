@@ -89,19 +89,27 @@ def decode_gmcp(data):
     Decode a GMCP message string into Evennia command format.
 
     Args:
-        data (str or bytes): GMCP data in the form "Module.Submodule.Cmdname structure"
+        data (str or bytes): GMCP data in the form "Module.Submodule.Cmdname structure".
+            Bytes input is decoded as UTF-8.
 
     Returns:
-        dict: A dict suitable for data_in(), e.g. {"cmdname": [[args], {kwargs}]}
-            Returns empty dict if data cannot be parsed.
+        dict: A dict suitable for data_in(), e.g. ``{"cmdname": [[args], {kwargs}]}``.
+            Returns empty dict if data is empty or cannot be parsed.
 
     Notes:
-        Incoming GMCP is parsed as:
+        Incoming GMCP is parsed as::
+
             Core.Name                         -> {"name": [[], {}]}
-            Core.Name string                  -> {"name": [["string"], {}]}
+            Core.Name "string"                -> {"name": [["string"], {}]}
             Core.Name [arg, arg, ...]         -> {"name": [[args], {}]}
             Core.Name {key:val, ...}          -> {"name": [[], {kwargs}]}
             Core.Name [[args], {kwargs}]      -> {"name": [[args], {kwargs}]}
+
+        Non-JSON payloads (plain strings that aren't valid JSON) are
+        wrapped as a single-element list: ``{"name": [["the string"], {}]}``.
+        This differs from the previous ``telnet_oob.py`` implementation
+        which would split plain strings into individual characters due to
+        ``list("string")`` being iterable.
 
     """
     if isinstance(data, bytes):
