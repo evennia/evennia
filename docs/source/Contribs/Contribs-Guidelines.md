@@ -24,7 +24,7 @@ Evennia has a [contrib](./Contribs-Overview.md) directory which contains optiona
 | `grid/` | _Systems related to the game world’s topology and structure. Contribs related to rooms, exits and map building._ |
 | `rpg/` | _Systems specifically related to roleplaying and rule implementation like character traits, dice rolling and emoting._ | 
 | `tutorials/` | _Helper resources specifically meant to teach a development concept or to exemplify an Evennia system. Any extra resources tied to documentation tutorials are found here. Also the home of the Tutorial-World and Evadventure demo codes._ | 
-| `tools/` | _Miscellaneous tools for manipulating text, security auditing, and more._|
+| `utils/` | _Miscellaneous tools for manipulating text, security auditing, and more._|
 
 
 - The folder (package) should be on the following form:

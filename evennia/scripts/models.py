@@ -126,6 +126,7 @@ class ScriptDB(TypedObject):
 
     class Meta(object):
         "Define Django meta options"
+
         verbose_name = "Script"
 
     #

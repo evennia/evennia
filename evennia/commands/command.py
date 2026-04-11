@@ -16,9 +16,10 @@ from django.utils.text import slugify
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
+from evennia.utils.utils import is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
+_RE_CMD_LOCKFUNC_IN_LOCKSTRING = re.compile(r"(^|;|\s)cmd\:\w+", re.DOTALL)
 
 
 class InterruptCommand(Exception):
@@ -74,7 +75,7 @@ def _init_command(cls, **kwargs):
     if not hasattr(cls, "locks"):
         # default if one forgets to define completely
         cls.locks = "cmd:all()"
-    if "cmd:" not in cls.locks:
+    if not _RE_CMD_LOCKFUNC_IN_LOCKSTRING.search(cls.locks):
         cls.locks = "cmd:all();" + cls.locks
     for lockstring in cls.locks.split(";"):
         if lockstring and ":" not in lockstring:
@@ -265,12 +266,16 @@ class Command(metaclass=CommandMeta):
         implement __hash__ and that the corresponding hashes for equivalent
         instances are themselves equivalent.
 
-        Technically, the following implementation is only valid for comparison
-        against other Commands, as our __eq__ supports comparison against
-        str, too.
+        We hash on the command key. This isn't perfectly consistent with
+        __eq__ (which uses matchset intersection — two commands sharing
+        only an alias would be equal but have different hashes), but the
+        intersection-based __eq__ makes a fully correct hash impossible
+        without degrading back to a constant. Hashing on key is the best
+        practical tradeoff: it satisfies the contract for the common case
+        (same key = same hash) and gives O(1) set lookups for cmdset merges.
 
         """
-        return hash("command")
+        return hash(self.key)
 
     def __ne__(self, cmd):
         """
@@ -382,7 +387,7 @@ class Command(metaclass=CommandMeta):
                     return k, v
         return None, None
 
-    def access(self, srcobj, access_type="cmd", default=False):
+    def access(self, srcobj, access_type="cmd", default=False, session=None):
         """
         This hook is called by the cmdhandler to determine if srcobj
         is allowed to execute this command. It should return a boolean
@@ -394,9 +399,10 @@ class Command(metaclass=CommandMeta):
             access_type (str, optional): The lock type to check.
             default (bool, optional): The fallback result if no lock
                 of matching `access_type` is found on this Command.
+            session (Session, optional): The session to pass to lock functions.
 
         """
-        return self.lockhandler.check(srcobj, access_type, default=default)
+        return self.lockhandler.check(srcobj, access_type, default=default, session=session)
 
     def msg(self, text=None, to_obj=None, from_obj=None, session=None, **kwargs):
         """
@@ -575,7 +581,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
 
         ex.
         ::
-            url(r'characters/(?P<slug>[\w\d\-]+)/(?P<pk>[0-9]+)/$',
+            url(r'characters/(?P<slug>[\\w\\d\\-]+)/(?P<pk>[0-9]+)/$',
                 CharDetailView.as_view(), name='character-detail')
 
         If no View has been created and defined in urls.py, returns an
@@ -594,7 +600,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
                 "help-entry-detail",
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
-        except Exception as e:
+        except Exception:
             return "#"
 
     def web_get_admin_url(self):
@@ -623,6 +629,22 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
             )[0]
         return settings.CLIENT_DEFAULT_WIDTH
 
+    def _get_account_option(self, option):
+        """
+        Retrieve the value of a specified account option.
+
+        Args:
+            option (str): The name of the option to retrieve.
+
+        Returns:
+            The value of the specified account option if the account exists,
+            otherwise the default value from settings.OPTIONS_ACCOUNT_DEFAULT.
+
+        """
+        if self.account:
+            return self.account.options.get(option)
+        return settings.OPTIONS_ACCOUNT_DEFAULT.get(option)
+
     def styled_table(self, *args, **kwargs):
         """
         Create an EvTable styled by on user preferences.
@@ -638,8 +660,8 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
                 or incomplete and ready for use with `.add_row` or `.add_collumn`.
 
         """
-        border_color = self.account.options.get("border_color")
-        column_color = self.account.options.get("column_names_color")
+        border_color = self._get_account_option("border_color")
+        column_color = self._get_account_option("column_names_color")
 
         colornames = ["|%s%s|n" % (column_color, col) for col in args]
 
@@ -699,9 +721,9 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
         """
 
         colors = dict()
-        colors["border"] = self.account.options.get("border_color")
-        colors["headertext"] = self.account.options.get("%s_text_color" % mode)
-        colors["headerstar"] = self.account.options.get("%s_star_color" % mode)
+        colors["border"] = self._get_account_option("border_color")
+        colors["headertext"] = self._get_account_option("%s_text_color" % mode)
+        colors["headerstar"] = self._get_account_option("%s_star_color" % mode)
 
         width = width or self.client_width()
         if edge_character:
@@ -722,7 +744,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
         else:
             center_string = ""
 
-        fill_character = self.account.options.get("%s_fill" % mode)
+        fill_character = self._get_account_option("%s_fill" % mode)
 
         remain_fill = width - len(center_string)
         if remain_fill % 2 == 0:

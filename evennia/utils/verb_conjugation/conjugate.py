@@ -365,25 +365,28 @@ def verb_is_past_participle(verb):
     return tense == "past participle"
 
 
-def verb_actor_stance_components(verb):
+def verb_actor_stance_components(verb, plural=False):
     """
     Figure out actor stance components of a verb.
 
     Args:
         verb (str): The verb to analyze
+        plural (bool): Whether to force 3rd person to plural form
 
     Returns:
         tuple: The 2nd person (you) and 3rd person forms of the verb,
             in the same tense as the ingoing verb.
-
     """
     tense = verb_tense(verb)
+    them = "*" if plural else "3"
+    them_suff = "" if plural else "s"
+
     if "participle" in tense or "plural" in tense:
         return (verb, verb)
     if tense == "infinitive" or "present" in tense:
         you_str = verb_present(verb, person="2") or verb
-        them_str = verb_present(verb, person="3") or verb + "s"
+        them_str = verb_present(verb, person=them) or verb + them_suff
     else:
         you_str = verb_past(verb, person="2") or verb
-        them_str = verb_past(verb, person="3") or verb + "s"
+        them_str = verb_past(verb, person=them) or verb + them_suff
     return (you_str, them_str)

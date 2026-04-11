@@ -323,7 +323,7 @@ def prototype_from_object(obj):
         prot["prototype_locks"] = "spawn:all();edit:all()"
         prot["prototype_tags"] = []
     else:
-        prot = prot[0]
+        prot = prot[0].copy()
 
     prot["key"] = obj.db_key or hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:6]
     prot["typeclass"] = obj.db_typeclass_path
@@ -653,7 +653,8 @@ def batch_update_objects_with_prototype(
             if it's not set in the prototype. With `exact=True`, all un-specified properties of the
             objects will be removed if they exist. This will lead to a more accurate 1:1 correlation
             between the  object and the prototype but is usually impractical.
-        caller (Object or Account, optional): This may be used by protfuncs to do permission checks.
+        caller (Object or Account, optional): The object requesting the update. Required when using
+            protofuncs that perform searches. For example ($obj, $objlist, $dbref, $search).
         protfunc_raise_errors (bool): Have protfuncs raise explicit errors if malformed/not found.
             This is highly recommended.
     Returns:
@@ -803,6 +804,8 @@ def batch_update_objects_with_prototype(
         if do_save:
             changed += 1
             obj.save()
+            if spawn_hook := getattr(obj, "at_object_post_spawn", None):
+                spawn_hook(prototype=new_prototype)
 
     return changed
 
@@ -869,6 +872,9 @@ def batch_create_object(*objparams):
         for code in objparam[7]:
             if code:
                 exec(code, {}, {"evennia": evennia, "obj": obj})
+        # run the spawned hook
+        if spawn_hook := getattr(obj, "at_object_post_spawn", None):
+            spawn_hook()
         objs.append(obj)
     return objs
 
@@ -885,7 +891,8 @@ def spawn(*prototypes, caller=None, **kwargs):
             prototype_key (will be used to find the prototype) or a full prototype
             dictionary. These will be batched-spawned as one object each.
     Keyword Args:
-        caller (Object or Account, optional): This may be used by protfuncs to do access checks.
+        caller (Object or Account, optional): The object requesting the update. Required when using
+            protofuncs that perform searches. For example ($obj, $objlist, $dbref, $search).
         prototype_modules (str or list): A python-path to a prototype
             module, or a list of such paths. These will be used to build
             the global protparents dictionary accessible by the input

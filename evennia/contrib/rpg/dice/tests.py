@@ -35,3 +35,12 @@ class TestDice(BaseEvenniaCommandTest):
             dice.roll(11, 1001, max_dicenum=10, max_dicetype=1000)
         with self.assertRaises(TypeError):
             dice.roll(10, 1001, max_dicenum=10, max_dicetype=1000)
+
+    def test_malformed_inputs(self, mocked_randint):
+        self.call(dice.CmdDice(), "d6", "Malformed input.")
+        self.call(dice.CmdDice(), "3d", "Malformed input.")
+        self.call(dice.CmdDice(), "3d6 +", "Malformed input.")
+        self.call(dice.CmdDice(), "3d6 -", "Malformed input.")
+        self.call(dice.CmdDice(), "foo 3d6 + 2", "Malformed input.")
+        self.call(dice.CmdDice(), "3d6 + 2 + 2", "Malformed input.")
+        self.call(dice.CmdDice(), "3d6 foo 2", "Malformed input.")

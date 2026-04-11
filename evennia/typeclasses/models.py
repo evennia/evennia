@@ -33,8 +33,10 @@ from django.db import models
 from django.db.models import signals
 from django.db.models.base import ModelBase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
+from django.utils.translation import gettext as _
 
 import evennia
 from evennia.locks.lockhandler import LockHandler
@@ -225,7 +227,8 @@ class TypedObject(SharedMemoryModel):
         ),
         db_index=True,
     )
-    # Creation date. This is not changed once the object is created.
+    # Creation date. This is not changed once the object is created. Note that this is UTC,
+    # use the .date_created property to get a localized version.
     db_date_created = models.DateTimeField("creation date", editable=False, auto_now_add=True)
     # Lock storage
     db_lock_storage = models.TextField(
@@ -345,12 +348,21 @@ class TypedObject(SharedMemoryModel):
         Called by creation methods; makes sure to initialize Attribute/TagProperties
         by fetching them once.
         """
-        for propkey, prop in self.__class__.__dict__.items():
-            if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty)):
-                try:
-                    getattr(self, propkey)
-                except Exception:
-                    log_trace()
+        evennia_properties = set()
+        for base in type(self).__mro__:
+            evennia_properties.update(
+                {
+                    propkey
+                    for propkey, prop in vars(base).items()
+                    if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty))
+                }
+            )
+
+        for propkey in evennia_properties:
+            try:
+                getattr(self, propkey)
+            except Exception:
+                log_trace()
 
     # initialize all handlers in a lazy fashion
     @lazy_property
@@ -419,6 +431,11 @@ class TypedObject(SharedMemoryModel):
         self.save(update_fields=["db_key"])
         self.at_rename(oldname, value)
         SIGNAL_TYPED_OBJECT_POST_RENAME.send(sender=self, old_key=oldname, new_key=value)
+
+    @property
+    def date_created(self):
+        """Get the localized date created, based on settings.TIME_ZONE."""
+        return timezone.localtime(self.db_date_created)
 
     #
     #
@@ -876,7 +893,7 @@ class TypedObject(SharedMemoryModel):
         """
 
         if self.location == looker:
-            return " (carried)"
+            return _(" (carried)")
         return ""
 
     def at_rename(self, oldname, newname):
@@ -941,7 +958,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_detail_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to view details for
         this object.
 
@@ -981,7 +998,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_puppet_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to puppet a specific
         object.
 
@@ -1019,7 +1036,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_update_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to update this
         object.
 
@@ -1058,7 +1075,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_delete_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to delete this object.
 
         Returns:

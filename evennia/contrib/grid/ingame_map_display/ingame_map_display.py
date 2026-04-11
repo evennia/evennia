@@ -1,4 +1,4 @@
-"""
+r"""
 Basic Map - helpme 2022
 
 This adds an ascii `map` to a given room which can be viewed with the `map` command.
@@ -60,7 +60,6 @@ arguments passed into the Map command.
 import time
 
 from django.conf import settings
-
 from evennia import CmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 
@@ -125,16 +124,11 @@ class Map(object):
         Returns:
             string: The exit name as a compass direction or an empty string.
         """
-        exit_name = ex.name
-        if exit_name not in _COMPASS_DIRECTIONS:
-            compass_aliases = [
-                direction in ex.aliases.all() for direction in _COMPASS_DIRECTIONS.keys()
-            ]
-            if compass_aliases[0]:
-                exit_name = compass_aliases[0]
-            if exit_name not in _COMPASS_DIRECTIONS:
-                return ""
-        return exit_name
+        return (
+            ex.name
+            if ex.name in _COMPASS_DIRECTIONS
+            else next((alias for alias in ex.aliases.all() if alias in _COMPASS_DIRECTIONS), "")
+        )
 
     def update_pos(self, room, exit_name):
         """

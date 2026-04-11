@@ -4,8 +4,8 @@ evennia.typeclasses
 
 .. automodule:: evennia.typeclasses
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

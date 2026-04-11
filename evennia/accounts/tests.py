@@ -172,7 +172,7 @@ class TestDefaultAccountAuth(BaseEvenniaTest):
         if not uses_database("mysql"):
             # TODO As of Mar 2019, mysql does not pass this test due to collation problems
             # that has not been possible to resolve
-            result, error = DefaultAccount.validate_username("¯\_(ツ)_/¯")
+            result, error = DefaultAccount.validate_username(r"¯\_(ツ)_/¯")
             self.assertFalse(result, "Validator allowed kanji in username.")
 
         # Should not allow duplicate username

@@ -161,9 +161,6 @@ class ServerSession(_BASE_SESSION_CLASS):
             account = self.account
             if self.puppet:
                 account.unpuppet_object(self)
-            uaccount = account
-            uaccount.last_login = timezone.now()
-            uaccount.save()
             # calling account hook
             account.at_disconnect(reason)
             self.logged_in = False
@@ -269,7 +266,7 @@ class ServerSession(_BASE_SESSION_CLASS):
 
         Notes:
             Since protocols can vary, no checking is done
-            as to the existene of the flag or not. The input
+            as to the existence of the flag or not. The input
             data should have been validated before this call.
 
         """

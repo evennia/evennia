@@ -144,12 +144,12 @@ class TestFuncParser(TestCase):
             (r'Test args3 $bar(foo, bar, "   too")', "Test args3 _test(foo, bar,    too)"),
             ("Test args4 $foo('')", "Test args4 _test('')"),  # ' treated as literal
             ('Test args4 $foo("")', "Test args4 _test()"),
-            ("Test args5 $foo(\(\))", "Test args5 _test(())"),
-            ("Test args6 $foo(\()", "Test args6 _test(()"),
+            (r"Test args5 $foo(\(\))", "Test args5 _test(())"),
+            (r"Test args6 $foo(\()", "Test args6 _test(()"),
             ("Test args7 $foo(())", "Test args7 _test(())"),
             ("Test args8 $foo())", "Test args8 _test())"),
             ("Test args9 $foo(=)", "Test args9 _test(=)"),
-            ("Test args10 $foo(\,)", "Test args10 _test(,)"),
+            (r"Test args10 $foo(\,)", "Test args10 _test(,)"),
             (r'Test args10 $foo(",")', "Test args10 _test(,)"),
             ("Test args11 $foo(()", "Test args11 $foo(()"),  # invalid syntax
             (
@@ -231,6 +231,9 @@ class TestFuncParser(TestCase):
             ("Test literal3 $typ($lit(1)aaa)", "Test literal3 <class 'str'>"),
             ("Test literal4 $typ(aaa$lit(1))", "Test literal4 <class 'str'>"),
             ("Test spider's thread", "Test spider's thread"),
+            ("Test escape syntax $a=$b", "Test escape syntax $a=$b"),
+            (r"Test escape syntax $a\= b", "Test escape syntax $a= b"),
+            (r"Test escape syntax $a\\= $b", r"Test escape syntax $a\= $b"),
         ]
     )
     def test_parse(self, string, expected):
@@ -320,6 +323,14 @@ class TestFuncParser(TestCase):
         ret = self.parser.parse(string)
         self.assertEqual("The ('testing',){'bar': '$dum(b = \"test2\" , a)'} $pass(", ret)
 
+    def test_parse_malformed(self):
+        """
+        Test the parser ignoring non-funcs like $"x"
+        """
+        string = '$"x"'
+        ret = self.parser.parse(string)
+        self.assertEqual('$"x"', ret)
+
     def test_parse_escape(self):
         """
         Test the parser's escape functionality.
@@ -327,7 +338,7 @@ class TestFuncParser(TestCase):
         """
         string = "Test $foo(a) and $bar() and $rep(c) things"
         ret = self.parser.parse(string, escape=True)
-        self.assertEqual("Test \$foo(a) and \$bar() and \$rep(c) things", ret)
+        self.assertEqual(r"Test \$foo(a) and \$bar() and \$rep(c) things", ret)
 
     def test_parse_lit(self):
         """
@@ -436,6 +447,11 @@ class TestDefaultCallables(TestCase):
             ("$You() $conj(smile) at $You(char1).", "You smile at You.", "Char1 smiles at Char1."),
             ("$You() $conj(smile) at $You(char2).", "You smile at Char2.", "Char1 smiles at You."),
             (
+                "$You() $conj(smile) while $You(char2) $conj(waves, char2).",
+                "You smile while Char2 waves.",
+                "Char1 smiles while You wave.",
+            ),
+            (
                 "$You(char2) $conj(smile) at $you(char1).",
                 "Char2 smile at you.",
                 "You smiles at Char1.",
@@ -510,6 +526,20 @@ class TestDefaultCallables(TestCase):
 
         self.obj1.gender = lambda: gender
         ret = self.parser.parse(string, caller=self.obj1, raise_errors=True)
+        self.assertEqual(expected, ret)
+
+    def test_pronoun_mapping(self):
+        self.obj1.gender = "female"
+        self.obj2.gender = "male"
+
+        string = "Char1 raises $pron(your, char1) fist as Char2 raises $pron(yours, char2)"
+        expected = "Char1 raises her fist as Char2 raises his"
+        ret = self.parser.parse(
+            string,
+            caller=self.obj1,
+            mapping={"char1": self.obj1, "char2": self.obj2},
+            raise_errors=True,
+        )
         self.assertEqual(expected, ret)
 
     def test_pronoun_viewpoint(self):

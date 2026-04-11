@@ -48,7 +48,7 @@ Here is a simple example of the prompt sent/updated from a command class:
             if not self.args:
                 target = self.caller
             else:
-                target = self.search(self.args)
+                target = self.caller.search(self.args)
                 if not target:
                     return
             # try to get health, mana and stamina

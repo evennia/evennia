@@ -97,6 +97,20 @@ class LoginTest(EvenniaWebTest):
 class LogoutTest(EvenniaWebTest):
     url_name = "logout"
 
+    def test_get(self):
+        """Since Django 5.0, logout is no longer supported with GET requests"""
+        pass
+
+    def test_post(self):
+        """Do the logout test with a POST request"""
+        response = self.client.post(reverse(self.url_name), follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_authenticated(self):
+        """Do the logout test with a POST instead of GET"""
+        response = self.client.post(reverse(self.url_name), follow=True)
+        self.assertEqual(response.status_code, 200)
+
 
 class PasswordResetTest(EvenniaWebTest):
     url_name = "password_change"

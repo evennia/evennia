@@ -102,7 +102,7 @@ and static files.
 - The api code is located in `evennia/web/api/` - the `url.py` file here is responsible for
   collecting all view-classes.
 
-Contrary to other web components, there is no pre-made urls.py set up for
+Contrary to other web components, there is no pre-made `urls.py` set up for
 `mygame/web/api/`. This is because the registration of models with the api is
 strongly integrated with the REST api functionality. Easiest is probably to
 copy over `evennia/web/api/urls.py` and modify it in place.

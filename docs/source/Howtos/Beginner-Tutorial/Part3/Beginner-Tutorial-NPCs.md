@@ -27,7 +27,7 @@ from evennia import DefaultCharacter, AttributeProperty
 
 from .characters import LivingMixin
 from .enums import Ability
-
+from .objects import get_bare_hands
 
 class EvAdventureNPC(LivingMixin, DefaultCharacter): 
 	"""Base class for NPCs""" 
@@ -40,7 +40,7 @@ class EvAdventureNPC(LivingMixin, DefaultCharacter):
     morale = AttributeProperty(default=9, autocreate=False)
     allegiance = AttributeProperty(default=Ability.ALLEGIANCE_HOSTILE, autocreate=False)
 
-    weapon = AttributeProperty(default=BARE_HANDS, autocreate=False)  # instead of inventory
+    weapon = AttributeProperty(default=get_bare_hands, autocreate=False)  # instead of inventory
     coins = AttributeProperty(default=1, autocreate=False)  # coin loot
  
     is_idle = AttributeProperty(default=False, autocreate=False)

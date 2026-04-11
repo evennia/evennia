@@ -63,7 +63,7 @@ class IAttribute:
         return LockHandler(self)
 
     key = property(lambda self: self.db_key)
-    strvalue = property(lambda self: self.db_strvalue)
+    strvalue = property(lambda self: getattr(self, "db_strvalue", None))
     category = property(lambda self: self.db_category)
     model = property(lambda self: self.db_model)
     attrtype = property(lambda self: self.db_attrtype)
@@ -142,6 +142,8 @@ class InMemoryAttribute(IAttribute):
             # Value and locks are special. We must call the wrappers.
             if key == "value":
                 self.value = value
+            elif key == "strvalue":
+                self.db_strvalue = value
             elif key == "lock_storage":
                 self.lock_storage = value
             else:
@@ -410,6 +412,7 @@ class Attribute(IAttribute, SharedMemoryModel):
 
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Attribute"
 
     # Wrapper properties to easily set database fields. These are
@@ -1470,7 +1473,7 @@ class DbHolder:
 # Nick templating
 #
 
-"""
+r"""
 This supports the use of replacement templates in nicks:
 
 This happens in two steps:

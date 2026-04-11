@@ -4,8 +4,8 @@ evennia.contrib.game\_systems.containers
 
 .. automodule:: evennia.contrib.game_systems.containers
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

@@ -99,7 +99,8 @@ Below are the access_types checked by the default commandset.
   - `send` - who may send to the channel.
   - `listen` - who may subscribe and listen to the channel.
 - [HelpEntry](./Help-System.md):
-  - `examine` - who may view this help entry (usually everyone)
+  - `view` - if the help entry header should show up in the help index
+  - `read` - who may view this help entry (usually everyone)
   - `edit` - who may edit this help entry.
 
 So to take an example, whenever an exit is to be traversed, a lock of the type *traverse* will be checked. Defining a suitable lock type for an exit object would thus involve a lockstring `traverse: <lock functions>`.
@@ -181,6 +182,9 @@ Some useful default lockfuncs (see `src/locks/lockfuncs.py` for more):
 - `attr(attrname, value)` - checks so an attribute exists on accessing_object *and* has the given value.
 - `attr_gt(attrname, value)` - checks so accessing_object has a value larger (`>`) than the given value.
 - `attr_ge, attr_lt, attr_le, attr_ne` - corresponding for `>=`, `<`, `<=` and `!=`.
+- `tag(tagkey[, category])` - checks if the accessing_object has the specified tag and optional category.
+- `objtag(tagkey[, category])` - checks if the *accessed_object* has the specified tag and optional category.
+- `objloctag(tagkey[, category])` - checks if the *accessed_obj*'s location has the specified tag and optional category.
 - `holds(objid)` - checks so the accessing objects contains an object of given name or dbref.
 - `inside()` - checks so the accessing object is inside the accessed object (the inverse of `holds()`).
 - `pperm(perm)`, `pid(num)/pdbref(num)` - same as `perm`, `id/dbref` but always looks for permissions and dbrefs of *Accounts*, not on Characters.

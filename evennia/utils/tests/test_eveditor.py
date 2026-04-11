@@ -338,6 +338,33 @@ class TestEvEditor(BaseEvenniaCommandTest):
         self.assertEqual(l3, " " * 37 + "l 3" + " " * 38)
         self.assertEqual(l4, "l" + " " * 76 + "4")
 
+    def test_eveditor_COLON_J_preserves_paragraph_breaks(self):
+        """
+        Test to verify fix of issue #3649 (:j command broke input)
+        """
+        eveditor.EvEditor(self.char1)
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "",
+            raw_string=":",
+            msg="Line Editor []\n01\n[l:01 w:000 c:0000](:h for help)",
+        )
+        text = (
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n\n"
+            "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        )
+        self.char1.ndb._eveditor.update_buffer(text)
+        self.call(
+            eveditor.CmdEditorGroup(),
+            "=40",
+            raw_string=":j",
+            msg="Left-justified lines 1-3.",
+        )
+        lines = self.char1.ndb._eveditor.get_buffer().split("\n")
+        blank_line_index = lines.index(" " * 40)
+        self.assertEqual(blank_line_index, 2)
+        self.assertTrue(lines[blank_line_index + 1].startswith("Sed do eiusmod"))
+
     def test_eveditor_bad_commands(self):
         eveditor.EvEditor(self.char1)
         self.call(

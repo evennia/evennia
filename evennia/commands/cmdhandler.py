@@ -32,12 +32,11 @@ from collections import defaultdict
 from copy import copy
 from itertools import chain
 from traceback import format_exc
-from weakref import WeakValueDictionary
 
 from django.conf import settings
 from django.utils.translation import gettext as _
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks
 from twisted.internet.task import deferLater
 
 from evennia.commands.cmdset import CmdSet
@@ -49,7 +48,7 @@ _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
 __all__ = ("cmdhandler", "InterruptCommand")
 _GA = object.__getattribute__
-_CMDSET_MERGE_CACHE = WeakValueDictionary()
+_CMDSET_MERGE_CACHE = {}
 
 # tracks recursive calls by each caller
 # to avoid infinite loops (commands calling themselves)
@@ -251,7 +250,9 @@ def _progressive_cmd_run(cmd, generator, response=None):
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
         elif isinstance(value, str):
-            _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
+            _GET_INPUT(
+                cmd.caller, value, _process_input, session=cmd.session, cmd=cmd, generator=generator
+            )
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
 
@@ -261,6 +262,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
+
     pass
 
 
@@ -350,7 +352,7 @@ def get_and_merge_cmdsets(
             """
             # Gather cmdsets from location, objects in location or carried
             try:
-                local_obj_cmdsets = [None]
+                local_obj_cmdsets = []
                 try:
                     location = obj.location
                 except Exception:
@@ -361,7 +363,12 @@ def get_and_merge_cmdsets(
                     local_objlist = yield (
                         location.contents_get(exclude=obj) + obj.contents_get() + [location]
                     )
-                    local_objlist = [o for o in local_objlist if not o._is_deleted]
+                    local_objlist = [
+                        o
+                        for o in local_objlist
+                        if not o._is_deleted
+                        and o.access(caller, access_type="call", no_superuser_bypass=True)
+                    ]
                     for lobj in local_objlist:
                         try:
                             # call hook in case we need to do dynamic changing to cmdset
@@ -375,12 +382,7 @@ def get_and_merge_cmdsets(
                         chain.from_iterable(
                             lobj.cmdset.cmdset_stack
                             for lobj in local_objlist
-                            if (
-                                lobj.cmdset.current
-                                and lobj.access(
-                                    caller, access_type="call", no_superuser_bypass=True
-                                )
-                            )
+                            if lobj.cmdset.current
                         )
                     )
                     for cset in local_obj_cmdsets:
@@ -390,7 +392,7 @@ def get_and_merge_cmdsets(
                         # explicitly.
                         cset.old_duplicates = cset.duplicates
                         cset.duplicates = True if cset.duplicates is None else cset.duplicates
-                returnValue(local_obj_cmdsets)
+                return local_obj_cmdsets
             except Exception:
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
@@ -408,9 +410,9 @@ def get_and_merge_cmdsets(
                 _msg_err(caller, _ERROR_CMDSETS)
                 raise ErrorReported(raw_string)
             try:
-                returnValue(obj.get_cmdsets(caller=caller, current=current))
+                return obj.get_cmdsets(caller=caller, current=current)
             except AttributeError:
-                returnValue((CmdSet(), []))
+                return (CmdSet(), [])
 
         local_obj_cmdsets = []
 
@@ -438,11 +440,12 @@ def get_and_merge_cmdsets(
             cmdset for cmdset in object_cmdsets if cmdset and cmdset.key != "_EMPTY_CMDSET"
         ]
         # report cmdset errors to user (these should already have been logged)
-        yield [
-            report_to.msg(err_helper(cmdset.errmessage, cmdid=cmdid))
-            for cmdset in cmdsets
-            if cmdset.key == "_CMDSET_ERROR"
-        ]
+        if report_to:
+            yield [
+                report_to.msg(err_helper(cmdset.errmessage, cmdid=cmdid))
+                for cmdset in cmdsets
+                if cmdset.key == "_CMDSET_ERROR"
+            ]
 
         if cmdsets:
             # faster to do tuple on list than to build tuple directly
@@ -485,7 +488,7 @@ def get_and_merge_cmdsets(
         # if cmdset:
         #     caller.cmdset.current = cmdset
 
-        returnValue(cmdset)
+        return cmdset
     except ErrorReported:
         raise
     except Exception:
@@ -599,7 +602,7 @@ def cmdhandler(
 
             if _testing:
                 # only return the command instance
-                returnValue(cmd)
+                return cmd
 
             # assign custom kwargs to found cmd object
             for key, val in kwargs.items():
@@ -618,7 +621,7 @@ def cmdhandler(
             abort = yield cmd.at_pre_cmd()
             if abort:
                 # abort sequence
-                returnValue(abort)
+                return abort
 
             # Parse and execute
             yield cmd.parse()
@@ -629,14 +632,12 @@ def cmdhandler(
             if isinstance(ret, types.GeneratorType):
                 # cmd.func() is a generator, execute progressively
                 _progressive_cmd_run(cmd, ret)
-                ret = yield ret
                 # note that the _progressive_cmd_run will itself run
                 # the at_post_cmd etc as it finishes; this is a bit of
                 # code duplication but there seems to be no way to
                 # catch the StopIteration here (it's not in the same
                 # frame since this is in a deferred chain)
             else:
-                ret = yield ret
                 # post-command hook
                 yield cmd.at_post_cmd()
 
@@ -647,15 +648,12 @@ def cmdhandler(
                 else:
                     caller.ndb.last_cmd = None
 
-            # return result to the deferred
-            returnValue(ret)
-
         except InterruptCommand:
             # Do nothing, clean exit
             pass
         except Exception:
             _msg_err(caller, _ERROR_UNTRAPPED)
-            raise ErrorReported(raw_string)
+            raise ErrorReported(cmd.raw_string)
         finally:
             _COMMAND_NESTING[called_by] -= 1
 
@@ -702,7 +700,17 @@ def cmdhandler(
                 # Parse the input string and match to available cmdset.
                 # This also checks for permissions, so all commands in match
                 # are commands the caller is allowed to call.
-                matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
+                try:
+                    matches = yield _COMMAND_PARSER(raw_string, cmdset, caller, session=session)
+                except TypeError:
+                    logger.log_dep(
+                        "Custom cmdparser does not accept 'session' kwarg. "
+                        "Update its signature to cmdparser(raw_string, cmdset, caller, "
+                        "match_index=None, session=None, **kwargs). "
+                        "Session-aware lock functions like is_ooc() will not "
+                        "work correctly until this is fixed."
+                    )
+                    matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
 
                 # Deal with matches
 
@@ -758,15 +766,14 @@ def cmdhandler(
                 cmd = copy(cmd)
 
             # A normal command.
-            ret = yield _run_command(
+            yield _run_command(
                 cmd, cmdname, args, raw_cmdname, cmdset, session, account, cmdset_providers
             )
-            returnValue(ret)
 
         except ErrorReported as exc:
             # this error was already reported, so we
             # catch it here and don't pass it on.
-            logger.log_err("User input was: '%s'." % exc.raw_string)
+            logger.log_err("User input was: '%s'." % logger.mask_sensitive_input(exc.raw_string))
 
         except ExecSystemCommand as exc:
             # Not a normal command: run a system command, if available,
@@ -775,7 +782,7 @@ def cmdhandler(
             sysarg = exc.sysarg
 
             if syscmd:
-                ret = yield _run_command(
+                yield _run_command(
                     syscmd,
                     syscmd.key,
                     sysarg,
@@ -785,7 +792,7 @@ def cmdhandler(
                     account,
                     cmdset_providers,
                 )
-                returnValue(ret)
+                return
             elif sysarg:
                 # return system arg
                 error_to.msg(err_helper(exc.sysarg, cmdid=cmdid))

@@ -636,6 +636,11 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
                     self.msg(f"Option |w{new_name}|n was kept as '|w{old_val}|n'.")
                 else:
                     flags[new_name] = new_val
+
+                    # If we're manually assign a display size, turn off auto-resizing
+                    if new_name in ["SCREENWIDTH", "SCREENHEIGHT"]:
+                        flags["AUTORESIZE"] = False
+
                     self.msg(
                         f"Option |w{new_name}|n was changed from '|w{old_val}|n' to"
                         f" '|w{new_val}|n'."
@@ -651,6 +656,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "ENCODING": validate_encoding,
             "MCCP": validate_bool,
             "NOGOAHEAD": validate_bool,
+            "NOPROMPTGOAHEAD": validate_bool,
             "MXP": validate_bool,
             "NOCOLOR": validate_bool,
             "NOPKEEPALIVE": validate_bool,
@@ -658,6 +664,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "RAW": validate_bool,
             "SCREENHEIGHT": validate_size,
             "SCREENWIDTH": validate_size,
+            "AUTORESIZE": validate_bool,
             "SCREENREADER": validate_bool,
             "TERM": utils.to_str,
             "UTF-8": validate_bool,
@@ -665,6 +672,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "INPUTDEBUG": validate_bool,
             "FORCEDENDLINE": validate_bool,
             "LOCALECHO": validate_bool,
+            "TRUECOLOR": validate_bool,
         }
 
         name = self.lhs.upper()
@@ -788,12 +796,12 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     testing which colors your client support
 
     Usage:
-      color ansi | xterm256
+      color ansi | xterm256 | truecolor
 
     Prints a color map along with in-mud color codes to use to produce
     them.  It also tests what is supported in your client. Choices are
-    16-color ansi (supported in most muds) or the 256-color xterm256
-    standard. No checking is done to determine your client supports
+    16-color ansi (supported in most muds), the 256-color xterm256
+    standard, or truecolor. No checking is done to determine your client supports
     color - if not you will see rubbish appear.
     """
 
@@ -807,8 +815,8 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
     # the slices of the ANSI_PARSER lists to use for retrieving the
     # relevant color tags to display. Replace if using another schema.
     # This command can only show one set of markup.
-    slice_bright_fg = slice(7, 15)  # from ANSI_PARSER.ansi_map
-    slice_dark_fg = slice(15, 23)  # from ANSI_PARSER.ansi_map
+    slice_bright_fg = slice(13, 21)  # from ANSI_PARSER.ansi_map
+    slice_dark_fg = slice(21, 29)  # from ANSI_PARSER.ansi_map
     slice_dark_bg = slice(-8, None)  # from ANSI_PARSER.ansi_map
     slice_bright_bg = slice(None, None)  # from ANSI_PARSER.ansi_xterm256_bright_bg_map
 
@@ -831,6 +839,18 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
                 ]
             )
         return ftable
+
+    def make_hex_color_from_column(self, column_number, count):
+        r = 255 - column_number * 255 / count
+        g = column_number * 510 / count
+        b = column_number * 255 / count
+
+        if g > 255:
+            g = 510 - g
+
+        return (
+            f"#{hex(round(r))[2:].zfill(2)}{hex(round(g))[2:].zfill(2)}{hex(round(b))[2:].zfill(2)}"
+        )
 
     def func(self):
         """Show color tables"""
@@ -910,9 +930,35 @@ class CmdColorTest(COMMAND_DEFAULT_CLASS):
             table = self.table_format(table)
             string += "\n" + "\n".join("".join(row) for row in table)
             self.msg(string)
+
+        elif self.args.startswith("t"):
+            # show abbreviated truecolor sample (16.7 million colors in truecolor)
+            string = (
+                "\n"
+                "True Colors (if this is not a smooth rainbow transition, your client might not "
+                "report that it can handle truecolor): \n"
+            )
+            display_width = self.client_width()
+            num_colors = display_width * 1
+            color_block = [
+                f"|[{self.make_hex_color_from_column(i, num_colors)} " for i in range(num_colors)
+            ]
+            color_block = [
+                "".join(color_block[iline : iline + display_width])
+                for iline in range(0, num_colors, display_width)
+            ]
+            string += "\n".join(color_block)
+
+            string += (
+                "\n|nfg: |#FF0000||#FF0000|n (|#F00||#F00|n) to |#0000FF||#0000FF|n (|#00F||#00F|n)"
+                "\n|nbg: |[#FF0000||[#FF0000|n (|[#F00||[#F00|n) to |n|[#0000FF||[#0000FF |n(|[#00F||[#00F|n)"
+            )
+
+            self.msg(string)
+
         else:
             # malformed input
-            self.msg("Usage: color ansi||xterm256")
+            self.msg("Usage: color ansi || xterm256 || truecolor")
 
 
 class CmdQuell(COMMAND_DEFAULT_CLASS):

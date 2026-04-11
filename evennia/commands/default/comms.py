@@ -1382,18 +1382,18 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 if target and target.isnumeric():
                     # a number to specify a historic page
                     number = int(target)
-                elif target:
+                elif message:
                     target_obj = self.caller.search(target, quiet=True)
                     if target_obj:
                         # a proper target
                         targets = [target_obj[0]]
                         message = message[0].strip()
                     else:
-                        # a message with a space in it - put it back together
-                        message = target + " " + (message[0] if message else "")
+                        # a message with a space in it - use the original args
+                        message = self.args.strip()
                 else:
-                    # a single-word message
-                    message = message[0].strip()
+                    # a single-word message - use the original args
+                    message = self.args.strip()
 
         pages = list(pages_we_sent) + list(pages_we_got)
         pages = sorted(pages, key=lambda page: page.date_created)
@@ -1413,12 +1413,13 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
                 message = f"{caller.key} {message.strip(':').strip()}"
 
             # create the persistent message object
+            target_perms = " or ".join([f"id({target.id})" for target in targets + [caller]])
             create.create_message(
                 caller,
                 message,
                 receivers=targets,
                 locks=(
-                    f"read:id({caller.id}) or perm(Admin);"
+                    f"read:{target_perms} or perm(Admin);"
                     f"delete:id({caller.id}) or perm(Admin);"
                     f"edit:id({caller.id}) or perm(Admin)"
                 ),
@@ -1498,7 +1499,7 @@ class CmdPage(COMMAND_DEFAULT_CLASS):
             if lastpages:
                 string = f"Your latest pages:\n {lastpages}"
             else:
-                string = "You haven't paged anyone yet."
+                string = "You haven't sent or received any pages yet."
             self.msg(string)
             return
 
@@ -2029,7 +2030,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             # show all connections
             if channel_list := discord_bot.db.channels:
                 table = self.styled_table(
-                    "|wLink ID|n",
+                    "|wLink Index|n",
                     "|wEvennia|n",
                     "|wDiscord|n",
                     border="cells",
@@ -2075,7 +2076,7 @@ class CmdDiscord2Chan(COMMAND_DEFAULT_CLASS):
             # show all discord channels linked to self.lhs
             if channel_list := discord_bot.db.channels:
                 table = self.styled_table(
-                    "|wLink ID|n",
+                    "|wLink Index|n",
                     "|wEvennia|n",
                     "|wDiscord|n",
                     border="cells",

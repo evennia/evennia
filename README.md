@@ -19,6 +19,7 @@ with [discussion forums][group] and a [discord server][chat] to help and support
 
     pip install evennia
         (windows users once: py -m evennia)
+        (note: Windows users with multiple Python versions should prefer `py -3.11` instead of `python` when creating virtual environments)
     evennia --init mygame
     cd mygame
     evennia migrate
@@ -45,7 +46,7 @@ Welcome!
 [homepage]: https://www.evennia.com
 [docs]: https://www.evennia.com/docs/latest
 [screenshot]: https://user-images.githubusercontent.com/294267/205434941-14cc4f59-7109-49f7-9d71-0ad3371b007c.jpg
-[logo]: https://github.com/evennia/evennia/blob/master/evennia/web/website/static/website/images/evennia_logo.png
+[logo]: https://raw.githubusercontent.com/evennia/evennia/refs/heads/main/evennia/web/static/website/images/evennia_logo.png
 [unittestciimg]: https://github.com/evennia/evennia/workflows/test-suite/badge.svg
 [unittestcilink]: https://github.com/evennia/evennia/actions?query=workflow%3Atest-suite
 [coverimg]: https://coveralls.io/repos/github/evennia/evennia/badge.svg?branch=main
@@ -56,7 +57,7 @@ Welcome!
 [license]: https://www.evennia.com/docs/latest/Licensing.html
 [group]: https://github.com/evennia/evennia/discussions
 [chat]: https://discord.gg/AJJpcRUhtF
-[wikimudpage]: http://en.wikipedia.org/wiki/MUD
+[wikimudpage]: http://en.wikipedia.org/wiki/Multi-user_dungeon
 [evenniapictures]: https://www.evennia.com/docs/latest/Evennia-In-Pictures.html
 [beginnertutorial]: https://www.evennia.com/docs/latest/Howtos/Beginner-Tutorial/Beginner-Tutorial-Overview.html
 [installation]: https://www.evennia.com/docs/latest/Setup/Setup-Overview.html#installation-and-running

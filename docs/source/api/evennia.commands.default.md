@@ -4,8 +4,8 @@ evennia.commands.default
 
 .. automodule:: evennia.commands.default
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

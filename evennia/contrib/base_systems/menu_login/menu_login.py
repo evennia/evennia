@@ -232,6 +232,7 @@ class MenuLoginEvMenu(EvMenu):
 
 class UnloggedinCmdSet(CmdSet):
     "Cmdset for the unloggedin state"
+
     key = "DefaultUnloggedin"
     priority = 0
 
