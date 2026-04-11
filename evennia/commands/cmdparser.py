@@ -10,7 +10,7 @@ import re
 
 from django.conf import settings
 
-from evennia.utils.logger import log_trace
+from evennia.utils.logger import log_trace, mask_sensitive_input
 
 _MULTIMATCH_REGEX = re.compile(settings.SEARCH_MULTIMATCH_REGEX, re.I + re.U)
 _CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
@@ -62,7 +62,6 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
     """
     matches = []
     try:
-        orig_string = raw_string
         if not include_prefixes and len(raw_string) > 1:
             raw_string = raw_string.lstrip(_CMD_IGNORE_PREFIXES)
         search_string = raw_string.lower()
@@ -71,7 +70,7 @@ def build_matches(raw_string, cmdset, include_prefixes=False):
             if cmdname:
                 matches.append(create_match(cmdname, raw_string, cmd, raw_cmdname))
     except Exception:
-        log_trace("cmdhandler error. raw_input:%s" % raw_string)
+        log_trace("cmdhandler error. raw_input:%s" % mask_sensitive_input(raw_string))
     return matches
 
 
@@ -111,7 +110,7 @@ def try_num_differentiators(raw_string):
         return None, None
 
 
-def cmdparser(raw_string, cmdset, caller, match_index=None):
+def cmdparser(raw_string, cmdset, caller, match_index=None, session=None, **kwargs):
     """
     This function is called by the cmdhandler once it has
     gathered and merged all valid cmdsets valid for this particular parsing.
@@ -166,7 +165,7 @@ def cmdparser(raw_string, cmdset, caller, match_index=None):
         matches = build_matches(raw_string, cmdset, include_prefixes=False)
 
     # only select command matches we are actually allowed to call.
-    matches = [match for match in matches if match[2].access(caller, "cmd")]
+    matches = [match for match in matches if match[2].access(caller, "cmd", session=session)]
 
     # try to bring the number of matches down to 1
     if len(matches) > 1:

@@ -38,14 +38,6 @@ play the demo game.
 )
 
 
-WARNING_POSTGRESQL_FIX = """
-    PostgreSQL-psycopg2 compatibility fix:
-    The in-game channels {chan1}, {chan2} and {chan3} were created,
-    but the superuser was not yet connected to them. Please use in
-    game commands to connect Account #1 to those channels when first
-    logging in.
-"""
-
 
 def _get_superuser_account():
     """

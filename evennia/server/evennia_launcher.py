@@ -20,8 +20,8 @@ import shutil
 import signal
 import sys
 from argparse import ArgumentParser
-from distutils.version import LooseVersion
-from subprocess import STDOUT, CalledProcessError, Popen, call, check_output
+from packaging.version import Version
+from subprocess import DEVNULL, STDOUT, CalledProcessError, Popen, call, check_output
 
 import django
 from django.core.management import execute_from_command_line
@@ -849,7 +849,14 @@ def start_evennia(pprofiler=False, sprofiler=False):
                 create_no_window = 0x08000000
                 Popen(portal_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window)
             else:
-                Popen(portal_cmd, env=getenv(), bufsize=-1)
+                Popen(
+                    portal_cmd, 
+                    env=getenv(), 
+                    bufsize=-1, 
+                    stdin=DEVNULL, 
+                    stdout=DEVNULL, 
+                    stderr=DEVNULL
+                )
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
             _reactor_stop()
@@ -1265,9 +1272,9 @@ def check_main_evennia_dependencies():
     def _test_python_version():
         """Test Python version"""
         python_version = ".".join(str(num) for num in sys.version_info if isinstance(num, int))
-        python_curr = LooseVersion(python_version)
-        python_min = LooseVersion(PYTHON_MIN)
-        python_max = LooseVersion(PYTHON_MAX_TESTED)
+        python_curr = Version(python_version)
+        python_min = Version(PYTHON_MIN)
+        python_max = Version(PYTHON_MAX_TESTED)
 
         if python_curr < python_min:
             print(ERROR_PYTHON_VERSION.format(python_version=python_version, python_min=PYTHON_MIN))
@@ -1291,8 +1298,8 @@ def check_main_evennia_dependencies():
             return False
         else:
             twisted_version = twisted.version.short()
-            twisted_curr = LooseVersion(twisted_version)
-            twisted_min = LooseVersion(TWISTED_MIN)
+            twisted_curr = Version(twisted_version)
+            twisted_min = Version(TWISTED_MIN)
 
             if twisted_curr < twisted_min:
                 print(
@@ -1313,11 +1320,9 @@ def check_main_evennia_dependencies():
             return False
         else:
             django_version = ".".join(str(num) for num in django.VERSION if isinstance(num, int))
-            # only the main version (1.5, not 1.5.4.0)
-            django_version = ".".join(django_version.split(".")[:2])
-            django_curr = LooseVersion(django_version)
-            django_min = LooseVersion(DJANGO_MIN)
-            django_max = LooseVersion(DJANGO_MAX_TESTED)
+            django_curr = Version(django_version)
+            django_min = Version(DJANGO_MIN)
+            django_max = Version(DJANGO_MAX_TESTED)
 
             if django_curr < django_min:
                 print(

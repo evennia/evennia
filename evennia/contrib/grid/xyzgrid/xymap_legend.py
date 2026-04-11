@@ -946,16 +946,14 @@ class SmartTeleporterMapLink(MapLink):
                 'pointing to an empty space' error we'd get if returning `None`.
 
         """
-        xygrid = self.xymap.xygrid
         if not self.paired_teleporter:
-            # scan for another teleporter
-            symbol = self.symbol
-            found_teleporters = []
-            for iy, line in xygrid.items():
-                for ix, node_or_link in xygrid[iy].items():
-                    if node_or_link.symbol == symbol and node_or_link is not self:
-                        found_teleporters.append(node_or_link)
-
+            # find the matching teleporter via pre-built symbol map
+            found_teleporters = [
+                comp
+                for comp in self.xymap.symbol_map.get(self.symbol, [])
+                if comp is not self
+            ]
+            
             if not found_teleporters:
                 raise MapParserError("found no matching teleporter to link to.", self)
             if len(found_teleporters) > 1:

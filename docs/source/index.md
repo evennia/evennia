@@ -1,6 +1,6 @@
 # Evennia Documentation
 
-This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles. This manual was last updated October 26, 2024, see the [Evennia Changelog](Coding/Changelog.md). Latest released Evennia version is 5.0.1.
+This is the manual of [Evennia](https://www.evennia.com), the open source Python `MU*` creation system. Use the Search bar on the left to find or discover interesting articles. This manual was last updated February 15, 2026, see the [Evennia Changelog](Coding/Changelog.md). Latest released Evennia version is 6.0.0.
 
 - [Introduction](./Evennia-Introduction.md) - what is this Evennia thing?
 - [Evennia in Pictures](./Evennia-In-Pictures.md) - a visual overview of Evennia

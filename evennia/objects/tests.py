@@ -1,5 +1,3 @@
-from unittest import skip
-
 from evennia.objects.models import ObjectDB
 from evennia.objects.objects import (
     DefaultCharacter,
@@ -542,6 +540,19 @@ class TestObjectPropertiesClass(DefaultObject):
         self.property_initialized = True
 
 
+class MixinAttributeProperty:
+    strength = AttributeProperty(default=0, category="stat")
+    agility = AttributeProperty(default=0, category="stat", autocreate=False)
+
+
+class MixinTagProperty:
+    mytag = TagProperty(category="mixin_tags")
+
+
+class TestObjectPropertiesMixinClass(MixinAttributeProperty, MixinTagProperty, DefaultObject):
+    pass
+
+
 class TestProperties(EvenniaTestCase):
     """
     Test Properties.
@@ -678,7 +689,6 @@ class TestProperties(EvenniaTestCase):
         self.assertEqual(obj.cusattr, 5)
         self.assertEqual(obj.settest, 5)
 
-    @skip("TODO: Needs more research")
     def test_stored_object_queries(self):
         """,
         Test https://github.com/evennia/evennia/issues/3155, where AttributeProperties
@@ -711,6 +721,42 @@ class TestProperties(EvenniaTestCase):
 
         obj1.delete()
         obj2.delete()
+
+    def test_stored_object_queries__self_reference(self):
+        """
+        Regression test for querying on a stored self-reference.
+
+        Related to https://github.com/evennia/evennia/issues/3194 comments.
+        """
+        obj = create.create_object(TestObjectPropertiesClass, key="selfref")
+        try:
+            obj.attr1 = obj
+            query = TestObjectPropertiesClass.objects.filter(
+                db_attributes__db_key="attr1", db_attributes__db_value=obj
+            )
+            self.assertEqual(list(query), [obj])
+        finally:
+            obj.delete()
+
+    def test_stored_object_queries__filter_family(self):
+        """
+        Regression test for object-valued attribute filtering via filter_family.
+
+        Related to https://github.com/evennia/evennia/issues/3194 comments.
+        """
+        holder = create.create_object(DefaultObject, key="holder")
+        leg = create.create_object(DefaultObject, key="leg")
+        try:
+            holder.attributes.add("attached", leg, category="systems")
+            query = DefaultObject.objects.filter_family(
+                db_attributes__db_key="attached",
+                db_attributes__db_category="systems",
+                db_attributes__db_value=leg,
+            )
+            self.assertIn(holder, query)
+        finally:
+            holder.delete()
+            leg.delete()
 
     def test_not_create_attribute_with_autocreate_false(self):
         """
@@ -804,3 +850,21 @@ class TestProperties(EvenniaTestCase):
 
         obj1.delete()
         obj2.delete()
+
+    def test_mixin_properties_initialized_on_creation(self):
+        """
+        Test regression for #3155: properties on mixins should initialize on create.
+        """
+        obj = create.create_object(TestObjectPropertiesMixinClass, key="mixin_prop_obj")
+
+        self.assertEqual(obj.attributes.get("strength", category="stat"), 0)
+        self.assertEqual(obj.strength, 0)
+
+        # non-autocreate should still not exist in db until explicitly accessed
+        self.assertEqual(obj.attributes.get("agility", category="stat"), None)
+        self.assertEqual(obj.agility, 0)
+        self.assertEqual(obj.attributes.get("agility", category="stat"), None)
+
+        self.assertTrue(obj.tags.has("mytag", category="mixin_tags"))
+
+        obj.delete()

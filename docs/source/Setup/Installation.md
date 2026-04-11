@@ -1,9 +1,5 @@
 # Installation
 
-```{important}
-If you are converting an existing game from a previous Evennia version, you will need to upgrade.
-```
-
 The fastest way to install Evennia is to use the `pip` installer that comes with Python (read on). You can also  [clone Evennia from github](./Installation-Git.md)  or use [docker](./Installation-Docker.md).  Some users have also experimented with [installing Evennia on Android](./Installation-Android.md).
 
 If you are converting an existing game, please follow the [upgrade instructions](./Installation-Upgrade.md).

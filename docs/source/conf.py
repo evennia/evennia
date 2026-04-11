@@ -63,8 +63,8 @@ html_static_path = ["_static"]
 # the folders built in the gh-pages evennia branch, under docs/.
 # See docs/deploy.py for more details on how to add to this during a major release.
 latest_version = "latest"
-legacy_versions = ["5.x", "4.x", "3.x", "2.x", "1.x", "0.x"]
-legacy_branches = ["v5.0.0", "v4.0.0", "v3.0.0", "v2.0.0", "v1.0.0", "v0.9.5"]
+legacy_versions = ["6.x", "5.x", "4.x", "3.x", "2.x", "1.x", "0.x"]
+legacy_branches = ["v6.0.0", "v5.0.0", "v4.0.0", "v3.0.0", "v2.0.0", "v1.0.0", "v0.9.5"]
 
 DOCS_BASE = "https://www.evennia.com/docs/"
 

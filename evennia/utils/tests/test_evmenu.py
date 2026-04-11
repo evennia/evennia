@@ -338,3 +338,38 @@ class TestMenuTemplateParse(BaseEvenniaTest):
         """
         with self.assertRaises(RuntimeError):
             evmenu.parse_menu_template(self.char1, template, self.goto_callables)
+
+
+def _reload_menu_start(caller, raw_string, **kwargs):
+    return "start text", {"key": "next", "desc": "go next", "goto": "end"}
+
+
+def _reload_menu_end(caller, raw_string, **kwargs):
+    return "end text", {"key": "back", "desc": "go back", "goto": "start"}
+
+
+class TestEvMenuPersistentReloadRegression(BaseEvenniaTest):
+    """
+    Regression tests for persistent EvMenu reload behavior.
+    """
+
+    def test_persistent_restore_does_not_duplicate_cmdset(self):
+        menutree = {"start": _reload_menu_start, "end": _reload_menu_end}
+
+        evmenu.EvMenu(
+            self.char1, menutree, persistent=True, cmdset_mergetype="Union", session=self.session
+        )
+        menu_cmdsets = [cmdset for cmdset in self.char1.cmdset.get() if cmdset.key == "menu_cmdset"]
+        self.assertEqual(len(menu_cmdsets), 1)
+
+        # Simulate reload behavior where ndb is cleared but cmdset persists.
+        del self.char1.ndb._evmenu
+        del self.char1.ndb._menutree
+
+        evmenu.EvMenu(
+            self.char1, menutree, persistent=True, cmdset_mergetype="Union", session=self.session
+        )
+
+        menu_cmdsets = [cmdset for cmdset in self.char1.cmdset.get() if cmdset.key == "menu_cmdset"]
+        self.assertEqual(len(menu_cmdsets), 1)
+        self.assertEqual(self.char1.cmdset_storage.count("evennia.utils.evmenu.EvMenuCmdSet"), 1)

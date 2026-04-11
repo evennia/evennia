@@ -19,68 +19,62 @@ runs:
   using: "composite"
 
   steps:
-    - name: Set up PostgreSQL server
-      if: ${{ inputs.database == 'postgresql' }}
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: "13"
-        postgresql db: "evennia"
-        postgresql user: "evennia"
-        postgresql password: "password"
-
-    - name: Wait for PostgreSQL to activate
+    - name: Wait for PostgreSQL to be ready
       if: ${{ inputs.database == 'postgresql' }}
       run: |
-        while ! pg_isready -h 127.0.0.1 -q >/dev/null 2>&1
-        do
+        # Wait for PostgreSQL service container to be healthy
+        until pg_isready -h localhost -U evennia -d evennia; do
           sleep 1
           echo -n .
         done
-        echo
+        echo "PostgreSQL is ready"
       shell: bash
+      env:
+        PGPASSWORD: password
 
-    - name: Set up MySQL server
-      if: ${{ inputs.database == 'mysql' }}
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        host port: 3306
-        # character set server: "utf8mb4"
-        # collation server: "utf8mb4_unicode_ci"
-        character set server: "utf8"
-        collation server: "utf8_general_ci"
-        mysql database: "evennia"
-        mysql user: "evennia"
-        mysql password: "password"
-        mysql root password: root_password
-
-    - name: Wait for MySQL to activate
+    - name: Wait for MySQL to be ready
       if: ${{ inputs.database == 'mysql' }}
       run: |
-        while ! mysqladmin ping -h 127.0.0.1 -u root -proot_password -s >/dev/null 2>&1
-        do
+        # Wait for MySQL server to be ready
+        until mysqladmin ping -u root -proot_password --silent; do
           sleep 1
           echo -n .
         done
-        echo
+        echo "MySQL is ready"
       shell: bash
 
-    - name: Set up MySQL Privileges
+    - name: Set up MySQL Database and Privileges
       if: ${{ inputs.database == 'mysql' }}
       run: |
-        cat <<EOF | mysql -u root -proot_password -h 127.0.0.1 mysql
-          create user 'evennia'@'%' identified by 'password';
-          grant all on \`evennia%\`.* to 'evennia'@'%';
-          grant process on *.* to 'evennia'@'%';
-          flush privileges
+        # Note: MySQL server configuration (character set, collation, row format) is set
+        # via my-cnf in the shogo82148/actions-setup-mysql action.
+        # The user 'evennia' is already created by the action for hosts: localhost, 127.0.0.1, and ::1
+        # We just need to create the database and grant additional privileges.
+        mysql -u root -proot_password mysql <<EOF
+        CREATE DATABASE IF NOT EXISTS evennia CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci;
+        -- Grant privileges to existing user hosts (action creates: localhost, 127.0.0.1, ::1)
+        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'localhost';
+        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'127.0.0.1';
+        GRANT ALL PRIVILEGES ON \`evennia%\`.* TO 'evennia'@'::1';
+        GRANT PROCESS ON *.* TO 'evennia'@'localhost';
+        GRANT PROCESS ON *.* TO 'evennia'@'127.0.0.1';
+        GRANT PROCESS ON *.* TO 'evennia'@'::1';
+        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'localhost';
+        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'127.0.0.1';
+        GRANT SESSION_VARIABLES_ADMIN ON *.* TO 'evennia'@'::1';
+        FLUSH PRIVILEGES;
         EOF
+        # Verify MySQL settings are applied correctly
+        echo "Verifying MySQL configuration:"
+        mysql -u root -proot_password -e "SELECT @@innodb_default_row_format as row_format, @@character_set_server as charset, @@collation_server as collation;" || true
       shell: bash
 
     # get logs from db start
     - name: Database container logs
-      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
+      if: ${{ inputs.database == 'postgresql'}}
       uses: jwalton/gh-docker-logs@v2
 
     - name: Check running containers
-      if: ${{ inputs.database == 'postgresql' || inputs.database == 'mysql' }}
+      if: ${{ inputs.database == 'postgresql'}}
       run: docker ps -a
       shell: bash

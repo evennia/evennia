@@ -26,11 +26,52 @@ class EvAdventureCharacterGenerationTest(BaseEvenniaTest):
         self.chargen = chargen.TemporaryCharacterSheet()
 
     def test_base_chargen(self):
-        self.assertEqual(self.chargen.strength, 10)  # not realistic, due to mock
+        # setUp mocks randint to always return 10
+        self.assertEqual(self.chargen.strength, 10)
+        # armor: roll 10 -> "gambeson" (range 4-14)
         self.assertEqual(self.chargen.armor, "gambeson")
-        self.assertEqual(self.chargen.shield, "shield")
+        # helmets and shields: roll 10 -> "no helmet or shield" (range 1-13) -> None
+        self.assertEqual(self.chargen.helmet, None)
+        self.assertEqual(self.chargen.shield, None)
+        # backpack: dungeoning gear index 9 = "waterskin", general gear 1 index 9 = "drill",
+        # general gear 2 index 9 = "twine"
         self.assertEqual(
-            self.chargen.backpack, ["ration", "ration", "waterskin", "waterskin", "drill", "twine"]
+            self.chargen.backpack,
+            ["ration", "ration", "waterskin", "waterskin", "drill", "twine"],
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.rules.randint")
+    def test_chargen_with_armor_and_shield(self, mock_randint):
+        """Roll 17 gives armor, shield, and different gear."""
+        mock_randint.return_value = 17
+        sheet = chargen.TemporaryCharacterSheet()
+        # armor: roll 17 -> "brigandine" (range 15-19)
+        self.assertEqual(sheet.armor, "brigandine")
+        # helmets and shields: roll 17 -> "shield" (range 17-19)
+        self.assertEqual(sheet.helmet, None)
+        self.assertEqual(sheet.shield, "shield")
+        # backpack: dungeoning gear index 16 = "sack", general gear 1 index 16 = "tongs",
+        # general gear 2 index 16 = "whistle"
+        self.assertEqual(
+            sheet.backpack,
+            ["ration", "ration", "sack", "sack", "tongs", "whistle"],
+        )
+
+    @patch("evennia.contrib.tutorials.evadventure.rules.randint")
+    def test_chargen_no_armor(self, mock_randint):
+        """Roll 3 gives no armor and no helmet/shield."""
+        mock_randint.return_value = 3
+        sheet = chargen.TemporaryCharacterSheet()
+        # armor: roll 3 -> "no armor" (range 1-3) -> None
+        self.assertEqual(sheet.armor, None)
+        # helmets and shields: roll 3 -> "no helmet or shield" (range 1-13) -> None
+        self.assertEqual(sheet.helmet, None)
+        self.assertEqual(sheet.shield, None)
+        # backpack: dungeoning gear index 2 = "candles, 5", general gear 1 index 2 = "shovel",
+        # general gear 2 index 2 = "lens"
+        self.assertEqual(
+            sheet.backpack,
+            ["ration", "ration", "candles, 5", "candles, 5", "shovel", "lens"],
         )
 
     def test_build_desc(self):

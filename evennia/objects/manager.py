@@ -5,6 +5,7 @@ Custom manager for Objects.
 import re
 
 from django.conf import settings
+from django.db import connection
 from django.db.models import Q
 from django.db.models.fields import exceptions
 
@@ -62,6 +63,19 @@ class ObjectDBManager(TypedObjectManager):
     #
 
     # account related
+
+    @staticmethod
+    def _build_fuzzy_search_regex(ostring):
+        """
+        Build a backend-compatible regex for partial word-start matching.
+
+        PostgreSQL uses POSIX regex where `\\b` is not a word-boundary token.
+        """
+        words = ostring.split()
+        if not words:
+            return r".*"
+        word_boundary = r"\m" if connection.vendor == "postgresql" else r"\b"
+        return r".* ".join(f"{word_boundary}{re.escape(word)}" for word in words) + r".*"
 
     def get_object_with_account(self, ostring, exact=True, candidates=None):
         """
@@ -322,7 +336,7 @@ class ObjectDBManager(TypedObjectManager):
             )
 
         # convert search term to partial-match regex
-        search_regex = r".* ".join(r"\b" + re.escape(word) for word in ostring.split()) + r".*"
+        search_regex = self._build_fuzzy_search_regex(ostring)
 
         # do the fuzzy search and return whatever it matches
         return (

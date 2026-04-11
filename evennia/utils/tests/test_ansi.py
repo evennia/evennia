@@ -195,3 +195,35 @@ class TestANSIString(TestCase):
         self.assertEqual(plain.upper().clean(), "HELLO WORLD")
         self.assertEqual(plain.lower().clean(), "hello world")
         self.assertEqual(plain.capitalize().clean(), "Hello world")
+
+    def test_getitem_no_cancelled_codes_after_reset(self):
+        """
+        Test that slicing after a reset does NOT inherit cancelled codes.
+
+        This prevents exponential ANSI code accumulation during split/slice
+        operations. Text after a reset (|n) should not carry forward the
+        color codes that were cancelled by that reset.
+        """
+        # String with red text, reset, then plain text
+        text = AN("|rRed|n plain")
+
+        # Slice starting after the reset - should NOT have red codes
+        after_reset = text[4:]  # " plain"
+        self.assertEqual(after_reset.clean(), "plain")
+
+        # The raw output should NOT contain red color code since it was reset
+        raw = after_reset.raw()
+        self.assertNotIn(ANSI_RED, raw, "Cancelled red code should not appear after reset")
+        self.assertNotIn(ANSI_HILITE, raw, "Cancelled hilite code should not appear after reset")
+
+        # More complex case: multiple colors with resets
+        multi = AN("|rRed|n |gGreen|n |bBlue|n end")
+
+        # Slice after all color codes are reset
+        end_slice = multi[-3:]  # "end"
+        self.assertEqual(end_slice.clean(), "end")
+        # Should have no color codes since all were reset
+        end_raw = end_slice.raw()
+        self.assertNotIn(ANSI_RED, end_raw)
+        self.assertNotIn(ANSI_GREEN, end_raw)
+        self.assertNotIn(ANSI_BLUE, end_raw)

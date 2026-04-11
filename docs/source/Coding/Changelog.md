@@ -1,12 +1,98 @@
 # Changelog
 
-## Main branch
+## Evennia 6.0.0
 
+Feb 15, 2026
+
+- Feat (backwards incompatble): Drop Python 3.11 support (supported: Python 3.12, 3.13, 3.14 (req)). (Griatch)
+- Security: Django >=6.0.2 (<6.1), Django RestFramework 3.16 (Griatch)
+- Update: `XYZGrid` contrib now requires scipy 1.15->1.17. Note: Pathfinding may pick different
+  shortest routes from before, due to private changes in scipy Dijkstra algorithm (Griatch)
+- [Feat][pull3599]: Make `at_pre_cmd` testable in unit tests (blongden)
+- [Fix]: API /openapi/setattribute endpoints were both POST and PUT, causing schema
+  errors; now changed to PUT only. (Griatch)
+- [Feat][issue2627]: Add `settings.AUDIT_MASKS` to customize what Evennia should
+  obfuscate in server error logs (such as passwords from custom login commands) (Griatch)
 - [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
+- [Fix][pull3806]: EvMore wouldn't pass Session to next cmd when exiting (gas-public-wooden-clean)
+- [Fix][pull3809]: Admin page - Repair link to Account button (UserlandAlchemist)
+- [Fix][pull3811]: Website login banner shows before login attempt (UserlandAlchemist)
+- [Fix][pull3817]: `ingame_reports` i18n fix (peddn)
+- [Fix][pull3818]: Update spawn hook to use `new_prototype` (InspectorCaracal)
+- [Fix][pull3815]: Performance improvement in large cmdset mergers (blongden)
+- [Fix][pull3831]: Performance optimization in ANSIString, performance boost for large colored
+  strings (count-infinity)
+- [Fix][pull3832]: Fix typo in prototype causing homogenized locks to use
+  fallbacks incorrectly (count-infinity)
+- [Fix][pull3834]: Fix so `$obj(#123)` inline function works in prototype spawning (count-infinity)
+- [Fix][pull3836]: Correctly handling calling `create_object` with `key=None` (count-infinity)
+- [Fix][pull3852]: Django 5.2+ was not properly detected. Fixing distutils being
+  removed in py3.12 for new installs (count-infinity)
+- [Fix][pull3845]: Fix exponential ANSI markup explosions when slicing
+  ANSIString after reset (speeds up EvForm other string ops, fixes compatibility) (count-infinity)
+- [Fix][pull3853]: Properly handle multimatch separations with native dashes, like
+  't-shirt-1' (count-infinity)
+- [Fix][pull3733]: Allow `CmdSetAttribute` to use categery, view dicts by key (InspectorCaracal)
+- [Fix][issue3858]: Fix parsing issues in dice contrib (Griatch)
+- Fix: `Typeclass.objects.get_by_tag()` will now always convert tag keys/categories to integers, to
+  avoid inconsistencies with PostgreSQL databases (Griatch)
+- [Fix][issue3513]: Fixed issue where OnDemandHandler could traceback on an
+  un-pickle-able object and cause an error at server shutdown (Griatch)
+- [Fix][issue3649]: The `:j` command in EvEditor would squash empty lines (Griatch)
+- [Fix][issue3560]: Tutorial QuestHandler failed to load after server restart (Griatch)
+- [Fix][issue3601]: `CmdSet.add(..., allow_duplicates=True)` didn't allow duplicate cmd keys (Griatch)
+- [Fix][issue3194]: Make filtering on AttributeProperties consistent across typeclasses (Griatch)
+- [Fix][issue2774]: Properly support `\n` in `evennia connections` long descriptions (Griatch)
+- [Fix][issue3312]: Handle all edge cases breaking `monitor/monitored` `input_funcs` (Griatch)
+- [Fix][issue3154]: Persistent EvMenu caused multiple cmdsets on reload (Griatch)
+- [Fix][issue3193]: Formatting of inner nested evtable would break (Griatch)
+- [Fix][issue3082]: MXP linking broke EvTable formatting (Griatch)
+- [Fix][issue3693]: Using `|/` in EvTable broke padding (Griatch)
+- [Fix][pull3864]: Correctly use cached dijkstra results for XYZGrid (jaborsh)
+- [Fix][pull3863]: `XYZGrid` performance improvement in teleporter search (jaborsh)
+- [Fix][pull3862]: `TraitHandler` typo/bug fixes  (jaborsh)
+- [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
+  (PowershellNinja, also honorary mention to electroglyph)
 - [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
+- [Doc][pull3825]: Update Portuguese translation (marado)
+- [Doc][pull3826]: Fix broken links in README (marado)
+- Docs: marado, Griatch, Hasna878, count-infinity
 
-[pull3799]: https://github.com/evennia/evennia/issues/3799
-[pull3800]: https://github.com/evennia/evennia/issues/3800
+[pull3799]: https://github.com/evennia/evennia/pull/3799
+[pull3800]: https://github.com/evennia/evennia/pull/3800
+[pull3801]: https://github.com/evennia/evennia/pull/3801
+[pull3806]: https://github.com/evennia/evennia/pull/3806
+[pull3809]: https://github.com/evennia/evennia/pull/3809
+[pull3811]: https://github.com/evennia/evennia/pull/3811
+[pull3815]: https://github.com/evennia/evennia/pull/3815
+[pull3817]: https://github.com/evennia/evennia/pull/3817
+[pull3818]: https://github.com/evennia/evennia/pull/3818
+[pull3825]: https://github.com/evennia/evennia/pull/3825
+[pull3826]: https://github.com/evennia/evennia/pull/3826
+[pull3831]: https://github.com/evennia/evennia/pull/3831
+[pull3832]: https://github.com/evennia/evennia/pull/3832
+[pull3834]: https://github.com/evennia/evennia/pull/3834
+[pull3836]: https://github.com/evennia/evennia/pull/3836
+[pull3599]: https://github.com/evennia/evennia/pull/3599
+[pull3852]: https://github.com/evennia/evennia/pull/3852
+[pull3853]: https://github.com/evennia/evennia/pull/3853
+[pull3854]: https://github.com/evennia/evennia/pull/3853
+[pull3733]: https://github.com/evennia/evennia/pull/3853
+[pull3864]: https://github.com/evennia/evennia/pull/3864
+[pull3863]: https://github.com/evennia/evennia/pull/3863
+[pull3862]: https://github.com/evennia/evennia/pull/3862
+[issue3858]: https://github.com/evennia/evennia/issues/3858
+[issue3813]: https://github.com/evennia/evennia/issues/3513
+[issue3649]: https://github.com/evennia/evennia/issues/3649
+[issue3560]: https://github.com/evennia/evennia/issues/3560
+[issue3601]: https://github.com/evennia/evennia/issues/3601
+[issue3194]: https://github.com/evennia/evennia/issues/3194
+[issue2774]: https://github.com/evennia/evennia/issues/2774
+[issue3312]: https://github.com/evennia/evennia/issues/3312
+[issue3154]: https://github.com/evennia/evennia/issues/3154
+[issue3193]: https://github.com/evennia/evennia/issues/3193
+[issue3082]: https://github.com/evennia/evennia/issues/3082
+[issue3693]: https://github.com/evennia/evennia/issues/3693
 
 
 ## Evennia 5.0.1
@@ -31,10 +117,10 @@ This upgrade requires running `evennia migrate` on your existing database
 
 - Feat (backwards incompatible): RUN MIGRATIONS (`evennia migrate`): Now requiring Django 5.1 (Griatch)
 - Feat (backwards incompatible): Drop support and testing for Python 3.10 (Griatch)
-- [Feat][pull3719]: Support Python 3.13. (0xDEADFED5)
+- [Feat][pull3719]: Support Python 3.13. (electroglyph)
 - [Feat][pull3633]: Default object's default descs are now taken from a `default_description`
     class variable instead of the `desc` Attribute always being set (count-infinity)
-- [Feat][pull3718]: Remove twistd.bat creation for Windows, should not be needed anymore (0xDEADFED5)
+- [Feat][pull3718]: Remove twistd.bat creation for Windows, should not be needed anymore (electroglyph)
 - [Feat][pull3756]: Updated German translation (JohnFi)
 - [Feat][pull3757]: Add more i18n strings to `DefaultObject` for easier translation (JohnFi)
 - [Feat][pull3783]: Support users of `ruff` linter by adding compatible config in `pyproject.toml` (jaborsh)
@@ -50,8 +136,8 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
   unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)
 - [Fix][pull3694]: Funcparser swallowing rest of line after a `\`-escape (count-infinity)
-- [Fix][pull3705]: Properly serialize `IntFlag` enum types (0xDEADFED5)
-- [Fix][pull3707]: Correct links in `about` command (0xDEADFED5)
+- [Fix][pull3705]: Properly serialize `IntFlag` enum types (electroglyph)
+- [Fix][pull3707]: Correct links in `about` command (electroglyph)
 - [Fix][pull3710]: Clean reduntant session clearin in `at_server_cold_start` (InspectorCaracal)
 - [Fix][pull3711]: Usability improvements in the Discord integration (InspectorCaracal)
 - [Fix][pull3721]: Avoid loading cmdsets that don't need to be checked, avoiding
@@ -67,7 +153,7 @@ This upgrade requires running `evennia migrate` on your existing database
 - [Fix][pull3743]: Log full stack trace on failed object creation (aMiss-aWry)
 - [Fix][pull3747]: TutorialWorld bridge-room didn't correctly randomize weather effects (SpyrosRoum)
 - [Fix][pull3765]: Storing TickerHandler `store_key` in a db attribute would not
-  work correctly (0xDEADFED5)
+  work correctly (electroglyph)
 - [Fix][pull3753]: Make sure `AttributeProperty`s are initialized with default values also in parent class (JohnFi)
 - [Fix][pull3751]: The `access` and `inventory` commands would traceback if run on a character without an Account (EliasWatson)
 - [Fix][pull3768]: Make sure the `CmdCopy` command copies object categories,
@@ -82,7 +168,7 @@ This upgrade requires running `evennia migrate` on your existing database
   it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
   used as the task's category (Griatch)
 - Fix: Correct aws contrib's use of legacy django string utils (Griatch)
-- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR, JohnFi, 0xDEADFED5, jaborsh, Problematic, BlaneWins
+- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR, JohnFi, electroglyph, jaborsh, Problematic, BlaneWins
 
 [pull3633]: https://github.com/evennia/evennia/pull/3633
 [pull3677]: https://github.com/evennia/evennia/pull/3677
@@ -204,7 +290,7 @@ Sep 29, 2024
 
 - Feat: Support `scripts key:typeclass` to create global scripts
 with dynamic keys (rather than just relying on typeclass' key) (Griatch)
-- [Feat][pull3595]: Tweak Sqlite3 PRAGMAs for better performance (0xDEADFED5)
+- [Feat][pull3595]: Tweak Sqlite3 PRAGMAs for better performance (electroglyph)
 - Feat: Make Sqlite3 PRAGMAs configurable via settings (Griatch)
 - [Feat][pull3592]: Revised German locationlization ('Du' instead of 'Sie',
   cleanup) (Drakon72)
@@ -213,7 +299,7 @@ with dynamic keys (rather than just relying on typeclass' key) (Griatch)
 - [Feat][pull3588]: New `DefaultObject` hooks: `at_object_post_creation`, called once after
   first creation but after any prototypes have been applied, and
 `at_object_post_spawn(prototype)`, called only after creation/update with a prototype (InspectorCaracal)
-- [Fix][pull3594]: Update/clean some Evennia dependencies (0xDEADFED5)
+- [Fix][pull3594]: Update/clean some Evennia dependencies (electroglyph)
 - [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
 - [Fix][issue3590]: Make `examine` command properly show `strattr` type
 Attribute values (Griatch)
@@ -227,7 +313,7 @@ did not add it to the handler's object (Griatch)
 - [Fix][pull3605]: Correctly pass node kwargs through `@list_node` decorated evmenu nodes
   (InspectorCaracal)
 - [Fix][pull3597]: Address timing issue for testing `new_task_waiting_input `on
-  Windows (0xDEADFED5)
+  Windows (electroglyph)
 - [Fix][pull3611]: Fix and update for Reports contrib (InspectorCaracal)
 - [Fix][pull3625]: Lycanthropy tutorial page had some issues (feyrkh)
 - [Fix][pull3622]: Fix for examine command tracebacking with strvalue error
@@ -273,10 +359,10 @@ Aug 11, 2024
 - [Feat][pull3531]: New contrib; `in-game reports` for handling user reports,
   bugs etc in-game (InspectorCaracal)
 - [Feat][pull3586]: Add ANSI color support `|U`, `|I`, `|i`, `|s`, `|S` for
-underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
+underline reset, italic/reset and strikethrough/reset (electroglyph)
 - Feat: Add `Trait.traithandler` back-reference so custom Traits from the Traits
   contrib can find and reference other Traits. (Griatch)
-- [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (0xDEADFED5)
+- [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (electroglyph)
 - [Fix][pull3571]: Better visual display of partial multimatch search results
   (InspectorCaracal)
 - [Fix][issue3378]: Prototype 'alias' key was not properly homogenized to a list
@@ -286,8 +372,8 @@ underline reset, italic/reset and strikethrough/reset (0xDEADFED5)
 - [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
 - [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
 - [Fix][pull3589]: Fix regex escaping in `utils.py` for future Python versions (hhsiao)
-- [Docs]: Add True-color description for Colors documentation (0xDEADFED5)
-- [Docs]: Doc fixes (Griatch, InspectorCaracal, 0xDEADFED5)
+- [Docs]: Add True-color description for Colors documentation (electroglyph)
+- [Docs]: Doc fixes (Griatch, InspectorCaracal, electroglyph)
 
 [pull3585]: https://github.com/evennia/evennia/pull/3585
 [pull3580]: https://github.com/evennia/evennia/pull/3580

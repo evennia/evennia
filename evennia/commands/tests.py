@@ -3,6 +3,8 @@ Unit testing for the Command system itself.
 
 """
 
+from unittest.mock import patch
+
 from django.test import override_settings
 
 from evennia.commands import cmdparser
@@ -169,6 +171,45 @@ class TestCmdSetMergers(TestCase):
         self.assertEqual(len(cmdset_f.commands), 2)
         self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
         self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
+
+    def test_system_cmds_not_duplicated_after_replace(self):
+        """System commands must appear exactly once after a Replace merge."""
+        a, c = self.cmdset_a, self.cmdset_c
+
+        class _SysCmd(_BaseCmd):
+            key = "__sys"
+
+        sys_cmd = _SysCmd("A")
+        a.add(sys_cmd)
+
+        c.mergetype = "Replace"
+        c.priority = 1
+        cmdset_f = c + a  # c higher prio, Replace kicks in
+
+        sys_cmds_in_commands = [cmd for cmd in cmdset_f.commands if cmd.key.startswith("__")]
+        self.assertEqual(len(sys_cmds_in_commands), 1)
+
+    def test_system_cmds_not_duplicated_after_union(self):
+        """System commands must appear exactly once after a Union merge, from either side."""
+        a, c = self.cmdset_a, self.cmdset_c
+
+        class _SysCmd(_BaseCmd):
+            key = "__sys"
+
+        # System command on the higher-priority side (cmdset_a)
+        a.add(_SysCmd("A"))
+        a.priority = 1
+        cmdset_f = a + c
+        sys_in_commands = [cmd for cmd in cmdset_f.commands if cmd.key.startswith("__")]
+        self.assertEqual(len(sys_in_commands), 1)
+
+        # System command on the lower-priority side (cmdset_c)
+        a2, c2 = self.cmdset_a, _CmdSetC()
+        c2.add(_SysCmd("C"))
+        a2.priority = 1
+        cmdset_f2 = a2 + c2
+        sys_in_commands2 = [cmd for cmd in cmdset_f2.commands if cmd.key.startswith("__")]
+        self.assertEqual(len(sys_in_commands2), 1)
 
     def test_order(self):
         "Merge in reverse- and forward orders, same priorities"
@@ -1191,6 +1232,19 @@ class TestCmdParser(TestCase):
             ("look at", " target", dummy, 7, 0.5, "look"),
         )
 
+    @patch("evennia.commands.cmdparser.log_trace")
+    def test_build_matches_masks_sensitive_input_on_error(self, mock_log_trace):
+        class _BrokenCmdSet:
+            def __iter__(self):
+                raise RuntimeError("forced parser failure")
+
+        cmdparser.build_matches("connect johnny password123", _BrokenCmdSet())
+        self.assertTrue(mock_log_trace.called)
+
+        logged = mock_log_trace.call_args[0][0]
+        self.assertIn("connect johnny ***********", logged)
+        self.assertNotIn("password123", logged)
+
     @override_settings(CMD_IGNORE_PREFIXES="@&/+")
     def test_build_matches(self):
         a_cmdset = _CmdSetTest()
@@ -1222,6 +1276,38 @@ class TestCmdParser(TestCase):
         self.assertEqual(cmdparser.try_num_differentiators("look me"), (None, None))
         self.assertEqual(cmdparser.try_num_differentiators("look me-3"), (3, "look me"))
         self.assertEqual(cmdparser.try_num_differentiators("look me-567"), (567, "look me"))
+
+    def test_num_differentiators_hyphenated_names(self):
+        """Test that hyphenated object names like 't-shirt-1' are parsed correctly.
+
+        This tests the default SEARCH_MULTIMATCH_REGEX which uses the format 'name-number'.
+        Objects with hyphens in their names (e.g., 't-shirt') should be correctly parsed
+        when disambiguated (e.g., 't-shirt-1' should return (1, 't-shirt')).
+
+        See: https://github.com/evennia/evennia/issues/3691
+        """
+        # Simple name without hyphen - should work
+        self.assertEqual(cmdparser.try_num_differentiators("ball-1"), (1, "ball"))
+        self.assertEqual(cmdparser.try_num_differentiators("ball-23"), (23, "ball"))
+
+        # Hyphenated name - this is the bug case
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt-1"), (1, "t-shirt"))
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt-2"), (2, "t-shirt"))
+
+        # Multiple hyphens in name
+        self.assertEqual(
+            cmdparser.try_num_differentiators("some-long-name-3"), (3, "some-long-name")
+        )
+
+        # No number suffix - should return (None, None)
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt"), (None, None))
+        self.assertEqual(cmdparser.try_num_differentiators("ball"), (None, None))
+
+        # With trailing args (space after the number)
+        self.assertEqual(cmdparser.try_num_differentiators("t-shirt-1 arg"), (1, "t-shirt arg"))
+        self.assertEqual(
+            cmdparser.try_num_differentiators("ball-2 some args"), (2, "ball some args")
+        )
 
     @override_settings(
         SEARCH_MULTIMATCH_REGEX=r"(?P<number>[0-9]+)-(?P<name>.*)", CMD_IGNORE_PREFIXES="@&/+"
@@ -1277,6 +1363,21 @@ class TestCmdSet(BaseEvenniaTest):
 
         self.assertIsInstance(result, _CmdTest2)
 
+    def test_cmdset_add_allow_duplicates(self):
+        class _CmdDuplicateA(Command):
+            key = "duplicate"
+
+        class _CmdDuplicateB(Command):
+            key = "duplicate"
+
+        cmdset = CmdSet()
+        cmdset.add(_CmdDuplicateA, allow_duplicates=True)
+        cmdset.add(_CmdDuplicateB, allow_duplicates=True)
+
+        duplicate_cmds = [cmd for cmd in cmdset.commands if cmd.key == "duplicate"]
+        self.assertEqual(len(duplicate_cmds), 2)
+        self.assertEqual({cmd.__class__ for cmd in duplicate_cmds}, {_CmdDuplicateA, _CmdDuplicateB})
+
 
 class _CmdG(Command):
     key = "smile"
@@ -1328,3 +1429,38 @@ class TestIssue3643(BaseEvenniaTest):
     def test_issue_3643(self):
         cmd = _TestCmd1()
         self.assertEqual(cmd.locks, "cmd:all();usecmd:false()")
+
+
+class _CmdCrash(Command):
+    key = "connect"
+
+    def func(self):
+        raise RuntimeError("forced failure")
+
+
+class TestIssue2627(TwistedTestCase, BaseEvenniaTest):
+    """
+    Prevent logging plaintext credentials in command-error reporting.
+    https://github.com/evennia/evennia/issues/2627
+    """
+
+    def setUp(self):
+        self.patch(sys.modules["evennia.server.sessionhandler"], "delay", _mockdelay)
+        super().setUp()
+
+    @patch("evennia.commands.cmdhandler.logger.log_err")
+    def test_cmdhandler_masks_sensitive_input_in_error_log(self, mock_log_err):
+        d = cmdhandler.cmdhandler(
+            self.session, " johnny password123", cmdobj=_CmdCrash(), cmdobj_key="connect"
+        )
+
+        def _callback(_):
+            logged = [call.args[0] for call in mock_log_err.call_args_list if call.args]
+            self.assertIn("User input was: 'connect johnny ***********'.", logged)
+            self.assertNotIn(
+                "User input was: 'connect johnny password123'.",
+                logged,
+            )
+
+        d.addCallback(_callback)
+        return d

@@ -44,8 +44,20 @@ def deploy():
     os.system("git fetch")
     os.system("git checkout gh-pages")
 
+    proc = subprocess.Popen(
+        ["git", "checkout gh-pages"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        shell=True,
+    )
+    if proc.returncode:
+        print("Could not checkout gh-pages branch.")
+        sys.exit(1)
+    else:
+        print("Checked out gh-pages branch.")
+
     os.system("pwd")
-    os.system("ls")
 
     names_to_skip = legacy_versions + ["build"]
 

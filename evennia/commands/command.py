@@ -16,7 +16,7 @@ from django.utils.text import slugify
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
-from evennia.utils.utils import fill, is_iter, lazy_property, make_iter
+from evennia.utils.utils import is_iter, lazy_property, make_iter
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 _RE_CMD_LOCKFUNC_IN_LOCKSTRING = re.compile(r"(^|;|\s)cmd\:\w+", re.DOTALL)
@@ -266,12 +266,16 @@ class Command(metaclass=CommandMeta):
         implement __hash__ and that the corresponding hashes for equivalent
         instances are themselves equivalent.
 
-        Technically, the following implementation is only valid for comparison
-        against other Commands, as our __eq__ supports comparison against
-        str, too.
+        We hash on the command key. This isn't perfectly consistent with
+        __eq__ (which uses matchset intersection — two commands sharing
+        only an alias would be equal but have different hashes), but the
+        intersection-based __eq__ makes a fully correct hash impossible
+        without degrading back to a constant. Hashing on key is the best
+        practical tradeoff: it satisfies the contract for the common case
+        (same key = same hash) and gives O(1) set lookups for cmdset merges.
 
         """
-        return hash("command")
+        return hash(self.key)
 
     def __ne__(self, cmd):
         """
@@ -383,7 +387,7 @@ class Command(metaclass=CommandMeta):
                     return k, v
         return None, None
 
-    def access(self, srcobj, access_type="cmd", default=False):
+    def access(self, srcobj, access_type="cmd", default=False, session=None):
         """
         This hook is called by the cmdhandler to determine if srcobj
         is allowed to execute this command. It should return a boolean
@@ -395,9 +399,10 @@ class Command(metaclass=CommandMeta):
             access_type (str, optional): The lock type to check.
             default (bool, optional): The fallback result if no lock
                 of matching `access_type` is found on this Command.
+            session (Session, optional): The session to pass to lock functions.
 
         """
-        return self.lockhandler.check(srcobj, access_type, default=default)
+        return self.lockhandler.check(srcobj, access_type, default=default, session=session)
 
     def msg(self, text=None, to_obj=None, from_obj=None, session=None, **kwargs):
         """
@@ -595,7 +600,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
                 "help-entry-detail",
                 kwargs={"category": slugify(self.help_category), "topic": slugify(self.key)},
             )
-        except Exception as e:
+        except Exception:
             return "#"
 
     def web_get_admin_url(self):

@@ -13,7 +13,8 @@ default:
 	@echo "  make test - run evennia test suite with all default values."
 	@echo "  make tests=evennia.path test - run only specific test or tests."
 	@echo "  make testp - run test suite using multiple cores."
-	@echo "  make release - publish evennia to pypi (requires pypi credentials)
+	@echo "  make release - publish evennia to pypi (requires pypi credentials)"
+	@echo "  make cleanrot - check agent context docs for rot/bloat"
 
 install:
 	pip install -e .
@@ -49,3 +50,6 @@ version:
 
 release:
 	./.release.sh
+
+cleanrot:
+	python .agents/tools/clean_rot.py
