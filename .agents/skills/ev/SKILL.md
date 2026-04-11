@@ -90,9 +90,12 @@ crediting the contributor.
 2. Show the generated entry to the user for approval. They may want to
    adjust the wording or category.
 3. Read `CHANGELOG.md` and insert:
-   - The **entry line** into the `## Main branch` section, after the last
-     existing entry line (before the blank line that precedes the link
-     references).
+   - The **entry line** into the `## Main branch` section. Entries are
+     ordered by category: `Feat` entries go at the top of the section,
+     then `Fix`, then `Doc`/`Docs`. Insert the new entry after the last
+     entry of the same category (or before the first entry of the next
+     category if none exist yet). Always before the blank line that
+     precedes the link references.
    - The **link reference** into the link-reference block at the bottom of
      the `## Main branch` section (before the next `## ` heading).
 4. Show the user the final diff for confirmation.
