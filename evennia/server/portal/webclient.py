@@ -184,6 +184,13 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             # don't echo a subprotocol, a well-behaved client should close the
             # connection. We still set a wire format so the connection doesn't
             # crash if the client proceeds anyway.
+            from evennia.utils import logger
+
+            logger.log_warn(
+                "WebSocket client offered subprotocols %r but none match "
+                "server's supported list %r. Falling back to v1 format."
+                % (request.protocols, supported)
+            )
             if "v1.evennia.com" in wire_formats:
                 self.wire_format = wire_formats["v1.evennia.com"]
             elif wire_formats:

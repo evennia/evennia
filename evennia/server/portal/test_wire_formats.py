@@ -8,13 +8,8 @@ Tests cover:
 """
 
 import json
-
-try:
-    from django.utils.unittest import TestCase
-except ImportError:
-    from django.test import TestCase
-
-from mock import MagicMock, Mock
+from unittest import TestCase
+from unittest.mock import MagicMock, Mock
 
 
 # ---------------------------------------------------------------------------
