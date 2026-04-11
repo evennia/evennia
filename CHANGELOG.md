@@ -7,10 +7,12 @@
 - [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
 - [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
 - Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
+- [Fix][pull3875]: Fix TypeError in telnet HTTP check when command stacking sends bytes (aMiss-aWry)
 - Docs: Griatch
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
 [pull3869]: https://github.com/evennia/evennia/pull/3869
+[pull3875]: https://github.com/evennia/evennia/pull/3875
 
 ## Evennia 6.0.0
 

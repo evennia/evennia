@@ -330,10 +330,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
-            # Normalize to bytes for regex match if needed.
-            if len(data) > 2 and _HTTP_REGEX.match(
-                data[0].encode("utf-8", errors="replace") if isinstance(data[0], str) else data[0]
-            ):
+            if len(data) > 2 and _HTTP_REGEX.match(data[0]):
                 # guard against HTTP request on the Telnet port; we
                 # block and kill the connection.
                 self.transport.write(_HTTP_WARNING)
