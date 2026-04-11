@@ -4,6 +4,10 @@
 
 - Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
 - Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
+- [Feat][pull3867]: Add WebSocket subprotocol negotiation per [MUD Standards proposal][mudstandards-ws].
+  Supports `json.mudstandards.org`, `gmcp.mudstandards.org`, `terminal.mudstandards.org` and
+  `v1.evennia.com` (evennia's own webclient). New `WEBSOCKET_SUBPROTOCOLS` setting.
+  Existing clients are unaffected. (daiimus)
 - [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
 - [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
 - Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
@@ -24,6 +28,7 @@
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
+[pull3867]: https://github.com/evennia/evennia/pull/3867
 [pull3869]: https://github.com/evennia/evennia/pull/3869
 [pull3875]: https://github.com/evennia/evennia/pull/3875
 [pull3877]: https://github.com/evennia/evennia/pull/3877
@@ -38,6 +43,7 @@
 [pull3905]: https://github.com/evennia/evennia/pull/3905
 [pull3909]: https://github.com/evennia/evennia/pull/3909
 [pull3910]: https://github.com/evennia/evennia/pull/3910
+[mudstandards-ws]: https://mudstandards.org/websocket/
 
 ## Evennia 6.0.0
 
