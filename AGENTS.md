@@ -23,7 +23,7 @@ uv run pytest .agents/tools/tests/ -v        # agent tooling tests (pytest)
 - **TDD**: write tests first. Prefer no-DB tests > mocks > full DB-backed tests.
 - **Don't manually format code.** Run `make format` after editing.
 - **All code must have Google-style docstrings.** See [Code Style](.agents/docs/code-style.md).
-- After editing agent context files, run `make cleanrot`.
+- **After editing agent context files** (anything under `.agents/` or `AGENTS.md`), run `make cleanrot` and fix all warnings before reporting done.
 
 ## Docs
 
@@ -33,3 +33,4 @@ uv run pytest .agents/tools/tests/ -v        # agent tooling tests (pytest)
 - [Code Style](.agents/docs/code-style.md) — docstring conventions, command docstring format
 - [Development Commands](.agents/docs/commands.md) — install, game lifecycle, test/format commands, PR conventions
 - [CI/CD](.agents/docs/ci.md) — GitHub Actions workflows, test matrix, database configs, Docker, secrets
+- [GitHub Issues & PRs](.agents/docs/github.md) — listing, searching, and reviewing issues/PRs with `gh` CLI
