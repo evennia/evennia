@@ -802,12 +802,12 @@ class TestJsonStandardEdgeCases(TestCase):
         self.assertIsNone(result)
 
     def test_decode_envelope_missing_id_and_data(self):
-        """Envelope with only proto should work."""
+        """Envelope with only proto="text" and no data should return None."""
         envelope = {"proto": "text"}
         payload = json.dumps(envelope).encode("utf-8")
         result = self.fmt.decode_incoming(payload, is_binary=False)
-        # proto="text", data="" → text input with empty string
-        self.assertEqual(result, {"text": [[""], {}]})
+        # proto="text", data="" → empty text, treated as no input
+        self.assertIsNone(result)
 
     def test_decode_binary_invalid_utf8(self):
         """Invalid UTF-8 in BINARY frame should return None."""

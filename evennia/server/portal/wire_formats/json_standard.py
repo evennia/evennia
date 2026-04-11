@@ -117,6 +117,8 @@ class JsonStandardFormat(WireFormat):
 
         elif proto == "text":
             # Text input sent via JSON envelope
+            if not data:
+                return None
             return {"text": [[data], {}]}
 
         elif proto == "websocket_close":
