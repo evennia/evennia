@@ -4,7 +4,7 @@ evennia.contrib.base\_systems.custom\_gametime.tests
 
 .. automodule:: evennia.contrib.base_systems.custom_gametime.tests
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

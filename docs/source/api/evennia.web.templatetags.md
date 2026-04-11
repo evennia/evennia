@@ -4,8 +4,8 @@ evennia.web.templatetags
 
 .. automodule:: evennia.web.templatetags
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

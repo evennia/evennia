@@ -4,8 +4,8 @@ evennia.contrib.game\_systems.achievements
 
 .. automodule:: evennia.contrib.game_systems.achievements
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

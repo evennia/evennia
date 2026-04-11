@@ -4,8 +4,8 @@ evennia.contrib.tutorials.evadventure
 
 .. automodule:: evennia.contrib.tutorials.evadventure
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

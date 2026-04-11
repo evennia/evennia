@@ -4,8 +4,8 @@ evennia.contrib.game\_systems.mail
 
 .. automodule:: evennia.contrib.game_systems.mail
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

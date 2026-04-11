@@ -4,7 +4,7 @@ evennia.contrib.base\_systems.ingame\_python.scripts
 
 .. automodule:: evennia.contrib.base_systems.ingame_python.scripts
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

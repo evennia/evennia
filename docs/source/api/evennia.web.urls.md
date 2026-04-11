@@ -4,7 +4,7 @@ evennia.web.urls
 
 .. automodule:: evennia.web.urls
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

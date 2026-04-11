@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.menu\_login
 
 .. automodule:: evennia.contrib.base_systems.menu_login
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

@@ -4,8 +4,8 @@ evennia.contrib.utils
 
 .. automodule:: evennia.contrib.utils
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 .. toctree::

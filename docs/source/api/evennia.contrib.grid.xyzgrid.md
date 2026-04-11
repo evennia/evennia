@@ -4,8 +4,8 @@ evennia.contrib.grid.xyzgrid
 
 .. automodule:: evennia.contrib.grid.xyzgrid
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

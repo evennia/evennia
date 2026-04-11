@@ -4,8 +4,8 @@ evennia.contrib.grid.wilderness
 
 .. automodule:: evennia.contrib.grid.wilderness
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

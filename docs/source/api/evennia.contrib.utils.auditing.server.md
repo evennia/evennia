@@ -4,7 +4,7 @@ evennia.contrib.utils.auditing.server
 
 .. automodule:: evennia.contrib.utils.auditing.server
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

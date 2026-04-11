@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.awsstorage
 
 .. automodule:: evennia.contrib.base_systems.awsstorage
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

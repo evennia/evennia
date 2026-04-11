@@ -4,8 +4,8 @@ evennia.contrib.rpg.dice
 
 .. automodule:: evennia.contrib.rpg.dice
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

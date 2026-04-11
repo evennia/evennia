@@ -4,8 +4,8 @@ evennia.contrib.grid.mapbuilder
 
 .. automodule:: evennia.contrib.grid.mapbuilder
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

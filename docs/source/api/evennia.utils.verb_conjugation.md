@@ -4,8 +4,8 @@ evennia.utils.verb\_conjugation
 
 .. automodule:: evennia.utils.verb_conjugation
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

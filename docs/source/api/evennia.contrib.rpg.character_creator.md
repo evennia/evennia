@@ -4,8 +4,8 @@ evennia.contrib.rpg.character\_creator
 
 .. automodule:: evennia.contrib.rpg.character_creator
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

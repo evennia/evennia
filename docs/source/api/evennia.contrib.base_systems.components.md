@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.components
 
 .. automodule:: evennia.contrib.base_systems.components
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

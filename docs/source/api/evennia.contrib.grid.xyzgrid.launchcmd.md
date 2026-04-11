@@ -4,7 +4,7 @@ evennia.contrib.grid.xyzgrid.launchcmd
 
 .. automodule:: evennia.contrib.grid.xyzgrid.launchcmd
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

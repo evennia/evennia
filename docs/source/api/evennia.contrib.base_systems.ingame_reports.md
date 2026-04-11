@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.ingame\_reports
 
 .. automodule:: evennia.contrib.base_systems.ingame_reports
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

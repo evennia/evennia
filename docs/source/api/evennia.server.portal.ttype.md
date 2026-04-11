@@ -4,7 +4,7 @@ evennia.server.portal.ttype
 
 .. automodule:: evennia.server.portal.ttype
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

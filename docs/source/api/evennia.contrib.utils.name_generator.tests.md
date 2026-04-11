@@ -4,7 +4,7 @@ evennia.contrib.utils.name\_generator.tests
 
 .. automodule:: evennia.contrib.utils.name_generator.tests
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

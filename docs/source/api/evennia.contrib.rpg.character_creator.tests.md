@@ -4,7 +4,7 @@ evennia.contrib.rpg.character\_creator.tests
 
 .. automodule:: evennia.contrib.rpg.character_creator.tests
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

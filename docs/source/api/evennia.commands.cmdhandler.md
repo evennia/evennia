@@ -4,7 +4,7 @@ evennia.commands.cmdhandler
 
 .. automodule:: evennia.commands.cmdhandler
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

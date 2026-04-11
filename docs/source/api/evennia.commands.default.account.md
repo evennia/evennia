@@ -4,7 +4,7 @@ evennia.commands.default.account
 
 .. automodule:: evennia.commands.default.account
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

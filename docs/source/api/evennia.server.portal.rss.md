@@ -4,7 +4,7 @@ evennia.server.portal.rss
 
 .. automodule:: evennia.server.portal.rss
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

@@ -4,8 +4,8 @@ evennia.locks
 
 .. automodule:: evennia.locks
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

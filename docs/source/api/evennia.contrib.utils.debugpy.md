@@ -4,8 +4,8 @@ evennia.contrib.utils.debugpy
 
 .. automodule:: evennia.contrib.utils.debugpy
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

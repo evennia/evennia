@@ -4,8 +4,8 @@ evennia.contrib.grid.extended\_room
 
 .. automodule:: evennia.contrib.grid.extended_room
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

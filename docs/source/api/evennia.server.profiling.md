@@ -4,8 +4,8 @@ evennia.server.profiling
 
 .. automodule:: evennia.server.profiling
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

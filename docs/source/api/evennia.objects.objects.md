@@ -4,7 +4,7 @@ evennia.objects.objects
 
 .. automodule:: evennia.objects.objects
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```

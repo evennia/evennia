@@ -4,8 +4,8 @@ evennia.contrib.tutorials.bodyfunctions
 
 .. automodule:: evennia.contrib.tutorials.bodyfunctions
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

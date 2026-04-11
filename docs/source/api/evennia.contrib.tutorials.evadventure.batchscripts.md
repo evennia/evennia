@@ -4,8 +4,8 @@ evennia.contrib.tutorials.evadventure.batchscripts
 
 .. automodule:: evennia.contrib.tutorials.evadventure.batchscripts
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

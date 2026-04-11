@@ -4,8 +4,8 @@ evennia.web.admin
 
 .. automodule:: evennia.web.admin
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 
 

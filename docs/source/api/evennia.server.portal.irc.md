@@ -4,7 +4,7 @@ evennia.server.portal.irc
 
 .. automodule:: evennia.server.portal.irc
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 ```
