@@ -266,11 +266,13 @@ class Command(metaclass=CommandMeta):
         implement __hash__ and that the corresponding hashes for equivalent
         instances are themselves equivalent.
 
-        We hash on the command key. This isn't perfectly consistent with __eq__
-        (which uses matchset intersection — two commands sharing only an alias
-        would be equal but have different hashes), but that case is rare in
-        practice and the performance gain from O(1) set lookups vs O(N) with
-        a constant hash is critical for large command sets (700+ commands).
+        We hash on the command key. This isn't perfectly consistent with
+        __eq__ (which uses matchset intersection — two commands sharing
+        only an alias would be equal but have different hashes), but the
+        intersection-based __eq__ makes a fully correct hash impossible
+        without degrading back to a constant. Hashing on key is the best
+        practical tradeoff: it satisfies the contract for the common case
+        (same key = same hash) and gives O(1) set lookups for cmdset merges.
 
         """
         return hash(self.key)

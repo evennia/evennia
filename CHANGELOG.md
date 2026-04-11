@@ -13,7 +13,11 @@
 - [Feat][pull3884]: Formally support PostgreSQL with psycopg3 (jaborsh)
 - [Fix][pull3885]: Is_ooc(): Thread session through lock system in multi-session mode (jaborsh)
 - Fix: Add deprecation warning for custom cmdparsers missing `session` kwarg (Griatch)
-- Docs: Griatch
+- [Fix][pull3888]: Close stale DB connections before first query (jaborsh)
+- [Fix][pull3898]: Pass caller to purge_processor in CmdStateCC cc command (saschabuehrle)
+- [Fix][pull3899]: Fix @teleport showing double error message on failed search (blongden)
+- [Fix][pull3901]: Fix O(N²) cmdset merge by hashing commands on key instead of constant (blongden)
+- Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
 [pull3869]: https://github.com/evennia/evennia/pull/3869
@@ -22,6 +26,10 @@
 [pull3883]: https://github.com/evennia/evennia/pull/3883
 [pull3884]: https://github.com/evennia/evennia/pull/3884
 [pull3885]: https://github.com/evennia/evennia/pull/3885
+[pull3888]: https://github.com/evennia/evennia/pull/3888
+[pull3898]: https://github.com/evennia/evennia/pull/3898
+[pull3899]: https://github.com/evennia/evennia/pull/3899
+[pull3901]: https://github.com/evennia/evennia/pull/3901
 
 ## Evennia 6.0.0
 
