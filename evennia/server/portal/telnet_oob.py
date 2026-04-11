@@ -183,7 +183,7 @@ class TelnetOOB:
         if args:
             msdp_args = msdp_cmdname
             if len(args) == 1:
-                msdp_args += args[0]
+                msdp_args += str(args[0])
             else:
                 msdp_args += (
                     "{msdp_array_open}"
