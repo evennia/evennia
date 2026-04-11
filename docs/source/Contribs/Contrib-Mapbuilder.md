@@ -86,7 +86,7 @@ For example:
 
 Below are two examples showcasing the use of automatic exit generation and
 custom exit generation. Whilst located, and can be used, from this module for
-convenience The below example code should be in mymap.py in mygame/world.
+convenience The below example code should be in `mymap.py` in mygame/world.
 
 ### Example One
 

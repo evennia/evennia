@@ -119,7 +119,7 @@ from textwrap import TextWrapper
 
 from django.conf import settings
 
-from evennia.utils.ansi import ANSIString
+from evennia.utils.ansi import ANSIString, strip_mxp
 from evennia.utils.utils import display_len as d_len
 from evennia.utils.utils import is_iter, justify
 
@@ -137,7 +137,7 @@ def _to_ansi(obj):
     if is_iter(obj):
         return [_to_ansi(o) for o in obj]
     else:
-        return ANSIString(obj)
+        return ANSIString(strip_mxp(str(obj)))
 
 
 _whitespace = "\t\n\x0b\x0c\r "
@@ -184,20 +184,54 @@ class ANSITextWrapper(TextWrapper):
           'use', ' ', 'the', ' ', '-b', ' ', option!'
         otherwise.
         """
-        # NOTE-PYTHON3: The following code only roughly approximates what this
-        #               function used to do. Regex splitting on ANSIStrings is
-        #               dropping ANSI codes, so we're using ANSIString.split
-        #               for the time being.
-        #
-        #               A less hackier solution would be appreciated.
-        chunks = _to_ansi(text).split()
-
-        chunks = [chunk + " " for chunk in chunks if chunk]  # remove empty chunks
-
-        if len(chunks) > 1:
-            chunks[-1] = chunks[-1][0:-1]
-
+        # ANSIString.split(None) collapses repeated whitespace, which breaks
+        # pre-formatted content (such as nested EvTables). Split on explicit
+        # spaces instead and keep separators as separate chunks.
+        text = _to_ansi(text)
+        parts = text.split(" ")
+        chunks = []
+        for idx, part in enumerate(parts):
+            if part:
+                chunks.append(part)
+            if idx < len(parts) - 1:
+                chunks.append(" ")
         return chunks
+
+    def _handle_long_word(self, reversed_chunks, cur_line, cur_len, width):
+        """Handle a chunk of text that is too long to fit in any line.
+
+        Overrides the standard library version to use display-width
+        (``d_len``) instead of ``len`` so that east-asian (CJK) characters
+        that occupy two terminal columns are measured correctly.
+        """
+        if width < 1:
+            space_left = 1
+        else:
+            space_left = width - cur_len
+
+        if self.break_long_words:
+            chunk = reversed_chunks[-1]
+            # Walk forward character-by-character, accumulating display
+            # width, because a single CJK char may be width 2.
+            end = 0
+            consumed_width = 0
+            for i, char in enumerate(chunk):
+                char_width = d_len(char)
+                if consumed_width + char_width > space_left:
+                    break
+                consumed_width += char_width
+                end = i + 1
+
+            if self.break_on_hyphens and d_len(chunk) > space_left:
+                hyphen = chunk.rfind("-", 0, end)
+                if hyphen > 0 and any(c != "-" for c in chunk[:hyphen]):
+                    end = hyphen + 1
+
+            cur_line.append(chunk[:end])
+            reversed_chunks[-1] = chunk[end:]
+
+        elif not cur_line:
+            cur_line.append(reversed_chunks.pop())
 
     def _wrap_chunks(self, chunks):
         """_wrap_chunks(chunks : [string]) -> [string]
@@ -489,6 +523,7 @@ class EvCell:
         Returns:
             split (list): split text.
         """
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
         return text.split("\n")
 
     def _fit_width(self, data):
@@ -557,7 +592,29 @@ class EvCell:
         align = self.align
         hfill_char = self.hfill_char
         width = self.width
-        return [justify(line, width, align=align, fillchar=hfill_char) for line in data]
+        aligned = []
+        for line in data:
+            # Preserve manually spaced/pre-formatted lines (like nested tables).
+            raw_line = line.raw() if hasattr(line, "raw") else str(line)
+            has_link_markup = strip_mxp(raw_line) != raw_line
+            has_manual_spacing = "  " in raw_line.lstrip(" ")
+            if has_manual_spacing or has_link_markup:
+                line_width = d_len(line)
+                if line_width >= width:
+                    aligned.append(justify(line, width, align="a", fillchar=hfill_char))
+                    continue
+                pad = width - line_width
+                if align == "r":
+                    aligned.append(hfill_char * pad + line)
+                elif align == "c":
+                    left = pad // 2
+                    right = pad - left
+                    aligned.append(hfill_char * left + line + hfill_char * right)
+                else:
+                    aligned.append(line + hfill_char * pad)
+            else:
+                aligned.append(justify(line, width, align=align, fillchar=hfill_char))
+        return aligned
 
     def _valign(self, data):
         """

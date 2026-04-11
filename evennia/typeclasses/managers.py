@@ -278,7 +278,7 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
                 than `key`.
 
         """
-        if not (key or category):
+        if key is None and category is None:
             return []
 
         global _Tag
@@ -287,8 +287,16 @@ class TypedObjectManager(idmapper.manager.SharedMemoryManager):
 
         anymatch = "any" == kwargs.get("match", "all").lower().strip()
 
-        keys = make_iter(key) if key else []
-        categories = make_iter(category) if category else []
+        _normalize_tag_value = lambda value: (
+            str(value).strip().lower() if value is not None else None
+        )
+
+        keys = [_normalize_tag_value(val) for val in make_iter(key)] if key is not None else []
+        categories = (
+            [_normalize_tag_value(val) for val in make_iter(category)]
+            if category is not None
+            else []
+        )
         n_keys = len(keys)
         n_categories = len(categories)
         unique_categories = set(categories)

@@ -7,13 +7,15 @@ the stability and integrity of the codebase during updates.
 This module tests the lock functionality of Evennia.
 
 """
+
+from evennia.server.serversession import ServerSession
 from evennia.utils.test_resources import BaseEvenniaTest
 
 try:
     # this is a special optimized Django version, only available in current Django devel
-    from django.utils.unittest import TestCase, override_settings
+    from django.utils.unittest import override_settings
 except ImportError:
-    from django.test import TestCase, override_settings
+    from django.test import override_settings
 
 from evennia import settings_default
 from evennia.locks import lockfuncs
@@ -219,6 +221,19 @@ class TestLockfuncs(BaseEvenniaTest):
         self.assertEqual(False, lockfuncs.is_ooc(self.account, self.char1))
         self.account.unpuppet_all()
         self.assertEqual(True, lockfuncs.is_ooc(self.account, self.char1))
+
+    def test_is_ooc__multi_session_mixed(self):
+        """Test that two sessions on the same account can have different IC/OOC states."""
+        ic_session = self.session
+
+        # Create a bare unpuppeted session. Full login flow steals the puppet from ic_session in
+        # MULTISESSION_MODE 0.
+        ooc_session = ServerSession()
+        ooc_session.sessid = 2
+        ooc_session.puppet = None
+
+        self.assertFalse(lockfuncs.is_ooc(self.account, self.char1, session=ic_session))
+        self.assertTrue(lockfuncs.is_ooc(self.account, self.char1, session=ooc_session))
 
 
 class TestPermissionCheck(BaseEvenniaTest):

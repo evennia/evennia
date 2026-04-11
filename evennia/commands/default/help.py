@@ -17,6 +17,7 @@ from django.conf import settings
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
+from evennia.locks.lockhandler import LockException
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.utils.eveditor import EvEditor
@@ -420,7 +421,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
         # retrieve all available commands and database / file-help topics.
         # also check the 'cmd:' lock here
-        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd")]
+        cmd_help_topics = [
+            cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd", session=self.session)
+        ]
         # get all file-based help entries, checking perms
         file_help_topics = {topic.key.lower().strip(): topic for topic in FILE_HELP_ENTRIES.all()}
         # get db-based help entries, checking perms
@@ -476,6 +479,12 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             tuple: A tuple (match, suggestions).
 
         """
+
+        def strip_prefix(query):
+            if query and query[0] in settings.CMD_IGNORE_PREFIXES:
+                return query[1:]
+            return query
+
         if not search_fields:
             # lunr search fields/boosts
             search_fields = [
@@ -486,6 +495,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 {"field_name": "tags", "boost": 1},  # tags are not used by default
             ]
         match, suggestions = None, None
+        base_query = strip_prefix(query)
         for match_query in (query, f"{query}*"):
             # We first do an exact word-match followed by a start-by query. The
             # return of this will either be a HelpCategory, a Command or a
@@ -493,9 +503,28 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
             matches, suggestions = help_search_with_index(
                 match_query, entries, suggestion_maxnum=self.suggestion_maxnum, fields=search_fields
             )
+            # Move an exact match (including aliases) to the front of the list, treating a prefixed
+            # and non-prefixed command as the same thing
+            for m in matches[:]:
+                aliases = [m.key]
+                if not isinstance(m, HelpCategory):
+                    # Aliases for help created with 'sethelp' is an AliasHandler
+                    aliases += m.aliases if isinstance(m.aliases, list) else m.aliases.all()
+                if base_query in [strip_prefix(alias) for alias in aliases]:
+                    matches.remove(m)
+                    matches.insert(0, m)
+                    break
             if matches:
                 match = matches[0]
                 break
+        if match:
+            # Move an exact suggestion match to the front of the list
+            for s in suggestions[:]:
+                if base_query == strip_prefix(s):
+                    suggestions.remove(s)
+                    suggestions.insert(0, s)
+                    break
+
         return match, suggestions
 
     def parse(self):
@@ -716,7 +745,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
 
                     if not fuzzy_match:
                         # no match found - give up
-                        checked_topic = topic + f"/{subtopic_query}"
+                        checked_topic = topic + f"{self.subtopic_separator_char}{subtopic_query}"
                         output = self.format_help_entry(
                             topic=topic,
                             help_text=f"No help entry found for '{checked_topic}'",
@@ -731,7 +760,7 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
                 subtopic_map = subtopic_map.pop(subtopic_query)
                 subtopic_index = [subtopic for subtopic in subtopic_map if subtopic is not None]
                 # keep stepping down into the tree, append path to show position
-                topic = topic + f"/{subtopic_query}"
+                topic = topic + f"{self.subtopic_separator_char}{subtopic_query}"
 
             # we reached the bottom of the topic tree
             help_text = subtopic_map[None]
@@ -781,13 +810,14 @@ class CmdSetHelp(CmdHelp):
 
     Usage:
       sethelp[/switches] <topic>[[;alias;alias][,category[,locks]]
-                [= <text or new category>]
+                [= <text or new value>]
     Switches:
       edit - open a line editor to edit the topic's help text.
       replace - overwrite existing help topic.
       append - add text to the end of existing topic with a newline between.
       extend - as append, but don't add a newline.
       category - change category of existing help topic.
+      locks - change locks of existing help topic.
       delete - remove help topic.
 
     Examples:
@@ -795,6 +825,7 @@ class CmdSetHelp(CmdHelp):
       sethelp/append pickpocketing,Thievery = This steals ...
       sethelp/replace pickpocketing, ,attr(is_thief) = This steals ...
       sethelp/edit thievery
+      sethelp/locks thievery = read:all()
       sethelp/category thievery = classes
 
     If not assigning a category, the `settings.DEFAULT_HELP_CATEGORY` category
@@ -842,7 +873,7 @@ class CmdSetHelp(CmdHelp):
 
     key = "sethelp"
     aliases = []
-    switch_options = ("edit", "replace", "append", "extend", "category", "delete")
+    switch_options = ("edit", "replace", "append", "extend", "category", "locks", "delete")
     locks = "cmd:perm(Helper)"
     help_category = "Building"
     arg_regex = None
@@ -856,6 +887,7 @@ class CmdSetHelp(CmdHelp):
 
         switches = self.switches
         lhslist = self.lhslist
+        rhslist = self.rhslist
 
         if not self.args:
             self.msg(
@@ -932,7 +964,17 @@ class CmdSetHelp(CmdHelp):
                     # types of entries.
                     self.msg(f"|rWarning:\n|r{warning}|n")
                     repl = yield ("|wDo you still want to continue? Y/[N]?|n")
-                    if repl.lower() not in ("y", "yes"):
+                    if repl.lower() in ("y", "yes"):
+                        # find a db-based help entry if one already exists
+                        db_topics = {**db_help_topics}
+                        db_categories = list(
+                            set(HelpCategory(topic.help_category) for topic in db_topics.values())
+                        )
+                        entries = list(db_topics.values()) + db_categories
+                        match, _ = self.do_search(querystr, entries)
+                        if match:
+                            old_entry = match
+                    else:
                         self.msg("Aborted.")
                         return
                 else:
@@ -999,6 +1041,35 @@ class CmdSetHelp(CmdHelp):
             category = self.rhs.lower()
             old_entry.help_category = category
             self.msg(f"Category for entry '{topicstr}'{aliastxt} changed to '{category}'.")
+            return
+
+        if "locks" in switches:
+            # set the locks
+            if not old_entry:
+                self.msg(f"Could not find topic '{topicstr}'{aliastxt}.")
+                return
+            show_locks = not rhslist
+            clear_locks = rhslist and not rhslist[0]
+            if show_locks:
+                self.msg(f"Current locks for entry '{topicstr}'{aliastxt} are: {old_entry.locks}")
+                return
+            if clear_locks:
+                old_entry.locks.clear()
+                old_entry.locks.add("read:all()")
+                self.msg(f"Locks for entry '{topicstr}'{aliastxt} reset to: read:all()")
+                return
+            lockstring = ",".join(rhslist)
+            # locks.validate() does not throw an exception for things like "read:id(1),read:id(6)"
+            # but locks.add() does
+            existing_locks = old_entry.locks.all()
+            old_entry.locks.clear()
+            try:
+                old_entry.locks.add(lockstring)
+            except LockException as e:
+                old_entry.locks.add(existing_locks)
+                self.msg(str(e) + " Locks not changed.")
+            else:
+                self.msg(f"Locks for entry '{topicstr}'{aliastxt} changed to: {lockstring}")
             return
 
         if "delete" in switches or "del" in switches:

@@ -7,17 +7,17 @@ Commands for managing and initiating an in-game character-creation menu.
 ## Installation
 
 In your game folder `commands/default_cmdsets.py`, import and add
-`ContribCmdCharCreate` to your `AccountCmdSet`.
+`ContribChargenCmdSet` to your `AccountCmdSet`.
 
 Example:
 ```python
-from evennia.contrib.rpg.character_creator.character_creator import ContribCmdCharCreate
+from evennia.contrib.rpg.character_creator.character_creator import ContribChargenCmdSet
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
 
     def at_cmdset_creation(self):
         super().at_cmdset_creation()
-        self.add(ContribCmdCharCreate)
+        self.add(ContribChargenCmdSet)
 ```
 
 In your game folder `typeclasses/accounts.py`, import and inherit from `ContribChargenAccount`
@@ -100,15 +100,19 @@ character creator menu, as well as supporting exiting/resuming the process. In
 addition, unlike the core command, it's designed for the character name to be
 chosen later on via the menu, so it won't parse any arguments passed to it.
 
-### Changes to `Account.at_look`
+### Changes to `Account`
 
-The contrib version works mostly the same as core evennia, but adds an
-additional check to recognize an in-progress character. If you've modified your
-own `at_look` hook, it's an easy addition to make: just add this section to the
+The contrib version works mostly the same as core evennia, but modifies `ooc_appearance_template`
+to match the contrib's command syntax, and the `at_look` method to recognize an in-progress
+character.
+
+If you've modified your own `at_look` hook, it's an easy change to add: just add this section to the
 playable character list loop.
 
 ```python
+    # the beginning of the loop starts here
     for char in characters:
+        # ...
         # contrib code starts here
         if char.db.chargen_step:
             # currently in-progress character; don't display placeholder names

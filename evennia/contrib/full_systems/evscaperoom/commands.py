@@ -31,14 +31,10 @@ import re
 
 from django.conf import settings
 
-from evennia import (
-    SESSION_HANDLER,
-    CmdSet,
-    Command,
-    InterruptCommand,
-    default_cmds,
-    syscmdkeys,
-)
+import evennia
+from evennia import default_cmds, syscmdkeys
+from evennia.commands.cmdset import CmdSet
+from evennia.commands.command import Command, InterruptCommand
 from evennia.utils import variable_from_module
 
 from .utils import create_evscaperoom_object
@@ -300,7 +296,7 @@ class CmdWho(CmdEvscapeRoom, default_cmds.CmdWho):
 
         if self.args == "all":
             table = self.style_table("|wName", "|wRoom")
-            sessions = SESSION_HANDLER.get_sessions()
+            sessions = evennia.SESSION_HANDLER.get_sessions()
             for session in sessions:
                 puppet = session.get_puppet()
                 if puppet:

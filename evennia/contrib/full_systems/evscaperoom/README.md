@@ -5,22 +5,27 @@ Contribution by Griatch, 2019
 A full engine for creating multiplayer escape-rooms in Evennia. Allows players to
 spawn and join puzzle rooms that track their state independently. Any number of players
 can join to solve a room together. This is the engine created for 'EvscapeRoom', which won
-the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has no game
-content but contains the utilities and base classes and an empty example room.
-
-The original code for the contest is found at
-https://github.com/Griatch/evscaperoom but the version on the public Evennia
-demo is more updated, so if you really want the latest bug fixes etc you should
-rather look at https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom
-instead. A copy of the full game can also be played on the Evennia demo server
-at https://demo.evennia.com - just connect to the server and write `evscaperoom`
-in the first room to start!
+the MUD Coders Guild "One Room" Game Jam in April-May, 2019. The contrib has only
+very minimal game content, it contains the utilities and base classes and an empty example room.
 
 ## Introduction
 
-Evscaperoom is, as it sounds, an escaperoom in text form. You start locked into
-a room and have to figure out how to get out. This engine contains everything
-needed to make a fully-featured puzzle game of this type!
+Evscaperoom is, as it sounds, an [escape room](https://en.wikipedia.org/wiki/Escape_room) in text form. You start locked into
+a room and have to figure out how to get out. This contrib contains everything
+needed to make a fully-featured puzzle game of this type. It also contains a
+'lobby' for creating new rooms, allowing players to join another person's room
+to collaborate solving it!
+
+This is the game engine for the original _EvscapeRoom_. It
+allows you to recreate the same game experience, but it doesn't contain any of
+the story content created for the game jam. If you want to see the full game
+(where you must escape the cottage of a very tricky jester girl or lose the
+village's pie-eating contest...), you can find it at Griatch's github page [here](https://github.com/Griatch/evscaperoom),
+(but the recommended version is the one that used to run on the Evennia demo server which has
+some more bug fixes, found [here instead](https://github.com/evennia/evdemo/tree/master/evdemo/evscaperoom)).
+
+If you want to read more about how _EvscapeRoom_ was created and designed, you can read the
+dev blog, [part 1](https://www.evennia.com/devblog/2019.html#2019-05-18-creating-evscaperoom-part-1) and [part 2](https://www.evennia.com/devblog/2019.html#2019-05-26-creating-evscaperoom-part-2).
 
 ## Installation
 

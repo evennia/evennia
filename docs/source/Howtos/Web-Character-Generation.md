@@ -56,7 +56,7 @@ After this, we will get into defining our *models* (the description of the datab
 ### Installing - Checkpoint:
 
 * you should have a folder named `chargen` or whatever you chose in your mygame/web/ directory
-* you should have your application name added to your INSTALLED_APPS in settings.py
+* you should have your application name added to your INSTALLED_APPS in `settings.py`
 
 ## Create Models
 
@@ -350,7 +350,7 @@ urlpatterns = [
 
 ### URLs - Checkpoint:
 
-* You’ve created a urls.py file in the `mygame/web/chargen` directory
+* You’ve created a `urls.py` file in the `mygame/web/chargen` directory
 * You have edited the main `mygame/web/urls.py` file to include urls to the `chargen` directory.
 
 ## HTML Templates
@@ -416,7 +416,7 @@ This page should show a detailed character sheet of their application. This will
 
 ### create.html
 
-Our create HTML template will use the Django form we defined back in views.py/forms.py to drive the majority of the application process. There will be a form input for every field we defined in forms.py, which is handy. We have used POST as our method because we are sending information to the server that will update the database. As an alternative, GET would be much less secure. You can read up on documentation elsewhere on the web for GET vs. POST.
+Our create HTML template will use the Django form we defined back in views.py/forms.py to drive the majority of the application process. There will be a form input for every field we defined in `forms.py`, which is handy. We have used POST as our method because we are sending information to the server that will update the database. As an alternative, GET would be much less secure. You can read up on documentation elsewhere on the web for GET vs. POST.
 
 ```html
 <!-- file mygame/web/chargen/templates/chargen/create.html-->

@@ -92,6 +92,16 @@ def dbsafe_encode(value, compress_object=False, pickle_protocol=DEFAULT_PROTOCOL
     # simple string matches, thus the character streams must be the same
     # for the lookups to work properly. See tests.py for more information.
     try:
+        if isinstance(value, _ObjectWrapper):
+            # Keep conflict wrappers for regular values, but still normalize wrapped
+            # db objects to the same packed representation as Attribute storage.
+            packed = pack_dbobj(value._obj)
+            if packed is not value._obj:
+                value = packed
+        else:
+            # Make sure database objects are normalized before pickling for lookups.
+            value = pack_dbobj(value)
+
         value = deepcopy(value)
     except CopyError:
         # this can happen on a manager query where the search query string is a

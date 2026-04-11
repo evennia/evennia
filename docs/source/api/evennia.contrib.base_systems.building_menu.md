@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.building\_menu
 
 .. automodule:: evennia.contrib.base_systems.building_menu
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

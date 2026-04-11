@@ -13,6 +13,7 @@ game world, policy info, rules and similar.
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 
 from evennia.help.manager import HelpEntryManager
@@ -79,7 +80,8 @@ class HelpEntry(SharedMemoryModel):
         help_text="tags on this object. Tags are simple string markers to "
         "identify, group and alias objects.",
     )
-    # Creation date. This is not changed once the object is created.
+    # Creation date. This is not changed once the object is created. This is in UTC,
+    # use the property date_created to get it in local time.
     db_date_created = models.DateTimeField("creation date", editable=False, auto_now=True)
 
     # Database manager
@@ -100,8 +102,14 @@ class HelpEntry(SharedMemoryModel):
     def aliases(self):
         return AliasHandler(self)
 
+    @property
+    def date_created(self):
+        """Return the field in localized time based on settings.TIME_ZONE."""
+        return timezone.localtime(self.db_date_created)
+
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Help Entry"
         verbose_name_plural = "Help Entries"
 
@@ -199,7 +207,7 @@ class HelpEntry(SharedMemoryModel):
             return "#"
 
     def web_get_detail_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to view details for
         this object.
 
@@ -235,7 +243,7 @@ class HelpEntry(SharedMemoryModel):
             return "#"
 
     def web_get_update_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to update this
         object.
 
@@ -271,7 +279,7 @@ class HelpEntry(SharedMemoryModel):
             return "#"
 
     def web_get_delete_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to delete this object.
 
         ex. Oscar (Character) = '/characters/oscar/1/delete/'

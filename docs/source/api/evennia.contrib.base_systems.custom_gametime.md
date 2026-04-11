@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.custom\_gametime
 
 .. automodule:: evennia.contrib.base_systems.custom_gametime
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

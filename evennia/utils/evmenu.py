@@ -520,13 +520,15 @@ class EvMenu:
             startnode (str, optional): The starting node name in the menufile.
             cmdset_mergetype (str, optional): 'Replace' (default) means the menu
                 commands will be exclusive - no other normal commands will
-                be usable while the user is in the menu. 'Union' means the
-                menu commands will be integrated with the existing commands
-                (it will merge with `merge_priority`), if so, make sure that
-                the menu's command names don't collide with existing commands
-                in an unexpected way. Also the CMD_NOMATCH and CMD_NOINPUT will
-                be overloaded by the menu cmdset. Other cmdser mergetypes
-                has little purpose for the menu.
+                be usable while the user is in the menu. 'Union' does merge the menu
+                command, but note that the only command used in EvMenu has key/alias
+                of NOINPUT/NOMATCH. So if you merge with 'Union' and a high `cmdset_prio`
+                (below), you won't replace individual normal commands as you may
+                expect. Instead commands will work normally and you'll only always fall
+                back to menu commands when no other command is found. There is no way
+                to partially replace normal commands with EvMenu actions - to do this,
+                remove the normal command from the caller's cmdset - if not found
+                the menu's version will kick in instead.
             cmdset_priority (int, optional): The merge priority for the
                 menu command set. The default (1) is usually enough for most
                 types of menus.
@@ -688,6 +690,10 @@ class EvMenu:
                 self.msg(_ERROR_PERSISTENT_SAVING.format(error=err))
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
+
+        # Make sure to not stack menu cmdsets across reload-restore cycles.
+        # On reload, ndb is cleared so we can't always close an old menu cleanly first.
+        self.caller.cmdset.remove(EvMenuCmdSet)
 
         # set up the menu command on the caller
         menu_cmdset = EvMenuCmdSet()
@@ -1412,21 +1418,27 @@ def list_node(option_generator, select=None, pagesize=10):
                     {
                         "key": (_("|Wcurrent|n"), "c"),
                         "desc": "|W({}/{})|n".format(page_index + 1, npages),
-                        "goto": (lambda caller: None, {"optionpage_index": page_index}),
+                        "goto": (lambda caller: None, kwargs | {"optionpage_index": page_index}),
                     }
                 )
                 if page_index > 0:
                     options.append(
                         {
                             "key": (_("|wp|Wrevious page|n"), "p"),
-                            "goto": (lambda caller: None, {"optionpage_index": page_index - 1}),
+                            "goto": (
+                                lambda caller: None,
+                                kwargs | {"optionpage_index": page_index - 1},
+                            ),
                         }
                     )
                 if page_index < npages - 1:
                     options.append(
                         {
                             "key": (_("|wn|Wext page|n"), "n"),
-                            "goto": (lambda caller: None, {"optionpage_index": page_index + 1}),
+                            "goto": (
+                                lambda caller: None,
+                                kwargs | {"optionpage_index": page_index + 1},
+                            ),
                         }
                     )
 
@@ -1626,17 +1638,19 @@ class CmdYesNoQuestion(Command):
     """
 
     key = _CMD_NOINPUT
-    aliases = [_CMD_NOMATCH, "yes", "no", "y", "n", "a", "abort"]
+    aliases = [_CMD_NOMATCH]
     arg_regex = r"^$"
 
     def _clean(self, caller):
-        del caller.ndb._yes_no_question
-        if not caller.cmdset.has(YesNoQuestionCmdSet) and inherits_from(
-            caller, evennia.DefaultObject
-        ):
-            caller.account.cmdset.remove(YesNoQuestionCmdSet)
-        else:
+        if hasattr(caller.ndb, "_yes_no_question"):
+            del caller.ndb._yes_no_question
+        while caller.cmdset.has(YesNoQuestionCmdSet):
             caller.cmdset.remove(YesNoQuestionCmdSet)
+        if inherits_from(caller, evennia.DefaultObject) and caller.account:
+            if hasattr(caller.account.ndb, "_yes_no_question"):
+                del caller.account.ndb._yes_no_question
+            while caller.account.cmdset.has(YesNoQuestionCmdSet):
+                caller.account.cmdset.remove(YesNoQuestionCmdSet)
 
     def func(self):
         """This is called when user enters anything."""
@@ -1653,13 +1667,16 @@ class CmdYesNoQuestion(Command):
 
             inp = self.cmdname
 
-            if inp == _CMD_NOINPUT:
+            if inp in (_CMD_NOINPUT, _CMD_NOMATCH):
                 raw = self.raw_cmdname.strip()
                 if not raw:
                     # use default
                     inp = yes_no_question.default
                 else:
                     inp = raw
+
+            if isinstance(inp, str):
+                inp = inp.lower()
 
             if inp in ("a", "abort") and yes_no_question.allow_abort:
                 caller.msg(_("Aborted."))
@@ -1808,7 +1825,14 @@ def ask_yes_no(
     caller.ndb._yes_no_question.args = args
     caller.ndb._yes_no_question.kwargs = kwargs
 
-    caller.cmdset.add(YesNoQuestionCmdSet)
+    # Avoid duplicate yes/no cmdsets across account/object command merges.
+    while caller.cmdset.has(YesNoQuestionCmdSet):
+        caller.cmdset.remove(YesNoQuestionCmdSet)
+    if inherits_from(caller, evennia.DefaultObject) and caller.account:
+        while caller.account.cmdset.has(YesNoQuestionCmdSet):
+            caller.account.cmdset.remove(YesNoQuestionCmdSet)
+
+    caller.cmdset.add(YesNoQuestionCmdSet, persistent=False)
     caller.msg(prompt, session=session)
 
 

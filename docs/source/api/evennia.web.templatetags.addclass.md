@@ -4,7 +4,7 @@ evennia.web.templatetags.addclass
 
 .. automodule:: evennia.web.templatetags.addclass
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 ```

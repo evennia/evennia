@@ -47,14 +47,23 @@ DATABASES = {
         "HOST": "127.0.0.1",
         "PORT": "",  # use default port
         "OPTIONS": {
-            "charset": "utf8mb4",
-            "init_command": "set collation_connection=utf8mb4_unicode_ci",
+            "charset": "utf8mb3",
+            # Note: MySQL server global settings (character set, collation, row format) are set
+            # in setup-database action before migrations run. The init_command sets per-connection
+            # variables that don't require special privileges.
+            "init_command": (
+                "SET collation_connection=utf8mb3_unicode_ci, "
+                "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1"
+            ),
         },
         "TEST": {
             "NAME": "evennia",
             "OPTIONS": {
-                "charset": "utf8mb4",
-                "init_command": "set collation_connection=utf8mb4_unicode_ci",
+                "charset": "utf8mb3",
+                "init_command": (
+                    "SET collation_connection=utf8mb3_unicode_ci, "
+                    "sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1"
+                ),
             },
         },
     }

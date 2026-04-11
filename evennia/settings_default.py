@@ -121,6 +121,27 @@ WEBSOCKET_CLIENT_INTERFACE = "0.0.0.0"
 # the client will itself figure out this url based on the server's hostname.
 # e.g. ws://external.example.com or wss://external.example.com:443
 WEBSOCKET_CLIENT_URL = None
+# Ordered list of WebSocket subprotocols the server will accept during
+# RFC 6455 Sec-WebSocket-Protocol negotiation. The first protocol in this
+# list that matches a client's offered protocols will be selected.
+# Removing a subprotocol from this list disables it for clients that
+# explicitly negotiate via Sec-WebSocket-Protocol.
+# Set to None to accept all built-in formats. Set to [] to disable all
+# subprotocol negotiation.
+# Note: Evennia's built-in webclient explicitly sends
+# Sec-WebSocket-Protocol: v1.evennia.com and therefore requires
+# "v1.evennia.com" to remain in this list in order to connect successfully.
+# External/legacy third-party clients that do not send any
+# Sec-WebSocket-Protocol header are still accepted and always receive the
+# v1.evennia.com message format, regardless of this setting.
+# See https://mudstandards.org/websocket/ for details on the standard
+# subprotocols.
+WEBSOCKET_SUBPROTOCOLS = [
+    "json.mudstandards.org",
+    "gmcp.mudstandards.org",
+    "terminal.mudstandards.org",
+    "v1.evennia.com",
+]
 # This determine's whether Evennia's custom admin page is used, or if the
 # standard Django admin is used.
 EVENNIA_ADMIN = True
@@ -272,6 +293,25 @@ MAX_CHAR_LIMIT_WARNING = (
 # debugging. OBS: Showing full tracebacks to regular users could be a
 # security problem -turn this off in a production game!
 IN_GAME_ERRORS = True
+# Default masking regexes used by security/audit logging to avoid writing
+# cleartext credentials to logs. Each entry is a dict mapping an arbitrary
+# label to a regex with a named group `(?P<secret>...)` indicating what to mask.
+# You can override this list in your settings.py, or append to it to support
+# custom login/password commands:
+#     AUDIT_MASKS += [{"mycmd": r"^mycmd\\s+(?P<secret>.+)$"}]
+AUDIT_MASKS = [
+    {"connect": r'^\s*(?:connect|conn|con|co)\s+("[^"]+"|[^\s]+)\s+(?P<secret>.+)$'},
+    {"create": r'^\s*(?:create|cre|cr)\s+("[^"]+"|[^\s]+)\s+(?P<secret>.+)$'},
+    {"userpassword": r'^[@\s]*userpassword\s+(\w+|".+?")\s+=*\s*(?P<secret>[\w]+)$'},
+    {"userpassword": r"^.*new password set to '(?P<secret>[^']+)'\."},
+    {"userpassword": r"^.* has changed your password to '(?P<secret>[^']+)'\."},
+    {"password": r"^[@\s]*(?:password|passwd)\s+(?P<secret>.*)$"},
+    # Legacy typo-tolerant variants (kept for backwards compatibility with auditing behavior).
+    {"connect": r'^[@\s]*[connect]{5,8}\s+(".+?"|[^\s]+)\s+(?P<secret>.+)$'},
+    {"connect": r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w]+)$"},
+    {"create": r'^[^@]?[create]{5,6}\s+(\w+|".+?")\s+(?P<secret>[\w]+)$'},
+    {"create": r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)$"},
+]
 # Broadcast "Server restart"-like messages to all sessions.
 BROADCAST_SERVER_RESTART_MESSAGES = True
 
@@ -300,6 +340,16 @@ DATABASES = {
         "PORT": "",
     }
 }
+# PRAGMA (directives) for the default Sqlite3 database operations. This can be used to tweak
+# performance for your setup. Don't change this unless you know what you are doing. Also
+# be careful to change for an already populated database.
+SQLITE3_PRAGMAS = (
+    "PRAGMA cache_size=10000",
+    "PRAGMA synchronous=OFF",
+    "PRAGMA count_changes=OFF",
+    "PRAGMA temp_store=2",
+)
+
 # How long the django-database connection should be kept open, in seconds.
 # If you get errors about the database having gone away after long idle
 # periods, shorten this value (e.g. MySQL defaults to a timeout of 8 hrs)
@@ -347,16 +397,16 @@ WEBCLIENT_OPTIONS = {
 # The command parser module to use. See the default module for which
 # functions it must implement
 COMMAND_PARSER = "evennia.commands.cmdparser.cmdparser"
-# On a multi-match when search objects or commands, the user has the
+# On a multi-match when searching objects or commands, the user has the
 # ability to search again with an index marker that differentiates
-# the results. If multiple "box" objects
-# are found, they can by default be separated as 1-box, 2-box. Below you
-# can change the regular expression used. The regex must have one
-# have two capturing groups (?P<number>...) and (?P<name>...) - the default
-# parser expects this. It should also involve a number starting from 1.
-# When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
+# the results. If multiple "box" objects are found, they can by default
+# be separated as box-1, box-2. Below you can change the regular expression
+# used. The regex must have two capturing groups (?P<number>...) and
+# (?P<name>...) - the default parser expects this. It may also have an
+# optional (?P<args>...) group. It should also involve a number starting
+# from 1. When changing this you must also update SEARCH_MULTIMATCH_TEMPLATE
 # to properly describe the syntax.
-SEARCH_MULTIMATCH_REGEX = r"(?P<name>[^-]*)-(?P<number>[0-9]+)(?P<args>.*)"
+SEARCH_MULTIMATCH_REGEX = r"^(?P<name>.*?)-(?P<number>[0-9]+)(?P<args>(?:\s.*)?)$"
 # To display multimatch errors in various listings we must display
 # the syntax in a way that matches what SEARCH_MULTIMATCH_REGEX understand.
 # The template will be populated with data and expects the following markup:

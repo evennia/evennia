@@ -248,7 +248,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in cmdset_a])
+            existing_commands = set(cmdset_a.commands)
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in existing_commands])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -487,7 +488,11 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
         # cmdset_a.key, cmdset_a.priority)
 
-        # return the system commands to the cmdset
+        # Re-add the merged system commands. First strip any that were carried
+        # through via the raw commands[:] copy in the merge methods, so they
+        # don't appear twice.
+        sys_set = set(sys_commands)
+        cmdset_c.commands = [c for c in cmdset_c.commands if c not in sys_set]
         cmdset_c.add(sys_commands, allow_duplicates=True)
         return cmdset_c
 
@@ -548,17 +553,19 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             if not hasattr(cmd, "obj") or cmd.obj is None:
                 cmd.obj = self.cmdsetobj
 
-            # remove duplicates and add new
-            for _dum in range(commands.count(cmd)):
-                commands.remove(cmd)
+            if not allow_duplicates:
+                # remove duplicates and add new
+                for _dum in range(commands.count(cmd)):
+                    commands.remove(cmd)
             commands.append(cmd)
 
             # add system_command to separate list as well,
             # for quick look-up. These have no
             if cmd.key.startswith("__"):
-                # remove same-matches and add new
-                for _dum in range(system_commands.count(cmd)):
-                    system_commands.remove(cmd)
+                if not allow_duplicates:
+                    # remove same-matches and add new
+                    for _dum in range(system_commands.count(cmd)):
+                        system_commands.remove(cmd)
                 system_commands.append(cmd)
 
         if not allow_duplicates:

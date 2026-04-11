@@ -4,8 +4,8 @@ evennia.contrib.game\_systems.cooldowns
 
 .. automodule:: evennia.contrib.game_systems.cooldowns
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

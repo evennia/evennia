@@ -39,7 +39,7 @@ In dictionary form, a prototype can look something like this:
 ```
 If you wanted to load it into the spawner in-game you could just put all on one line:
 
-    spawn {"prototype_key="house", "key": "Large house", ...}
+    spawn {"prototype_key"="house", "key": "Large house", ...}
 
 > Note that the prototype dict as given on the command line must be a valid Python structure - so you need to put quotes around strings etc. For security reasons, a dict inserted from-in game cannot have any other advanced Python functionality, such as executable code, `lambda` etc. If builders are supposed to be able to use such features, you need to offer them through [$protfuncs](Spawner-and- Prototypes#protfuncs), embedded runnable functions that you have full control to check and vet before running.
 
@@ -167,9 +167,8 @@ The default protfuncs available out of the box are defined in `evennia/prototype
 |  `$div(<value1>, <value2>)` | Returns value2 / value1 |
 |  `$toint(<value>)` | Returns value converted to integer (or value if not possible) |
 |  `$eval(<code>)` | Returns result of [literal-eval](https://docs.python.org/2/library/ast.html#ast.literal_eval) of code string. Only simple python expressions. |
-| `$obj(<query>)` | Returns object #dbref searched globally by key, tag or #dbref. Error if more than one found. |
-| `$objlist(<query>)` | Like `$obj`, except always returns a list of zero, one or more results. |
-| `$dbref(dbref)` | Returns argument if it is formed as a #dbref (e.g. #1234), otherwise error. |
+| `$obj(<query>)` | Returns object searched globally by key, tag or #dbref. Requires `caller` kwarg in `spawner.spawn()` for access checks. See [searching callables](./FuncParser.md#evenniautilsfuncparsersearching_callables).  ($dbref(<query>) is an alias and works the same) |
+| `$objlist(<query>)` | Like `$obj`, except always returns a list of zero, one or more results. Requires `caller` kwarg in `spawner.spawn()` for access checks. See [searching callables](./FuncParser.md#evenniautilsfuncparsersearching_callables). |
 
 For developers with access to Python, using protfuncs in prototypes is generally not useful. Passing real Python functions is a lot more powerful and flexible. Their main use is to allow in-game builders to do limited coding/scripting for their prototypes without giving them direct access to raw Python. 
 

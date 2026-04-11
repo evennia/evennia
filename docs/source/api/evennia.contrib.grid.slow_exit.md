@@ -4,8 +4,8 @@ evennia.contrib.grid.slow\_exit
 
 .. automodule:: evennia.contrib.grid.slow_exit
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

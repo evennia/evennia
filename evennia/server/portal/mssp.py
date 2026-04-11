@@ -11,6 +11,8 @@ active players and so on.
 
 """
 
+import weakref
+
 from django.conf import settings
 
 from evennia.utils import utils
@@ -39,8 +41,8 @@ class Mssp:
             protocol (Protocol): The active protocol instance.
 
         """
-        self.protocol = protocol
-        self.protocol.will(MSSP).addCallbacks(self.do_mssp, self.no_mssp)
+        self.protocol = weakref.ref(protocol)
+        self.protocol().will(MSSP).addCallbacks(self.do_mssp, self.no_mssp)
 
     def get_player_count(self):
         """
@@ -50,7 +52,7 @@ class Mssp:
             count (int): The number of players in the MUD.
 
         """
-        return str(self.protocol.sessionhandler.count_loggedin())
+        return str(self.protocol().sessionhandler.count_loggedin())
 
     def get_uptime(self):
         """
@@ -60,7 +62,7 @@ class Mssp:
             uptime (int): Number of seconds of uptime.
 
         """
-        return str(self.protocol.sessionhandler.uptime)
+        return str(self.protocol().sessionhandler.uptime)
 
     def no_mssp(self, option):
         """
@@ -71,7 +73,7 @@ class Mssp:
             option (Option): Not used.
 
         """
-        self.protocol.handshake_done()
+        self.protocol().handshake_done()
 
     def do_mssp(self, option):
         """
@@ -132,5 +134,5 @@ class Mssp:
                 )
 
         # send to crawler by subnegotiation
-        self.protocol.requestNegotiation(MSSP, varlist)
-        self.protocol.handshake_done()
+        self.protocol().requestNegotiation(MSSP, varlist)
+        self.protocol().handshake_done()

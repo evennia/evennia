@@ -4,8 +4,8 @@ evennia.prototypes
 
 .. automodule:: evennia.prototypes
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

@@ -73,6 +73,7 @@ class XYZManager(ObjectManager):
                 if z == wildcard
                 else Q(db_tags__db_key__iexact=str(z), db_tags__db_category=MAP_Z_TAG_CATEGORY)
             )
+            .distinct()
         )
 
     def get_xyz(self, xyz=(0, 0, "map"), **kwargs):
@@ -97,9 +98,12 @@ class XYZManager(ObjectManager):
         """
         # filter by tags, then figure out of we got a single match or not
         query = self.filter_xyz(xyz=xyz, **kwargs)
-        ncount = query.count()
+        # Avoid expensive count() on multi-join tag queries; we only need to
+        # know if there are 0, 1 or more than 1 unique matches.
+        matches = list(query[:2])
+        ncount = len(matches)
         if ncount == 1:
-            return query.first()
+            return matches[0]
 
         # error - mimic default get() behavior but with a little more info
         x, y, z = xyz
@@ -184,6 +188,7 @@ class XYZExitManager(XYZManager):
                     db_tags__db_key__iexact=str(zdest), db_tags__db_category=MAP_ZDEST_TAG_CATEGORY
                 )
             )
+            .distinct()
         )
 
     def get_xyz_exit(self, xyz=(0, 0, "map"), xyz_destination=(0, 0, "map"), **kwargs):
@@ -230,6 +235,7 @@ class XYZExitManager(XYZManager):
                 .filter(
                     db_tags__db_key__iexact=str(zdest), db_tags__db_category=MAP_ZDEST_TAG_CATEGORY
                 )
+                .distinct()
                 .get(**kwargs)
             )
         except self.model.DoesNotExist:

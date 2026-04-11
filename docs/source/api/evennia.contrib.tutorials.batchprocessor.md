@@ -4,8 +4,8 @@ evennia.contrib.tutorials.batchprocessor
 
 .. automodule:: evennia.contrib.tutorials.batchprocessor
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

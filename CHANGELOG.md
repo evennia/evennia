@@ -2,23 +2,531 @@
 
 ## Main branch
 
+- Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
+- Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
+- [Feat][pull3867]: Add WebSocket subprotocol negotiation per [MUD Standards proposal][mudstandards-ws].
+  Supports `json.mudstandards.org`, `gmcp.mudstandards.org`, `terminal.mudstandards.org` and
+  `v1.evennia.com` (evennia's own webclient). New `WEBSOCKET_SUBPROTOCOLS` setting.
+  Existing clients are unaffected. (daiimus)
+- [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
+- [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
+- Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
+- [Fix][pull3875]: Fix TypeError in telnet HTTP check when command stacking sends bytes (aMiss-aWry)
+- [Fix][pull3877]: Fixes multimatch numbering display to be case insensitive (InspectorCaracal)
+- [Fix][pull3883]: Taskhandler: Fix TaskHandlerTask stale references & clean up (jaborsh)
+- [Feat][pull3884]: Formally support PostgreSQL with psycopg3 (jaborsh)
+- [Fix][pull3885]: Is_ooc(): Thread session through lock system in multi-session mode (jaborsh)
+- Fix: Add deprecation warning for custom cmdparsers missing `session` kwarg (Griatch)
+- [Fix][pull3888]: Close stale DB connections before first query (jaborsh)
+- [Fix][pull3898]: Pass caller to purge_processor in CmdStateCC cc command (saschabuehrle)
+- [Fix][pull3899]: Fix @teleport showing double error message on failed search (blongden)
+- [Fix][pull3900]: Fix TypeError in MSDP encode when args contain non-string values (blongden)
+- [Fix][pull3901]: Fix O(N²) cmdset merge by hashing commands on key instead of constant (blongden)
+- [Fix][pull3905]: Fix system commands duplicated in merged CmdSets (kvmet)
+- [Fix][pull3909]: Fix funcparser treating $" as malformed function call (aMiss-aWry)
+- [Fix][pull3910]: Fix MXP parse to not escape surrounding text as HTML entities (aMiss-aWry)
+- [Fix][pull3504]: Mail contrib now displays date/times in the player's local timezone (chiizujin)
+- Docs: Griatch, BigJMoney
+
+[pull3866]: https://github.com/evennia/evennia/pull/3866
+[pull3867]: https://github.com/evennia/evennia/pull/3867
+[pull3869]: https://github.com/evennia/evennia/pull/3869
+[pull3875]: https://github.com/evennia/evennia/pull/3875
+[pull3877]: https://github.com/evennia/evennia/pull/3877
+[pull3883]: https://github.com/evennia/evennia/pull/3883
+[pull3884]: https://github.com/evennia/evennia/pull/3884
+[pull3885]: https://github.com/evennia/evennia/pull/3885
+[pull3888]: https://github.com/evennia/evennia/pull/3888
+[pull3898]: https://github.com/evennia/evennia/pull/3898
+[pull3899]: https://github.com/evennia/evennia/pull/3899
+[pull3900]: https://github.com/evennia/evennia/pull/3900
+[pull3901]: https://github.com/evennia/evennia/pull/3901
+[pull3905]: https://github.com/evennia/evennia/pull/3905
+[pull3909]: https://github.com/evennia/evennia/pull/3909
+[pull3910]: https://github.com/evennia/evennia/pull/3910
+[pull3504]: https://github.com/evennia/evennia/pull/3504
+[mudstandards-ws]: https://mudstandards.org/websocket/
+
+## Evennia 6.0.0
+
+Feb 15, 2026
+
+- Feat (backwards incompatble): Drop Python 3.11 support (supported: Python 3.12, 3.13, 3.14 (req)). (Griatch)
+- Security: Django >=6.0.2 (<6.1), Django RestFramework 3.16 (Griatch)
+- Update: `XYZGrid` contrib now requires scipy 1.15->1.17. Note: Pathfinding may pick different
+  shortest routes from before, due to private changes in scipy Dijkstra algorithm (Griatch)
+- [Feat][pull3599]: Make `at_pre_cmd` testable in unit tests (blongden)
+- [Fix]: API /openapi/setattribute endpoints were both POST and PUT, causing schema
+  errors; now changed to PUT only. (Griatch)
+- [Feat][issue2627]: Add `settings.AUDIT_MASKS` to customize what Evennia should
+  obfuscate in server error logs (such as passwords from custom login commands) (Griatch)
+- [Fix][pull3799]: Fix typo in `basic_tc.py` contrib for beginner tutorial (Tharic99)
+- [Fix][pull3806]: EvMore wouldn't pass Session to next cmd when exiting (gas-public-wooden-clean)
+- [Fix][pull3809]: Admin page - Repair link to Account button (UserlandAlchemist)
+- [Fix][pull3811]: Website login banner shows before login attempt (UserlandAlchemist)
+- [Fix][pull3817]: `ingame_reports` i18n fix (peddn)
+- [Fix][pull3818]: Update spawn hook to use `new_prototype` (InspectorCaracal)
+- [Fix][pull3815]: Performance improvement in large cmdset mergers (blongden)
+- [Fix][pull3831]: Performance optimization in ANSIString, performance boost for large colored
+  strings (count-infinity)
+- [Fix][pull3832]: Fix typo in prototype causing homogenized locks to use
+  fallbacks incorrectly (count-infinity)
+- [Fix][pull3834]: Fix so `$obj(#123)` inline function works in prototype spawning (count-infinity)
+- [Fix][pull3836]: Correctly handling calling `create_object` with `key=None` (count-infinity)
+- [Fix][pull3852]: Django 5.2+ was not properly detected. Fixing distutils being
+  removed in py3.12 for new installs (count-infinity)
+- [Fix][pull3845]: Fix exponential ANSI markup explosions when slicing
+  ANSIString after reset (speeds up EvForm other string ops, fixes compatibility) (count-infinity)
+- [Fix][pull3853]: Properly handle multimatch separations with native dashes, like
+  't-shirt-1' (count-infinity)
+- [Fix][pull3733]: Allow `CmdSetAttribute` to use categery, view dicts by key (InspectorCaracal)
+- [Fix][issue3858]: Fix parsing issues in dice contrib (Griatch)
+- Fix: `Typeclass.objects.get_by_tag()` will now always convert tag keys/categories to integers, to
+  avoid inconsistencies with PostgreSQL databases (Griatch)
+- [Fix][issue3813]: Fixed issue where OnDemandHandler could traceback on an
+  un-pickle-able object and cause an error at server shutdown (Griatch)
+- [Fix][issue3649]: The `:j` command in EvEditor would squash empty lines (Griatch)
+- [Fix][issue3560]: Tutorial QuestHandler failed to load after server restart (Griatch)
+- [Fix][issue3601]: `CmdSet.add(..., allow_duplicates=True)` didn't allow duplicate cmd keys (Griatch)
+- [Fix][issue3194]: Make filtering on AttributeProperties consistent across typeclasses (Griatch)
+- [Fix][issue2774]: Properly support `\n` in `evennia connections` long descriptions (Griatch)
+- [Fix][issue3312]: Handle all edge cases breaking `monitor/monitored` `input_funcs` (Griatch)
+- [Fix][issue3154]: Persistent EvMenu caused multiple cmdsets on reload (Griatch)
+- [Fix][issue3193]: Formatting of inner nested evtable would break (Griatch)
+- [Fix][issue3082]: MXP linking broke EvTable formatting (Griatch)
+- [Fix][issue3693]: Using `|/` in EvTable broke padding (Griatch)
+- [Fix][pull3864]: Correctly use cached dijkstra results for XYZGrid (jaborsh)
+- [Fix][pull3863]: `XYZGrid` performance improvement in teleporter search (jaborsh)
+- [Fix][pull3862]: `TraitHandler` typo/bug fixes  (jaborsh)
+- [Doc][pull3801]: Move Evennia doc build system to latest Sphinx/myST
+  (PowershellNinja, also honorary mention to electroglyph)
+- [Doc][pull3800]: Describe support for Telnet SSH in HAProxy documentation (holl0wstar)
+- [Doc][pull3825]: Update Portuguese translation (marado)
+- [Doc][pull3826]: Fix broken links in README (marado)
+- Docs: marado, Griatch, Hasna878, count-infinity
+
+[pull3799]: https://github.com/evennia/evennia/pull/3799
+[pull3800]: https://github.com/evennia/evennia/pull/3800
+[pull3801]: https://github.com/evennia/evennia/pull/3801
+[pull3806]: https://github.com/evennia/evennia/pull/3806
+[pull3809]: https://github.com/evennia/evennia/pull/3809
+[pull3811]: https://github.com/evennia/evennia/pull/3811
+[pull3815]: https://github.com/evennia/evennia/pull/3815
+[pull3817]: https://github.com/evennia/evennia/pull/3817
+[pull3818]: https://github.com/evennia/evennia/pull/3818
+[pull3825]: https://github.com/evennia/evennia/pull/3825
+[pull3826]: https://github.com/evennia/evennia/pull/3826
+[pull3831]: https://github.com/evennia/evennia/pull/3831
+[pull3832]: https://github.com/evennia/evennia/pull/3832
+[pull3834]: https://github.com/evennia/evennia/pull/3834
+[pull3836]: https://github.com/evennia/evennia/pull/3836
+[pull3599]: https://github.com/evennia/evennia/pull/3599
+[pull3852]: https://github.com/evennia/evennia/pull/3852
+[pull3853]: https://github.com/evennia/evennia/pull/3853
+[pull3733]: https://github.com/evennia/evennia/pull/3733
+[pull3864]: https://github.com/evennia/evennia/pull/3864
+[pull3863]: https://github.com/evennia/evennia/pull/3863
+[pull3845]: https://github.com/evennia/evennia/pull/3845
+[pull3862]: https://github.com/evennia/evennia/pull/3862
+[issue3858]: https://github.com/evennia/evennia/issues/3858
+[issue3813]: https://github.com/evennia/evennia/issues/3813
+[issue3649]: https://github.com/evennia/evennia/issues/3649
+[issue3560]: https://github.com/evennia/evennia/issues/3560
+[issue3601]: https://github.com/evennia/evennia/issues/3601
+[issue3194]: https://github.com/evennia/evennia/issues/3194
+[issue2774]: https://github.com/evennia/evennia/issues/2774
+[issue3312]: https://github.com/evennia/evennia/issues/3312
+[issue3154]: https://github.com/evennia/evennia/issues/3154
+[issue3193]: https://github.com/evennia/evennia/issues/3193
+[issue3082]: https://github.com/evennia/evennia/issues/3082
+[issue3693]: https://github.com/evennia/evennia/issues/3693
+[issue2627]: https://github.com/evennia/evennia/issues/2627
+
+
+## Evennia 5.0.1
+
+Jul 2, 2025
+
+- [Fix][issue3796]: Fix Django version minimum string being too picky, causing
+  confusing warning message on startup (Griatch)
+
+[issue3796]: https://github.com/evennia/evennia/issues/3796
+
+
+## Evennia 5.0.0
+
+Jul 1, 2025
+
+Updated dependencies: Django >5.2 (<5.3), Twisted >24 (<25).
+Python versions: 3.11, 3.12, 3.13.
+
+This upgrade requires running `evennia migrate` on your existing database
+(ignore any prompts to run `evennia makemigrations`).
+
+- Feat (backwards incompatible): RUN MIGRATIONS (`evennia migrate`): Now requiring Django 5.1 (Griatch)
+- Feat (backwards incompatible): Drop support and testing for Python 3.10 (Griatch)
+- [Feat][pull3719]: Support Python 3.13. (electroglyph)
+- [Feat][pull3633]: Default object's default descs are now taken from a `default_description`
+    class variable instead of the `desc` Attribute always being set (count-infinity)
+- [Feat][pull3718]: Remove twistd.bat creation for Windows, should not be needed anymore (electroglyph)
+- [Feat][pull3756]: Updated German translation (JohnFi)
+- [Feat][pull3757]: Add more i18n strings to `DefaultObject` for easier translation (JohnFi)
+- [Feat][pull3783]: Support users of `ruff` linter by adding compatible config in `pyproject.toml` (jaborsh)
+- [Feat][pull3777]: New contrib `debugpy` for debugging Evennia with in VSCode with `debugpy` adapter (electroglyph)
+- [Feat][pull3795]: Support evennia launcher for use with `uv` installation (TehomCD)
+- [Fix][pull3677]: Make sure that `DefaultAccount.create` normalizes to empty
+  strings instead of `None` if no name is provided, also enforce string type (InspectorCaracal)
+- [Fix][pull3682]: Allow in-game help searching for commands natively starting
+  with `*` (which is the Lunr search wildcard) (count-infinity)
+- [Fix][pull3684]: Web client stopped auto-focusing the input box after opening settings (count-infinity)
+- [Fix][pull3689]: Partial matching fix in default search, makes sure e.g. `b sw` uniquely
+  finds `big sword` even if another type of sword is around (InspectorCaracal)
+- [Fix][pull3690]: In searches, allow special 'here' and 'me' keywords only be valid queries
+  unless current location and/or caller is in valid search candidates respectively (InspectorCaracal)
+- [Fix][pull3694]: Funcparser swallowing rest of line after a `\`-escape (count-infinity)
+- [Fix][pull3705]: Properly serialize `IntFlag` enum types (electroglyph)
+- [Fix][pull3707]: Correct links in `about` command (electroglyph)
+- [Fix][pull3710]: Clean reduntant session clearin in `at_server_cold_start` (InspectorCaracal)
+- [Fix][pull3711]: Usability improvements in the Discord integration (InspectorCaracal)
+- [Fix][pull3721]: Avoid loading cmdsets that don't need to be checked, avoiding
+  a performance hit for loading cmdsets in rooms with a lot of objects (InspectorCaracal)
+- [Fix][issue3688]: Made TutorialWorld possible to build cleanly without being a superuser (Griatch)
+- [Fix][issue3687]: Fixed batchcommand/interactive with developer perms (Griatch)
+- [Fix][pull3723]: Bug in `ingame-map-display` contrib when using ordinal alises (aMiss-aWry)
+- [Fix][pull3726]: Fix Twisted v25 issue with returnValue()
+- [Fix][pull3729]: Godot client text2bbcode mxp link conversion error (ChrisLR)
+- [Fix][pull3737]: The `evennia --gamedir` command didn't properly set the alt gamedir (Russel-Jones)
+- [Fix][pull3739]: Fixing f-string in account.py for i18n (JohnFi)
+- [Fix][pull3744]: Fix for format strings not getting picked up in i18n (JohnFi)
+- [Fix][pull3743]: Log full stack trace on failed object creation (aMiss-aWry)
+- [Fix][pull3747]: TutorialWorld bridge-room didn't correctly randomize weather effects (SpyrosRoum)
+- [Fix][pull3765]: Storing TickerHandler `store_key` in a db attribute would not
+  work correctly (electroglyph)
+- [Fix][pull3753]: Make sure `AttributeProperty`s are initialized with default values also in parent class (JohnFi)
+- [Fix][pull3751]: The `access` and `inventory` commands would traceback if run on a character without an Account (EliasWatson)
+- [Fix][pull3768]: Make sure the `CmdCopy` command copies object categories,
+  since otherwise plurals were lost (jaborsh)
+- [Fix][issue3788]: `GLOBAL_SCRIPTS.all()` raised error (Griatch)
+- [Fix][issue3790]: Fix migration issue due to new db init-check code in launcher (Griatch)
+- [Fix][issue3794]: Make sure to pass `move_type` kwarg to `at_pre_object_receive|leave` hooks (Griatch)
+- Fix: `options` setting `NOPROMPTGOAHEAD` was not possible to set (Griatch)
+- Fix: Make `\\` properly preserve one backlash in funcparser (Griatch)
+- Fix: The testing 'echo' inputfunc didn't work correctly; now returns both args/kwargs (Griatch)
+- Fix: When an object was used as an On-Demand Task's category, and that object was then deleted,
+  it caused an OnDemandHandler save error on reload. Will now clean up on save. (Griatch)
+  used as the task's category (Griatch)
+- Fix: Correct aws contrib's use of legacy django string utils (Griatch)
+- [Docs]: Fixes from InspectorCaracal, Griatch, ChrisLR, JohnFi, electroglyph, jaborsh, Problematic, BlaneWins
+
+[pull3633]: https://github.com/evennia/evennia/pull/3633
+[pull3677]: https://github.com/evennia/evennia/pull/3677
+[pull3682]: https://github.com/evennia/evennia/pull/3682
+[pull3684]: https://github.com/evennia/evennia/pull/3684
+[pull3689]: https://github.com/evennia/evennia/pull/3689
+[pull3690]: https://github.com/evennia/evennia/pull/3690
+[pull3705]: https://github.com/evennia/evennia/pull/3705
+[pull3707]: https://github.com/evennia/evennia/pull/3707
+[pull3710]: https://github.com/evennia/evennia/pull/3710
+[pull3711]: https://github.com/evennia/evennia/pull/3711
+[pull3718]: https://github.com/evennia/evennia/pull/3718
+[pull3719]: https://github.com/evennia/evennia/pull/3719
+[pull3721]: https://github.com/evennia/evennia/pull/3721
+[pull3723]: https://github.com/evennia/evennia/pull/3723
+[pull3726]: https://github.com/evennia/evennia/pull/3726
+[pull3729]: https://github.com/evennia/evennia/pull/3729
+[pull3737]: https://github.com/evennia/evennia/pull/3737
+[pull3739]: https://github.com/evennia/evennia/pull/3739
+[pull3743]: https://github.com/evennia/evennia/pull/3743
+[pull3744]: https://github.com/evennia/evennia/pull/3744
+[pull3747]: https://github.com/evennia/evennia/pull/3747
+[pull3765]: https://github.com/evennia/evennia/pull/3765
+[pull3753]: https://github.com/evennia/evennia/pull/3753
+[pull3751]: https://github.com/evennia/evennia/pull/3751
+[pull3756]: https://github.com/evennia/evennia/pull/3756
+[pull3757]: https://github.com/evennia/evennia/pull/3757
+[pull3768]: https://github.com/evennia/evennia/pull/3768
+[pull3783]: https://github.com/evennia/evennia/pull/3783
+[pull3777]: https://github.com/evennia/evennia/pull/3777
+[pull3694]: https://github.com/evennia/evennia/pull/3694
+[issue3794]: https://github.com/evennia/evennia/issues/3794
+[pull3795]: https://github.com/evennia/evennia/pull/3795
+[issue3688]: https://github.com/evennia/evennia/issues/3688
+[issue3687]: https://github.com/evennia/evennia/issues/3687
+[issue3788]: https://github.com/evennia/evennia/issues/3788
+[issue3790]: https://github.com/evennia/evennia/issues/3790
+
+
+
+## Evennia 4.5.0
+
+Nov 12, 2024
+
+- [Feat][pull3634]: New contrib for in-game `storage` of items in rooms (aMiss-aWry)
+- [Feat][pull3636]: Make `cpattr` command also support Attribute categories (aMiss-aWry)
+- [Feat][pull3653]: Updated Chinese translation (Pridell).
+- [Fix][pull3635]: Fix memory leak in Portal Telnet connections, force weak
+  references to Telnet negotiations, stop LoopingCall on disconnect (a-rodian-jedi)
+- [Fix][pull3626]: Typo in `defense_type` in evadventure tutorial (feyrkh)
+- [Fix][pull3632]: Made fallback permissions on be set correctly (InspectorCaracal)
+- [Fix][pull3639]: Fix `system` command when environment uses a language with
+  commas for decimal points (aMiss-aWry)
+- [Fix][pull3645]: Correct `character_creator` contrib's error return (InspectorCaracal)
+- [Fix][pull3640]: Typo fixes for conjugate verbs (aMiss-aWry)
+- [Fix][pull3647]: Contents cache didn't reset internal typecache on use of `init` hook (InspectorCaracal)
+- [Fix][issue3627]: Traceback from contrib `in-game reports` `help manage` command (Griatch)
+- [Fix][issue3643]: Fix for Commands metaclass interpreting e.g. `usercmd:false()` locks as
+  a `cmd:` type lock for the purposes of default access fallbacks (Griatch).
+- [Fix][pull3651]: EvEditor `:j` defaulted to 'full' justify instead of 'left' as
+  was documented (willmofield)
+- [Fix][pull3657]: Fix error in `do_search` that caused `FileHelpEntries` to
+  traceback (a-rodian-jedi)
+- [Fix][pull3660]: Numbered aliases didn't refresh after a object rename unless
+  the endpoint hook was re-called; now triggers the call autiomatically (count-infinity)
+- [Fix][pull3664]: The `Account.last_login` field was updated also when user
+  disconnected, which is not useful (InspectorCaracal)
+- [Fix][pull3665]: Remove faulty verb conjugation exceptions for 'offer',
+  'hinder' and 'alter' in automatic verb-conjugation engine (aMiss-aWry)
+- [Fix][pull3669]: The `page` command tracebacked for some input combinations (InspectorCaracal)
+- [Fix][pull3642]: Give friendlier error if EvMore object is not available
+  neither on Object, nor on account fallback. (InspectorCaracal)
+- [Docs][pull3655]: Fixed many erroneously created links on `file.py` names in
+  the docs (marado)
+- [Docs][pull3576]: Rework doc for [Pycharm howto][doc-pycharm]
+- Docs updates: feykrh, Griatch, marado, jaborsh
+
+[pull3626]: https://github.com/evennia/evennia/pull/3626
+[pull3634]: https://github.com/evennia/evennia/pull/3634
+[pull3632]: https://github.com/evennia/evennia/pull/3632
+[pull3636]: https://github.com/evennia/evennia/pull/3636
+[pull3639]: https://github.com/evennia/evennia/pull/3639
+[pull3645]: https://github.com/evennia/evennia/pull/3645
+[pull3640]: https://github.com/evennia/evennia/pull/3640
+[pull3647]: https://github.com/evennia/evennia/pull/3647
+[pull3635]: https://github.com/evennia/evennia/pull/3635
+[pull3651]: https://github.com/evennia/evennia/pull/3651
+[pull3655]: https://github.com/evennia/evennia/pull/3655
+[pull3657]: https://github.com/evennia/evennia/pull/3657
+[pull3653]: https://github.com/evennia/evennia/pull/3653
+[pull3660]: https://github.com/evennia/evennia/pull/3660
+[pull3664]: https://github.com/evennia/evennia/pull/3664
+[pull3665]: https://github.com/evennia/evennia/pull/3665
+[pull3669]: https://github.com/evennia/evennia/pull/3669
+[pull3642]: https://github.com/evennia/evennia/pull/3642
+[pull3576]: https://github.com/evennia/evennia/pull/3576
+[issue3627]: https://github.com/evennia/evennia/issues/3627
+[issue3643]: https://github.com/evennia/evennia/issues/3643
+[doc-pycharm]: https://www.evennia.com/docs/latest/Coding/Setting-up-PyCharm.html
+
+## Evennia 4.4.1
+
+Oct 1, 2024
+
+- [Fix][issue3629]: Reverting change of default Sqlite3 PRAGMA settings, changing them for
+  existing database caused corruption of db. For empty db, can still change in
+  `SQLITE3_PRAGMAS` settings. (Griatch)
+
+[issue3629]: https://github.com/evennia/evennia/issues/3629
+
+
+## Evennia 4.4.0
+
+Sep 29, 2024
+
+> WARNING: Due to a bug in the default Sqlite3 PRAGMA settings, it is
+> recommended to not upgrade to this version if you are using Sqlite3.
+> Use `4.4.1` or higher instead.
+
+- Feat: Support `scripts key:typeclass` to create global scripts
+with dynamic keys (rather than just relying on typeclass' key) (Griatch)
+- [Feat][pull3595]: Tweak Sqlite3 PRAGMAs for better performance (electroglyph)
+- Feat: Make Sqlite3 PRAGMAs configurable via settings (Griatch)
+- [Feat][pull3592]: Revised German locationlization ('Du' instead of 'Sie',
+  cleanup) (Drakon72)
+- [Feat][pull3541]: Rework main Object searching to respect partial matches, empty
+  search now partial matching all candidates, overall cleanup (InspectorCaracal)
+- [Feat][pull3588]: New `DefaultObject` hooks: `at_object_post_creation`, called once after
+  first creation but after any prototypes have been applied, and
+`at_object_post_spawn(prototype)`, called only after creation/update with a prototype (InspectorCaracal)
+- [Fix][pull3594]: Update/clean some Evennia dependencies (electroglyph)
+- [Fix][issue3556]: Better error if trying to treat ObjectDB as a typeclass (Griatch)
+- [Fix][issue3590]: Make `examine` command properly show `strattr` type
+Attribute values (Griatch)
+- [Fix][issue3519]: `GLOBAL_SCRIPTS` container didn't list global scripts not
+defined explicitly to be restarted/recrated in `settings.py` (Griatch)
+- Fix: Passing an already instantiated Script to `obj.scripts.add` (`ScriptHandler.add`)
+did not add it to the handler's object (Griatch)
+- [Fix][pull3533]: Fix Lunr search issues preventing finding help entries with similar
+  names (chiizyjin)
+- [Fix][pull3603]: Fix of client header for LLM contrib for remote APIs (InspectorCaracal)
+- [Fix][pull3605]: Correctly pass node kwargs through `@list_node` decorated evmenu nodes
+  (InspectorCaracal)
+- [Fix][pull3597]: Address timing issue for testing `new_task_waiting_input `on
+  Windows (electroglyph)
+- [Fix][pull3611]: Fix and update for Reports contrib (InspectorCaracal)
+- [Fix][pull3625]: Lycanthropy tutorial page had some issues (feyrkh)
+- [Fix][pull3622]: Fix for examine command tracebacking with strvalue error
+  (aMiss-aWry)
+- [Fix][issue3612]: Make sure help entries' `subtopic_separator_char` is
+  respected (Griatch)
+- [Fix][issue3624]: Setting tags with integer names caused errors on postgres (Griatch)
+- [Fix][issue3615]: Using `print()` in `py` caused an infinite loop (Griatch)
+- [Fix][issue3620]: Better handle TaskHandler running against an attribute that
+  was removed since last reload (Griatch)
+- [Fix][issue3616]: The `color ansi` command output was broken (Griatch)
+- Fix: Extended the `color truecolor` display with usage examples. Also updated docs (Griatch)
+- [Docs][issue3591]: Fix of NPC reaction tutorial code (Griatch)
+- Docs: Tutorial fixes (Griatch, aMiss-aWry, feyrkh)
+
+[issue3591]: https://github.com/evennia/evennia/issues/3591
+[issue3590]: https://github.com/evennia/evennia/issues/3590
+[issue3556]: https://github.com/evennia/evennia/issues/3556
+[issue3519]: https://github.com/evennia/evennia/issues/3519
+[issue3612]: https://github.com/evennia/evennia/issues/3612
+[issue3624]: https://github.com/evennia/evennia/issues/3624
+[issue3615]: https://github.com/evennia/evennia/issues/3615
+[issue3620]: https://github.com/evennia/evennia/issues/3620
+[issue3616]: https://github.com/evennia/evennia/issues/3616
+[pull3595]: https://github.com/evennia/evennia/pull/3595
+[pull3533]: https://github.com/evennia/evennia/pull/3533
+[pull3594]: https://github.com/evennia/evennia/pull/3594
+[pull3592]: https://github.com/evennia/evennia/pull/3592
+[pull3603]: https://github.com/evennia/evennia/pull/3603
+[pull3605]: https://github.com/evennia/evennia/pull/3605
+[pull3597]: https://github.com/evennia/evennia/pull/3597
+[pull3611]: https://github.com/evennia/evennia/pull/3611
+[pull3541]: https://github.com/evennia/evennia/pull/3541
+[pull3588]: https://github.com/evennia/evennia/pull/3588
+[pull3625]: https://github.com/evennia/evennia/pull/3625
+[pull3622]: https://github.com/evennia/evennia/pull/3622
+
+
+## Evennia 4.3.0
+
+Aug 11, 2024
+
+- [Feat][pull3531]: New contrib; `in-game reports` for handling user reports,
+  bugs etc in-game (InspectorCaracal)
+- [Feat][pull3586]: Add ANSI color support `|U`, `|I`, `|i`, `|s`, `|S` for
+underline reset, italic/reset and strikethrough/reset (electroglyph)
+- Feat: Add `Trait.traithandler` back-reference so custom Traits from the Traits
+  contrib can find and reference other Traits. (Griatch)
+- [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (electroglyph)
+- [Fix][pull3571]: Better visual display of partial multimatch search results
+  (InspectorCaracal)
+- [Fix][issue3578]: Prototype 'alias' key was not properly homogenized to a list
+  (Griatch)
+- [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
+    of local search on multimatch (InspectorCaracal)
+- [Fix][pull3585]: `TagCmd.switch_options` was misnamed (erratic-pattern)
+- [Fix][pull3580]: Fix typo that made `find/loc` show the wrong dbref in result (erratic-pattern)
+- [Fix][pull3589]: Fix regex escaping in `utils.py` for future Python versions (hhsiao)
+- [Docs]: Add True-color description for Colors documentation (electroglyph)
+- [Docs]: Doc fixes (Griatch, InspectorCaracal, electroglyph)
+
+[pull3585]: https://github.com/evennia/evennia/pull/3585
+[pull3580]: https://github.com/evennia/evennia/pull/3580
+[pull3586]: https://github.com/evennia/evennia/pull/3586
+[pull3550]: https://github.com/evennia/evennia/pull/3550
+[pull3531]: https://github.com/evennia/evennia/pull/3531
+[pull3571]: https://github.com/evennia/evennia/pull/3571
+[pull3582]: https://github.com/evennia/evennia/pull/3582
+[pull3589]: https://github.com/evennia/evennia/pull/3589
+[issue3578]: https://github.com/evennia/evennia/issues/3578
+
+## Evennia 4.2.0
+
+June 27, 2024
+
 - [Feature][pull3470]: New `exit_order` kwarg to
   `DefaultObject.get_display_exits` to easier customize the order in which
   standard exits are displayed in a room (chiizujin)
+- [Feature][pull3498]: Properly update Evennia's screen width when client
+  changes width (assuming client supports NAWS properly) (michaelfaith84)
+- [Feature][pull3502]: New `sethelp/locks` allows for editing help entry
+  locks after they were first created (chiizujin)
+- [Feature][pull3514]: Support `$pron(pronoun, key)` and new `$pconj(verb, key)`
+  (pronoun conjugation) for actor stance (InspectorCaracal)
+- [Feature][pull3521]: Allow `WORD` (fully capitalized) in GMCP command names
+  instead of only `Word` (titled) to support specific clients better (InspectorCaracal)
+- [Feature][pull3447]: New Contrib: Achievements (InspectorCaracal)
+- [Feature][pull3494]: Xterm truecolor hex support `|#0f0` style. Expanded
+  `color true` to test (michaelFaith84)
+- [Feature][pull3497]: Add optional width to EvEditor flood-fill commands using
+  new `=` argument, for example `:f=40` or `:j 1:2 l = 60` (chiizujin)
+- [Feature][pull3549]: Run the `collectstatic` command when reloading server to
+  keep game assets in sync automatically (InspectorCaracal)
+- [Feature][issue3522]: (also a fix) Make `.created_date` property on all models property return
+  a time adjusted based on `settings.TIME_ZONE` (Griatch)
+- [Language][pull3523]: Updated Polish translation (Moonchasered)
 - [Fix][pull3495]: Fix rate in Trait contribs not updating after reload (jaborsh)
 - [Fix][pull3491]: Fix traceback in EvEditor when searching with malformed regex (chiizujin)
-- [Docs]: Doc fixes (Griatch, chiizujin)
+- [Fix][pull3489]: Superuser could break wilderness contrib exits (t34lbytes)
+- [Fix][pull3496]: EvEditor would not correctly show search&replace feedback
+  when replacing colors (Chiizujin)
+- [Fix][pull3499]: Dig/tunnel commands didn't echo the typeclass of the newly
+  created room properly (chiizujin)
+- [Fix][pull3501]: Using `sethelp` to create a help entry colliding with a
+  command-name made the entry impossible to edit/delete later (chiizujin)
+- [Fix][pull3506]: Fix Traceback when setting prototype parent in the in-game OLC wizard (chiizujin)
+- [Fix][pull3507]: Prototype wizard would not save changes if aborting the
+  updating of existing spawned instances (chiizujun)
+- [Fix][pull3516]: Quitting the chargen contrib menu will now trigger auto-look (InspectorCaracal)
+- [Fix][pull3517]: Supply `Object.search` with an empty `candidates` list caused
+  defaults to be used instead of finding nothing (InspectorCaracal)
+- [Fix][pull3518]: `GlobalScriptsContainer.all()` raised a traceback (InspectorCaracal)
+- [Fix][pull3520]: Exits not included in exit sort order were not listed correctly (chiizujin)
+- [Fix][pull3529]: Fix page/list command not showing received pages correctly (chiizujin)
+- [Fix][pull3530]: EvEditor cmdset priority increased so it doesn't respond to
+  movement commands while in editor (chiizujin)
+- [Fix][pull3537]: Bug setting `_fields` in Components contrib (ChrisLR)
+- [Fix][pull3542]: Update `character_creator` contrib to use the Account's look
+  template properly (InspectorCaracal)
+- [Fix][pull3545]: Fix fallback issue in cmdhandler for local-object cmdsets (InspectorCaracal)
+- [Fix][pull3554]: Fix/readd custom `ic` command to the `character_creator` contrib (InspectorCaracal)
+- [Fix][pull3566]: Make sure the `website/base.html` website base is targeted
+  explicitly so it doesn't get overridden by same file name elsewhere in app (InspectorCaracal)
+- [fix][issue3387]: Update all game template doc strings to be more up-to-date
+  (Griatch)
+- [Docs]: Doc fixes (Griatch, chiizujin, InspectorCaracal, iLPDev)
 
 [pull3470]: https://github.com/evennia/evennia/pull/3470
 [pull3495]: https://github.com/evennia/evennia/pull/3495
 [pull3491]: https://github.com/evennia/evennia/pull/3491
+[pull3489]: https://github.com/evennia/evennia/pull/3489
+[pull3496]: https://github.com/evennia/evennia/pull/3496
+[pull3498]: https://github.com/evennia/evennia/pull/3498
+[pull3499]: https://github.com/evennia/evennia/pull/3499
+[pull3501]: https://github.com/evennia/evennia/pull/3501
+[pull3502]: https://github.com/evennia/evennia/pull/3502
+[pull3506]: https://github.com/evennia/evennia/pull/3506
+[pull3507]: https://github.com/evennia/evennia/pull/3507
+[pull3514]: https://github.com/evennia/evennia/pull/3514
+[pull3516]: https://github.com/evennia/evennia/pull/3516
+[pull3517]: https://github.com/evennia/evennia/pull/3517
+[pull3518]: https://github.com/evennia/evennia/pull/3518
+[pull3520]: https://github.com/evennia/evennia/pull/3520
+[pull3521]: https://github.com/evennia/evennia/pull/3521
+[pull3447]: https://github.com/evennia/evennia/pull/3447
+[pull3494]: https://github.com/evennia/evennia/pull/3494
+[pull3497]: https://github.com/evennia/evennia/pull/3497
+[pull3529]: https://github.com/evennia/evennia/pull/3529
+[pull3530]: https://github.com/evennia/evennia/pull/3530
+[pull3537]: https://github.com/evennia/evennia/pull/3537
+[pull3542]: https://github.com/evennia/evennia/pull/3542
+[pull3545]: https://github.com/evennia/evennia/pull/3545
+[pull3549]: https://github.com/evennia/evennia/pull/3549
+[pull3554]: https://github.com/evennia/evennia/pull/3554
+[pull3523]: https://github.com/evennia/evennia/pull/3523
+[pull3566]: https://github.com/evennia/evennia/pull/3566
+[issue3522]: https://github.com/evennia/evennia/issues/3522
+[issue3387]: https://github.com/evennia/evennia/issues/3387
 
 
 ## Evennia 4.1.1
 
 April 6, 2024
 
-- [Fix][pull3438]: Error with 'you' mapping in third-person style of
+- [Fix][pull3483]: Error with 'you' mapping in third-person style of
   `msg_contents` (InspectorCaracal)
 - [Fix][pull3472]: The new `filter_visible` didn't exclude oneself by default
   (InspectorCaracal)
@@ -39,7 +547,8 @@ April 6, 2024
   the hooks called on server start/stop/reload (Griatch)
 - [Docs] Doc typo fixes (Griatch, chiizujin)
 
-[pull3438]: https://github.com/evennia/evennia/pull/3446
+[pull3472]: https://github.com/evennia/evennia/pull/3472
+[pull3483]: https://github.com/evennia/evennia/pull/3483
 [pull3485]: https://github.com/evennia/evennia/pull/3485
 [pull3487]: https://github.com/evennia/evennia/pull/3487
 [issue3476]: https://github.com/evennia/evennia/issues/3476
@@ -160,7 +669,7 @@ March 17, 2024
   Evennia core's version (michaelfaith84, Griatch)
 - [Fix][issue3438]: Limiting search by tag didn't take search-string into
   account (Griatch)
-- [Fix][issue4311]: SSH connection caused a traceback in protocol (Griatch)
+- [Fix][issue3411]: SSH connection caused a traceback in protocol (Griatch)
 - Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
 - Security: Potential O(n2) regex exploit in rpsystem regex (Griatch)
 - Security: Fix potential redirect vulnerability in character page redirect (Griatch)
@@ -1012,7 +1521,7 @@ without arguments starts a full interactive Python console.
 - `VALIDATOR_FUNC_MODULES` - (general) text validator functions, for verifying an input
   is on a specific form.
 
-### Utils
+### Utilities
 
 - `evennia` launcher now fully handles all django-admin commands, like running tests in parallel.
 - `evennia.utils.create.account` now also takes `tags` and `attrs` keywords.
@@ -1035,7 +1544,7 @@ without arguments starts a full interactive Python console.
 - Option Classes added to make storing user-options easier and smoother.
 - `evennia.VALIDATOR_CONTAINER` and `evennia.OPTION_CONTAINER` added to load these.
 
-### Contribs
+### New Contribs
 
 - Evscaperoom - a full puzzle engine for making multiplayer escape rooms in Evennia. Used to make
   the entry for the MUD-Coder's Guild's 2019 Game Jam with the theme "One Room", where it ranked #1.
@@ -1159,7 +1668,7 @@ without arguments starts a full interactive Python console.
 - Removed the enforcing of `MAX_NR_CHARACTERS=1` for `MULTISESSION_MODE` `0` and `1` by default.
 - Add `evennia.utils.logger.log_sec` for logging security-related messages (marked SS in log).
 
-### Contribs
+### More Contribs
 
 - `Auditing` (Johnny): Log and filter server input/output for security purposes
 - `Build Menu` (vincent-lg): New @edit command to edit object properties in a menu.
@@ -1263,7 +1772,7 @@ base-modules where removed from game/gamesrc. Instead admins are
 encouraged to explicitly create new modules under game/gamesrc/ when
 they want to implement their game - gamesrc/ is empty by default
 except for the example folders that contain template files to use for
-this purpose. We also added the ev.py file, implementing a new, flat
+this purpose. We also added the `ev.py` file, implementing a new, flat
 API.  Work is ongoing to add support for mud-specific telnet
 extensions, notably the MSDP and GMCP out-of-band extensions.  On the
 community side, evennia's dev blog was started and linked on planet

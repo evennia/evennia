@@ -156,6 +156,16 @@ class TraitHandlerTest(_TraitHandlerBase):
             self.obj.attributes.get("traits", category="traits")["test1"]["value"], None
         )
 
+    def test_related_traits(self):
+        """Test traits related to each other via Trait.get_trait()"""
+
+        trait1 = self.traithandler.test1
+        trait2 = self.traithandler.test2
+
+        self.assertEqual(trait1.traithandler, self.traithandler)
+        self.assertEqual(trait1.get_trait("test1"), trait1)
+        self.assertEqual(trait1.get_trait("test2"), trait2)
+
 
 class TestTrait(_TraitHandlerBase):
     """

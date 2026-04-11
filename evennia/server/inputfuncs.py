@@ -142,9 +142,9 @@ def echo(session, *args, **kwargs):
     Echo test function
     """
     if _STRIP_INCOMING_MXP:
-        txt = strip_mxp(txt)
+        args = [_maybe_strip_incoming_mxp(str(arg)) for arg in args]
 
-    session.data_out(text="Echo returns: %s" % args)
+    session.data_out(text=f"Echo returns: {args}, {kwargs}")
 
 
 def default(session, cmdname, *args, **kwargs):
@@ -175,6 +175,7 @@ _CLIENT_OPTIONS = (
     "MCCP",
     "SCREENHEIGHT",
     "SCREENWIDTH",
+    "AUTORESIZE",
     "INPUTDEBUG",
     "RAW",
     "NOCOLOR",
@@ -201,6 +202,7 @@ def client_options(session, *args, **kwargs):
         mccp (bool): MCCP compression on/off
         screenheight (int): Screen height in lines
         screenwidth (int): Screen width in characters
+        autoresize (bool): Use NAWS updates to dynamically adjust format
         inputdebug (bool): Debug input functions
         nocolor (bool): Strip color
         raw (bool): Turn off parsing
@@ -256,6 +258,8 @@ def client_options(session, *args, **kwargs):
             flags["SCREENHEIGHT"] = validate_size(value)
         elif key == "screenwidth":
             flags["SCREENWIDTH"] = validate_size(value)
+        elif key == "autoresize":
+            flags["AUTORESIZE"] = validate_size(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
         elif key == "nocolor":
@@ -495,9 +499,20 @@ def monitored(session, *args, **kwargs):
 
     """
     from evennia.scripts.monitorhandler import MONITOR_HANDLER
+    import pickle
+
+    def _safe_pickle(value):
+        try:
+            pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
+            return value
+        except Exception:
+            return str(value)
 
     obj = session.puppet
-    monitors = MONITOR_HANDLER.all(obj=obj)
+    monitors = []
+    for mon_obj, fieldname, idstring, persistent, monitor_kwargs in MONITOR_HANDLER.all(obj=obj):
+        safe_kwargs = {key: _safe_pickle(val) for key, val in monitor_kwargs.items()}
+        monitors.append((_safe_pickle(mon_obj), fieldname, idstring, persistent, safe_kwargs))
     session.msg(monitored=(monitors, {}))
 
 

@@ -172,7 +172,7 @@ In game:
 Or in code: 
 
     exit_obj.locks.add(
-        "traverse:attr(is_ic, True)")
+        "traverse:attr(is_pc, True)")
 
 See [Locks](../../../Components/Locks.md) for a lot more information about Evennia locks.
 ```

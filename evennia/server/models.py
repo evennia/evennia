@@ -110,6 +110,7 @@ class ServerConfig(WeakSharedMemoryModel):
 
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Server Config value"
         verbose_name_plural = "Server Config values"
 

@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.unixcommand
 
 .. automodule:: evennia.contrib.base_systems.unixcommand
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

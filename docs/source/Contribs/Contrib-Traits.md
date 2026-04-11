@@ -4,7 +4,7 @@ Contribution by Griatch 2020, based on code by Whitenoise and Ainneve contribs, 
 
 A `Trait` represents a modifiable property on (usually) a Character. They can
 be used to represent everything from attributes (str, agi etc) to skills
-(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc. 
+(hunting 10, swords 14 etc) and dynamically changing things like HP, XP etc.
 Traits differ from normal Attributes in that they track their changes and limit
 themselves to particular value-ranges. One can add/subtract from them easily and
 they can even change dynamically at a particular rate (like you being poisoned or
@@ -50,8 +50,6 @@ class Character(DefaultCharacter):
         self.traits.add("hp", "Health", trait_type="gauge", min=0, max=100)
         self.traits.add("hunting", "Hunting Skill", trait_type="counter",
                         base=10, mod=1, min=0, max=100)
-
-
 ```
 When adding the trait, you supply the name of the property (`hunting`) along
 with a more human-friendly name ("Hunting Skill"). The latter will show if you
@@ -78,7 +76,6 @@ class Object(DefaultObject):
     strength = TraitProperty("Strength", trait_type="static", base=10, mod=2)
     health = TraitProperty("Health", trait_type="gauge", min=0, base=100, mod=2)
     hunting = TraitProperty("Hunting Skill", trait_type="counter", base=10, mod=1, min=0, max=100)
-
 ```
 
 > Note that the property-name will become the name of the trait and you don't supply `trait_key`
@@ -92,7 +89,7 @@ class Object(DefaultObject):
 
 ## Using traits
 
-A trait is added to the traithandler (if you use `TraitProperty` the handler is just created under
+A trait are entities added to the traithandler (if you use `TraitProperty` the handler is just created under
 the hood) after which one can access it as a property on the handler (similarly to how you can do
 .db.attrname for Attributes in Evennia).
 
@@ -137,8 +134,29 @@ obj.traits.strength.value
 > obj.strength.value += 5
 > obj.strength.value
 17
-
 ```
+
+### Relating traits to one another
+
+From a trait you can access its own Traithandler as `.traithandler`. You can
+also find another trait on the same handler by using the
+`Trait.get_trait("traitname")` method.
+
+```python
+> obj.strength.get_trait("hp").value
+100
+```
+
+This is not too useful for the default trait types - they are all operating
+independently from one another. But if you create your own trait classes, you
+can use this to make traits that depend on each other.
+
+For example, you could picture making a Trait that is the sum of the values of
+two other traits and capped by the value of a third trait. Such complex
+interactions are common in RPG rule systems but are by definition game specific.
+
+See an example in the section about [making your own Trait classes](#expanding-with-your-own-traits).
+
 
 ## Trait types
 
@@ -158,7 +176,6 @@ compatible type.
 > trait1 + 2
 > trait1.value
 5
-
 ```
 
 Two numerical traits can also be compared (bigger-than etc), which is useful in
@@ -168,7 +185,6 @@ all sorts of rule-resolution.
 
 if trait1 > trait2:
     # do stuff
-
 ```
 
 ### Trait
@@ -193,7 +209,6 @@ like a glorified Attribute.
 > obj.traits.mytrait.value = "stringvalue"
 > obj.traits.mytrait.value
 "stringvalue"
-
 ```
 
 ### Static trait
@@ -217,7 +232,6 @@ that varies slowly or not at all, and which may be modified in-place.
 > obj.traits.mytrait.mod = 0
 > obj.traits.mytrait.value
 12
-
 ```
 
 ### Counter
@@ -253,8 +267,6 @@ remove it. A suggested use for a Counter Trait would be to track skill values.
 
 # for TraitProperties, pass the args/kwargs of traits.add() to the
 # TraitProperty constructor instead.
-
-
 ```
 
 Counters have some extra properties:
@@ -286,7 +298,6 @@ By calling `.desc()` on the Counter, you will get the text matching the current 
 
 > obj.traits.hunting.desc()
 "expert"
-
 ```
 
 #### .rate
@@ -327,12 +338,10 @@ a previous value.
 71    # we have stopped at the ratetarget
 
 > obj.traits.hunting.rate = 0  # disable auto-change
-
-
 ```
 Note that when retrieving the `current`, the result will always be of the same
 type as the `.base` even `rate` is a non-integer value. So if `base` is an `int`
-(default)`, the `current` value will also be rounded the closest full integer.
+(default), the `current` value will also be rounded the closest full integer.
 If you want to see the exact `current` value, set `base` to a float - you
 will then need to use `round()` yourself on the result if you want integers.
 
@@ -347,7 +356,6 @@ return the value as a percentage.
 
 > obj.traits.hunting.percent(formatting=None)
 71.0
-
 ```
 
 ### Gauge
@@ -379,7 +387,6 @@ stamina and the like.
 > obj.traits.hp.current -= 30
 > obj.traits.hp.value
 80
-
 ```
 
 The Gauge trait is subclass of the Counter, so you have access to the same
@@ -412,8 +419,6 @@ class RageTrait(StaticTrait):
 
     def sedate(self):
         self.mod = 0
-
-
 ```
 
 Above is an example custom-trait-class "rage" that stores a property "rage" on
@@ -432,12 +437,24 @@ Reload the server and you should now be able to use your trait:
 > obj.traits.add("mood", "A dark mood", rage=30, trait_type='rage')
 > obj.traits.mood.rage
 30
+```
+
+Remember that you can use `.get_trait("name")` to access other traits on the
+same handler.  Let's say that the rage modifier is actually limited by
+the characters's current STR value times 3, with a max of 100:
+
+```python
+class RageTrait(StaticTrait):
+    #...
+    def berserk(self):
+        self.mod = min(100, self.get_trait("STR").value * 3)
+```
 
 # as TraitProperty
 
+```
 class Character(DefaultCharacter):
     rage = TraitProperty("A dark mood", rage=30, trait_type='rage')
-
 ```
 
 ## Adding additional TraitHandlers
@@ -459,7 +476,7 @@ class Character(DefaultCharacter):
     def traits(self):
         # this adds the handler as .traits
         return TraitHandler(self)
-    
+
     @lazy_property
     def stats(self):
         # this adds the handler as .stats
@@ -478,6 +495,9 @@ class Character(DefaultCharacter):
         self.skills.add("hunting", "Hunting Skill", trait_type="counter",
                         base=10, mod=1, min=0, max=100)
 ```
+
+> Rememebr that the `.get_traits()` method only works for accessing Traits within the
+_same_ TraitHandler.
 
 
 ----

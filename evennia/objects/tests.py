@@ -1,7 +1,10 @@
-from unittest import skip
-
-from evennia import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
 from evennia.objects.models import ObjectDB
+from evennia.objects.objects import (
+    DefaultCharacter,
+    DefaultExit,
+    DefaultObject,
+    DefaultRoom,
+)
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.typeclasses.tags import (
     AliasProperty,
@@ -30,6 +33,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertEqual(obj.db.creator_ip, self.ip)
         self.assertEqual(obj.db_home, self.room1)
 
+    def test_object_default_description(self):
+        obj, errors = DefaultObject.create("void")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
+
     def test_character_create(self):
         description = "A furry green monster, reeking of garbage."
         home = self.room1.dbref
@@ -57,6 +67,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(obj.name, "SigurXurXorarinsson")
 
+    def test_character_default_description(self):
+        obj, errors = DefaultCharacter.create("dementor")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
+
     def test_room_create(self):
         description = "A dimly-lit alley behind the local Chinese restaurant."
         obj, errors = DefaultRoom.create("alley", self.account, description=description, ip=self.ip)
@@ -64,6 +81,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+
+    def test_room_default_description(self):
+        obj, errors = DefaultRoom.create("black hole")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_exit_create(self):
         description = (
@@ -77,6 +101,13 @@ class DefaultObjectTest(BaseEvenniaTest):
         self.assertFalse(errors, errors)
         self.assertEqual(description, obj.db.desc)
         self.assertEqual(obj.db.creator_ip, self.ip)
+
+    def test_exit_default_description(self):
+        obj, errors = DefaultExit.create("the nothing")
+        self.assertTrue(obj, errors)
+        self.assertFalse(errors, errors)
+        self.assertIsNone(obj.db.desc)
+        self.assertEqual(obj.default_description, obj.get_display_desc(obj))
 
     def test_exit_get_return_exit(self):
         ex1, _ = DefaultExit.create("north", self.room1, self.room2, account=self.account)
@@ -211,6 +242,20 @@ class DefaultObjectTest(BaseEvenniaTest):
 class TestObjectManager(BaseEvenniaTest):
     "Test object manager methods"
 
+    def test_create_object_with_none_key(self):
+        """Test that create_object() handles key=None and key="" correctly."""
+        # Test with key=None - should convert to "" and then to #dbref
+        obj_none = ObjectDB.objects.create_object(key=None, location=self.room1)
+        self.assertIsNotNone(obj_none)
+        self.assertEqual(obj_none.key, f"#{obj_none.id}")
+        obj_none.delete()
+
+        # Test with key="" - should convert to #dbref
+        obj_empty = ObjectDB.objects.create_object(key="", location=self.room1)
+        self.assertIsNotNone(obj_empty)
+        self.assertEqual(obj_empty.key, f"#{obj_empty.id}")
+        obj_empty.delete()
+
     def test_get_object_with_account(self):
         query = ObjectDB.objects.get_object_with_account("TestAccount").first()
         self.assertEqual(query, self.char1)
@@ -244,6 +289,74 @@ class TestObjectManager(BaseEvenniaTest):
         self.assertFalse(query)
         query = ObjectDB.objects.get_objs_with_key_and_typeclass(
             "Char", "evennia.objects.objects.DefaultCharacter", candidates=[self.char1, self.char2]
+        )
+        self.assertEqual(list(query), [self.char1])
+
+    def test_get_objs_with_key_or_alias(self):
+        query = ObjectDB.objects.get_objs_with_key_or_alias("Char")
+        self.assertEqual(list(query), [self.char1])
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "Char", typeclasses="evennia.objects.objects.DefaultObject"
+        )
+        self.assertEqual(list(query), [])
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "Char", candidates=[self.char1, self.char2]
+        )
+        self.assertEqual(list(query), [self.char1])
+
+        self.char1.aliases.add("test alias")
+        query = ObjectDB.objects.get_objs_with_key_or_alias("test alias")
+        self.assertEqual(list(query), [self.char1])
+
+        query = ObjectDB.objects.get_objs_with_key_or_alias("")
+        self.assertFalse(query)
+        query = ObjectDB.objects.get_objs_with_key_or_alias("", exact=False)
+        self.assertEqual(list(query), list(ObjectDB.objects.all().order_by("id")))
+
+        query = ObjectDB.objects.get_objs_with_key_or_alias(
+            "", exact=False, typeclasses="evennia.objects.objects.DefaultCharacter"
+        )
+        self.assertEqual(list(query), [self.char1, self.char2])
+
+    def test_key_alias_search_partial_match(self):
+        """
+        verify that get_objs_with_key_or_alias will partial match the first part of
+        any words in the name, when given in the correct order
+        """
+        self.obj1.key = "big sword"
+        self.obj2.key = "shiny sword"
+
+        # beginning of "sword", should match both
+        query = ObjectDB.objects.get_objs_with_key_or_alias("sw", exact=False)
+        self.assertEqual(list(query), [self.obj1, self.obj2])
+
+        # middle of "sword", should NOT match
+        query = ObjectDB.objects.get_objs_with_key_or_alias("wor", exact=False)
+        self.assertEqual(list(query), [])
+
+        # beginning of "big" then "sword", should match obj1
+        query = ObjectDB.objects.get_objs_with_key_or_alias("b sw", exact=False)
+        self.assertEqual(list(query), [self.obj1])
+
+        # beginning of "sword" then "big", should NOT match
+        query = ObjectDB.objects.get_objs_with_key_or_alias("sw b", exact=False)
+        self.assertEqual(list(query), [])
+
+    def test_search_object(self):
+        self.char1.tags.add("test tag")
+        self.obj1.tags.add("test tag")
+
+        query = ObjectDB.objects.search_object("", exact=False, tags=[("test tag", None)])
+        self.assertEqual(list(query), [self.obj1, self.char1])
+
+        query = ObjectDB.objects.search_object("Char", tags=[("invalid tag", None)])
+        self.assertFalse(query)
+
+        query = ObjectDB.objects.search_object(
+            "",
+            exact=False,
+            tags=[("test tag", None)],
+            typeclass="evennia.objects.objects.DefaultCharacter",
         )
         self.assertEqual(list(query), [self.char1])
 
@@ -392,6 +505,19 @@ class TestObjectPropertiesClass(DefaultObject):
         self.property_initialized = True
 
 
+class MixinAttributeProperty:
+    strength = AttributeProperty(default=0, category="stat")
+    agility = AttributeProperty(default=0, category="stat", autocreate=False)
+
+
+class MixinTagProperty:
+    mytag = TagProperty(category="mixin_tags")
+
+
+class TestObjectPropertiesMixinClass(MixinAttributeProperty, MixinTagProperty, DefaultObject):
+    pass
+
+
 class TestProperties(EvenniaTestCase):
     """
     Test Properties.
@@ -528,7 +654,6 @@ class TestProperties(EvenniaTestCase):
         self.assertEqual(obj.cusattr, 5)
         self.assertEqual(obj.settest, 5)
 
-    @skip("TODO: Needs more research")
     def test_stored_object_queries(self):
         """,
         Test https://github.com/evennia/evennia/issues/3155, where AttributeProperties
@@ -561,6 +686,42 @@ class TestProperties(EvenniaTestCase):
 
         obj1.delete()
         obj2.delete()
+
+    def test_stored_object_queries__self_reference(self):
+        """
+        Regression test for querying on a stored self-reference.
+
+        Related to https://github.com/evennia/evennia/issues/3194 comments.
+        """
+        obj = create.create_object(TestObjectPropertiesClass, key="selfref")
+        try:
+            obj.attr1 = obj
+            query = TestObjectPropertiesClass.objects.filter(
+                db_attributes__db_key="attr1", db_attributes__db_value=obj
+            )
+            self.assertEqual(list(query), [obj])
+        finally:
+            obj.delete()
+
+    def test_stored_object_queries__filter_family(self):
+        """
+        Regression test for object-valued attribute filtering via filter_family.
+
+        Related to https://github.com/evennia/evennia/issues/3194 comments.
+        """
+        holder = create.create_object(DefaultObject, key="holder")
+        leg = create.create_object(DefaultObject, key="leg")
+        try:
+            holder.attributes.add("attached", leg, category="systems")
+            query = DefaultObject.objects.filter_family(
+                db_attributes__db_key="attached",
+                db_attributes__db_category="systems",
+                db_attributes__db_value=leg,
+            )
+            self.assertIn(holder, query)
+        finally:
+            holder.delete()
+            leg.delete()
 
     def test_not_create_attribute_with_autocreate_false(self):
         """
@@ -654,3 +815,21 @@ class TestProperties(EvenniaTestCase):
 
         obj1.delete()
         obj2.delete()
+
+    def test_mixin_properties_initialized_on_creation(self):
+        """
+        Test regression for #3155: properties on mixins should initialize on create.
+        """
+        obj = create.create_object(TestObjectPropertiesMixinClass, key="mixin_prop_obj")
+
+        self.assertEqual(obj.attributes.get("strength", category="stat"), 0)
+        self.assertEqual(obj.strength, 0)
+
+        # non-autocreate should still not exist in db until explicitly accessed
+        self.assertEqual(obj.attributes.get("agility", category="stat"), None)
+        self.assertEqual(obj.agility, 0)
+        self.assertEqual(obj.attributes.get("agility", category="stat"), None)
+
+        self.assertTrue(obj.tags.has("mytag", category="mixin_tags"))
+
+        obj.delete()

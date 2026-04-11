@@ -377,7 +377,6 @@ class ObjectParent:
     """
     class docstring 
     """
-    pass
 
 class Object(ObjectParent, DefaultObject):
     """

@@ -501,7 +501,7 @@ See `evennia/utils/evmenu.py` for the details of their default implementations.
 
 ## EvMenu templating language
 
-In evmenu.py are two helper functions `parse_menu_template` and `template2menu` that is used to parse a _menu template_ string into an EvMenu:
+In `evmenu.py` are two helper functions `parse_menu_template` and `template2menu` that is used to parse a _menu template_ string into an EvMenu:
 
     evmenu.template2menu(caller, menu_template, goto_callables)
 

@@ -226,7 +226,6 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - user (User, read-only) - django User authorization object
      - obj (Object) - game object controlled by account. 'character' can also
                      be used.
-     - sessions (list of Sessions) - sessions connected to this account
      - is_superuser (bool, read-only) - if the connected user is a superuser
 
     * Handlers
@@ -239,18 +238,47 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - scripts - script-handler. Add new scripts to object with scripts.add()
      - cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
      - nicks - nick-handler. New nicks with nicks.add().
+     - sessions - session-handler. Use session.get() to see all sessions connected, if any
+     - options - option-handler. Defaults are taken from settings.OPTIONS_ACCOUNT_DEFAULT
+     - characters - handler for listing the account's playable characters
 
-    * Helper methods
+    * Helper methods (check autodocs for full updated listing)
 
      - msg(text=None, from_obj=None, session=None, options=None, **kwargs)
      - execute_cmd(raw_string)
-     - search(ostring, global_search=False, attribute_name=None,
-                      use_nicks=False, location=None,
-                      ignore_errors=False, account=False)
+     - search(searchdata, return_puppet=False, search_object=False, typeclass=None,
+                      nofound_string=None, multimatch_string=None, use_nicks=True,
+                      quiet=False, **kwargs)
      - is_typeclass(typeclass, exact=False)
      - swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     - access(accessing_obj, access_type='read', default=False, no_superuser_bypass=False)
+     - access(accessing_obj, access_type='read', default=False, no_superuser_bypass=False, **kwargs)
      - check_permstring(permstring)
+     - get_cmdsets(caller, current, **kwargs)
+     - get_cmdset_providers()
+     - uses_screenreader(session=None)
+     - get_display_name(looker, **kwargs)
+     - get_extra_display_name_info(looker, **kwargs)
+     - disconnect_session_from_account()
+     - puppet_object(session, obj)
+     - unpuppet_object(session)
+     - unpuppet_all()
+     - get_puppet(session)
+     - get_all_puppets()
+     - is_banned(**kwargs)
+     - get_username_validators(validator_config=settings.AUTH_USERNAME_VALIDATORS)
+     - authenticate(username, password, ip="", **kwargs)
+     - normalize_username(username)
+     - validate_username(username)
+     - validate_password(password, account=None)
+     - set_password(password, **kwargs)
+     - get_character_slots()
+     - get_available_character_slots()
+     - create_character(*args, **kwargs)
+     - create(*args, **kwargs)
+     - delete(*args, **kwargs)
+     - channel_msg(message, channel, senders=None, **kwargs)
+     - idle_time()
+     - connection_time()
 
     * Hook methods
 
@@ -261,15 +289,26 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
        usually handled on the character level:
 
      - at_init()
+     - at_first_save()
      - at_access()
      - at_cmdset_get(**kwargs)
+     - at_password_change(**kwargs)
      - at_first_login()
+     - at_pre_login()
      - at_post_login(session=None)
-     - at_disconnect()
+     - at_failed_login(session, **kwargs)
+     - at_disconnect(reason=None, **kwargs)
+     - at_post_disconnect(**kwargs)
      - at_message_receive()
      - at_message_send()
      - at_server_reload()
      - at_server_shutdown()
+     - at_look(target=None, session=None, **kwargs)
+     - at_post_create_character(character, **kwargs)
+     - at_post_add_character(char)
+     - at_post_remove_character(char)
+     - at_pre_channel_msg(message, channel, senders=None, **kwargs)
+     - at_post_chnnel_msg(message, channel, senders=None, **kwargs)
 
     """
 
@@ -439,11 +478,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             raise RuntimeError("Session not found")
         if self.get_puppet(session) == obj:
             # already puppeting this object
-            self.msg("You are already puppeting this object.")
+            self.msg(_("You are already puppeting this object."))
             return
         if not obj.access(self, "puppet"):
             # no access
-            self.msg(f"You don't have permission to puppet '{obj.key}'.")
+            self.msg(_("You don't have permission to puppet '{key}'.").format(key=obj.key))
             return
         if obj.account:
             # object already puppeted
@@ -452,13 +491,21 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                     # we may take over another of our sessions
                     # output messages to the affected sessions
                     if _MULTISESSION_MODE in (1, 3):
-                        txt1 = f"Sharing |c{obj.name}|n with another of your sessions."
-                        txt2 = f"|c{obj.name}|n|G is now shared from another of your sessions.|n"
+                        txt1 = _("Sharing |c{name}|n with another of your sessions.").format(
+                            name=obj.name
+                        )
+                        txt2 = _(
+                            "|c{name}|n|G is now shared from another of your sessions.|n"
+                        ).format(name=obj.name)
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                     else:
-                        txt1 = f"Taking over |c{obj.name}|n from another of your sessions."
-                        txt2 = f"|c{obj.name}|n|R is now acted from another of your sessions.|n"
+                        txt1 = _("Taking over |c{name}|n from another of your sessions.").format(
+                            name=obj.name
+                        )
+                        txt2 = _(
+                            "|c{name}|n|R is now acted from another of your sessions.|n"
+                        ).format(name=obj.name)
                         self.msg(txt1, session=session)
                         self.msg(txt2, session=obj.sessions.all())
                         self.unpuppet_object(obj.sessions.get())
@@ -484,7 +531,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 and len(self.get_all_puppets()) >= _MAX_NR_SIMULTANEOUS_PUPPETS
             ):
                 self.msg(
-                    _(f"You cannot control any more puppets (max {_MAX_NR_SIMULTANEOUS_PUPPETS})")
+                    _("You cannot control any more puppets (max {max_puppets})").format(
+                        max_puppets=_MAX_NR_SIMULTANEOUS_PUPPETS
+                    )
                 )
                 return
 
@@ -739,6 +788,9 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         In this case we're simply piggybacking on this feature to apply
         additional normalization per Evennia's standards.
         """
+        if not isinstance(username, str):
+            username = str(username)
+
         username = super(DefaultAccount, cls).normalize_username(username)
 
         # strip excessive spaces in accountname
@@ -900,7 +952,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         # parse inputs
         character_key = kwargs.pop("key", self.key)
         character_ip = kwargs.pop("ip", self.db.creator_ip)
-        character_permissions = kwargs.pop("permissions", self.permissions)
+        character_permissions = kwargs.pop("permissions", self.permissions.all())
 
         # Load the appropriate Character class
         character_typeclass = kwargs.pop("typeclass", self.default_character_typeclass)
@@ -971,8 +1023,8 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         account = None
         errors = []
 
-        username = kwargs.get("username")
-        password = kwargs.get("password")
+        username = kwargs.get("username", "")
+        password = kwargs.get("password", "")
         email = kwargs.get("email", "").strip()
         guest = kwargs.get("guest", False)
 

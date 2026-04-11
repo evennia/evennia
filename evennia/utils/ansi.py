@@ -69,7 +69,11 @@ from collections import OrderedDict
 from django.conf import settings
 
 from evennia.utils import logger, utils
+from evennia.utils.hex_colors import HexColors
 from evennia.utils.utils import to_str
+
+hex2truecolor = HexColors()
+hex_sub = HexColors.hex_sub
 
 MXP_ENABLED = settings.MXP_ENABLED
 
@@ -80,6 +84,11 @@ ANSI_ESCAPE = "\033"
 ANSI_NORMAL = "\033[0m"
 
 ANSI_UNDERLINE = "\033[4m"
+ANSI_UNDERLINE_RESET = "\033[24m"
+ANSI_ITALIC = "\033[3m"
+ANSI_ITALIC_RESET = "\033[23m"
+ANSI_STRIKE = "\033[9m"
+ANSI_STRIKE_RESET = "\033[29m"
 ANSI_HILITE = "\033[1m"
 ANSI_UNHILITE = "\033[22m"
 ANSI_BLINK = "\033[5m"
@@ -115,7 +124,7 @@ ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
 # Escapes
-ANSI_ESCAPES = ("{{", "\\\\", "\|\|")
+ANSI_ESCAPES = ("{{", r"\\", r"\|\|")
 
 _PARSE_CACHE = OrderedDict()
 _PARSE_CACHE_SIZE = 10000
@@ -145,6 +154,11 @@ class ANSIParser(object):
         (r"|*", ANSI_INVERSE),  # invert
         (r"|^", ANSI_BLINK),  # blinking text (very annoying and not supported by all clients)
         (r"|u", ANSI_UNDERLINE),  # underline
+        (r"|U", ANSI_UNDERLINE_RESET),  # underline reset
+        (r"|i", ANSI_ITALIC),  # italic
+        (r"|I", ANSI_ITALIC_RESET),  # italic reset
+        (r"|s", ANSI_STRIKE),  # strikethrough
+        (r"|S", ANSI_STRIKE_RESET),  # strikethrough reset
         (r"|r", ANSI_HILITE + ANSI_RED),
         (r"|g", ANSI_HILITE + ANSI_GREEN),
         (r"|y", ANSI_HILITE + ANSI_YELLOW),
@@ -432,7 +446,7 @@ class ANSIParser(object):
         """
         return self.unsafe_tokens.sub("", string)
 
-    def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False):
+    def parse_ansi(self, string, strip_ansi=False, xterm256=False, mxp=False, truecolor=False):
         """
         Parses a string, subbing color codes according to the stored
         mapping.
@@ -459,12 +473,16 @@ class ANSIParser(object):
 
         # check cached parsings
         global _PARSE_CACHE
-        cachekey = "%s-%s-%s-%s" % (string, strip_ansi, xterm256, mxp)
+        cachekey = f"{string}-{strip_ansi}-{xterm256}-{mxp}-{truecolor}"
+
         if cachekey in _PARSE_CACHE:
             return _PARSE_CACHE[cachekey]
 
         # pre-convert bright colors to xterm256 color tags
         string = self.brightbg_sub.sub(self.sub_brightbg, string)
+
+        def do_truecolor(part: re.Match, truecolor=truecolor):
+            return hex2truecolor.sub_truecolor(part, truecolor)
 
         def do_xterm256_fg(part):
             return self.sub_xterm256(part, xterm256, "fg")
@@ -484,7 +502,8 @@ class ANSIParser(object):
         parsed_string = []
         parts = self.ansi_escapes.split(in_string) + [" "]
         for part, sep in zip(parts[::2], parts[1::2]):
-            pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, part)
+            pstring = hex_sub.sub(do_truecolor, part)
+            pstring = self.xterm256_fg_sub.sub(do_xterm256_fg, pstring)
             pstring = self.xterm256_bg_sub.sub(do_xterm256_bg, pstring)
             pstring = self.xterm256_gfg_sub.sub(do_xterm256_gfg, pstring)
             pstring = self.xterm256_gbg_sub.sub(do_xterm256_gbg, pstring)
@@ -516,7 +535,9 @@ ANSI_PARSER = ANSIParser()
 #
 
 
-def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False):
+def parse_ansi(
+    string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp=False, truecolor=False
+):
     """
     Parses a string, subbing color codes as needed.
 
@@ -526,13 +547,16 @@ def parse_ansi(string, strip_ansi=False, parser=ANSI_PARSER, xterm256=False, mxp
         parser (ansi.AnsiParser, optional): A parser instance to use.
         xterm256 (bool, optional): Support xterm256 or not.
         mxp (bool, optional): Support MXP markup or not.
+        truecolor (bool, optional): Support for truecolor or not.
 
     Returns:
         string (str): The parsed string.
 
     """
     string = string or ""
-    return parser.parse_ansi(string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp)
+    return parser.parse_ansi(
+        string, strip_ansi=strip_ansi, xterm256=xterm256, mxp=mxp, truecolor=truecolor
+    )
 
 
 def strip_ansi(string, parser=ANSI_PARSER):
@@ -679,12 +703,17 @@ def _transform(func_name):
 
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
+
+        # Convert to sets for O(1) membership testing
+        code_indexes_set = set(self._code_indexes)
+        char_indexes_set = set(self._char_indexes)
+
         to_string = []
         char_counter = 0
         for index in range(0, len(self._raw_string)):
-            if index in self._code_indexes:
+            if index in code_indexes_set:
                 to_string.append(self._raw_string[index])
-            elif index in self._char_indexes:
+            elif index in char_indexes_set:
                 to_string.append(replacement_string[char_counter])
                 char_counter += 1
         return ANSIString(
@@ -798,7 +827,7 @@ class ANSIString(str, metaclass=ANSIMeta):
         if not decoded:
             # Completely new ANSI String
             clean_string = parser.parse_ansi(string, strip_ansi=True, mxp=MXP_ENABLED)
-            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED)
+            string = parser.parse_ansi(string, xterm256=True, mxp=MXP_ENABLED, truecolor=True)
         elif clean_string is not None:
             # We have an explicit clean string.
             pass
@@ -1004,10 +1033,12 @@ class ANSIString(str, metaclass=ANSIMeta):
             return ANSIString("")
         last_mark = slice_indexes[0]
         # Check between the slice intervals for escape sequences.
+        # Convert to set for O(1) membership testing
+        code_indexes_set = set(self._code_indexes)
         i = None
         for i in slice_indexes[1:]:
             for index in range(last_mark, i):
-                if index in self._code_indexes:
+                if index in code_indexes_set:
                     string += self._raw_string[index]
             last_mark = i
             try:
@@ -1041,15 +1072,24 @@ class ANSIString(str, metaclass=ANSIMeta):
             append_tail = self._get_interleving(item + 1)
         else:
             append_tail = ""
-        item = self._char_indexes[item]
 
-        clean = self._raw_string[item]
-        result = ""
-        # Get the character they're after, and replay all escape sequences
-        # previous to it.
-        for index in range(0, item + 1):
-            if index in self._code_indexes:
-                result += self._raw_string[index]
+        char_pos = self._char_indexes[item]
+        clean = self._raw_string[char_pos]
+
+        code_indexes_set = set(self._code_indexes)
+
+        # Only collect codes after the last reset to avoid accumulating
+        # cancelled codes when slicing
+        start_pos = self._find_last_reset_before(char_pos)
+
+        result_chars = [
+            self._raw_string[index]
+            for index in range(start_pos, char_pos + 1)
+            if index in code_indexes_set
+        ]
+
+        result = "".join(result_chars)
+
         return ANSIString(result + clean + append_tail, decoded=True)
 
     def clean(self):
@@ -1129,8 +1169,27 @@ class ANSIString(str, metaclass=ANSIMeta):
             # Plain string, no ANSI codes.
             return code_indexes, list(range(0, len(self._raw_string)))
         # all indexes not occupied by ansi codes are normal characters
-        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes]
+        code_indexes_set = set(code_indexes)
+        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes_set]
+
         return code_indexes, char_indexes
+
+    def _find_last_reset_before(self, pos):
+        """
+        Find the end position of the last ANSI reset sequence
+        that occurs before the given position.
+
+        Args:
+            pos (int): Position in _raw_string to search before.
+
+        Returns:
+            int: The index immediately after the last reset sequence,
+                 or 0 if no reset was found before pos.
+        """
+        reset_pos = self._raw_string.rfind(ANSI_NORMAL, 0, pos)
+        if reset_pos == -1:
+            return 0
+        return reset_pos + len(ANSI_NORMAL)
 
     def _get_interleving(self, index):
         """
@@ -1142,12 +1201,17 @@ class ANSIString(str, metaclass=ANSIMeta):
             index = self._char_indexes[index - 1]
         except IndexError:
             return ""
+
+        # Convert to sets for O(1) membership testing
+        char_indexes_set = set(self._char_indexes)
+        code_indexes_set = set(self._code_indexes)
+
         s = ""
         while True:
             index += 1
-            if index in self._char_indexes:
+            if index in char_indexes_set:
                 break
-            elif index in self._code_indexes:
+            elif index in code_indexes_set:
                 s += self._raw_string[index]
             else:
                 break

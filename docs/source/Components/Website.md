@@ -104,7 +104,7 @@ This is the layout of the `mygame/web/` folder relevant for the website:
   Game folders created with older versions of Evennia will lack most of this
   convenient `mygame/web/` layout. If you use a game dir from an older version,
   you should copy over the missing `evennia/game_template/web/` folders from
-  there, as well as the main urls.py file.
+  there, as well as the main `urls.py` file.
 
 ```
 

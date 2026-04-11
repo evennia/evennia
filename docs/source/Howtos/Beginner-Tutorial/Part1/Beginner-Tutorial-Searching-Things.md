@@ -23,12 +23,15 @@ On the `DefaultObject` is a `.search` method which we have already tried out whe
 - It will always return exactly one match. If it found zero or more than one match, the return is `None`. This is different from `evennia.search` (see below), which always returns a list.
 - On a no-match or multimatch, `.search` will automatically send an error message to `obj`. So you don't have to worry about reporting messages if the result is `None`.
 
-In other words, this method handles error messaging for you. A very common way to use it is in commands:
+In other words, this method handles error messaging for you. A very common way to use it is in commands. You can put your command anywhere, but let's try the pre-filled-in `mygame/commands/command.py`.
 
 ```python
 # in for example mygame/commands/command.py
 
-from evennia import Command
+from evennia import Command as BaseCommand
+
+class Command(BaseCommand): 
+    # ... 
 
 class CmdQuickFind(Command):
     """ 
@@ -132,9 +135,9 @@ Above we find first the rose and then an Account. You can try both using `py`:
     > py evennia.search_account("YourName")[0]
     <Player: YourName>
 
-In the example above we used `[0]` to only get the first match of the queryset, which in this case gives us the rose and your Account respectively. Note that if you don't find any matches, using `[0]` like this leads to an error, so it's mostly useful for debugging.
+The `search_object/account` returns all matches. We use `[0]` to only get the first match of the queryset, which in this case gives us the rose and your Account respectively. Note that if you don't find any matches, using `[0]` like this leads to an error, so it's mostly useful for debugging.
 
-If you you really want all matches to the search parameters you specify. In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself. This is too detailed for testing out just with `py`, but good to know if you want to make your own search methods:
+In other situations, having zero or more than one match is a sign of a problem and you need to handle this case yourself. This is too detailed for testing out just with `py`, but good to know if you want to make your own search methods:
 
 ```python
     the_one_ring = evennia.search_object("The one Ring")
@@ -379,10 +382,8 @@ from evennia import search_object
 # we assume only one match of each 
 dungeons = search_object("dungeon", typeclass="typeclasses.rooms.Room")
 chests = search_object("chest", location=dungeons[0])
-# find if there are any skulls in the chest 
+# find out how much coin are in the chest 
 coins = search_object("coin", candidates=chests[0].contents)
 ```
 
-This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by directly querying the database.
-
-In the next lesson we will dive further into more complex searching when we look at Django queries and querysets in earnest.
+This would work but is both quite inefficient, fragile and a lot to type. This kind of thing is better done by *directly querying the database*. We will get to this in the next lesson. There we will dive into more complex searching using Django database queries and querysets.

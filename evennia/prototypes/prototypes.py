@@ -104,6 +104,7 @@ def homogenize_prototype(prototype, custom_keys=None):
                 prototype[protkey] = ""
 
     homogenized = {}
+    homogenized_aliases = []
     homogenized_tags = []
     homogenized_attrs = []
     homogenized_parents = []
@@ -111,7 +112,10 @@ def homogenize_prototype(prototype, custom_keys=None):
     for key, val in prototype.items():
         if key in reserved:
             # check all reserved keys
-            if key == "tags":
+            if key == "aliases":
+                # make sure aliases are always in a list even if given as a single string
+                homogenized_aliases = make_iter(val)
+            elif key == "tags":
                 # tags must be on form [(tag, category, data), ...]
                 tags = make_iter(prototype.get("tags", []))
                 for tag in tags:
@@ -160,13 +164,14 @@ def homogenize_prototype(prototype, custom_keys=None):
                     else:
                         # normal prototype-parent names are added as-is
                         homogenized_parents.append(parent)
-
             else:
                 # another reserved key
                 homogenized[key] = val
         else:
             # unreserved keys -> attrs
             homogenized_attrs.append((key, val, None, ""))
+    if homogenized_aliases:
+        homogenized["aliases"] = homogenized_aliases
     if homogenized_attrs:
         homogenized["attrs"] = homogenized_attrs
     if homogenized_tags:
@@ -182,7 +187,7 @@ def homogenize_prototype(prototype, custom_keys=None):
         "prototype-{}".format(hashlib.md5(bytes(str(time.time()), "utf-8")).hexdigest()[:7]),
     )
     homogenized["prototype_tags"] = homogenized.get("prototype_tags", [])
-    homogenized["prototype_locks"] = homogenized.get("prototype_lock", _PROTOTYPE_FALLBACK_LOCK)
+    homogenized["prototype_locks"] = homogenized.get("prototype_locks", _PROTOTYPE_FALLBACK_LOCK)
     homogenized["prototype_desc"] = homogenized.get("prototype_desc", "")
     if "typeclass" not in prototype and "prototype_parent" not in prototype:
         homogenized["typeclass"] = settings.BASE_OBJECT_TYPECLASS

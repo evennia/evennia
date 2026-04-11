@@ -1,13 +1,15 @@
-{% if versions %}
+{% if versions or legacy_versions %}
 <h3>{{ _('Doc Versions') }}</h3>
 <ul>
   {% for item in versions %}
-    <li><a href="{{ item.url }}">{{ item.release }} ({{ item.name }} branch)</a></li>
-  {%- endfor %}
-{% if legacy_versions %}
-  {%- for item in legacy_versions %}
-    <li><a href="{{ item.url }}">{{ item.branch }} branch (outdated)</a></li>
+    <li>
+      <a href="{{ item.url }}">{{ item.release }} ({{ item.name }} branch)</a>
+    </li>
   {% endfor %}
-{% endif %}
+  {% for item in legacy_versions %}
+    <li>
+      <a href="{{ item.url }}">{{ item.release }} branch (outdated)</a>
+    </li>
+  {% endfor %}
 </ul>
 {% endif %}

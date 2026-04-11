@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
 from django.test import TestCase, override_settings
-from django.utils.timezone import is_aware, utc
+from django.utils.timezone import is_aware
 
 _SKIP = False
 try:
@@ -65,7 +65,7 @@ class S3Boto3StorageTests(S3Boto3TestCase):
         """
         Test the _clean_name when the path has a trailing slash
         """
-        path = self.storage._clean_name("path\\to\\somewhere")
+        path = self.storage._clean_name(r"path\to\somewhere")
         self.assertEqual(path, "path/to/somewhere")
 
     def test_pickle_with_bucket(self):
@@ -533,7 +533,7 @@ class S3Boto3StorageTests(S3Boto3TestCase):
 
     def _test_storage_mtime(self, use_tz):
         obj = self.storage.bucket.Object.return_value
-        obj.last_modified = datetime.datetime.now(utc)
+        obj.last_modified = datetime.datetime.now(datetime.timezone.utc)
 
         name = "file.txt"
         self.assertFalse(
