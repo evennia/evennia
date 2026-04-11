@@ -6,7 +6,6 @@ Module containing the test cases for the Audit system.
 import re
 
 from anything import Anything
-from django.test import override_settings
 from mock import patch
 
 import evennia
@@ -15,7 +14,6 @@ from evennia.utils.test_resources import BaseEvenniaTest
 from .server import AuditedServerSession
 
 
-@override_settings(AUDIT_MASKS=[])
 class AuditingTest(BaseEvenniaTest):
     @patch("evennia.server.sessionhandler._ServerSession", AuditedServerSession)
     def setup_session(self):

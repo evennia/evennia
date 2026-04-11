@@ -24,6 +24,7 @@ import importlib
 from codecs import lookup as codecs_lookup
 
 from django.conf import settings
+
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.utils.logger import log_err
@@ -498,9 +499,20 @@ def monitored(session, *args, **kwargs):
 
     """
     from evennia.scripts.monitorhandler import MONITOR_HANDLER
+    import pickle
+
+    def _safe_pickle(value):
+        try:
+            pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
+            return value
+        except Exception:
+            return str(value)
 
     obj = session.puppet
-    monitors = MONITOR_HANDLER.all(obj=obj)
+    monitors = []
+    for mon_obj, fieldname, idstring, persistent, monitor_kwargs in MONITOR_HANDLER.all(obj=obj):
+        safe_kwargs = {key: _safe_pickle(val) for key, val in monitor_kwargs.items()}
+        monitors.append((_safe_pickle(mon_obj), fieldname, idstring, persistent, safe_kwargs))
     session.msg(monitored=(monitors, {}))
 
 

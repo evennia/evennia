@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ['3.11']
+        python-version: ['3.13']
 
     steps:
       - name: Checkout ${{ github.ref }} branch 

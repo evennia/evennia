@@ -1,4 +1,4 @@
-"""Tests for validatorfuncs """
+"""Tests for validatorfuncs"""
 
 import datetime
 

@@ -259,7 +259,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
 
         """
         if action_dict["key"] not in self.action_classes:
-            self.obj.msg("This is an unkown action!")
+            self.obj.msg("This is an unknown action!")
             return
 
         # store action dict and schedule it to run in dt time
@@ -285,7 +285,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
 - **Line 43**: We simply store the given action dict in the Attribute `action_dict` on the handler. Simple and effective!
 - **Line 44**: When you enter e.g. `attack`, you expect in this type of combat to see the `attack` command repeat automatically even if you don't enter anything more. To this end we are looking for a new key in action dicts, indicating that this action should _repeat_ with a certain rate (`dt`, given in seconds).  We make this compatible with all action dicts by simply assuming it's zero if not specified. 
 
- [evennia.utils.utils.repeat](evennia.utils.utils.repeat) and [evennia.utils.utils.unrepeat](evennia.utils.utils.unrepeat) are convenient shortcuts to the [TickerHandler](../../../Components/TickerHandler.md). You tell `repeat` to call a given method/function at a certain rate. What you get back is a reference that you can then later use to 'un-repeat' (stop the repeating) later.  We make sure to store this reference (we don't care exactly how it looks, just that we need to store it) in `the current_ticket_ref` Attribute (**Line 26**).
+ [evennia.utils.utils.repeat](evennia.utils.utils.repeat) and [evennia.utils.utils.unrepeat](evennia.utils.utils.unrepeat) are convenient shortcuts to the [TickerHandler](../../../Components/TickerHandler.md). You tell `repeat` to call a given method/function at a certain rate. What you get back is a reference that you can then later use to 'un-repeat' (stop the repeating) later.  We make sure to store this reference (we don't care exactly how it looks, just that we need to store it) in the `current_ticker_ref` Attribute (**Line 26**).
  
 - **Line 48**: Whenever we queue a new action (it may replace an existing one) we must make sure to kill (un-repeat) any old repeats that are ongoing. Otherwise we would get old actions firing over and over and new ones starting alongside them.
 - **Line 49**: If `dt` is set, we call `repeat` to set up a new repeat action at the given rate. We store this new reference. After `dt` seconds, the `.execute_next_action` method will fire (we'll create that in the next section).
@@ -305,30 +305,30 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
     # ... 
 
     def execute_next_action(self):
-            """
-            Triggered after a delay by the command
-            """
-            combatant = self.obj
-            action_dict = self.action_dict
-            action_class = self.action_classes[action_dict["key"]]
-            action = action_class(self, combatant, action_dict)
-    
-            if action.can_use():
-                action.execute()
-                action.post_execute()
-    
-            if not action_dict.get("repeat", True):
-                # not a repeating action, use the fallback (normally the original attack)
-                self.action_dict = self.fallback_action_dict
-                self.queue_action(self.fallback_action_dict)
-    
-            self.check_stop_combat()
+        """
+        Triggered after a delay by the command
+        """
+        combatant = self.obj
+        action_dict = self.action_dict
+        action_class = self.action_classes[action_dict["key"]]
+        action = action_class(self, combatant, action_dict)
+
+        if action.can_use():
+            action.execute()
+            action.post_execute()
+
+        if not action_dict.get("repeat", True):
+            # not a repeating action, use the fallback (normally the original attack)
+            self.action_dict = self.fallback_action_dict
+            self.queue_action(self.fallback_action_dict)
+
+        self.check_stop_combat()
 ```
 
 This is the method called after `dt` seconds in `queue_action`. 
 
 - **Line 5**: We defined a 'fallback action'. This is used after a one-time action (one that should not repeat) has completed.
-- **Line 15**: We take the `'key'` from the `action-dict` and use the `action_classes` mapping to get an action class (e.g. `ACtionAttack` we defined [here](./Beginner-Tutorial-Combat-Base.md#attack-action)). 
+- **Line 15**: We take the `'key'` from the `action_dict` and use the `action_classes` mapping to get an action class (e.g. `ActionAttack` we defined [here](./Beginner-Tutorial-Combat-Base.md#attack-action)). 
 - **Line 16**: Here we initialize the action class with the actual current data - the combatant and the `action_dict`. This calls the `__init__` method on the class and makes the action ready to use.
 ```{sidebar} New action-dict keys 
 To summarize, for twitch-combat use we have now introduced two new keys to action-dicts:
@@ -365,7 +365,7 @@ class EvAdventureCombatTwitchHandler(EvAdventureCombatBaseHandler):
         enemies = [comb for comb in enemies if comb.hp > 0 and comb.location == location]
 
         if not allies and not enemies:
-            self.msg("The combat is over. Noone stands.", broadcast=False)
+            self.msg("The combat is over. No one stands.", broadcast=False)
             self.stop_combat()
             return
         if not allies: 
@@ -384,7 +384,7 @@ We must make sure to check if combat is over.
 - **Line 12**: With our `.get_sides()` method we can easily get the two sides of the conflict.
 - **Lines 18, 19**: We get everyone still alive _and still in the same room_. The latter condition is important in case we move away from the battle - you can't hit your enemy from another room. 
 
-In the `stop_method` we'll need to do a bunch of cleanup. We'll hold off on implementing this until we have the Commands written out. Read on.
+In the `stop_combat` method we'll need to do a bunch of cleanup. We'll hold off on implementing this until we have the Commands written out. Read on.
 
 ## Commands 
 
@@ -416,7 +416,7 @@ from evennia import InterruptCommand
 
 class _BaseTwitchCombatCommand(Command):
     """
-    Parent class for all twitch-combat commnads.
+    Parent class for all twitch-combat commands.
 
     """
 
@@ -641,7 +641,7 @@ class CmdStunt(_BaseTwitchCombatCommand):
             # something like `boost str target`
             target = recipient if advantage else "me"
             recipient = "me" if advantage else recipient
- we still have None:s at this point, we can't continue
+        # if any values are still None at this point, we can't continue
         if None in (stunt_type, recipient, target):
             self.msg("Both ability, recipient and  target of stunt must be given.")
             raise InterruptCommand()
@@ -677,7 +677,7 @@ class CmdStunt(_BaseTwitchCombatCommand):
 
 ```
 
-This looks much longer, but that is only because the stunt command should understand many different input structures depending on if you are trying to create a advantage or disadvantage, and if an ally or enemy should receive the effect of the stunt. 
+This looks much longer, but that is only because the stunt command should understand many different input structures depending on if you are trying to create an advantage or disadvantage, and if an ally or enemy should receive the effect of the stunt. 
 
 Note the `enums.ABILITY_REVERSE_MAP` (created in the [Utilities lesson](./Beginner-Tutorial-Utilities.md)) being useful to convert your input of 'str' into `Ability.STR` needed by the action dict.
 
@@ -754,8 +754,8 @@ To use an item, we need to make sure we are carrying it. Luckily our work in the
 
 class CmdWield(_BaseTwitchCombatCommand):
     """
-    Wield a weapon or spell-rune. You will the wield the item, 
-        swapping with any other item(s) you were wielded before.
+    Wield a weapon or spell-rune. You wield the item,
+        swapping with any other item(s) you were wielding before.
 
     Usage:
       wield <weapon or spell>
@@ -893,7 +893,7 @@ from .. import combat_twitch
 
 # ...
 
-class TestEvAdventureTwitchCombat(EvenniaCommandTestMixin)
+class TestEvAdventureTwitchCombat(EvenniaCommandTestMixin):
 
     def setUp(self): 
         self.combathandler = (
@@ -904,12 +904,12 @@ class TestEvAdventureTwitchCombat(EvenniaCommandTestMixin)
     @patch("evadventure.combat_twitch.unrepeat", new=Mock())
     @patch("evadventure.combat_twitch.repeat", new=Mock())
     def test_hold_command(self): 
-        self.call(combat_twitch, CmdHold(), "", "You hold back, doing nothing")
+        self.call(combat_twitch, CmdHold(), "", "You hold back, doing nothing.")
         self.assertEqual(self.combathandler.action_dict, {"key": "hold"})
             
 ```
 
-The `EvenniaCommandTestMixin` as a few default objects, including `self.char1`, which we make use of here. 
+The `EvenniaCommandTestMixin` has a few default objects, including `self.char1`, which we make use of here. 
 
 The two `@patch` lines are Python [decorators](https://realpython.com/primer-on-python-decorators/) that 'patch' the `test_hold_command` method. What they do is basically saying "in the following method, whenever any code tries to access `evadventure.combat_twitch.un/repeat`, just return a Mocked object instead".
 

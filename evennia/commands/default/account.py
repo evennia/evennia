@@ -22,8 +22,9 @@ method. Otherwise all text will be returned to all connected sessions.
 import time
 from codecs import lookup as codecs_lookup
 
-import evennia
 from django.conf import settings
+
+import evennia
 from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)

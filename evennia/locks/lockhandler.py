@@ -363,7 +363,7 @@ class LockHandler:
             access_type, rhs = [part.strip() for part in lockdef.split(":", 1)]
             if not access_type:
                 err = _(
-                    "Lock: '{lockdef}' has no access_type " "(left-side of colon is empty)."
+                    "Lock: '{lockdef}' has no access_type (left-side of colon is empty)."
                 ).format(lockdef=lockdef)
                 if validate_only:
                     return False, err
@@ -514,13 +514,15 @@ class LockHandler:
 
         """
         old_lockstring = self.get(access_type)
-        if not lockstring.strip().lower() in old_lockstring.lower():
+        if lockstring.strip().lower() not in old_lockstring.lower():
             lockstring = "{old} {op} {new}".format(
                 old=old_lockstring, op=op, new=lockstring.strip()
             )
             self.add(lockstring)
 
-    def check(self, accessing_obj, access_type, default=False, no_superuser_bypass=False):
+    def check(
+        self, accessing_obj, access_type, default=False, no_superuser_bypass=False, session=None
+    ):
         """
         Checks a lock of the correct type by passing execution off to
         the lock function(s).
@@ -580,7 +582,16 @@ class LockHandler:
             evalstring, func_tup, raw_string = self.locks[access_type]
             # execute all lock funcs in the correct order, producing a tuple of True/False results.
             true_false = tuple(
-                bool(tup[0](accessing_obj, self.obj, *tup[1], access_type=access_type, **tup[2]))
+                bool(
+                    tup[0](
+                        accessing_obj,
+                        self.obj,
+                        *tup[1],
+                        access_type=access_type,
+                        session=session,
+                        **tup[2],
+                    )
+                )
                 for tup in func_tup
             )
             # the True/False tuple goes into evalstring, which combines them

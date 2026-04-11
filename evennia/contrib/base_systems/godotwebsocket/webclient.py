@@ -65,6 +65,7 @@ class GodotWebSocketClient(webclient.WebSocketClient):
 def start_plugin_services(portal):
     class GodotWebsocket(WebSocketServerFactory):
         "Only here for better naming in logs"
+
         pass
 
     factory = GodotWebsocket()

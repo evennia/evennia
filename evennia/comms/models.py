@@ -184,6 +184,7 @@ class Msg(SharedMemoryModel):
 
     class Meta(object):
         "Define Django meta options"
+
         verbose_name = "Msg"
 
     @lazy_property
@@ -712,6 +713,7 @@ class ChannelDB(TypedObject):
 
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Channel"
         verbose_name_plural = "Channels"
 

@@ -4,8 +4,8 @@ evennia.contrib.game\_systems
 
 .. automodule:: evennia.contrib.game_systems
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 .. toctree::

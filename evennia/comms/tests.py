@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 
-from evennia.comms.comms import DefaultChannel
 from evennia.commands.default.comms import CmdChannel
+from evennia.comms.comms import DefaultChannel
 from evennia.utils.create import create_message
 from evennia.utils.test_resources import BaseEvenniaTest
 

@@ -7,7 +7,7 @@ in the [Community Contribs & Snippets][forum] forum.
 _Contribs_ are optional code snippets and systems contributed by
 the Evennia community. They vary in size and complexity and
 may be more specific about game types and styles than 'core' Evennia.
-This page is auto-generated and summarizes all **52** contribs currently included
+This page is auto-generated and summarizes all **53** contribs currently included
 with the Evennia distribution.
 
 All contrib categories are imported from `evennia.contrib`, such as
@@ -32,14 +32,14 @@ If you want to add a contrib, see [the contrib guidelines](./Contribs-Guidelines
 | [achievements](#achievements) | [auditing](#auditing) | [awsstorage](#awsstorage) | [barter](#barter) | [batchprocessor](#batchprocessor) |
 | [bodyfunctions](#bodyfunctions) | [buffs](#buffs) | [building_menu](#building_menu) | [character_creator](#character_creator) | [clothing](#clothing) |
 | [color_markups](#color_markups) | [components](#components) | [containers](#containers) | [cooldowns](#cooldowns) | [crafting](#crafting) |
-| [custom_gametime](#custom_gametime) | [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) | [evscaperoom](#evscaperoom) |
-| [extended_room](#extended_room) | [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) | [godotwebsocket](#godotwebsocket) |
-| [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [ingame_reports](#ingame_reports) | [llm](#llm) |
-| [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) | [multidescer](#multidescer) |
-| [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) | [red_button](#red_button) |
-| [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [storage](#storage) | [talking_npc](#talking_npc) |
-| [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) | [unixcommand](#unixcommand) |
-| [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
+| [custom_gametime](#custom_gametime) | [debugpy](#debugpy) | [dice](#dice) | [email_login](#email_login) | [evadventure](#evadventure) |
+| [evscaperoom](#evscaperoom) | [extended_room](#extended_room) | [fieldfill](#fieldfill) | [gendersub](#gendersub) | [git_integration](#git_integration) |
+| [godotwebsocket](#godotwebsocket) | [health_bar](#health_bar) | [ingame_map_display](#ingame_map_display) | [ingame_python](#ingame_python) | [ingame_reports](#ingame_reports) |
+| [llm](#llm) | [mail](#mail) | [mapbuilder](#mapbuilder) | [menu_login](#menu_login) | [mirror](#mirror) |
+| [multidescer](#multidescer) | [mux_comms_cmds](#mux_comms_cmds) | [name_generator](#name_generator) | [puzzles](#puzzles) | [random_string_generator](#random_string_generator) |
+| [red_button](#red_button) | [rpsystem](#rpsystem) | [simpledoor](#simpledoor) | [slow_exit](#slow_exit) | [storage](#storage) |
+| [talking_npc](#talking_npc) | [traits](#traits) | [tree_select](#tree_select) | [turnbattle](#turnbattle) | [tutorial_world](#tutorial_world) |
+| [unixcommand](#unixcommand) | [wilderness](#wilderness) | [xyzgrid](#xyzgrid) |
 
 
 
@@ -804,6 +804,7 @@ Contribs-Guidelines.md
 :maxdepth: 1
 
 Contrib-Auditing.md
+Contrib-Debugpy.md
 Contrib-Fieldfill.md
 Contrib-Git-Integration.md
 Contrib-Name-Generator.md
@@ -821,6 +822,17 @@ server and passes it to a callback of your choosing. This is intended for
 quality assurance, post-incident investigations and debugging.
 
 [Read the documentation](./Contrib-Auditing.md) - [Browse the Code](evennia.contrib.utils.auditing)
+
+
+
+### `debugpy`
+
+_Contribution by electroglyph, 2025_
+
+This registers an in-game command `debugpy` which starts the debugpy debugger and listens on port 5678.
+For now this is only available for Visual Studio Code (VS Code).
+
+[Read the documentation](./Contrib-Debugpy.md) - [Browse the Code](evennia.contrib.utils.debugpy)
 
 
 

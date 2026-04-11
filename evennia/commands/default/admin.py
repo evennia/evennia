@@ -212,7 +212,7 @@ class CmdBan(COMMAND_DEFAULT_CLASS):
             typ = "IP"
             ban = ipban[0]
             # replace * with regex form and compile it
-            ipregex = ban.replace(".", "\.")
+            ipregex = ban.replace(".", r"\.")
             ipregex = ipregex.replace("*", "[0-9]{1,3}")
             ipregex = re.compile(r"%s" % ipregex)
             bantup = ("", ban, ipregex, now, reason)

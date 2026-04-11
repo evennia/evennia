@@ -14,27 +14,39 @@ main test suite started with
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
-import evennia
 from anything import Anything
 from django.conf import settings
 from django.test import override_settings
+from parameterized import parameterized
+from twisted.internet import task
 
-from evennia.objects.objects import DefaultCharacter, DefaultExit, DefaultObject, DefaultRoom
-from evennia.objects.models import ObjectDB
-from evennia.utils.search import search_object
+import evennia
 from evennia.commands import cmdparser
 from evennia.commands.cmdset import CmdSet
 from evennia.commands.command import Command, InterruptCommand
-from evennia.commands.default import account, admin, batchprocess, building, comms, general
+from evennia.commands.default import (
+    account,
+    admin,
+    batchprocess,
+    building,
+    comms,
+    general,
+)
 from evennia.commands.default import help as help_module
 from evennia.commands.default import syscommands, system, unloggedin
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.commands.default.muxcommand import MuxCommand
+from evennia.objects.models import ObjectDB
+from evennia.objects.objects import (
+    DefaultCharacter,
+    DefaultExit,
+    DefaultObject,
+    DefaultRoom,
+)
 from evennia.prototypes import prototypes as protlib
 from evennia.utils import create, gametime, utils
+from evennia.utils.search import search_object
 from evennia.utils.test_resources import BaseEvenniaCommandTest  # noqa
-from parameterized import parameterized
-from twisted.internet import task
 
 # ------------------------------------------------------------
 # Command testing
@@ -1683,7 +1695,7 @@ class TestBuilding(BaseEvenniaCommandTest):
         self.call(
             building.CmdTeleport(),
             "Obj = NotFound",
-            "Could not find 'NotFound'.|Destination not found.",
+            "Could not find 'NotFound'.",
         )
         self.call(
             building.CmdTeleport(),
@@ -1913,6 +1925,25 @@ class TestBuilding(BaseEvenniaCommandTest):
         # shows error
         self.call(
             building.CmdSpawn(), "/examine NO_EXISTS", "No prototype named 'NO_EXISTS' was found."
+        )
+
+    def test_setattr_view_with_category(self):
+        """
+        Test checking attributes with a category, including nested attributes.
+        """
+        self.obj1.attributes.add("test", "value", category="cat")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/test:cat",
+            "Attribute Obj/test [category:cat] = value",
+        )
+
+        # nested dict
+        self.obj1.attributes.add("testdict", {"key": "value"}, category="cat")
+        self.call(
+            building.CmdSetAttribute(),
+            "Obj/testdict['key']:cat",
+            "Attribute Obj/testdict['key'] [category:cat] = value",
         )
 
 
@@ -2251,3 +2282,16 @@ class TestSystemCommands(BaseEvenniaCommandTest):
         multimatch.matches = matches
 
         self.call(multimatch, "look", "")
+
+class TestPreCmdOutputTestable(BaseEvenniaCommandTest):
+    def test_pre_cmd(self):
+        class CmdTest(Command):
+            def at_pre_cmd(self):
+                self.msg("This should be testable")
+                return True
+
+            def func(self):
+                self.msg("This should never be executed")
+                return
+
+        self.call(CmdTest(), "test", "This should be testable")

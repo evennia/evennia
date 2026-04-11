@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "evennia"
-version = "4.5.0"
+version = "6.0.0"
 maintainers = [{ name = "Griatch", email = "griatch@gmail.com" }]
 description = "A full-featured toolkit and server for text-based multiplayer games (MUDs, MU*, etc)."
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { text = "BSD" }
 keywords = [
@@ -38,9 +38,9 @@ keywords = [
 ]
 classifiers = [
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: JavaScript",
   "Development Status :: 5 - Production/Stable",
   "License :: OSI Approved :: BSD License",
@@ -65,19 +65,20 @@ classifiers = [
 dependencies = [
   # core dependencies
   "legacy-cgi;python_version >= '3.13'",
-  "django >= 5.1, < 5.2",
+  "django >= 6.0.2, < 6.1",
   "twisted >= 24.11.0, < 25",
   "pytz >= 2022.6",
-  "djangorestframework >= 3.14, < 3.15",
+  "djangorestframework >= 3.16, < 3.17",
   "pyyaml >= 6.0",
-  "django-filter == 2.4",
+  "django-filter == 25.2",
   "django-sekizai == 2.0.0",
   "inflect >= 5.2.0",
   "autobahn >= 20.7.1, < 21.0.0",
   "lunr == 0.7.0.post1",
-  "simpleeval <= 1.0",
+  "simpleeval == 1.0.5",
   "uritemplate == 4.1.1",
   "tzdata >= 2022.6",
+  "inflection == 0.5.1",
   # for unit tests and code formatting
   "mock >= 4.0.3",
   "model_mommy >= 2.0",
@@ -112,10 +113,13 @@ extra = [
   "django-extensions >= 3.1.0",
 
   # xyzroom contrib
-  "scipy == 1.15.1",
+  "scipy == 1.17.0",
 
   # Git contrib
   "gitpython >= 3.1.27",
+
+  # PostgreSQL support
+  "psycopg[binary] >= 3.1.12",
 ]
 
 [project.urls]
@@ -129,6 +133,10 @@ extra = [
 "Game Index" = "http://games.evennia.com"
 "Issue tracker" = "https://github.com/evennia/evennia/issues"
 "Patreon" = "https://www.patreon.com/griatch"
+
+[project.scripts]
+evennia = "evennia.server.evennia_launcher:main"
+
 
 [tool.black]
 line-length = 100
@@ -170,3 +178,20 @@ omit = [
   "*.pyc",
   "*.service",
 ]
+
+[tool.ruff]
+exclude = [
+  "/.eggs/",
+  "/.git/",
+  "/.hg/",
+  "/.mypy_cache/",
+  "/.tox/",
+  "/.venv/",
+  "/_build/",
+  "/buck-out/",
+  "/build/",
+  "/dist/",
+  "migrations",
+  "docs",
+]
+line-length = 100

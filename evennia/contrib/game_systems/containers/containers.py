@@ -11,7 +11,7 @@ To install, import and add the `ContainerCmdSet` to `CharacterCmdSet` in your `d
 
     class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # ...
-        
+
         def at_cmdset_creation(self):
             # ...
             self.add(ContainerCmdSet)

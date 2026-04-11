@@ -7,15 +7,16 @@ System commands
 import code
 import datetime
 import os
+import subprocess
 import sys
 import time
 import traceback
 
 import django
-import evennia
-import subprocess
 import twisted
 from django.conf import settings
+
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
 from evennia.utils import gametime, logger, search, utils

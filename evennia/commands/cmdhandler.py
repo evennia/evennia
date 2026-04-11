@@ -32,7 +32,6 @@ from collections import defaultdict
 from copy import copy
 from itertools import chain
 from traceback import format_exc
-from weakref import WeakValueDictionary
 
 from django.conf import settings
 from django.utils.translation import gettext as _
@@ -49,7 +48,7 @@ _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
 __all__ = ("cmdhandler", "InterruptCommand")
 _GA = object.__getattribute__
-_CMDSET_MERGE_CACHE = WeakValueDictionary()
+_CMDSET_MERGE_CACHE = {}
 
 # tracks recursive calls by each caller
 # to avoid infinite loops (commands calling themselves)
@@ -251,7 +250,9 @@ def _progressive_cmd_run(cmd, generator, response=None):
         if isinstance(value, (int, float)):
             utils.delay(value, _progressive_cmd_run, cmd, generator)
         elif isinstance(value, str):
-            _GET_INPUT(cmd.caller, value, _process_input, cmd=cmd, generator=generator)
+            _GET_INPUT(
+                cmd.caller, value, _process_input, session=cmd.session, cmd=cmd, generator=generator
+            )
         else:
             raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
 
@@ -261,6 +262,7 @@ def _progressive_cmd_run(cmd, generator, response=None):
 
 class NoCmdSets(Exception):
     "No cmdsets found. Critical error."
+
     pass
 
 
@@ -651,7 +653,7 @@ def cmdhandler(
             pass
         except Exception:
             _msg_err(caller, _ERROR_UNTRAPPED)
-            raise ErrorReported(raw_string)
+            raise ErrorReported(cmd.raw_string)
         finally:
             _COMMAND_NESTING[called_by] -= 1
 
@@ -698,7 +700,17 @@ def cmdhandler(
                 # Parse the input string and match to available cmdset.
                 # This also checks for permissions, so all commands in match
                 # are commands the caller is allowed to call.
-                matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
+                try:
+                    matches = yield _COMMAND_PARSER(raw_string, cmdset, caller, session=session)
+                except TypeError:
+                    logger.log_dep(
+                        "Custom cmdparser does not accept 'session' kwarg. "
+                        "Update its signature to cmdparser(raw_string, cmdset, caller, "
+                        "match_index=None, session=None, **kwargs). "
+                        "Session-aware lock functions like is_ooc() will not "
+                        "work correctly until this is fixed."
+                    )
+                    matches = yield _COMMAND_PARSER(raw_string, cmdset, caller)
 
                 # Deal with matches
 
@@ -761,7 +773,7 @@ def cmdhandler(
         except ErrorReported as exc:
             # this error was already reported, so we
             # catch it here and don't pass it on.
-            logger.log_err("User input was: '%s'." % exc.raw_string)
+            logger.log_err("User input was: '%s'." % logger.mask_sensitive_input(exc.raw_string))
 
         except ExecSystemCommand as exc:
             # Not a normal command: run a system command, if available,

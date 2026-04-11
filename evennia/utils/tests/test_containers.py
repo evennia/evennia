@@ -2,7 +2,6 @@ import unittest
 
 from django.conf import settings
 from django.test import override_settings
-
 from evennia import DefaultScript
 from evennia.utils import containers
 from evennia.utils.utils import class_from_module
@@ -10,15 +9,16 @@ from evennia.utils.utils import class_from_module
 _BASE_TYPECLASS = class_from_module(settings.BASE_SCRIPT_TYPECLASS)
 
 
-class GoodScript(DefaultScript):
+class UnittestGoodScript(DefaultScript):
     pass
 
 
-class InvalidScript:
+class UnittestInvalidScript:
     pass
 
 
 class TestGlobalScriptContainer(unittest.TestCase):
+
     def test_init_with_no_scripts(self):
         gsc = containers.GlobalScriptContainer()
 
@@ -60,7 +60,7 @@ class TestGlobalScriptContainer(unittest.TestCase):
 
     @override_settings(
         GLOBAL_SCRIPTS={
-            "script_name": {"typeclass": "evennia.utils.tests.test_containers.GoodScript"}
+            "script_name": {"typeclass": "evennia.utils.tests.test_containers.UnittestGoodScript"}
         }
     )
     def test_start_with_valid_script(self):
@@ -70,11 +70,13 @@ class TestGlobalScriptContainer(unittest.TestCase):
 
         self.assertEqual(len(gsc.typeclass_storage), 1)
         self.assertIn("script_name", gsc.typeclass_storage)
-        self.assertEqual(gsc.typeclass_storage["script_name"], GoodScript)
+        self.assertEqual(gsc.typeclass_storage["script_name"], UnittestGoodScript)
 
     @override_settings(
         GLOBAL_SCRIPTS={
-            "script_name": {"typeclass": "evennia.utils.tests.test_containers.InvalidScript"}
+            "script_name": {
+                "typeclass": "evennia.utils.tests.test_containers.UnittestInvalidScript"
+            }
         }
     )
     def test_start_with_invalid_script(self):
@@ -85,7 +87,7 @@ class TestGlobalScriptContainer(unittest.TestCase):
             gsc.start()
         # check for general attribute failure on the invalid class to preserve against future code-rder changes
         self.assertTrue(
-            str(err.exception).startswith("type object 'InvalidScript' has no attribute"),
+            str(err.exception).startswith("type object 'UnittestInvalidScript' has no attribute"),
             err.exception,
         )
 
@@ -105,3 +107,24 @@ class TestGlobalScriptContainer(unittest.TestCase):
             str(err.exception).startswith("cannot import name 'nonexistent_module' from 'evennia'"),
             err.exception,
         )
+
+    @override_settings(
+        GLOBAL_SCRIPTS={
+            "script_name": {"typeclass": "evennia.utils.tests.test_containers.UnittestGoodScript"}
+        }
+    )
+    def test_using_global_script__all(self):
+        """
+        Using the GlobalScriptContainer.all() to get all scripts
+
+        Tests https://github.com/evennia/evennia/issues/3788
+
+        """
+        from evennia.scripts.models import ScriptDB
+
+        ScriptDB.objects.all().delete()  # clean up any old scripts
+
+        gsc = containers.GlobalScriptContainer()
+        script = gsc.get("script_name")
+        result = gsc.all()
+        self.assertEqual(result, [script])

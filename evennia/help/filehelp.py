@@ -128,7 +128,7 @@ class FileHelpEntry:
         return LockHandler(self)
 
     def web_get_detail_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to view details for
         this object.
 

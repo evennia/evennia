@@ -11,7 +11,6 @@ import re
 from django.conf import settings
 from lunr.stemmer import stemmer
 
-
 _RE_HELP_SUBTOPICS_START = re.compile(r"^\s*?#\s*?subtopics\s*?$", re.I + re.M)
 _RE_HELP_SUBTOPIC_SPLIT = re.compile(r"^\s*?(\#{2,6}\s*?\w+?[a-z0-9 \-\?!,\.]*?)$", re.M + re.I)
 _RE_HELP_SUBTOPIC_PARSE = re.compile(r"^(?P<nesting>\#{2,6})\s*?(?P<name>.*?)$", re.I + re.M)
@@ -80,12 +79,10 @@ class LunrSearch:
         before twisted's logging has been set up
         """
         # Lunr-related imports
-        from lunr import get_default_builder
-        from lunr import lunr
-        from lunr import stop_word_filter
+        from lunr import get_default_builder, lunr, stop_word_filter
         from lunr.exceptions import QueryParseError
-        from lunr.stemmer import stemmer
         from lunr.pipeline import Pipeline
+        from lunr.stemmer import stemmer
 
         # Store imported modules as instance attributes
         self.get_default_builder = get_default_builder

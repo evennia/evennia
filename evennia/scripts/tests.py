@@ -13,11 +13,11 @@ from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.monitorhandler import MonitorHandler
 from evennia.scripts.ondemandhandler import OnDemandHandler, OnDemandTask
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
+from evennia.scripts.taskhandler import TASK_HANDLER
 from evennia.scripts.tickerhandler import TickerHandler
+from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.create import create_script
-from evennia.utils.dbserialize import dbserialize
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
-from parameterized import parameterized
 
 
 class TestScript(BaseEvenniaTest):
@@ -45,6 +45,20 @@ class TestTickerHandler(TestCase):
             th = TickerHandler()
             th.remove(callback=1)
 
+    def test_removing_ticker_using_store_key_in_attribute(self):
+        """
+        Test adding a ticker, storing the store_key in an attribute, and then removing it
+        using that same store_key.
+
+        https://github.com/evennia/evennia/pull/3765
+        """
+        obj = DefaultObject.create("test_object")[0]
+        th = TickerHandler()
+        obj.db.ticker = th.add(60, obj.msg, idstring="ticker_test", persistent=True)
+        self.assertTrue(len(th.all()), 1)
+        th.remove(store_key=obj.db.ticker)
+        self.assertTrue(len(th.all()), 0)
+
 
 class TestScriptDBManager(TestCase):
     """Test the ScriptDBManger class"""
@@ -69,6 +83,10 @@ class TestingListIntervalScript(DefaultScript):
         self.desc = "This is an empty placeholder script."
         self.interval = 1
         self.repeats = 1
+
+
+class ScriptWithStoredRef(DefaultScript):
+    linked = AttributeProperty(default=None, autocreate=False)
 
 
 class TestScriptHandler(BaseEvenniaTest):
@@ -145,6 +163,47 @@ class TestScriptDB(TestCase):
             self.scr.start()
         # Check the script is not recreated as a side-effect
         self.assertFalse(self.scr in ScriptDB.objects.get_all_scripts())
+
+
+class TestIssue3194(BaseEvenniaTest):
+    """
+    Regression test for inconsistent filtering of Script AttributeProperty refs.
+    https://github.com/evennia/evennia/issues/3194
+    """
+
+    def test_script_attributeproperty_filtering_stored_dbobjs(self):
+        script_a = create_script(ScriptWithStoredRef, key="issue3194-script-a")
+        script_b = create_script(ScriptWithStoredRef, key="issue3194-script-b")
+        script_c = create_script(ScriptWithStoredRef, key="issue3194-script-c")
+
+        try:
+            script_a.linked = script_b
+            script_c.linked = self.room1
+
+            self.assertEqual(
+                list(ScriptWithStoredRef.objects.get_by_attribute("linked", value=script_b)),
+                [script_a],
+            )
+            self.assertEqual(
+                list(
+                    ScriptWithStoredRef.objects.filter(
+                        db_attributes__db_key="linked", db_attributes__db_value=script_b
+                    )
+                ),
+                [script_a],
+            )
+            self.assertEqual(
+                list(
+                    ScriptWithStoredRef.objects.filter(
+                        db_attributes__db_key="linked", db_attributes__db_value=self.room1
+                    )
+                ),
+                [script_c],
+            )
+        finally:
+            script_a.delete()
+            script_b.delete()
+            script_c.delete()
 
 
 class TestExtendedLoopingCall(TestCase):
@@ -319,6 +378,71 @@ class TestMonitorHandler(TestCase):
         """Remove attribute from the handler and assert that it is gone"""
         self.handler.remove(obj, fieldname, idstring=idstring, category=category)
         self.assertEqual(self.handler.monitors[index][name], {})
+
+
+class TestTaskHandlerTask(TestCase):
+    """Test that TaskHandlerTask correctly handles stale references when task IDs are reused."""
+
+    def setUp(self):
+        from twisted.internet import task as twisted_task
+
+        TASK_HANDLER.clock = twisted_task.Clock()
+        TASK_HANDLER.clear()
+
+    def tearDown(self):
+        TASK_HANDLER.clear()
+
+    def test_stale_reference_after_id_reuse(self):
+        """A stale TaskHandlerTask must not operate on a new task that reused its ID."""
+        callback1 = mock.Mock(return_value="result1")
+        callback2 = mock.Mock(return_value="result2")
+
+        # Create first task (gets ID 1)
+        task1 = TASK_HANDLER.add(5, callback1)
+        task1_id = task1.get_id()
+
+        # Complete and remove the first task so its ID is freed
+        TASK_HANDLER.clock.advance(5)
+
+        # Create second task - should reuse ID 1
+        task2 = TASK_HANDLER.add(5, callback2)
+        self.assertEqual(task2.get_id(), task1_id)
+
+        # The stale reference (task1) must not affect the new task (task2)
+        self.assertFalse(task1.exists())
+        self.assertFalse(task1.active())
+        self.assertFalse(task1.cancel())
+        self.assertFalse(task1.remove())
+        self.assertFalse(task1.do_task())
+        self.assertFalse(task1.call())
+        self.assertIsNone(task1.get_deferred())
+
+        # The new task must still be intact
+        self.assertTrue(task2.exists())
+        self.assertTrue(task2.active())
+
+    def test_valid_reference_works_normally(self):
+        """A valid TaskHandlerTask should work as expected."""
+        callback = mock.Mock(return_value="result")
+        task = TASK_HANDLER.add(5, callback)
+
+        self.assertTrue(task.exists())
+        self.assertTrue(task.active())
+        self.assertIsNotNone(task.get_deferred())
+
+        result = task.call()
+        self.assertEqual(result, "result")
+        callback.assert_called_once()
+
+    def test_is_valid_after_remove(self):
+        """After removing a task, its TaskHandlerTask reference should be invalid."""
+        callback = mock.Mock()
+        task = TASK_HANDLER.add(5, callback)
+
+        task.remove()
+        self.assertFalse(task.exists())
+        self.assertFalse(task.active())
+        self.assertFalse(task.cancel())
 
 
 class TestOnDemandTask(EvenniaTest):
@@ -706,6 +830,60 @@ class TestOnDemandHandler(EvenniaTest):
         self.handler.save()
         self.handler.clear()
         self.handler.save()
+
+    def test_handler_save_purges_unpicklable_task(self):
+        class _UnpicklableValue:
+            def __getstate__(self):
+                raise TypeError("cannot pickle this")
+
+        self.handler.clear()
+        self.handler.save()
+        self.handler.add("good", category="decay", stages={0: "new"})
+        self.handler.add("bad", category=_UnpicklableValue(), stages={0: "new"})
+
+        self.handler.save()
+
+        self.assertEqual(
+            set(self.handler.tasks.keys()),
+            {
+                ("good", "decay"),
+            },
+        )
+        reloaded_handler = OnDemandHandler()
+        reloaded_handler.load()
+        self.assertEqual(
+            set(reloaded_handler.tasks.keys()),
+            {
+                ("good", "decay"),
+            },
+        )
+
+    def test_handler_save_purges_recursive_task(self):
+        class _RecursiveValue:
+            def __getstate__(self):
+                return self.__getstate__()
+
+        self.handler.clear()
+        self.handler.save()
+        self.handler.add("good", category="decay", stages={0: "new"})
+        self.handler.add(_RecursiveValue(), category="loop", stages={0: "new"})
+
+        self.handler.save()
+
+        self.assertEqual(
+            set(self.handler.tasks.keys()),
+            {
+                ("good", "decay"),
+            },
+        )
+        reloaded_handler = OnDemandHandler()
+        reloaded_handler.load()
+        self.assertEqual(
+            set(reloaded_handler.tasks.keys()),
+            {
+                ("good", "decay"),
+            },
+        )
 
     @mock.patch("evennia.scripts.ondemandhandler.OnDemandTask.runtime")
     def test_call_staging_function_with_kwargs(self, mock_runtime):

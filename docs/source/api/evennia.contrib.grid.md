@@ -4,8 +4,8 @@ evennia.contrib.grid
 
 .. automodule:: evennia.contrib.grid
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 .. toctree::

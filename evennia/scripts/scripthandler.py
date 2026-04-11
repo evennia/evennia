@@ -7,6 +7,7 @@ added to all game objects. You access it through the property
 """
 
 from django.utils.translation import gettext as _
+
 from evennia.scripts.models import ScriptDB
 from evennia.utils import create, logger
 

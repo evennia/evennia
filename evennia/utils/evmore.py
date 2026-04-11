@@ -79,7 +79,7 @@ class CmdMore(Command):
         Implement the command
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, 'account') and self.caller.account:
+        if not more and hasattr(self.caller, "account") and self.caller.account:
             more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in loading the pager. Contact an admin.")
@@ -113,7 +113,7 @@ class CmdMoreExit(Command):
         Exit pager and re-fire the failed command.
         """
         more = self.caller.ndb._more
-        if not more and hasattr(self.caller, 'account') and self.caller.account:
+        if not more and hasattr(self.caller, "account") and self.caller.account:
             more = self.caller.account.ndb._more
         if not more:
             self.caller.msg("Error in exiting the pager. Contact an admin.")
@@ -121,7 +121,7 @@ class CmdMoreExit(Command):
         more.page_quit()
 
         # re-fire the command (in new cmdset)
-        self.caller.execute_cmd(self.raw_string)
+        self.caller.execute_cmd(self.raw_string, session=self.session)
 
 
 class CmdSetMore(CmdSet):

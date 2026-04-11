@@ -4,8 +4,8 @@ evennia.contrib.game\_systems.storage
 
 .. automodule:: evennia.contrib.game_systems.storage
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

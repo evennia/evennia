@@ -21,7 +21,6 @@ therefore always be limited to superusers only.
 import re
 
 from django.conf import settings
-
 from evennia.commands.cmdset import CmdSet
 from evennia.utils import logger, utils
 from evennia.utils.batchprocessors import BATCHCMD, BATCHCODE
@@ -412,7 +411,7 @@ class CmdStateLL(_COMMAND_DEFAULT_CLASS):
 
     key = "ll"
     help_category = "BatchProcess"
-    locks = "cmd:perm(batchcommands)"
+    locks = "cmd:perm(batchcommands) or perm(Developer)"
 
     def func(self):
         show_curr(self.caller, showall=True)
@@ -663,7 +662,7 @@ class CmdStateCC(_COMMAND_DEFAULT_CLASS):
             step_pointer(caller, 1)
             show_curr(caller)
 
-        purge_processor(self)
+        purge_processor(caller)
         caller.msg(format_code("Finished processing batch file."))
 
 

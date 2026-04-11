@@ -1,21 +1,6 @@
 # requirements for building the docs
 
-sphinx==3.2.1
-myst-parser==0.15.2
-myst-parser[linkify]==0.15.2
-Jinja2 < 3.1
-
-# pinned to allow for sphinx 3.x to still work, latest required 5+
-alabaster==0.7.13
-sphinxcontrib-applehelp<1.0.7
-sphinxcontrib-devhelp<1.0.6
-sphinxcontrib-htmlhelp<2.0.5
-sphinxcontrib-qthelp<1.0.7
-sphinxcontrib-jsmath==1.0.1
-sphinxcontrib-serializinghtml<1.1.10
-
-# sphinx-multiversion with evennia fixes 
-git+https://github.com/evennia/sphinx-multiversion.git@evennia-mods#egg=sphinx-multiversion
-
-# sphinxcontrib-lunrsearch custom branch with evennia-specific fixes
-# git+https://github.com/evennia/sphinxcontrib-lunrsearch.git@evennia-mods#egg=sphinxcontrib-lunrsearch
+sphinx>=8.0.0,<9.0.0
+myst-parser>=4.0.0,<5.0.0
+Jinja2>=3.1
+linkify-it-py>=2.0.0

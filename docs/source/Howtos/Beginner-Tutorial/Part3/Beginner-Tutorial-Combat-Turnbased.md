@@ -164,7 +164,7 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
     def get_sides(self, combatant):
            """
            Get a listing of the two 'sides' of this combat,
-           m the perspective of the provided combatant.
+           from the perspective of the provided combatant.
            """
            if self.obj.allow_pvp:
                # in pvp, everyone else is an ememy
@@ -218,7 +218,7 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
 We use the `advantage/disadvantage_matrix` Attributes to track who has advantage against whom.
 
 ```{sidebar} .pop()
-The Python `.pop()` method exists on lists and dicts as well as some other iterables. It 'pops' and returns an element from the container. For a list, it's either popped by index or by popping the last element. For a dict (like here), a specific key must be given to pop. If you don't provide a default value as a second element, an error will be raised if the key you try to pop is not found.
+The Python `.pop()` method removes an element from a list or dict and returns it. For a list, it removes by index (or the last element by default). For a dict (like here), you specify which key to remove. Providing a default value as a second argument prevents an error if the key doesn't exist.
 ```
 In the `has dis/advantage` methods we `pop` the target from the matrix which will result either in the value `True` or `False` (the default value we give to `pop` if the target is not in the matrix). This means that the advantage, once gained, can only be used once.
 
@@ -478,7 +478,7 @@ class EvadventureTurnbasedCombatHandler(EvAdventureCombatBaseHandler):
             surviving_combatant = None
             allies, enemies = (), ()
         else:
-            # grab a random survivor and check of they have any living enemies.
+            # grab a random survivor and check if they have any living enemies.
             surviving_combatant = random.choice(list(self.combatants.keys()))
             allies, enemies = self.get_sides(surviving_combatant)
 
@@ -722,7 +722,7 @@ Using this in an option will rerun the current node, but will preserve the `kwar
 
 ### Stepping through the wizard
 
-Our particualr menu is very symmetric - you select an option and then you will just select a series of option before you come back. So we will make another goto-function to help us easily do this. To understand, let's first show how we plan to use this:
+Our particular menu is very symmetric - you select an option and then you will just select a series of option before you come back. So we will make another goto-function to help us easily do this. To understand, let's first show how we plan to use this:
 
 ```python
 # in the base combat-node function (just shown as an example)
@@ -816,7 +816,7 @@ We will make one final helper function, to quickly add the `back` (and `abort`) 
 
 # ...
 
-_get_default_wizard_options(caller, **kwargs):
+def _get_default_wizard_options(caller, **kwargs):
     return [
         {
             "key": "back",
@@ -932,7 +932,6 @@ def node_choose_ability(caller, raw_string, **kwargs):
             Ability.DEX,
             Ability.CON,
             Ability.INT,
-            Ability.INT,
             Ability.WIS,
             Ability.CHA,
         )
@@ -979,7 +978,7 @@ def node_choose_wield_item(caller, raw_string, **kwargs):
 
 Our [equipment handler](./Beginner-Tutorial-Equipment.md) has the very useful help method `.get_usable_objects_from_backpack`. We just call this to get a list of all the items we want to choose. Otherwise this node should look pretty familiar by now.
 
-The `node_choose_wiqld_item` is very similar, except it uses `caller.equipment.get_wieldable_objects_from_backpack()` instead. We'll leave the implementation of this up to the reader.
+The `node_choose_wield_item` is very similar, except it uses `caller.equipment.get_wieldable_objects_from_backpack()` instead. We'll leave the implementation of this up to the reader.
 
 ### The main menu node
 
@@ -1084,11 +1083,11 @@ def node_combat(caller, raw_string, **kwargs):
 
 This starts off the `_step_wizard` for each action choice. It also lays out the `action_dict` for every action, leaving `None` values for the fields that will be set by the following nodes.
 
-Note how we add the `"repeat"` key to some actions. Having them automatically repeat means the player don't have to insert the same action every time.
+Note how we add the `"repeat"` key to some actions. Having them automatically repeat means the player doesn't have to insert the same action every time.
 
 ## Attack Command
 
-We will only need one single Command to run the Turnbased combat system. This is the `attack` command. Once you use it once, you will be in the menu.
+We will only need one single command to run the turnbased combat system. This is the `attack` command. Once you use it once, you will be in the menu.
 
 
 ```python
@@ -1317,7 +1316,7 @@ But apart from the `# HEADER` and `# CODE` specials, this just a series of norma
 
 Log into the game with a developer/superuser account and run
 
-    > batchcmd evadventure.batchscripts.turnbased_combat_demo
+    > batchcode evadventure.batchscripts.turnbased_combat_demo
 
 This should place you in the arena with the dummy (if not, check for errors in the output! Use `objects` and `delete` commands to list and delete objects if you need to start over.)
 
@@ -1325,6 +1324,6 @@ You can now try `attack dummy` and should be able to pound away at the dummy (lo
 
 ## Conclusions
 
-At this point we have coverered some ideas on how to implement both twitch- and turnbased combat systems. Along the way you have been exposed to many concepts such as classes, scripts and handlers, Commands, EvMenus and more.
+At this point we have covered some ideas on how to implement both twitch- and turnbased combat systems. Along the way you have been exposed to many concepts such as classes, scripts and handlers, Commands, EvMenus and more.
 
 Before our combat system is actually usable, we need our enemies to actually fight back. We'll get to that next.

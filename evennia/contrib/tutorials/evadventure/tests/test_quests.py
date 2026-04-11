@@ -5,6 +5,7 @@ Testing Quest functionality.
 
 from unittest.mock import MagicMock
 
+from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
 
 from .. import quests
@@ -146,3 +147,22 @@ class EvAdventureQuestTest(EvAdventureMixin, BaseEvenniaTest):
         quest.progress()
         self.assertEqual(quest.current_step, "C")  # still on last step
         self.assertEqual(quest.is_completed, True)
+
+    def test_questhandler_reload_after_restart(self):
+        """
+        Test #3560: quest handler should reload and keep quest data after restart.
+        """
+        quest = self._get_quest()
+        questgiver = create.create_object(
+            EvAdventureObject, key="questgiver", location=self.location
+        )
+        quest.add_data("client", questgiver)
+
+        # simulate server restart by clearing lazy-property cache
+        self.character.__dict__.pop("quests", None)
+
+        reloaded_quest = self.character.quests.get(_TestQuest.key)
+        self.assertIsNotNone(reloaded_quest)
+        self.assertEqual(reloaded_quest.get_data("client"), questgiver)
+
+        questgiver.delete()

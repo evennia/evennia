@@ -555,7 +555,7 @@ class DiscordBot(Bot):
     """
 
     factory_path = "evennia.server.portal.discord.DiscordWebsocketServerFactory"
-    
+
     def _load_channels(self):
         self.ndb.ev_channels = {}
         if channel_links := self.db.channels:
@@ -594,7 +594,9 @@ class DiscordBot(Bot):
             if not channel.connect(self):
                 logger.log_warn(f"{self} could not connect to Evennia channel {channel}.")
             if not channel.access(self, "send"):
-                logger.log_warn(f"{self} doesn't have permission to send messages to Evennia channel {channel}.")
+                logger.log_warn(
+                    f"{self} doesn't have permission to send messages to Evennia channel {channel}."
+                )
 
         # these will be made available as properties on the protocol factory
         configdict = {"uid": self.dbid}
