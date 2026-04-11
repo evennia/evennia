@@ -172,6 +172,45 @@ class TestCmdSetMergers(TestCase):
         self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "A"), 2)
         self.assertEqual(sum(1 for cmd in cmdset_f.commands if cmd.from_cmdset == "C"), 0)
 
+    def test_system_cmds_not_duplicated_after_replace(self):
+        """System commands must appear exactly once after a Replace merge."""
+        a, c = self.cmdset_a, self.cmdset_c
+
+        class _SysCmd(_BaseCmd):
+            key = "__sys"
+
+        sys_cmd = _SysCmd("A")
+        a.add(sys_cmd)
+
+        c.mergetype = "Replace"
+        c.priority = 1
+        cmdset_f = c + a  # c higher prio, Replace kicks in
+
+        sys_cmds_in_commands = [cmd for cmd in cmdset_f.commands if cmd.key.startswith("__")]
+        self.assertEqual(len(sys_cmds_in_commands), 1)
+
+    def test_system_cmds_not_duplicated_after_union(self):
+        """System commands must appear exactly once after a Union merge, from either side."""
+        a, c = self.cmdset_a, self.cmdset_c
+
+        class _SysCmd(_BaseCmd):
+            key = "__sys"
+
+        # System command on the higher-priority side (cmdset_a)
+        a.add(_SysCmd("A"))
+        a.priority = 1
+        cmdset_f = a + c
+        sys_in_commands = [cmd for cmd in cmdset_f.commands if cmd.key.startswith("__")]
+        self.assertEqual(len(sys_in_commands), 1)
+
+        # System command on the lower-priority side (cmdset_c)
+        a2, c2 = self.cmdset_a, _CmdSetC()
+        c2.add(_SysCmd("C"))
+        a2.priority = 1
+        cmdset_f2 = a2 + c2
+        sys_in_commands2 = [cmd for cmd in cmdset_f2.commands if cmd.key.startswith("__")]
+        self.assertEqual(len(sys_in_commands2), 1)
+
     def test_order(self):
         "Merge in reverse- and forward orders, same priorities"
         a, b, c, d = self.cmdset_a, self.cmdset_b, self.cmdset_c, self.cmdset_d

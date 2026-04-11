@@ -6,8 +6,6 @@ Unit tests for the scripts package
 from collections import defaultdict
 from unittest import TestCase, mock
 
-from parameterized import parameterized
-
 from evennia import DefaultScript
 from evennia.objects.objects import DefaultObject
 from evennia.scripts.manager import ScriptDBManager
@@ -15,10 +13,10 @@ from evennia.scripts.models import ObjectDoesNotExist, ScriptDB
 from evennia.scripts.monitorhandler import MonitorHandler
 from evennia.scripts.ondemandhandler import OnDemandHandler, OnDemandTask
 from evennia.scripts.scripts import DoNothing, ExtendedLoopingCall
+from evennia.scripts.taskhandler import TASK_HANDLER
 from evennia.scripts.tickerhandler import TickerHandler
 from evennia.typeclasses.attributes import AttributeProperty
 from evennia.utils.create import create_script
-from evennia.utils.dbserialize import dbserialize
 from evennia.utils.test_resources import BaseEvenniaTest, EvenniaTest
 
 
@@ -380,6 +378,71 @@ class TestMonitorHandler(TestCase):
         """Remove attribute from the handler and assert that it is gone"""
         self.handler.remove(obj, fieldname, idstring=idstring, category=category)
         self.assertEqual(self.handler.monitors[index][name], {})
+
+
+class TestTaskHandlerTask(TestCase):
+    """Test that TaskHandlerTask correctly handles stale references when task IDs are reused."""
+
+    def setUp(self):
+        from twisted.internet import task as twisted_task
+
+        TASK_HANDLER.clock = twisted_task.Clock()
+        TASK_HANDLER.clear()
+
+    def tearDown(self):
+        TASK_HANDLER.clear()
+
+    def test_stale_reference_after_id_reuse(self):
+        """A stale TaskHandlerTask must not operate on a new task that reused its ID."""
+        callback1 = mock.Mock(return_value="result1")
+        callback2 = mock.Mock(return_value="result2")
+
+        # Create first task (gets ID 1)
+        task1 = TASK_HANDLER.add(5, callback1)
+        task1_id = task1.get_id()
+
+        # Complete and remove the first task so its ID is freed
+        TASK_HANDLER.clock.advance(5)
+
+        # Create second task - should reuse ID 1
+        task2 = TASK_HANDLER.add(5, callback2)
+        self.assertEqual(task2.get_id(), task1_id)
+
+        # The stale reference (task1) must not affect the new task (task2)
+        self.assertFalse(task1.exists())
+        self.assertFalse(task1.active())
+        self.assertFalse(task1.cancel())
+        self.assertFalse(task1.remove())
+        self.assertFalse(task1.do_task())
+        self.assertFalse(task1.call())
+        self.assertIsNone(task1.get_deferred())
+
+        # The new task must still be intact
+        self.assertTrue(task2.exists())
+        self.assertTrue(task2.active())
+
+    def test_valid_reference_works_normally(self):
+        """A valid TaskHandlerTask should work as expected."""
+        callback = mock.Mock(return_value="result")
+        task = TASK_HANDLER.add(5, callback)
+
+        self.assertTrue(task.exists())
+        self.assertTrue(task.active())
+        self.assertIsNotNone(task.get_deferred())
+
+        result = task.call()
+        self.assertEqual(result, "result")
+        callback.assert_called_once()
+
+    def test_is_valid_after_remove(self):
+        """After removing a task, its TaskHandlerTask reference should be invalid."""
+        callback = mock.Mock()
+        task = TASK_HANDLER.add(5, callback)
+
+        task.remove()
+        self.assertFalse(task.exists())
+        self.assertFalse(task.active())
+        self.assertFalse(task.cancel())
 
 
 class TestOnDemandTask(EvenniaTest):

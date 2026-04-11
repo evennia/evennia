@@ -1755,14 +1755,14 @@ class CmdSetAttribute(ObjManipCommand):
     the attribute (if any). The last one (with the star) is a shortcut for
     operating on a player Account rather than an Object.
 
-    If you want <value> to be an object, use $dbef(#dbref) or
+    If you want <value> to be an object, use $dbref(#dbref) or
     $search(key) to assign it. You need control or edit access to
     the object you are adding.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
     dictionaries and tuples on objects (this might be important for
-    the functionality of certain custom objects).  This is indicated
+    the functionality of certain custom objects). This is indicated
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
     or |c{ |n.
 
@@ -3897,7 +3897,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             return
 
         if not destination:
-            caller.msg("Destination not found.")
+            # Search already reported the error to the caller in parse().
             return
 
         if "loc" in self.switches:

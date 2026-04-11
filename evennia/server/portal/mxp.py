@@ -32,16 +32,30 @@ MXP_URL = MXP_TEMPSECURE + '<A HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</A>"
 
 def mxp_parse(text):
     """
-    Replaces links to the correct format for MXP.
+    Parse Evennia's MXP link markup into MXP escape sequences suitable for
+    sending to MXP-enabled clients.
+
+    Converts ``|lc<cmd>|lt<label>|le`` to a clickable SEND tag and
+    ``|lu<url>|lt<label>|le`` to a clickable URL tag. Non-MXP text
+    is left unchanged — MXP clients only interpret tags inside
+    secure-mode markers, so surrounding text is treated as literal.
+
+    Messages containing no MXP markup are returned unchanged.
 
     Args:
         text (str): The text to parse.
 
     Returns:
-        parsed (str): The parsed text.
+        str: The parsed text with MXP sequences substituted, or the
+            original text if no MXP markup was found.
 
+    Examples:
+        ``|lchelp overview|lthelp overview|le`` becomes
+        ``\\x1b[4z<SEND HREF="help overview">help overview\\x1b[4z</SEND>``
     """
-    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    if "|lc" not in text and "|lu" not in text:
+        return text
 
     text = LINKS_SUB.sub(MXP_SEND, text)
     text = URL_SUB.sub(MXP_URL, text)

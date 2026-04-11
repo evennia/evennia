@@ -2,7 +2,42 @@
 
 ## Main branch
 
-Docs: Griatch
+- Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
+- Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
+- [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
+- [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
+- Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
+- [Fix][pull3875]: Fix TypeError in telnet HTTP check when command stacking sends bytes (aMiss-aWry)
+- [Fix][pull3877]: Fixes multimatch numbering display to be case insensitive (InspectorCaracal)
+- [Fix][pull3883]: Taskhandler: Fix TaskHandlerTask stale references & clean up (jaborsh)
+- [Feat][pull3884]: Formally support PostgreSQL with psycopg3 (jaborsh)
+- [Fix][pull3885]: Is_ooc(): Thread session through lock system in multi-session mode (jaborsh)
+- Fix: Add deprecation warning for custom cmdparsers missing `session` kwarg (Griatch)
+- [Fix][pull3888]: Close stale DB connections before first query (jaborsh)
+- [Fix][pull3898]: Pass caller to purge_processor in CmdStateCC cc command (saschabuehrle)
+- [Fix][pull3899]: Fix @teleport showing double error message on failed search (blongden)
+- [Fix][pull3900]: Fix TypeError in MSDP encode when args contain non-string values (blongden)
+- [Fix][pull3901]: Fix O(N²) cmdset merge by hashing commands on key instead of constant (blongden)
+- [Fix][pull3905]: Fix system commands duplicated in merged CmdSets (kvmet)
+- [Fix][pull3909]: Fix funcparser treating $" as malformed function call (aMiss-aWry)
+- [Fix][pull3910]: Fix MXP parse to not escape surrounding text as HTML entities (aMiss-aWry)
+- Docs: Griatch, BigJMoney
+
+[pull3866]: https://github.com/evennia/evennia/pull/3866
+[pull3869]: https://github.com/evennia/evennia/pull/3869
+[pull3875]: https://github.com/evennia/evennia/pull/3875
+[pull3877]: https://github.com/evennia/evennia/pull/3877
+[pull3883]: https://github.com/evennia/evennia/pull/3883
+[pull3884]: https://github.com/evennia/evennia/pull/3884
+[pull3885]: https://github.com/evennia/evennia/pull/3885
+[pull3888]: https://github.com/evennia/evennia/pull/3888
+[pull3898]: https://github.com/evennia/evennia/pull/3898
+[pull3899]: https://github.com/evennia/evennia/pull/3899
+[pull3900]: https://github.com/evennia/evennia/pull/3900
+[pull3901]: https://github.com/evennia/evennia/pull/3901
+[pull3905]: https://github.com/evennia/evennia/pull/3905
+[pull3909]: https://github.com/evennia/evennia/pull/3909
+[pull3910]: https://github.com/evennia/evennia/pull/3910
 
 ## Evennia 6.0.0
 
@@ -80,14 +115,13 @@ Feb 15, 2026
 [pull3599]: https://github.com/evennia/evennia/pull/3599
 [pull3852]: https://github.com/evennia/evennia/pull/3852
 [pull3853]: https://github.com/evennia/evennia/pull/3853
-[pull3854]: https://github.com/evennia/evennia/pull/3853
-[pull3733]: https://github.com/evennia/evennia/pull/3853
+[pull3733]: https://github.com/evennia/evennia/pull/3733
 [pull3864]: https://github.com/evennia/evennia/pull/3864
 [pull3863]: https://github.com/evennia/evennia/pull/3863
 [pull3845]: https://github.com/evennia/evennia/pull/3845
 [pull3862]: https://github.com/evennia/evennia/pull/3862
 [issue3858]: https://github.com/evennia/evennia/issues/3858
-[issue3813]: https://github.com/evennia/evennia/issues/3513
+[issue3813]: https://github.com/evennia/evennia/issues/3813
 [issue3649]: https://github.com/evennia/evennia/issues/3649
 [issue3560]: https://github.com/evennia/evennia/issues/3560
 [issue3601]: https://github.com/evennia/evennia/issues/3601
@@ -205,7 +239,8 @@ This upgrade requires running `evennia migrate` on your existing database
 [pull3768]: https://github.com/evennia/evennia/pull/3768
 [pull3783]: https://github.com/evennia/evennia/pull/3783
 [pull3777]: https://github.com/evennia/evennia/pull/3777
-[pull3794]: https://github.com/evennia/evennia/pull/3794
+[pull3694]: https://github.com/evennia/evennia/pull/3694
+[issue3794]: https://github.com/evennia/evennia/issues/3794
 [pull3795]: https://github.com/evennia/evennia/pull/3795
 [issue3688]: https://github.com/evennia/evennia/issues/3688
 [issue3687]: https://github.com/evennia/evennia/issues/3687
@@ -252,7 +287,6 @@ Nov 12, 2024
 - Docs updates: feykrh, Griatch, marado, jaborsh
 
 [pull3626]: https://github.com/evennia/evennia/pull/3626
-[pull3676]: https://github.com/evennia/evennia/pull/3676
 [pull3634]: https://github.com/evennia/evennia/pull/3634
 [pull3632]: https://github.com/evennia/evennia/pull/3632
 [pull3636]: https://github.com/evennia/evennia/pull/3636
@@ -371,7 +405,7 @@ underline reset, italic/reset and strikethrough/reset (electroglyph)
 - [Feat][pull3582]: Add true-color parsing/fallback for ANSIString (electroglyph)
 - [Fix][pull3571]: Better visual display of partial multimatch search results
   (InspectorCaracal)
-- [Fix][issue3378]: Prototype 'alias' key was not properly homogenized to a list
+- [Fix][issue3578]: Prototype 'alias' key was not properly homogenized to a list
   (Griatch)
 - [Fix][pull3550]: Issue where rpsystem contrib search would do a global instead
     of local search on multimatch (InspectorCaracal)
@@ -389,7 +423,7 @@ underline reset, italic/reset and strikethrough/reset (electroglyph)
 [pull3571]: https://github.com/evennia/evennia/pull/3571
 [pull3582]: https://github.com/evennia/evennia/pull/3582
 [pull3589]: https://github.com/evennia/evennia/pull/3589
-[issue3378]: https://github.com/evennia/evennia/issues/3578
+[issue3578]: https://github.com/evennia/evennia/issues/3578
 
 ## Evennia 4.2.0
 
@@ -456,7 +490,6 @@ June 27, 2024
 [pull3499]: https://github.com/evennia/evennia/pull/3499
 [pull3501]: https://github.com/evennia/evennia/pull/3501
 [pull3502]: https://github.com/evennia/evennia/pull/3502
-[pull3503]: https://github.com/evennia/evennia/pull/3503
 [pull3506]: https://github.com/evennia/evennia/pull/3506
 [pull3507]: https://github.com/evennia/evennia/pull/3507
 [pull3514]: https://github.com/evennia/evennia/pull/3514
@@ -477,15 +510,15 @@ June 27, 2024
 [pull3554]: https://github.com/evennia/evennia/pull/3554
 [pull3523]: https://github.com/evennia/evennia/pull/3523
 [pull3566]: https://github.com/evennia/evennia/pull/3566
-[issue3522]: https://github.com/evennia/evennia/issue/3522
-[issue3387]: https://github.com/evennia/evennia/issue/3387
+[issue3522]: https://github.com/evennia/evennia/issues/3522
+[issue3387]: https://github.com/evennia/evennia/issues/3387
 
 
 ## Evennia 4.1.1
 
 April 6, 2024
 
-- [Fix][pull3438]: Error with 'you' mapping in third-person style of
+- [Fix][pull3483]: Error with 'you' mapping in third-person style of
   `msg_contents` (InspectorCaracal)
 - [Fix][pull3472]: The new `filter_visible` didn't exclude oneself by default
   (InspectorCaracal)
@@ -506,7 +539,8 @@ April 6, 2024
   the hooks called on server start/stop/reload (Griatch)
 - [Docs] Doc typo fixes (Griatch, chiizujin)
 
-[pull3438]: https://github.com/evennia/evennia/pull/3446
+[pull3472]: https://github.com/evennia/evennia/pull/3472
+[pull3483]: https://github.com/evennia/evennia/pull/3483
 [pull3485]: https://github.com/evennia/evennia/pull/3485
 [pull3487]: https://github.com/evennia/evennia/pull/3487
 [issue3476]: https://github.com/evennia/evennia/issues/3476
@@ -627,7 +661,7 @@ March 17, 2024
   Evennia core's version (michaelfaith84, Griatch)
 - [Fix][issue3438]: Limiting search by tag didn't take search-string into
   account (Griatch)
-- [Fix][issue4311]: SSH connection caused a traceback in protocol (Griatch)
+- [Fix][issue3411]: SSH connection caused a traceback in protocol (Griatch)
 - Fix: Resolve a bug when loading on-demand-handler data from database (Griatch)
 - Security: Potential O(n2) regex exploit in rpsystem regex (Griatch)
 - Security: Fix potential redirect vulnerability in character page redirect (Griatch)

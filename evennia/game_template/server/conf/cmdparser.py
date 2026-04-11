@@ -32,7 +32,7 @@ your settings file:
 """
 
 
-def cmdparser(raw_string, cmdset, caller, match_index=None):
+def cmdparser(raw_string, cmdset, caller, match_index=None, **kwargs):
     """
     This function is called by the cmdhandler once it has
     gathered and merged all valid cmdsets valid for this particular parsing.

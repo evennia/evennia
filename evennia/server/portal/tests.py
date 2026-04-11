@@ -237,6 +237,22 @@ class TestTelnet(TwistedTestCase):
         self.addCleanup(factory.sessionhandler.disconnect_all)
 
     @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+    def test_command_stacking_no_type_error(self):
+        self.transport.client = ["localhost"]
+        self.transport.setTcpKeepAlive = Mock()
+        d = self.proto.makeConnection(self.transport)
+        # Mudlet sends multiple commands in one packet when command stacking
+        data = b"wave\r\nsay hi\r\n"
+        try:
+            self.proto.dataReceived(data)
+        except TypeError:
+            self.fail("dataReceived raised TypeError on stacked commands")
+        # clean up to prevent Unclean reactor
+        self.proto.nop_keep_alive.stop()
+        self.proto._handshake_delay.cancel()
+        return d
+
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
     def test_mudlet_ttype(self):
         self.transport.client = ["localhost"]
         self.transport.setTcpKeepAlive = Mock()
@@ -289,6 +305,41 @@ class TestTelnet(TwistedTestCase):
         self.proto.nop_keep_alive.stop()
         self.proto._handshake_delay.cancel()
         return d
+
+    def test_mxp_parse(self):
+        """
+        Test that mxp_parse correctly converts Evennia MXP markup to MXP escape sequences,
+        and leaves messages without MXP markup untouched.
+        """
+        from evennia.server.portal.mxp import mxp_parse, MXP_TEMPSECURE
+
+        # no MXP markup - should be returned unchanged
+        self.assertEqual(mxp_parse("hello world"), "hello world")
+
+        # angle brackets without MXP markup - should be returned unchanged
+        self.assertEqual(mxp_parse("<name>"), "<name>")
+
+        # basic link substitution
+        result = mxp_parse("|lchelp overview|lthelp overview|le")
+        self.assertIn('<SEND HREF="help overview">', result)
+        self.assertIn("help overview", result)
+        self.assertIn(MXP_TEMPSECURE, result)
+        self.assertNotIn("|lc", result)
+        self.assertNotIn("|lt", result)
+        self.assertNotIn("|le", result)
+
+        # surrounding text should pass through unchanged
+        result = mxp_parse("<|lchelp eat|lthelp eat|le>")
+        self.assertIn("<", result)
+        self.assertIn(">", result)
+        self.assertNotIn("&lt;", result)
+        self.assertNotIn("&gt;", result)
+        self.assertIn('<SEND HREF="help eat">', result)
+
+        # non-MXP ampersands should pass through unchanged
+        result = mxp_parse("fish & chips |lchelp eat|lthelp eat|le")
+        self.assertIn("fish & chips", result)
+        self.assertNotIn("&amp;", result)
 
 
 class TestWebSocket(BaseEvenniaTest):

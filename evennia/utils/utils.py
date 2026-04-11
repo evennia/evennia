@@ -2323,22 +2323,21 @@ def calledby(callerdepth=1):
 
 def m_len(target):
     """
-    Provides length checking for strings with MXP patterns, and falls
-    back to normal len for other objects.
+    Provides display-width length checking for strings, taking into account
+    MXP patterns and east-asian character widths.  Falls back to normal
+    ``len`` for non-string objects.
 
     Args:
         target (str): A string with potential MXP components
             to search.
 
     Returns:
-        length (int): The length of `target`, ignoring MXP components.
+        length (int): The visible width of `target`, ignoring MXP components
+            and counting east-asian characters as width 2.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
-
-    if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
+    if inherits_from(target, str):
+        return display_len(target)
     return len(target)
 
 
@@ -2422,13 +2421,14 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         # group results by display name to properly disambiguate
         grouped_matches = defaultdict(list)
         for item in matches:
-            group_key = (
+            item_key = (
                 item.get_display_name(caller) if hasattr(item, "get_display_name") else query
             )
-            grouped_matches[group_key].append(item)
+            # the actual searching is case-insensitive, so we force grouping keys to lower
+            grouped_matches[item_key.lower()].append( (item_key, item) )
 
         for key, match_list in grouped_matches.items():
-            for num, result in enumerate(match_list):
+            for num, (result_key, result) in enumerate(match_list):
                 # we need to consider that result could be a Command, where .aliases
                 # is a list of strings
                 if hasattr(result.aliases, "all"):
@@ -2444,7 +2444,7 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
 
                 error += _MULTIMATCH_TEMPLATE.format(
                     number=num + 1,
-                    name=key,
+                    name=result_key,
                     aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
                     info=result.get_extra_info(caller),
                 )

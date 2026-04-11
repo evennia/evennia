@@ -179,9 +179,9 @@ def check_warnings(settings):
         )
 
     for dbentry in settings.DATABASES.values():
-        if "psycopg" in dbentry.get("ENGINE", ""):
+        if "psycopg2" in dbentry.get("ENGINE", ""):
             print(
-                'Deprecation: postgresql_psycopg2 backend is deprecated". '
+                "Deprecation: postgresql_psycopg2 backend is deprecated. "
                 "Switch settings.DATABASES to use "
-                '"ENGINE": "django.db.backends.postgresql instead"'
+                '"ENGINE": "django.db.backends.postgresql" instead.'
             )

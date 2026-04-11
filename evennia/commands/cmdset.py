@@ -488,7 +488,11 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
         # cmdset_a.key, cmdset_a.priority)
 
-        # return the system commands to the cmdset
+        # Re-add the merged system commands. First strip any that were carried
+        # through via the raw commands[:] copy in the merge methods, so they
+        # don't appear twice.
+        sys_set = set(sys_commands)
+        cmdset_c.commands = [c for c in cmdset_c.commands if c not in sys_set]
         cmdset_c.add(sys_commands, allow_duplicates=True)
         return cmdset_c
 

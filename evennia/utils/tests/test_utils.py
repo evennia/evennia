@@ -135,8 +135,9 @@ class TestListToString(TestCase):
 
 class TestMLen(TestCase):
     """
-    Verifies that m_len behaves like len in all situations except those
-    where MXP may be involved.
+    Verifies that m_len returns the visible display width for strings
+    (accounting for MXP and east-asian characters) and falls back to
+    normal len for non-strings.
     """
 
     def test_non_mxp_string(self):
@@ -156,6 +157,9 @@ class TestMLen(TestCase):
 
     def test_dict(self):
         self.assertEqual(utils.m_len({"hello": True, "Goodbye": False}), 2)
+
+    def test_east_asian(self):
+        self.assertEqual(utils.m_len("서서서"), 6)
 
 
 class TestDisplayLen(TestCase):
@@ -889,6 +893,17 @@ More than one match for 'obj' (please narrow target):
  obj1-3
  obj2-1
  obj2-2"""
+        caller.msg.assert_called_once_with(multimatch_msg)
+
+    def test_mixed_case_multimatch(self):
+        """multiple matches with different case should increment index by case-insensitive name"""
+        matches = [self.MockObject("obj1"), self.MockObject("Obj1")]
+        caller = mock.MagicMock()
+        self.assertIsNone(utils.at_search_result(matches, caller, "obj1"))
+        multimatch_msg = """\
+More than one match for 'obj1' (please narrow target):
+ obj1-1
+ Obj1-2"""
         caller.msg.assert_called_once_with(multimatch_msg)
 
 

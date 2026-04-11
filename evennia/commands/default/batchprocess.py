@@ -662,7 +662,7 @@ class CmdStateCC(_COMMAND_DEFAULT_CLASS):
             step_pointer(caller, 1)
             show_curr(caller)
 
-        purge_processor(self)
+        purge_processor(caller)
         caller.msg(format_code("Finished processing batch file."))
 
 
