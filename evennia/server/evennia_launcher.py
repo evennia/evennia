@@ -21,7 +21,7 @@ import signal
 import sys
 from argparse import ArgumentParser
 from packaging.version import Version
-from subprocess import STDOUT, CalledProcessError, Popen, call, check_output
+from subprocess import DEVNULL, STDOUT, CalledProcessError, Popen, call, check_output
 
 import django
 from django.core.management import execute_from_command_line
@@ -849,7 +849,14 @@ def start_evennia(pprofiler=False, sprofiler=False):
                 create_no_window = 0x08000000
                 Popen(portal_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window)
             else:
-                Popen(portal_cmd, env=getenv(), bufsize=-1)
+                Popen(
+                    portal_cmd, 
+                    env=getenv(), 
+                    bufsize=-1, 
+                    stdin=DEVNULL, 
+                    stdout=DEVNULL, 
+                    stderr=DEVNULL
+                )
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
             _reactor_stop()
