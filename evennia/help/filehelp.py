@@ -120,12 +120,15 @@ class FileHelpEntry:
     def __repr__(self):
         return f"<FileHelpEntry {self.key}>"
 
+    def __hash__(self):
+        return hash(self.key)
+
     @lazy_property
     def locks(self):
         return LockHandler(self)
 
     def web_get_detail_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to view details for
         this object.
 

@@ -67,6 +67,7 @@ import re
 from collections import OrderedDict
 
 from django.conf import settings
+
 from evennia.utils import logger, utils
 from evennia.utils.hex_colors import HexColors
 from evennia.utils.utils import to_str
@@ -702,12 +703,17 @@ def _transform(func_name):
 
     def wrapped(self, *args, **kwargs):
         replacement_string = _query_super(func_name)(self, *args, **kwargs)
+
+        # Convert to sets for O(1) membership testing
+        code_indexes_set = set(self._code_indexes)
+        char_indexes_set = set(self._char_indexes)
+
         to_string = []
         char_counter = 0
         for index in range(0, len(self._raw_string)):
-            if index in self._code_indexes:
+            if index in code_indexes_set:
                 to_string.append(self._raw_string[index])
-            elif index in self._char_indexes:
+            elif index in char_indexes_set:
                 to_string.append(replacement_string[char_counter])
                 char_counter += 1
         return ANSIString(
@@ -1027,10 +1033,12 @@ class ANSIString(str, metaclass=ANSIMeta):
             return ANSIString("")
         last_mark = slice_indexes[0]
         # Check between the slice intervals for escape sequences.
+        # Convert to set for O(1) membership testing
+        code_indexes_set = set(self._code_indexes)
         i = None
         for i in slice_indexes[1:]:
             for index in range(last_mark, i):
-                if index in self._code_indexes:
+                if index in code_indexes_set:
                     string += self._raw_string[index]
             last_mark = i
             try:
@@ -1064,15 +1072,24 @@ class ANSIString(str, metaclass=ANSIMeta):
             append_tail = self._get_interleving(item + 1)
         else:
             append_tail = ""
-        item = self._char_indexes[item]
 
-        clean = self._raw_string[item]
-        result = ""
-        # Get the character they're after, and replay all escape sequences
-        # previous to it.
-        for index in range(0, item + 1):
-            if index in self._code_indexes:
-                result += self._raw_string[index]
+        char_pos = self._char_indexes[item]
+        clean = self._raw_string[char_pos]
+
+        code_indexes_set = set(self._code_indexes)
+
+        # Only collect codes after the last reset to avoid accumulating
+        # cancelled codes when slicing
+        start_pos = self._find_last_reset_before(char_pos)
+
+        result_chars = [
+            self._raw_string[index]
+            for index in range(start_pos, char_pos + 1)
+            if index in code_indexes_set
+        ]
+
+        result = "".join(result_chars)
+
         return ANSIString(result + clean + append_tail, decoded=True)
 
     def clean(self):
@@ -1152,8 +1169,27 @@ class ANSIString(str, metaclass=ANSIMeta):
             # Plain string, no ANSI codes.
             return code_indexes, list(range(0, len(self._raw_string)))
         # all indexes not occupied by ansi codes are normal characters
-        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes]
+        code_indexes_set = set(code_indexes)
+        char_indexes = [i for i in range(len(self._raw_string)) if i not in code_indexes_set]
+
         return code_indexes, char_indexes
+
+    def _find_last_reset_before(self, pos):
+        """
+        Find the end position of the last ANSI reset sequence
+        that occurs before the given position.
+
+        Args:
+            pos (int): Position in _raw_string to search before.
+
+        Returns:
+            int: The index immediately after the last reset sequence,
+                 or 0 if no reset was found before pos.
+        """
+        reset_pos = self._raw_string.rfind(ANSI_NORMAL, 0, pos)
+        if reset_pos == -1:
+            return 0
+        return reset_pos + len(ANSI_NORMAL)
 
     def _get_interleving(self, index):
         """
@@ -1165,12 +1201,17 @@ class ANSIString(str, metaclass=ANSIMeta):
             index = self._char_indexes[index - 1]
         except IndexError:
             return ""
+
+        # Convert to sets for O(1) membership testing
+        char_indexes_set = set(self._char_indexes)
+        code_indexes_set = set(self._code_indexes)
+
         s = ""
         while True:
             index += 1
-            if index in self._char_indexes:
+            if index in char_indexes_set:
                 break
-            elif index in self._code_indexes:
+            elif index in code_indexes_set:
                 s += self._raw_string[index]
             else:
                 break

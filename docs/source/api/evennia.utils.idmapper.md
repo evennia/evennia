@@ -4,8 +4,8 @@ evennia.utils.idmapper
 
 .. automodule:: evennia.utils.idmapper
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

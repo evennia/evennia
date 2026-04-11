@@ -23,7 +23,7 @@ The recognized fields for an achievement are:
 - name (str): The name of the achievement. This is not the key and does not need to be unique.
 - desc (str): The longer description of the achievement. Common uses for this would be flavor text
         or hints on how to complete it.
-- category (str): The category of conditions which this achievement tracks. It will most likely be 
+- category (str): The category of conditions which this achievement tracks. It will most likely be
         an action and you will most likely specify it based on where you're checking from.
         e.g. killing 10 rats might have a category of "defeat", which you'd then check from your code
         that runs when a player defeats something.

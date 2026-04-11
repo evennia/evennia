@@ -111,18 +111,25 @@ Use `nn` and `bb` (next and back) to step through the file; e.g. `nn 12` will ju
 
 ## Limitations and Caveats
 
-The batch-command processor is great for automating smaller builds or for testing new commands and objects repeatedly without having to write so much. There are several caveats you have to be aware of when using the batch-command processor for building larger, complex worlds though.  
+The main issue with batch-command builds is that when you run a batch-command script you (*you*, as in your character) are actually moving around in the game creating and building rooms in sequence, just as if you had been entering those commands manually, one by one. 
 
-The main issue is that when you run a batch-command script you (*you*, as in your superuser
-character) are actually moving around in the game creating and building rooms in sequence, just as if you had been entering those commands manually, one by one. You have to take this into account when creating the file, so that you can 'walk' (or teleport) to the right places in order.
+You have to take this into account when creating the file, so that you can 'walk' (or teleport) to the right places in order. It also means that you may be affected by the things you create, such as mobs attacking you or traps immediately hurting you. 
 
-This also means there are several pitfalls when designing and adding certain types of objects. Here are some examples:
+If you know that your rooms and objects are going to be deployed via a batch-command script, you can plan for this beforehand. To help with this, you can use the fact that the non-persistent Attribute `batch_batchmode` is _only_ set while the batch-processor is running. Here's an example of how to use it: 
 
-- *Rooms that change your [Command Set](./Command-Sets.md)*: Imagine that you build a 'dark' room, which severely limits the cmdsets of those entering it (maybe you have to find the light switch to proceed). In your batch script you would create this room, then teleport to it - and promptly be shifted into the dark state where none of your normal build commands work ...
-- *Auto-teleportation*: Rooms that automatically teleport those that enter them to another place (like a trap room, for example). You would be teleported away too.
-- *Mobiles*: If you add aggressive mobs, they might attack you, drawing you into combat. If they have AI they might even follow you around when building - or they might move away from you before you've had time to finish describing and equipping them!
+```python
+class HorribleTrapRoom(Room):
+    # ... 
+    def at_object_receive(self, received_obj, source_location, **kwargs):
+        """Apply the horrible traps the moment the room is entered!"""
+        if received_obj.ndb.batch_batchmode: 
+            # skip if we are currently building the room
+            return 
+        # commence horrible trap code
+```
+So we skip the hook if we are currently building the room. This can work for anything, including making sure mobs don't start attacking you while you are creating them. 
 
-The solution to all these is to plan ahead. Make sure that superusers are never affected by whatever effects are in play. Add an on/off switch to objects and make sure it's always set to *off* upon creation. It's all doable, one just needs to keep it in mind.
+There are other strategies, such as adding an on/off switch to actiive objects and make sure it's always set to *off* upon creation.
 
 ## Editor highlighting for .ev files
 

@@ -1,47 +1,47 @@
 # Player Characters
 
-In the [previous lesson about rules and dice rolling](./Beginner-Tutorial-Rules.md) we made some assumptions about the "Player Character" entity: 
+In the [previous lesson about rules and dice rolling](./Beginner-Tutorial-Rules.md) we made some assumptions about the "Player Character" entity:
 
 - It should store Abilities on itself as `character.strength`, `character.constitution` etc.
 - It should have a `.heal(amount)`  method.
 
-So we have some guidelines of how it should look! A Character is a database entity with values that should be able to be changed over time. It makes sense to base it off Evennia's 
-[DefaultCharacter Typeclass](../../../Components/Typeclasses.md). The Character class is like a 'character sheet' in a tabletop 
+So we have some guidelines of how it should look! A Character is a database entity with values that should be able to be changed over time. It makes sense to base it off Evennia's
+[DefaultCharacter Typeclass](../../../Components/Typeclasses.md). The Character class is like a 'character sheet' in a tabletop
 RPG, it will hold everything relevant to that PC.
 
 ## Inheritance structure
 
-Player Characters (PCs) are not the only "living" things in our world. We also have _NPCs_ 
-(like shopkeepers and other friendlies) as well as _monsters_ (mobs) that can attack us. 
+Player Characters (PCs) are not the only "living" things in our world. We also have _NPCs_
+(like shopkeepers and other friendlies) as well as _monsters_ (mobs) that can attack us.
 
-In code, there are a few ways we could structure this. If NPCs/monsters were just special cases of PCs, we could use a class inheritance like this: 
+In code, there are a few ways we could structure this. If NPCs/monsters were just special cases of PCs, we could use a class inheritance like this:
 
 ```python
-from evennia import DefaultCharacter 
+from evennia import DefaultCharacter
 
-class EvAdventureCharacter(DefaultCharacter): 
-    # stuff 
-    
+class EvAdventureCharacter(DefaultCharacter):
+    # stuff
+
 class EvAdventureNPC(EvAdventureCharacter):
-    # more stuff 
-    
-class EvAdventureMob(EvAdventureNPC): 
-    # more stuff 
+    # more stuff
+
+class EvAdventureMob(EvAdventureNPC):
+    # more stuff
 ```
 
-All code we put on the `Character` class would now be inherited to `NPC` and `Mob` automatically. 
+All code we put on the `Character` class would now be inherited to `NPC` and `Mob` automatically.
 
 However, in _Knave_, NPCs and particularly monsters are _not_ using the same rules as PCs - they are simplified to use a Hit-Die (HD) concept. So while still character-like, NPCs should be separate from PCs like this:
 
 ```python
-from evennia import DefaultCharacter 
+from evennia import DefaultCharacter
 
-class EvAdventureCharacter(DefaultCharacter): 
-    # stuff 
+class EvAdventureCharacter(DefaultCharacter):
+    # stuff
 
 class EvAdventureNPC(DefaultCharacter):
-    # separate stuff 
-    
+    # separate stuff
+
 class EvAdventureMob(EvadventureNPC):
     # more separate stuff
 ```
@@ -57,18 +57,18 @@ Nevertheless, there are some things that _should_ be common for all 'living thin
 
 We don't want to code this separately for every class but we no longer have a common parent  class to put it on. So instead we'll use the concept of a _mixin_ class:
 
-```python 
-from evennia import DefaultCharacter 
+```python
+from evennia import DefaultCharacter
 
 class LivingMixin:
     # stuff common for all living things
 
-class EvAdventureCharacter(LivingMixin, DefaultCharacter): 
-    # stuff 
+class EvAdventureCharacter(LivingMixin, DefaultCharacter):
+    # stuff
 
 class EvAdventureNPC(LivingMixin, DefaultCharacter):
-    # stuff 
-    
+    # stuff
+
 class EvAdventureMob(LivingMixin, EvadventureNPC):
     # more stuff
 ```
@@ -77,7 +77,8 @@ class EvAdventureMob(LivingMixin, EvadventureNPC):
 In [evennia/contrib/tutorials/evadventure/characters.py](../../../api/evennia.contrib.tutorials.evadventure.characters.md)
 is an example of a character class structure.
 ```
-Above, the `LivingMixin` class cannot work on its own - it just 'patches' the other classes with some  extra functionality all living things should be able to do. This is an example of  _multiple inheritance_. It's useful to know about, but one should not over-do multiple inheritance since it can also get confusing to follow the code.
+Above, the `LivingMixin` class cannot work on its own - it just 'patches' the other classes with some  extra functionality all living things should be able to do. This is an example of  _multiple inheritance_. The order of inheritance matters here - the `LivingMixin` must come _before_ `DefaultCharacter` (or EvAdventureNPC etc) so that its methods are found first when called.Multiple inheritance is a powerful tool in object-oriented programming, and useful to know about. Be careful to over-use it, however. If you have too many mixins it can get hard to follow which method comes from where.
+
 
 ## Living mixin class
 
@@ -85,15 +86,15 @@ Above, the `LivingMixin` class cannot work on its own - it just 'patches' the ot
 
 Let's get some useful common methods all living things should have in our game.
 
-```python 
-# in mygame/evadventure/characters.py 
+```python
+# in mygame/evadventure/characters.py
 
-from .rules import dice 
+from .rules import dice
 
 class LivingMixin:
 
     # makes it easy for mobs to know to attack PCs
-    is_pc = False  
+    is_pc = False
 
 	@property
     def hurt_level(self):
@@ -118,58 +119,58 @@ class LivingMixin:
         elif percent == 0:
             return "|RCollapsed!|n"
 
-    def heal(self, hp): 
-        """ 
+    def heal(self, hp):
+        """
         Heal hp amount of health, not allowing to exceed our max hp
-         
-        """ 
-        damage = self.hp_max - self.hp 
-        healed = min(damage, hp) 
-        self.hp += healed 
-        
-        self.msg(f"You heal for {healed} HP.") 
-        
+
+        """
+        damage = self.hp_max - self.hp
+        healed = min(damage, hp)
+        self.hp += healed
+
+        self.msg(f"You heal for {healed} HP.")
+
     def at_pay(self, amount):
         """When paying coins, make sure to never detract more than we have"""
         amount = min(amount, self.coins)
         self.coins -= amount
         return amount
-        
-    def at_attacked(self, attacker, **kwargs): 
+
+    def at_attacked(self, attacker, **kwargs):
 		"""Called when being attacked and combat starts."""
 		pass
-    
+
     def at_damage(self, damage, attacker=None):
         """Called when attacked and taking damage."""
-        self.hp -= damage  
-        
-    def at_defeat(self): 
+        self.hp -= damage
+
+    def at_defeat(self):
         """Called when defeated. By default this means death."""
         self.at_death()
-        
+
     def at_death(self):
         """Called when this thing dies."""
         # this will mean different things for different living things
-        pass 
-        
+        pass
+
     def at_do_loot(self, looted):
-        """Called when looting another entity""" 
+        """Called when looting another entity"""
         looted.at_looted(self)
-        
+
     def at_looted(self, looter):
-        """Called when looted by another entity""" 
-        
-        # default to stealing some coins 
-        max_steal = dice.roll("1d10") 
+        """Called when looted by another entity"""
+
+        # default to stealing some coins
+        max_steal = dice.roll("1d10")
         stolen = self.at_pay(max_steal)
         looter.coins += stolen
 
 ```
 Most of these are empty since they will behave differently for characters and npcs. But having them in the mixin means we can expect these methods to be available for all living things.
 
-Once we create more of our game, we will need to remember to actually call these hook methods so they serve a purpose. For example, once we implement combat, we must remember to call `at_attacked` as well as the other methods involving taking damage, getting defeated or dying. 
+Once we create more of our game, we will need to remember to actually call these hook methods so they serve a purpose. For example, once we implement combat, we must remember to call `at_attacked` as well as the other methods involving taking damage, getting defeated or dying.
 
-## Character class 
+## Character class
 
 We will now start making the basic Character class, based on what we need from _Knave_.
 
@@ -177,28 +178,28 @@ We will now start making the basic Character class, based on what we need from _
 # in mygame/evadventure/characters.py
 
 from evennia import DefaultCharacter, AttributeProperty
-from .rules import dice 
+from .rules import dice
 
 class LivingMixin:
-    # ... 
+    # ...
 
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):
-    """ 
-    A character to use for EvAdventure. 
     """
-    is_pc = True 
+    A character to use for EvAdventure.
+    """
+    is_pc = True
 
-    strength = AttributeProperty(1) 
+    strength = AttributeProperty(1)
     dexterity = AttributeProperty(1)
     constitution = AttributeProperty(1)
     intelligence = AttributeProperty(1)
     wisdom = AttributeProperty(1)
     charisma = AttributeProperty(1)
-    
-    hp = AttributeProperty(8) 
+
+    hp = AttributeProperty(8)
     hp_max = AttributeProperty(8)
-    
+
     level = AttributeProperty(1)
     xp = AttributeProperty(0)
     coins = AttributeProperty(0)
@@ -213,18 +214,18 @@ class EvAdventureCharacter(LivingMixin, DefaultCharacter):
                 "$You() $conj(collapse) in a heap, alive but beaten.",
                 from_obj=self)
             self.heal(self.hp_max)
-            
+
     def at_death(self):
         """We rolled 'dead' on the death table."""
         self.location.msg_contents(
             "$You() collapse in a heap, embraced by death.",
-            from_obj=self) 
-        # TODO - go back into chargen to make a new character!            
+            from_obj=self)
+        # TODO - go back into chargen to make a new character!
 ```
 
 We make an assumption about our rooms here - that they have a property `.allow_death`. We need  to make a note to actually add such a property to rooms later!
 
-In our `Character` class we implement all attributes we want to simulate from the _Knave_ ruleset. The `AttributeProperty` is one way to add an Attribute in a field-like way; these will be accessible on every character in several ways: 
+In our `Character` class we implement all attributes we want to simulate from the _Knave_ ruleset. The `AttributeProperty` is one way to add an Attribute in a field-like way; these will be accessible on every character in several ways:
 
 - As `character.strength`
 - As `character.db.strength`
@@ -234,7 +235,7 @@ See [Attributes](../../../Components/Attributes.md) for seeing how Attributes wo
 
 Unlike in base _Knave_, we store `coins` as a separate Attribute rather than as items in the inventory, this makes it easier to handle barter and trading later.
 
-We implement the Player Character versions of `at_defeat` and `at_death`. We also make use of `.heal()`  from the `LivingMixin` class. 
+We implement the Player Character versions of `at_defeat` and `at_death`. We also make use of `.heal()`  from the `LivingMixin` class.
 
 ### Funcparser inlines
 
@@ -259,68 +260,68 @@ Note how `$conj()` chose `collapse/collapses` to make the sentences grammaticall
 
 We make our first use of the `rules.dice` roller to roll on the death table! As you may recall, in the previous lesson, we didn't know just what to do when rolling 'dead' on this table. Now we know - we should be calling `at_death` on the character. So let's add that where we had TODOs before:
 
-```python 
-# mygame/evadventure/rules.py 
+```python
+# mygame/evadventure/rules.py
 
 class EvAdventureRollEngine:
-    
-    # ... 
 
-    def roll_death(self, character): 
+    # ...
+
+    def roll_death(self, character):
         ability_name = self.roll_random_table("1d8", death_table)
 
         if ability_name == "dead":
             # kill the character!
             character.at_death()  # <------ TODO no more
-        else: 
-            # ... 
-                        
-            if current_ability < -10: 
+        else:
+            # ...
+
+            if current_ability < -10:
                 # kill the character!
                 character.at_death()  # <------- TODO no more
             else:
-                # ... 
+                # ...
 ```
 
-## Connecting the Character with Evennia 
+## Connecting the Character with Evennia
 
-You can easily make yourself an `EvAdventureCharacter` in-game by using the 
-`type` command: 
+You can easily make yourself an `EvAdventureCharacter` in-game by using the
+`type` command:
 
     type self = evadventure.characters.EvAdventureCharacter
 
-You can now do `examine self` to check your type updated. 
+You can now do `examine self` to check your type updated.
 
-If you want _all_ new Characters to be of this type you need to tell Evennia about it. Evennia  uses a global setting `BASE_CHARACTER_TYPECLASS` to know which typeclass to use when creating  Characters (when logging in, for example). This defaults to `typeclasses.characters.Character` (that is, the `Character` class in `mygame/typeclasses/characters.py`). 
+If you want _all_ new Characters to be of this type you need to tell Evennia about it. Evennia  uses a global setting `BASE_CHARACTER_TYPECLASS` to know which typeclass to use when creating  Characters (when logging in, for example). This defaults to `typeclasses.characters.Character` (that is, the `Character` class in `mygame/typeclasses/characters.py`).
 
-There are thus two ways to weave your new Character class into Evennia: 
+There are thus two ways to weave your new Character class into Evennia:
 
 1. Change `mygame/server/conf/settings.py` and add `BASE_CHARACTER_TYPECLASS = "evadventure.characters.EvAdventureCharacter"`.
-2. Or, change `typeclasses.characters.Character` to inherit from `EvAdventureCharacter`. 
+2. Or, change `typeclasses.characters.Character` to inherit from `EvAdventureCharacter`.
 
 You must always reload the server for changes like this to take effect.
 
 ```{important}
-In this tutorial we are making all changes in a folder `mygame/evadventure/`. This means we can isolate 
-our code but means we need to do some extra steps to tie the character (and other objects) into Evennia. 
-For your own game it would be just fine to start editing `mygame/typeclasses/characters.py` directly 
+In this tutorial we are making all changes in a folder `mygame/evadventure/`. This means we can isolate
+our code but means we need to do some extra steps to tie the character (and other objects) into Evennia.
+For your own game it would be just fine to start editing `mygame/typeclasses/characters.py` directly
 instead.
 ```
 
 
-## Unit Testing 
+## Unit Testing
 
 > Create a new module `mygame/evadventure/tests/test_characters.py`
 
-For testing, we just need to create a new EvAdventure character and check  that calling the methods on it doesn't error out. 
+For testing, we just need to create a new EvAdventure character and check  that calling the methods on it doesn't error out.
 
 ```python
-# mygame/evadventure/tests/test_characters.py 
+# mygame/evadventure/tests/test_characters.py
 
 from evennia.utils import create
-from evennia.utils.test_resources import BaseEvenniaTest 
+from evennia.utils.test_resources import BaseEvenniaTest
 
-from ..characters import EvAdventureCharacter 
+from ..characters import EvAdventureCharacter
 
 class TestCharacters(BaseEvenniaTest):
     def setUp(self):
@@ -328,73 +329,73 @@ class TestCharacters(BaseEvenniaTest):
         self.character = create.create_object(EvAdventureCharacter, key="testchar")
 
     def test_heal(self):
-        self.character.hp = 0 
-        self.character.hp_max = 8 
-        
+        self.character.hp = 0
+        self.character.hp_max = 8
+
         self.character.heal(1)
         self.assertEqual(self.character.hp, 1)
         # make sure we can't heal more than max
         self.character.heal(100)
         self.assertEqual(self.character.hp, 8)
-        
+
     def test_at_pay(self):
-        self.character.coins = 100 
-        
+        self.character.coins = 100
+
         result = self.character.at_pay(60)
-        self.assertEqual(result, 60) 
+        self.assertEqual(result, 60)
         self.assertEqual(self.character.coins, 40)
-        
-        # can't get more coins than we have 
+
+        # can't get more coins than we have
         result = self.character.at_pay(100)
         self.assertEqual(result, 40)
         self.assertEqual(self.character.coins, 0)
-        
-    # tests for other methods ... 
+
+    # tests for other methods ...
 
 ```
-If you followed the previous lessons, these tests should look familiar. Consider adding  tests for other methods as practice. Refer to previous lessons for details. 
+If you followed the previous lessons, these tests should look familiar. Consider adding  tests for other methods as practice. Refer to previous lessons for details.
 
-For running the tests you do: 
+For running the tests you do:
 
      evennia test --settings settings.py .evadventure.tests.test_characters
 
 
-## About races and classes 
+## About races and classes
 
-_Knave_ doesn't have any D&D-style _classes_ (like Thief, Fighter etc). It also does not bother with  _races_ (like dwarves, elves etc). This makes the tutorial shorter, but you may ask yourself how you'd  add these functions. 
+_Knave_ doesn't have any D&D-style _classes_ (like Thief, Fighter etc). It also does not bother with  _races_ (like dwarves, elves etc). This makes the tutorial shorter, but you may ask yourself how you'd  add these functions.
 
-In the framework we have sketched out for _Knave_, it would be simple - you'd add your race/class as  an Attribute on your Character: 
+In the framework we have sketched out for _Knave_, it would be simple - you'd add your race/class as  an Attribute on your Character:
 
 ```python
 # mygame/evadventure/characters.py
 
 from evennia import DefaultCharacter, AttributeProperty
-# ... 
+# ...
 
 class EvAdventureCharacter(LivingMixin, DefaultCharacter):
-    
-    # ... 
+
+    # ...
 
     charclass = AttributeProperty("Fighter")
     charrace = AttributeProperty("Human")
 
 ```
-We use `charclass` rather than `class` here, because `class` is a reserved Python keyword. Naming  `race` as `charrace` thus matches in style. 
+We use `charclass` rather than `class` here, because `class` is a reserved Python keyword. Naming  `race` as `charrace` thus matches in style.
 
-We'd then need to expand our [rules module](./Beginner-Tutorial-Rules.md) (and later 
+We'd then need to expand our [rules module](./Beginner-Tutorial-Rules.md) (and later
 [character generation](./Beginner-Tutorial-Chargen.md) to check and include what these classes mean.
 
 
 ## Summary
 
 
-With the `EvAdventureCharacter` class in place, we have a better understanding of how our PCs will look  like under _Knave_. 
+With the `EvAdventureCharacter` class in place, we have a better understanding of how our PCs will look  like under _Knave_.
 
-For now, we only have bits and pieces and haven't been testing this code in-game. But if you want  you can swap yourself into `EvAdventureCharacter` right now. Log into your game and run the command 
+For now, we only have bits and pieces and haven't been testing this code in-game. But if you want  you can swap yourself into `EvAdventureCharacter` right now. Log into your game and run the command
 
-    type self = evadventure.characters.EvAdventureCharacter 
+    type self = evadventure.characters.EvAdventureCharacter
 
-If all went well, `ex self` will now show your typeclass as being `EvAdventureCharacter`.  Check out your strength with 
+If all went well, `ex self` will now show your typeclass as being `EvAdventureCharacter`.  Check out your strength with
 
     py self.strength = 3
 

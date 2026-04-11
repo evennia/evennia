@@ -167,7 +167,7 @@ class ObjManipCommand(COMMAND_DEFAULT_CLASS):
                     attrs = _attrs
                 # store data
                 obj_defs[iside].append({"name": objdef, "option": option, "aliases": aliases})
-                obj_attrs[iside].append({"name": objdef, "attrs": attrs})
+                obj_attrs[iside].append({"name": objdef, "attrs": attrs, "category": option})
 
         # store for future access
         self.lhs_objs = obj_defs[0]
@@ -397,7 +397,10 @@ class CmdCopy(ObjManipCommand):
             if not from_obj:
                 return
             to_obj_name = "%s_copy" % from_obj_name
-            to_obj_aliases = ["%s_copy" % alias for alias in from_obj.aliases.all()]
+            to_obj_aliases = [
+                (f"{alias}_copy", category)
+                for alias, category in from_obj.aliases.all(return_key_and_category=True)
+            ]
             copiedobj = ObjectDB.objects.copy_object(
                 from_obj, new_key=to_obj_name, new_aliases=to_obj_aliases
             )
@@ -447,7 +450,7 @@ class CmdCpAttr(ObjManipCommand):
     Usage:
       cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
-      cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+      cpattr[/switch] <attr>[:category] = <obj1>/<attr1>[:category] [,<obj2>/<attr2>,<obj3>/<attr3>,...]
       cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]
 
     Switches:
@@ -459,6 +462,11 @@ class CmdCpAttr(ObjManipCommand):
       copies the coolness attribute (defined on yourself), to attributes
       on Anna and Tom.
 
+      cpattr box/width:dimension = tube/width:dimension
+      ->
+      copies the box's width attribute in the dimension category, to be the
+      tube's width attribute in the dimension category
+
     Copy the attribute one object to one or more attributes on another object.
     If you don't supply a source object, yourself is used.
     """
@@ -468,7 +476,7 @@ class CmdCpAttr(ObjManipCommand):
     locks = "cmd:perm(cpattr) or perm(Builder)"
     help_category = "Building"
 
-    def check_from_attr(self, obj, attr, clear=False):
+    def check_from_attr(self, obj, attr, category=None, clear=False):
         """
         Hook for overriding on subclassed commands. Checks to make sure a
         caller can copy the attr from the object in question. If not, return a
@@ -479,7 +487,7 @@ class CmdCpAttr(ObjManipCommand):
         """
         return True
 
-    def check_to_attr(self, obj, attr):
+    def check_to_attr(self, obj, attr, category=None):
         """
         Hook for overriding on subclassed commands. Checks to make sure a
         caller can write to the specified attribute on the specified object.
@@ -488,22 +496,24 @@ class CmdCpAttr(ObjManipCommand):
         """
         return True
 
-    def check_has_attr(self, obj, attr):
+    def check_has_attr(self, obj, attr, category=None):
         """
         Hook for overriding on subclassed commands. Do any preprocessing
         required and verify an object has an attribute.
         """
-        if not obj.attributes.has(attr):
-            self.msg(f"{obj.name} doesn't have an attribute {attr}.")
+        if not obj.attributes.has(attr, category=category):
+            self.msg(
+                f"{obj.name} doesn't have an attribute {attr}{f'[{category}]' if category else ''}."
+            )
             return False
         return True
 
-    def get_attr(self, obj, attr):
+    def get_attr(self, obj, attr, category=None):
         """
         Hook for overriding on subclassed commands. Do any preprocessing
         required and get the attribute from the object.
         """
-        return obj.attributes.get(attr)
+        return obj.attributes.get(attr, category=category)
 
     def func(self):
         """
@@ -513,7 +523,7 @@ class CmdCpAttr(ObjManipCommand):
 
         if not self.rhs:
             string = """Usage:
-            cpattr[/switch] <obj>/<attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
+            cpattr[/switch] <obj>/<attr>[:category] = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
             cpattr[/switch] <obj>/<attr> = <obj1> [,<obj2>,<obj3>,...]
             cpattr[/switch] <attr> = <obj1>/<attr1> [,<obj2>/<attr2>,<obj3>/<attr3>,...]
             cpattr[/switch] <attr> = <obj1>[,<obj2>,<obj3>,...]"""
@@ -524,6 +534,8 @@ class CmdCpAttr(ObjManipCommand):
         to_objs = self.rhs_objattr
         from_obj_name = lhs_objattr[0]["name"]
         from_obj_attrs = lhs_objattr[0]["attrs"]
+        from_obj_category = lhs_objattr[0]["category"]  # None if unset
+        from_obj_category_str = f"[{from_obj_category}]" if from_obj_category else ""
 
         if not from_obj_attrs:
             # this means the from_obj_name is actually an attribute
@@ -540,11 +552,13 @@ class CmdCpAttr(ObjManipCommand):
             clear = True
         else:
             clear = False
-        if not self.check_from_attr(from_obj, from_obj_attrs[0], clear=clear):
+        if not self.check_from_attr(
+            from_obj, from_obj_attrs[0], clear=clear, category=from_obj_category
+        ):
             return
 
         for attr in from_obj_attrs:
-            if not self.check_has_attr(from_obj, attr):
+            if not self.check_has_attr(from_obj, attr, category=from_obj_category):
                 return
 
         if (len(from_obj_attrs) != len(set(from_obj_attrs))) and clear:
@@ -552,10 +566,11 @@ class CmdCpAttr(ObjManipCommand):
             return
 
         result = []
-
         for to_obj in to_objs:
             to_obj_name = to_obj["name"]
             to_obj_attrs = to_obj["attrs"]
+            to_obj_category = to_obj.get("category")
+            to_obj_category_str = f"[{to_obj_category}]" if to_obj_category else ""
             to_obj = caller.search(to_obj_name)
             if not to_obj:
                 result.append(f"\nCould not find object '{to_obj_name}'")
@@ -567,19 +582,19 @@ class CmdCpAttr(ObjManipCommand):
                     # if there are too few attributes given
                     # on the to_obj, we copy the original name instead.
                     to_attr = from_attr
-                if not self.check_to_attr(to_obj, to_attr):
+                if not self.check_to_attr(to_obj, to_attr, to_obj_category):
                     continue
-                value = self.get_attr(from_obj, from_attr)
-                to_obj.attributes.add(to_attr, value)
+                value = self.get_attr(from_obj, from_attr, from_obj_category)
+                to_obj.attributes.add(to_attr, value, category=to_obj_category)
                 if clear and not (from_obj == to_obj and from_attr == to_attr):
-                    from_obj.attributes.remove(from_attr)
+                    from_obj.attributes.remove(from_attr, category=from_obj_category)
                     result.append(
-                        f"\nMoved {from_obj.name}.{from_attr} -> {to_obj_name}.{to_attr}. (value:"
+                        f"\nMoved {from_obj.name}.{from_attr}{from_obj_category_str} -> {to_obj_name}.{to_attr}{to_obj_category_str}. (value:"
                         f" {repr(value)})"
                     )
                 else:
                     result.append(
-                        f"\nCopied {from_obj.name}.{from_attr} -> {to_obj.name}.{to_attr}. (value:"
+                        f"\nCopied {from_obj.name}.{from_attr}{from_obj_category_str} -> {to_obj.name}.{to_attr}{to_obj_category_str}. (value:"
                         f" {repr(value)})"
                     )
         caller.msg("".join(result))
@@ -693,6 +708,7 @@ class CmdCreate(ObjManipCommand):
             )
             if errors:
                 self.msg(errors)
+
             if not obj:
                 continue
 
@@ -702,9 +718,7 @@ class CmdCreate(ObjManipCommand):
                 )
             else:
                 string = f"You create a new {obj.typename}: {obj.name}."
-            # set a default desc
-            if not obj.db.desc:
-                obj.db.desc = "You see nothing special."
+
             if "drop" in self.switches:
                 if caller.location:
                     obj.home = caller.location
@@ -1473,7 +1487,7 @@ class CmdName(ObjManipCommand):
         obj = None
         if self.lhs_objs:
             objname = self.lhs_objs[0]["name"]
-            if objname.startswith("*"):
+            if objname.startswith("*") and caller.account:
                 # account mode
                 obj = caller.account.search(objname.lstrip("*"))
                 if obj:
@@ -1741,14 +1755,14 @@ class CmdSetAttribute(ObjManipCommand):
     the attribute (if any). The last one (with the star) is a shortcut for
     operating on a player Account rather than an Object.
 
-    If you want <value> to be an object, use $dbef(#dbref) or
+    If you want <value> to be an object, use $dbref(#dbref) or
     $search(key) to assign it. You need control or edit access to
     the object you are adding.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
     dictionaries and tuples on objects (this might be important for
-    the functionality of certain custom objects).  This is indicated
+    the functionality of certain custom objects). This is indicated
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
     or |c{ |n.
 
@@ -1843,12 +1857,21 @@ class CmdSetAttribute(ObjManipCommand):
         nested = False
         for key, nested_keys in self.split_nested_attr(attr):
             nested = True
-            if obj.attributes.has(key):
-                val = obj.attributes.get(key)
-                val = self.do_nested_lookup(val, *nested_keys)
-                if val is not self.not_found:
-                    return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
-        error = f"\nAttribute {obj.name}/|w{attr} [category:{category}] does not exist."
+            if obj.attributes.has(key, category):
+                if nested_keys:
+                    val = obj.attributes.get(key, category=category)
+                    deep = self.do_nested_lookup(val, *nested_keys[:-1])
+                    if deep is not self.not_found:
+                        try:
+                            val = deep[nested_keys[-1]]
+                        except (IndexError, KeyError, TypeError):
+                            continue
+                        return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+                else:
+                    val = obj.attributes.get(key, category=category)
+                    if val:
+                        return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+        error = f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] does not exist."
         if nested:
             error += " (Nested lookups attempted)"
         return error
@@ -3238,7 +3261,7 @@ class CmdFind(COMMAND_DEFAULT_CLASS):
             try:
                 # Check that rhs is either a valid dbref or dbref range
                 bounds = tuple(
-                    sorted(dbref(x, False) for x in re.split("[-\s]+", self.rhs.strip()))
+                    sorted(dbref(x, False) for x in re.split(r"[-\s]+", self.rhs.strip()))
                 )
 
                 # dbref() will return either a valid int or None
@@ -3874,7 +3897,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             return
 
         if not destination:
-            caller.msg("Destination not found.")
+            # Search already reported the error to the caller in parse().
             return
 
         if "loc" in self.switches:
@@ -4226,23 +4249,23 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # treat as string
             eval_err = err
             prototype = utils.to_str(inp)
-        finally:
-            # it's possible that the input was a prototype-key, in which case
-            # it's okay for the LITERAL_EVAL to fail. Only if the result does not
-            # match the expected type do we have a problem.
-            if not isinstance(prototype, expect):
-                if eval_err:
-                    string = (
-                        f"{inp}\n{eval_err}\n|RCritical Python syntax error in argument. Only"
-                        " primitive Python structures are allowed. \nMake sure to use correct"
-                        " Python syntax. Remember especially to put quotes around all strings"
-                        " inside lists and dicts.|n For more advanced uses, embed funcparser"
-                        " callables ($funcs) in the strings."
-                    )
-                else:
-                    string = f"Expected {expect}, got {type(prototype)}."
-                self.msg(string)
-                return
+
+        # validation - it's possible that the input was a prototype-key, in which case
+        # it's okay for the LITERAL_EVAL to fail. Only if the result does not
+        # match the expected type do we have a problem.
+        if not isinstance(prototype, expect):
+            if eval_err:
+                string = (
+                    f"{inp}\n{eval_err}\n|RCritical Python syntax error in argument. Only"
+                    " primitive Python structures are allowed. \nMake sure to use correct"
+                    " Python syntax. Remember especially to put quotes around all strings"
+                    " inside lists and dicts.|n For more advanced uses, embed funcparser"
+                    " callables ($funcs) in the strings."
+                )
+            else:
+                string = f"Expected {expect}, got {type(prototype)}."
+            self.msg(string)
+            return
 
         if expect == dict:
             # an actual prototype. We need to make sure it's safe,

@@ -9,9 +9,10 @@ Unit test module for Trait classes.
 from copy import copy
 
 from anything import Something
+from mock import MagicMock, patch
+
 from evennia.objects.objects import DefaultCharacter
 from evennia.utils.test_resources import BaseEvenniaTestCase, EvenniaTest
-from mock import MagicMock, patch
 
 from . import traits
 

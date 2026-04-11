@@ -15,6 +15,7 @@ http://www.gammon.com.au/mushclient/addingservermxp.htm
 """
 
 import re
+import weakref
 
 from django.conf import settings
 
@@ -24,23 +25,37 @@ URL_SUB = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 # MXP Telnet option
 MXP = bytes([91])  # b"\x5b"
 
-MXP_TEMPSECURE = "\x1B[4z"
+MXP_TEMPSECURE = "\x1b[4z"
 MXP_SEND = MXP_TEMPSECURE + '<SEND HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</SEND>"
 MXP_URL = MXP_TEMPSECURE + '<A HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</A>"
 
 
 def mxp_parse(text):
     """
-    Replaces links to the correct format for MXP.
+    Parse Evennia's MXP link markup into MXP escape sequences suitable for
+    sending to MXP-enabled clients.
+
+    Converts ``|lc<cmd>|lt<label>|le`` to a clickable SEND tag and
+    ``|lu<url>|lt<label>|le`` to a clickable URL tag. Non-MXP text
+    is left unchanged — MXP clients only interpret tags inside
+    secure-mode markers, so surrounding text is treated as literal.
+
+    Messages containing no MXP markup are returned unchanged.
 
     Args:
         text (str): The text to parse.
 
     Returns:
-        parsed (str): The parsed text.
+        str: The parsed text with MXP sequences substituted, or the
+            original text if no MXP markup was found.
 
+    Examples:
+        ``|lchelp overview|lthelp overview|le`` becomes
+        ``\\x1b[4z<SEND HREF="help overview">help overview\\x1b[4z</SEND>``
     """
-    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    if "|lc" not in text and "|lu" not in text:
+        return text
 
     text = LINKS_SUB.sub(MXP_SEND, text)
     text = URL_SUB.sub(MXP_URL, text)
@@ -61,10 +76,10 @@ class Mxp:
             protocol (Protocol): The active protocol instance.
 
         """
-        self.protocol = protocol
-        self.protocol.protocol_flags["MXP"] = False
+        self.protocol = weakref.ref(protocol)
+        self.protocol().protocol_flags["MXP"] = False
         if settings.MXP_ENABLED:
-            self.protocol.will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
+            self.protocol().will(MXP).addCallbacks(self.do_mxp, self.no_mxp)
 
     def no_mxp(self, option):
         """
@@ -74,8 +89,8 @@ class Mxp:
             option (Option): Not used.
 
         """
-        self.protocol.protocol_flags["MXP"] = False
-        self.protocol.handshake_done()
+        self.protocol().protocol_flags["MXP"] = False
+        self.protocol().handshake_done()
 
     def do_mxp(self, option):
         """
@@ -86,8 +101,8 @@ class Mxp:
 
         """
         if settings.MXP_ENABLED:
-            self.protocol.protocol_flags["MXP"] = True
-            self.protocol.requestNegotiation(MXP, b"")
+            self.protocol().protocol_flags["MXP"] = True
+            self.protocol().requestNegotiation(MXP, b"")
         else:
-            self.protocol.wont(MXP)
-        self.protocol.handshake_done()
+            self.protocol().wont(MXP)
+        self.protocol().handshake_done()

@@ -4,8 +4,8 @@ evennia.contrib.rpg.health\_bar
 
 .. automodule:: evennia.contrib.rpg.health_bar
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

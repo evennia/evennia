@@ -86,13 +86,19 @@ class EvenniaGameIndexClient:
         # We are using `or` statements below with dict.get() to avoid sending
         # stringified 'None' values to the server.
         try:
+            long_description = egi_config.get("long_description", "")
+            if long_description:
+                # The connection wizard documents using "\n" for line breaks;
+                # normalize that to actual newlines before sending to EGI.
+                long_description = long_description.replace("\\n", "\n")
+
             values = {
                 # Game listing stuff
                 "game_name": egi_config.get("game_name", settings.SERVERNAME),
                 "game_status": egi_config["game_status"],
                 "game_website": egi_config.get("game_website", ""),
                 "short_description": egi_config["short_description"],
-                "long_description": egi_config.get("long_description", ""),
+                "long_description": long_description,
                 "listing_contact": egi_config["listing_contact"],
                 # How to play
                 "telnet_hostname": egi_config.get("telnet_hostname", ""),

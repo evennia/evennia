@@ -518,14 +518,13 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
     account = obj.account if utils.inherits_from(obj, evennia.DefaultObject) else obj
     if not account:
         return True
-    try:
-        session = accessed_obj.session
-    except AttributeError:
-        # note-this doesn't work well
-        # for high multisession mode. We may need
-        # to change to sessiondb to resolve this
-        sessions = session = account.sessions.get()
-        session = sessions[0] if sessions else None
+    session = kwargs.get("session", None)
+    if session is None:
+        try:
+            session = accessed_obj.session
+        except AttributeError:
+            sessions = account.sessions.get()
+            session = sessions[0] if sessions else None
     if not session:
         # this suggests we are not even logged in; treat as ooc.
         return True
@@ -533,20 +532,6 @@ def is_ooc(accessing_obj, accessed_obj, *args, **kwargs):
         return not account.get_puppet(session)
     except TypeError:
         return not session.get_puppet()
-
-
-def objtag(accessing_obj, accessed_obj, *args, **kwargs):
-    """
-    Usage:
-        objtag(tagkey)
-        objtag(tagkey, category)
-
-    Only true if accessed_obj has the specified tag and optional
-    category.
-    """
-    tagkey = args[0] if args else None
-    category = args[1] if len(args) > 1 else None
-    return bool(accessed_obj.tags.get(tagkey, category=category))
 
 
 def inside(accessing_obj, accessed_obj, *args, **kwargs):

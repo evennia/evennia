@@ -204,6 +204,11 @@ class TestTypedObjectManager(BaseEvenniaTest):
             [],
         )
 
+    def test_get_by_tag_with_integer_key_and_category(self):
+        self.obj1.tags.add(123, 456)
+        self.assertEqual(self._manager("get_by_tag", 123, 456), [self.obj1])
+        self.assertEqual(self._manager("get_by_tag", "123", "456"), [self.obj1])
+
     def test_batch_add(self):
         tags = ["tag1", ("tag2", "category2"), "tag3", ("tag4", "category4", "data4")]
         self.obj1.tags.batch_add(*tags)

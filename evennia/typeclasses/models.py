@@ -36,6 +36,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.text import slugify
+from django.utils.translation import gettext as _
 
 import evennia
 from evennia.locks.lockhandler import LockHandler
@@ -347,12 +348,21 @@ class TypedObject(SharedMemoryModel):
         Called by creation methods; makes sure to initialize Attribute/TagProperties
         by fetching them once.
         """
-        for propkey, prop in self.__class__.__dict__.items():
-            if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty)):
-                try:
-                    getattr(self, propkey)
-                except Exception:
-                    log_trace()
+        evennia_properties = set()
+        for base in type(self).__mro__:
+            evennia_properties.update(
+                {
+                    propkey
+                    for propkey, prop in vars(base).items()
+                    if isinstance(prop, (AttributeProperty, TagProperty, TagCategoryProperty))
+                }
+            )
+
+        for propkey in evennia_properties:
+            try:
+                getattr(self, propkey)
+            except Exception:
+                log_trace()
 
     # initialize all handlers in a lazy fashion
     @lazy_property
@@ -883,7 +893,7 @@ class TypedObject(SharedMemoryModel):
         """
 
         if self.location == looker:
-            return " (carried)"
+            return _(" (carried)")
         return ""
 
     def at_rename(self, oldname, newname):
@@ -948,7 +958,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_detail_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to view details for
         this object.
 
@@ -988,7 +998,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_puppet_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to puppet a specific
         object.
 
@@ -1026,7 +1036,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_update_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to update this
         object.
 
@@ -1065,7 +1075,7 @@ class TypedObject(SharedMemoryModel):
             return "#"
 
     def web_get_delete_url(self):
-        """
+        r"""
         Returns the URI path for a View that allows users to delete this object.
 
         Returns:

@@ -4,8 +4,8 @@ evennia.contrib.utils.name\_generator
 
 .. automodule:: evennia.contrib.utils.name_generator
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

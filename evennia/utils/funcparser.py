@@ -70,6 +70,12 @@ _CLIENT_DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 _MAX_NESTING = settings.FUNCPARSER_MAX_NESTING
 _START_CHAR = settings.FUNCPARSER_START_CHAR
 _ESCAPE_CHAR = settings.FUNCPARSER_ESCAPE_CHAR
+_YOU_FORMAT_FUNCS = {
+    "upper": str.upper,
+    "lower": str.lower,
+    "capital": lambda s: s[:1].upper() + s[1:],
+    "title": str.title,
+}
 
 
 @dataclasses.dataclass
@@ -334,24 +340,34 @@ class FuncParser:
         infuncstr = ""  # string parts inside the current level of $funcdef (including $)
         literal_infuncstr = False
 
-        for char in string:
+        for ichar, char in enumerate(string):
             if escaped:
                 # always store escaped characters verbatim
                 if curr_func:
                     infuncstr += char
+                    curr_func.rawstr += char
                 else:
                     fullstr += char
                 escaped = False
                 continue
 
-            if char == escape_char:
-                # don't store the escape-char itself
+            if char == escape_char and string[ichar + 1 : ichar + 2] != escape_char:
+                # don't store the escape-char itself, but keep one escape-char,
+                # if it's followed by another escape-char
                 escaped = True
                 continue
 
             if char == start_char:
+                # peek ahead - if next char can't start a funcname, treat $ as literal
+                next_char = string[ichar + 1 : ichar + 2]
+                if next_char and not (next_char.isalpha() or next_char == "_"):
+                    # can't be a valid funcname, treat as literal
+                    if curr_func:
+                        infuncstr += char
+                    else:
+                        fullstr += char
+                    continue
                 # start a new function definition (not escaped as $$)
-
                 if curr_func:
                     # we are starting a nested funcdef
                     if len(callstack) >= _MAX_NESTING - 1:
@@ -372,7 +388,8 @@ class FuncParser:
                         curr_func.open_lsquare = open_lsquare
                         curr_func.open_lcurly = open_lcurly
                         # we must strip the remaining funcstr so it's not counted twice
-                        curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
+                        if len(infuncstr) > 0:
+                            curr_func.rawstr = curr_func.rawstr[: -len(infuncstr)]
                         current_kwarg = ""
                         infuncstr = ""
                         double_quoted = -1
@@ -1128,12 +1145,12 @@ def funcparser_callable_search(*args, caller=None, access="control", **kwargs):
         - "$search(beach, category=outdoors, type=tag)
 
     """
-    # clean out funcparser-specific kwargs so we can use the kwargs for
+    # clean out funcparser and protfunc_parser-specific kwargs so we can use the kwargs for
     # searching
     search_kwargs = {
         key: value
         for key, value in kwargs.items()
-        if key not in ("funcparser", "raise_errors", "type", "return_list")
+        if key not in ("funcparser", "raise_errors", "type", "return_list", "prototype")
     }
     return_list = str(kwargs.pop("return_list", "false")).lower() == "true"
 
@@ -1230,12 +1247,34 @@ def funcparser_callable_you(
 
     capitalize = bool(capitalize)
     if caller == receiver:
-        return "You" if capitalize else "you"
-    return (
-        caller.get_display_name(looker=receiver)
-        if hasattr(caller, "get_display_name")
-        else str(caller)
-    )
+        name = "You" if capitalize else "you"
+    else:
+        if kwargs.get("article"):
+            name = (
+                caller.get_numbered_name(1, looker=receiver, return_string=True)
+                if hasattr(caller, "get_numbered_name")
+                else str(caller)
+            )
+        else:
+            name = (
+                caller.get_display_name(looker=receiver)
+                if hasattr(caller, "get_display_name")
+                else str(caller)
+            )
+
+    # a specified format overrides 'capitalize' and also applies to "you"
+    fmt = kwargs.get('format')
+    if fmt:
+        try:
+            name = _YOU_FORMAT_FUNCS[fmt](name)
+        except KeyError:
+            callable_name = "$You" if capitalize else "$you"
+            raise ParsingError(f"Unsupported format supplied to {callable_name} callable: {fmt}.")
+    elif capitalize and caller != receiver:
+        # $You() auto-capitalizes the name for third-person receivers
+        name = name[:1].upper() + name[1:]
+
+    return name
 
 
 def funcparser_callable_you_capitalize(
@@ -1297,15 +1336,36 @@ def funcparser_callable_your(
 
     capitalize = bool(capitalize)
     if caller == receiver:
-        return "Your" if capitalize else "your"
+        name = "Your" if capitalize else "your"
+    else:
+        if kwargs.get("article"):
+            name = (
+                caller.get_numbered_name(1, looker=receiver, return_string=True)
+                if hasattr(caller, "get_numbered_name")
+                else str(caller)
+            )
+        else:
+            name = (
+                caller.get_display_name(looker=receiver)
+                if hasattr(caller, "get_display_name")
+                else str(caller)
+            )
 
-    name = (
-        caller.get_display_name(looker=receiver)
-        if hasattr(caller, "get_display_name")
-        else str(caller)
-    )
+    # a specified format overrides 'capitalize' and also applies to "your"
+    fmt = kwargs.get('format')
+    if fmt:
+        try:
+            name = _YOU_FORMAT_FUNCS[fmt](name)
+        except KeyError:
+            callable_name = "$Your" if capitalize else "$your"
+            raise ParsingError(f"Unsupported format supplied to {callable_name} callable: {fmt}.")
+    elif capitalize and caller != receiver:
+        # $Your() auto-capitalizes the name for third-person receivers
+        name = name[:1].upper() + name[1:]
 
-    return name + "'s"
+    if caller != receiver:
+        name += "'s"
+    return name
 
 
 def funcparser_callable_your_capitalize(

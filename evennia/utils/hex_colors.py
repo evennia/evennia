@@ -1,3 +1,8 @@
+"""
+Truecolor 24bit hex color support, on the form `|#00FF00`, `|[00FF00` or `|#0F0 or `|[#0F0`
+
+"""
+
 import re
 
 

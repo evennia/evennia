@@ -4,8 +4,8 @@ evennia.web.website
 
 .. automodule:: evennia.web.website
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

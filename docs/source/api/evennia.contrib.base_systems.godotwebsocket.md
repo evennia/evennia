@@ -4,8 +4,8 @@ evennia.contrib.base\_systems.godotwebsocket
 
 .. automodule:: evennia.contrib.base_systems.godotwebsocket
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

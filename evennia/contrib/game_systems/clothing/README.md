@@ -21,7 +21,7 @@ Would result in this added description:
 ## Installation
 
 To install, import this module and have your default character
-inherit from ClothedCharacter in your game's characters.py file:
+inherit from ClothedCharacter in your game's `characters.py` file:
 
 ```python
 

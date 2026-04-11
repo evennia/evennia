@@ -62,10 +62,10 @@ At this point, our new *app*  contains mostly empty files that you can explore. 
 
 ### Create a view
 
-A *view* in Django is a simple Python function placed in the "views.py" file in your app.  It will
+A *view* in Django is a simple Python function placed in the `views.py` file in your app.  It will
 handle the behavior that is triggered when a user asks for this information by entering a *URL* (the connection between *views* and *URLs* will be discussed later).
 
-So let's create our view.  You can open the "web/help_system/views.py" file and paste the following lines:
+So let's create our view.  You can open the `web/help_system/views.py` file and paste the following lines:
 
 ```python
 from django.shortcuts import render
@@ -108,7 +108,7 @@ Here's a little explanation line by line of what this template does:
 
 ### Create a new URL
 
-Last step to add our page: we need to add a *URL* leading to it... otherwise users won't be able to access it.  The URLs of our apps are stored in the app's directory "urls.py" file.
+Last step to add our page: we need to add a *URL* leading to it... otherwise users won't be able to access it.  The URLs of our apps are stored in the app's directory `urls.py` file.
 
 Open the `web/help_system/urls.py` file (you might have to create it) and make it look like this:
 

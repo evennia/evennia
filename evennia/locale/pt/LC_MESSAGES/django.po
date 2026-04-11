@@ -1,9 +1,10 @@
 # EVENNIA - Tradução em Português
 # Copyright (C) 2015, Daniel Dias Rodrigues (a.k.a. Nerun)
-# Copyright (C) 2022, Marcos Marado
+# Copyright (C) 2022, 2025, Marcos Marado
 # This file is distributed under the same license as the Evennia package.
 # Nerun <nerunblogs@gmail.com>, 2015.
-# Marcos Marado <mindboosternoori@gmail.com>, 2022.
+# Marcos Marado <mindboosternoori@gmail.com>, 2022, 2025.
+# Version 4 (Oct. 9nd, 2022)
 # Version 3 (Oct. 2nd, 2022)
 # Version 2 (Dec. 16th, 2015)
 # Version 1 (Aug. 19th, 2014)
@@ -14,7 +15,7 @@ msgstr ""
 "Project-Id-Version: Evennia Beta\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-29 18:53+0000\n"
-"PO-Revision-Date: 2022-10-02 18:12+0000\n"
+"PO-Revision-Date: 2025-10-09 23:27+0000\n"
 "Last-Translator: Marcos Marado <mindboosternoori@gmail.com>\n"
 "Language-Team: Nerun <nerunblogs@gmail.com>\n"
 "Language: pt\n"
@@ -457,19 +458,19 @@ msgstr "{name} entrou no jogo."
 #, fuzzy, python-brace-format
 #| msgid "{name} has left the game."
 msgid "{name} has left the game{reason}."
-msgstr "{name} saiu do jogo."
+msgstr "{name} saiu do jogo{reason}."
 
 #: objects/objects.py:2838
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is a room."
-msgstr "Este é o Usuário #1."
+msgstr "Esta é uma sala."
 
 #: objects/objects.py:3045
 #, fuzzy
 #| msgid "This is User #1."
 msgid "This is an exit."
-msgstr "Este é o Usuário #1."
+msgstr "Esta é uma saída."
 
 #: objects/objects.py:3142
 msgid "You cannot go there."
@@ -669,7 +670,7 @@ msgstr "Tempo de inatividade esgotado, desconectando."
 
 #: server/server.py:177
 msgid " (connection lost)"
-msgstr ""
+msgstr " (ligação perdida)"
 
 #: server/sessionhandler.py:41
 msgid "Your client sent an incorrect UTF-8 sequence."

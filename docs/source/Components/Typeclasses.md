@@ -244,18 +244,18 @@ The arguments to this method are described [in the API docs here](github:evennia
 
 Technically, typeclasses are [Django proxy models](https://docs.djangoproject.com/en/4.1/topics/db/models/#proxy-models).  The only database models that are "real" in the typeclass system (that is, are represented by actual tables in the database) are `AccountDB`, `ObjectDB`, `ScriptDB` and `ChannelDB` (there are also [Attributes](./Attributes.md) and [Tags](./Tags.md) but they are not typeclasses themselves). All the subclasses of them are "proxies", extending them with Python code without actually modifying the database layout.
 
-Evennia modifies Django's proxy model in various ways to allow them to work without any boiler plate (for example you don't need to set the Django "proxy" property in the model `Meta` subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches django to allow multiple inheritance from the same base class.
+Evennia modifies Django's proxy model in various ways to allow them to work without any boiler plate (for example you don't need to set the Django "proxy" property in the model `Meta` subclass, Evennia handles this for you using metaclasses). Evennia also makes sure you can query subclasses as well as patches Django to allow multiple inheritance from the same base class.
 
 ### Caveats
 
-Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you'll get a *different* instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia's Typeclass instances subside in memory a lot longer than vanilla Django model instance do. 
+Evennia uses the *idmapper* to cache its typeclasses (Django proxy models) in memory. The idmapper allows things like on-object handlers and properties to be stored on typeclass instances and to not get lost as long as the server is running (they will only be cleared on a Server reload). Django does not work like this by default; by default every time you search for an object in the database you'll get a *different* instance of that object back and anything you stored on it that was not in the database would be lost. The bottom line is that Evennia's Typeclass instances subsist in memory a lot longer than vanilla Django model instances do. 
 
 There is one caveat to consider with this, and that relates to [making your own models](New-
 Models): Foreign relationships to typeclasses are cached by Django and that means that if you were to change an object in a foreign relationship via some other means than via that relationship, the object seeing the relationship may not reliably update but will still see its old cached version. Due to typeclasses staying so long in memory, stale caches of such relationships could be more visible than common in Django. See the [closed issue #1098 and its comments](https://github.com/evennia/evennia/issues/1098) for examples and solutions.
 
 ## Will I run out of dbrefs? 
 
-Evennia does not re-use its `#dbrefs`. This means new objects get an ever-increasing `#dbref`, also if you delete older objects. There are technical and safety reasons for this. But you may wonder if this means you have to worry about a big game 'running out' of dbref integers eventually.
+Evennia does not re-use its `#dbrefs`. This means new objects get an ever-increasing `#dbref`, even if you delete older objects. There are technical and safety reasons for this. But you may wonder if this means you have to worry about a big game 'running out' of dbref integers eventually.
 
 The answer is simply **no**. 
 

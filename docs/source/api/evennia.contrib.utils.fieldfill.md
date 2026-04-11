@@ -4,8 +4,8 @@ evennia.contrib.utils.fieldfill
 
 .. automodule:: evennia.contrib.utils.fieldfill
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

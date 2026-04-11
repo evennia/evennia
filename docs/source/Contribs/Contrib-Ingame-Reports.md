@@ -77,7 +77,7 @@ The contrib is designed to make adding new types of reports to the system as sim
 
 #### Update your settings
 
-The contrib optionally references `INGAME_REPORT_TYPES` in your settings.py to see which types of reports can be managed. If you want to change the available report types, you'll need to define this setting.
+The contrib optionally references `INGAME_REPORT_TYPES` in your `settings.py` to see which types of reports can be managed. If you want to change the available report types, you'll need to define this setting.
 
 ```python
 # in server/conf/settings.py

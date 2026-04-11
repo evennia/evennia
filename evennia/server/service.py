@@ -8,18 +8,20 @@ import time
 import traceback
 
 import django
-import evennia
 from django.conf import settings
+import django.db
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _
-from evennia.utils import logger
-from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 from twisted.application import internet
 from twisted.application.service import MultiService
 from twisted.internet import defer, reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.task import LoopingCall
+
+import evennia
+from evennia.utils import logger
+from evennia.utils.utils import get_evennia_version, make_iter, mod_import
 
 _SA = object.__setattr__
 
@@ -186,6 +188,10 @@ class EvenniaServerService(MultiService):
 
         # clear server startup mode
         try:
+            # Close stale DB connections inherited from the pre-fork parent
+            # process. Python 3.14's sqlite3 module is not fork-safe and will
+            # raise MemoryError if a pre-fork connection is reused.
+            django.db.connections.close_all()
             evennia.ServerConfig.objects.conf("server_starting_mode", delete=True)
         except OperationalError:
             print("Server server_starting_mode couldn't unset - db not set up.")
@@ -521,7 +527,10 @@ class EvenniaServerService(MultiService):
             # only save monitor state on reload, not on shutdown/reset
             from evennia.scripts.monitorhandler import MONITOR_HANDLER
 
-            MONITOR_HANDLER.save()
+            try:
+                MONITOR_HANDLER.save()
+            except Exception as err:
+                logger.log_trace(f"Error saving MonitorHandler state: {err}")
         else:
             if mode == "reset":
                 # like shutdown but don't unset the is_connected flag and don't disconnect sessions
@@ -551,12 +560,18 @@ class EvenniaServerService(MultiService):
         # tickerhandler state should always be saved.
         from evennia.scripts.tickerhandler import TICKER_HANDLER
 
-        TICKER_HANDLER.save()
+        try:
+            TICKER_HANDLER.save()
+        except Exception as err:
+            logger.log_trace(f"Error saving TickerHandler state: {err}")
 
         # on-demand handler state should always be saved.
         from evennia.scripts.ondemandhandler import ON_DEMAND_HANDLER
 
-        ON_DEMAND_HANDLER.save()
+        try:
+            ON_DEMAND_HANDLER.save()
+        except Exception as err:
+            logger.log_trace(f"Error saving OnDemandHandler state: {err}")
 
         # always called, also for a reload
         self.at_server_stop()
@@ -673,12 +688,6 @@ class EvenniaServerService(MultiService):
         shutdown or a reset.
 
         """
-        # We need to do this just in case the server was killed in a way where
-        # the normal cleanup operations did not have time to run.
-        from evennia.objects.models import ObjectDB
-
-        ObjectDB.objects.clear_all_sessids()
-
         # Remove non-persistent scripts
         from evennia.scripts.models import ScriptDB
 

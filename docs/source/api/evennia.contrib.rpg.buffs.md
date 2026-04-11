@@ -4,8 +4,8 @@ evennia.contrib.rpg.buffs
 
 .. automodule:: evennia.contrib.rpg.buffs
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

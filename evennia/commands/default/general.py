@@ -6,7 +6,7 @@ import re
 
 from django.conf import settings
 
-import evennia
+from evennia.objects.objects import DefaultObject
 from evennia.typeclasses.attributes import NickTemplateInvalid
 from evennia.utils import utils
 
@@ -118,7 +118,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
       nick build $1 $2 = create/drop $1;$2
       nick tell $1 $2=page $1=$2
       nick tm?$1=page tallman=$1
-      nick tm\=$1=page tallman=$1
+      nick tm\\\\=$1=page tallman=$1
 
     A 'nick' is a personal string replacement. Use $1, $2, ... to catch arguments.
     Put the last $-marker without an ending space to catch all remaining text. You
@@ -128,7 +128,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
         ? - matches 0 or 1 single characters
         [abcd] - matches these chars in any order
         [!abcd] - matches everything not among these chars
-        \= - escape literal '=' you want in your <string>
+        \\\\= - escape literal '=' you want in your <string>
 
     Note that no objects are actually renamed or changed by this command - your nicks
     are only available to you. If you want to permanently add keywords to an object
@@ -143,7 +143,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
     def parse(self):
         """
-        Support escaping of = with \=
+        Support escaping of = with \\=
         """
         super().parse()
         args = (self.lhs or "") + (" = %s" % self.rhs if self.rhs else "")
@@ -153,7 +153,7 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
             self.lhs = parts[0].strip()
         else:
             self.lhs, self.rhs = [part.strip() for part in parts]
-        self.lhs = self.lhs.replace("\=", "=")
+        self.lhs = self.lhs.replace("\\=", "=")
 
     def func(self):
         """Create the nickname"""
@@ -190,7 +190,8 @@ class CmdNick(COMMAND_DEFAULT_CLASS):
 
         if "clearall" in switches:
             caller.nicks.clear()
-            caller.account.nicks.clear()
+            if caller.account:
+                caller.account.nicks.clear()
             caller.msg("Cleared all nicks.")
             return
 
@@ -790,15 +791,18 @@ class CmdAccess(COMMAND_DEFAULT_CLASS):
         hierarchy_full = settings.PERMISSION_HIERARCHY
         string = "\n|wPermission Hierarchy|n (climbing):\n %s" % ", ".join(hierarchy_full)
 
-        if self.caller.account.is_superuser:
+        if caller.account and caller.account.is_superuser:
             cperms = "<Superuser>"
             pperms = "<Superuser>"
         else:
             cperms = ", ".join(caller.permissions.all())
-            pperms = ", ".join(caller.account.permissions.all())
+            if caller.account:
+                pperms = ", ".join(caller.account.permissions.all())
+            else:
+                pperms = "<No account>"
 
         string += "\n|wYour access|n:"
         string += f"\nCharacter |c{caller.key}|n: {cperms}"
-        if utils.inherits_from(caller, evennia.DefaultObject):
+        if utils.inherits_from(caller, DefaultObject) and caller.account:
             string += f"\nAccount |c{caller.account.key}|n: {pperms}"
         caller.msg(string)

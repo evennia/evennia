@@ -41,6 +41,7 @@ _RE_KEYS = re.compile(r"([\w\s]+)(?:\+*?)", re.U + re.I)
 
 class DescValidateError(ValueError):
     "Used for tracebacks from desc systems"
+
     pass
 
 

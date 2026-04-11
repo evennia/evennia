@@ -4,8 +4,8 @@ evennia.contrib.game\_systems.barter
 
 .. automodule:: evennia.contrib.game_systems.barter
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 
 

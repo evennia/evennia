@@ -248,7 +248,7 @@ class EvAdventureWeapon(EvAdventureObject):
     quality = AttributeProperty(3, autocreate=False)
     
     attack_type = AttributeProperty(Ability.STR, autocreate=False)
-    defend_type = AttributeProperty(Ability.ARMOR, autocreate=False)
+    defense_type = AttributeProperty(Ability.ARMOR, autocreate=False)
     
     damage_roll = AttributeProperty("1d6", autocreate=False)
 
@@ -387,7 +387,7 @@ class EvAdventureRuneStone(EvAdventureWeapon, EvAdventureConsumable):
     quality = AttributeProperty(3, autocreate=False)
 
     attack_type = AttributeProperty(Ability.INT, autocreate=False)
-    defend_type = AttributeProperty(Ability.DEX, autocreate=False)
+    defense_type = AttributeProperty(Ability.DEX, autocreate=False)
     
     damage_roll = AttributeProperty("1d8", autocreate=False)
 

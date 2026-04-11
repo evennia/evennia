@@ -731,7 +731,7 @@ class CmdEditorGroup(CmdEditorBase):
                     + " [f]ull (default), [c]enter, [r]right or [l]eft"
                 )
                 return
-            align = align_map[self.arg1.lower()] if self.arg1 else "f"
+            align = align_map[self.arg1.lower()] if self.arg1 else "l"
             width = _DEFAULT_WIDTH
             if self.arg2:
                 value = self.arg2.lstrip("=")

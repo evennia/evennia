@@ -15,15 +15,15 @@
 <br>Taking our new game online and letting players try it out.
 ```
 
-Welcome to Evennia! This multi-part Beginner Tutorial will help get you off the ground and running. 
+Welcome to Evennia! This multi-part Beginner Tutorial will help get you off the ground and running.
 
 You may choose topics that seem interesting but, if you follow this tutorial through to the end, you will have created your own small online game to play and share with others!
 
-Use the menu on the right to navigate the index of each of the tutorial's parts. Use the [next](Part1/Beginner-Tutorial-Part1-Overview.md) and [previous](../Howtos-Overview.md) links at the top/bottom right of each page to jump between lessons. 
+Use the menu on the right to navigate the index of each of the tutorial's parts. Use the [next](Part1/Beginner-Tutorial-Part1-Overview.md) and [previous](../Howtos-Overview.md) links at the top/bottom right of each page to jump between lessons.
 
 ## Things You Need
 
-- A command line interface 
+- A command line interface
 - A MUD client (or web browser)
 - A text-editor/IDE
 - Evennia installed and a game-dir initialized
@@ -38,9 +38,9 @@ You need to know how to find the terminal/console in your OS. The Evennia server
 
 ### A Fresh Game-Dir?
 
-You should make sure that you have successfully [installed Evennia](../../Setup/Installation.md). If you followed the instructions, you will have already created a game-dir. The documentation will continue to refer to this game-dir as `mygame`, so you may want to re-use it or make a new one specific to this tutorial only -- it's up to you. 
+You should make sure that you have successfully [installed Evennia](../../Setup/Installation.md). If you followed the instructions, you will have already created a game-dir. The documentation will continue to refer to this game-dir as `mygame`, so you may want to re-use it or make a new one specific to this tutorial only -- it's up to you.
 
-If you already have a game-dir and want a new one specific to this tutorial, use the `evennia stop` command to halt the running server. Then, [initialize a new game-dir](../../Setup/Installation.md#initialize-a-new-game) somewhere else (_not_ inside the previous game-dir!). 
+If you already have a game-dir and want a new one specific to this tutorial, use the `evennia stop` command to halt the running server. Then, [initialize a new game-dir](../../Setup/Installation.md#initialize-a-new-game) somewhere else (_not_ inside the previous game-dir!).
 
 ### A MUD Client
 
@@ -56,7 +56,7 @@ You need a text editor application to edit Python source files. Most anything th
 
 - [Here's a blog post summing up a variety of text editor options](https://www.elegantthemes.com/blog/resources/best-code-editors) - these things don't change much from year to year. Popular choices for Python are PyCharm, VSCode, Atom, Sublime Text, and Notepad++. Evennia is -- to a very large degree -- coded in VIM, but it is not suitable for beginners.
 
-```{important} Use Spaces, Not Tabs< br/>
+```{important} Use Spaces, Not Tabs
 Make sure to configure your text editor so that pressing the 'Tab' key inserts _4 spaces_ rather than a tab-character. Because Python is whitespace-aware, this simple practice will make your life much easier.
 ```
 
@@ -64,7 +64,7 @@ Make sure to configure your text editor so that pressing the 'Tab' key inserts _
 
 This tutorial will primarily assume you are experimenting with Python through your game client, using the in-game `py` command. But you can also explore Python instructions outside of the game. Run the following from your game dir folder:
 
-    $ evennia shell 
+    $ evennia shell
 
 ```{sidebar}
 The `evennia shell` console is convenient for experimenting with Python. But note that if you manipulate database objects from `evennia shell`, those changes will not be visible from inside the game until you reload the server. Similarly changes in-game may not visible to the `evennia shell` console until restarting it. As a guideline, use `evennia shell` for testing things out. Don't use it to change the state of a running game. The beginner tutorial uses the in-game `py` command to avoid confusion.
@@ -73,7 +73,7 @@ This will open an Evennia/Django aware python shell. You should use this instead
 
      $ pip install ipython3
 
-The `evennia shell` command will use `ipython` automatically if installed. 
+The `evennia shell` command will use `ipython` automatically if installed.
 
 ---
 

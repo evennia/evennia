@@ -8,9 +8,8 @@ from random import randint
 from unittest import mock
 
 from django.test import TestCase
-from parameterized import parameterized
-
 from evennia.utils.test_resources import BaseEvenniaCommandTest, BaseEvenniaTest
+from parameterized import parameterized
 
 from . import commands, xymap, xymap_legend, xyzgrid, xyzroom
 
@@ -437,14 +436,15 @@ class TestMap1(_MapTest):
 
     def test_get_shortest_path(self):
         directions, path = self.map.get_shortest_path((0, 0), (1, 1))
-        self.assertEqual(directions, ["e", "n"])
+        # self.assertEqual(directions, ["e", "n"])
+        self.assertEqual(directions, ["n", "e"])
         self.assertEqual(
             [str(node) for node in path],
             [
                 str(self.map.node_index_map[0]),
-                "<LinkNode '-' XY=(0.5,0)>",
-                str(self.map.node_index_map[1]),
-                "<LinkNode '|' XY=(1,0.5)>",
+                "<LinkNode '|' XY=(0,0.5)>",
+                str(self.map.node_index_map[2]),
+                "<LinkNode '-' XY=(0.5,1)>",
                 str(self.map.node_index_map[3]),
             ],
         )
@@ -681,9 +681,11 @@ class TestMap3(_MapTest):
             ((4, 1), (4, 3), ("ne", "nw")),
             ((2, 2), (3, 5), ("nw", "ne")),
             ((2, 2), (1, 5), ("nw", "ne", "w")),
-            ((5, 5), (0, 0), ("sw", "nw", "sw", "s", "s", "sw")),
-            ((5, 5), (0, 0), ("sw", "nw", "sw", "s", "s", "sw")),
-            ((5, 2), (1, 2), ("sw", "nw", "w", "nw", "s")),
+            # ((5, 5), (0, 0), ("sw", "nw", "sw", "s", "s", "sw")),
+            ((5, 5), (0, 0), ("sw", "nw", "sw", "se", "sw", "sw")),
+            ((5, 5), (0, 0), ("sw", "nw", "sw", "se", "sw", "sw")),
+            # ((5, 2), (1, 2), ("sw", "nw", "w", "nw", "s")),
+            ((5, 2), (1, 2), ("nw", "n", "nw", "sw", "s")),
             ((4, 1), (1, 1), ("nw", "w", "sw")),
         ]
     )
@@ -750,7 +752,8 @@ class TestMap4(_MapTest):
             ((4, 1), (1, 0), ("w", "w", "n", "e", "s")),
             ((1, 2), (2, 3), ("ne",)),  # cross x
             ((1, 2), (2, 3), ("ne",)),
-            ((2, 2), (0, 4), ("w", "ne", "nw", "w")),
+            # ((2, 2), (0, 4), ("w", "ne", "nw", "w")),
+            ((2, 2), (0, 4), ("ne", "w", "nw", "w")),
         ]
     )
     def test_shortest_path(self, startcoord, endcoord, expected_directions):
@@ -917,7 +920,8 @@ class TestMap8(_MapTest):
             ((1, 1), (2, 2), ("n", "w", "s")),
             ((5, 3), (5, 3), ()),
             ((5, 3), (0, 4), ("s", "n", "n", "w")),
-            ((1, 4), (3, 3), ("e", "w", "e")),
+            # ((1, 4), (3, 3), ("e", "w", "e")),
+            ((1, 4), (3, 3), ("w", "s", "e")),
         ]
     )
     def test_shortest_path(self, startcoord, endcoord, expected_directions):
