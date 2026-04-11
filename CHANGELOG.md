@@ -29,6 +29,7 @@
 - [Fix][pull3910]: Fix MXP parse to not escape surrounding text as HTML entities (aMiss-aWry)
 - [Fix][pull3504]: Mail contrib now displays date/times in the player's local timezone (chiizujin)
 - [Fix][pull3600]: Handle no armor and no helmet/shield cases in evadventure chargen (jzmiller1)
+- [Fix][pull3850]: Fix potential error from clone-num logic in `DefaultObject.copy` (InspectorCaracal)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -50,6 +51,7 @@
 [pull3504]: https://github.com/evennia/evennia/pull/3504
 [pull3511]: https://github.com/evennia/evennia/pull/3511
 [pull3600]: https://github.com/evennia/evennia/pull/3600
+[pull3850]: https://github.com/evennia/evennia/pull/3850
 [mudstandards-ws]: https://mudstandards.org/websocket/
 
 ## Evennia 6.0.0

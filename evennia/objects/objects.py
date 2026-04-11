@@ -1519,7 +1519,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             num = 1
             if nums := [int(suffix) for suffix in suffixes if suffix.isdigit()]:
                 num = max(nums) + 1
-            return f"{key}{num:02d}"
+            return f"{key}{num:03d}"
 
         new_key = new_key or find_clone_key()
         new_obj = ObjectDB.objects.copy_object(self, new_key=new_key, **kwargs)

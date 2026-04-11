@@ -397,30 +397,30 @@ class TestObjectManager(BaseEvenniaTest):
         # reset key to avoid overlap with other tests
         self.obj1.key = "CopyMe"
         copied = self.obj1.copy()
-        self.assertEqual(copied.key, "CopyMe01")
+        self.assertEqual(copied.key, "CopyMe001")
         copied2 = self.obj1.copy()
-        self.assertEqual(copied2.key, "CopyMe02")
+        self.assertEqual(copied2.key, "CopyMe002")
         # verify that it increments based on max existing identifier
         # both for skipped numbers...
-        copied.key = "CopyMe03"
+        copied.key = "CopyMe003"
         copied3 = self.obj1.copy()
-        self.assertEqual(copied3.key, "CopyMe04")
+        self.assertEqual(copied3.key, "CopyMe004")
         copied3.delete()
         # ...and for duplicate numbers
-        copied.key = "CopyMe01"
-        copied2.key = "CopyMe01"
+        copied.key = "CopyMe001"
+        copied2.key = "CopyMe001"
         copied3 = self.obj1.copy()
-        self.assertEqual(copied3.key, "CopyMe02")
+        self.assertEqual(copied3.key, "CopyMe002")
         # and that sharing a partial prefix doesn't count
         copied3.delete()
-        copied.key = "CopyMeMe02"
-        copied2.key = "CopyMe01"
+        copied.key = "CopyMeMe002"
+        copied2.key = "CopyMe001"
         copied3 = self.obj1.copy()
-        self.assertEqual(copied3.key, "CopyMe02")
+        self.assertEqual(copied3.key, "CopyMe002")
         # and that nothing breaks if something in the room doesn't share the prefix
         copied3.key = "NotACopy"
         copied4 = self.obj1.copy()
-        self.assertEqual(copied4.key, "CopyMe02")
+        self.assertEqual(copied4.key, "CopyMe002")
 
 
     def test_copy_object_no_location(self):
