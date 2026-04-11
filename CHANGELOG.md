@@ -30,6 +30,7 @@
 - [Fix][pull3504]: Mail contrib now displays date/times in the player's local timezone (chiizujin)
 - [Fix][pull3600]: Handle no armor and no helmet/shield cases in evadventure chargen (jzmiller1)
 - [Fix][pull3850]: Fix potential error from clone-num logic in `DefaultObject.copy` (InspectorCaracal)
+- [Fix][pull3769]: Exit multimatch now shows the exit's display name instead of the search query (JohniFi)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -51,6 +52,7 @@
 [pull3504]: https://github.com/evennia/evennia/pull/3504
 [pull3511]: https://github.com/evennia/evennia/pull/3511
 [pull3600]: https://github.com/evennia/evennia/pull/3600
+[pull3769]: https://github.com/evennia/evennia/pull/3769
 [pull3850]: https://github.com/evennia/evennia/pull/3850
 [mudstandards-ws]: https://mudstandards.org/websocket/
 

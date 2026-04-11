@@ -498,6 +498,33 @@ class TestContentHandler(BaseEvenniaTest):
         self.assertEqual(self.room2.contents, [self.obj1, self.obj2])
 
 
+class TestExitCommand(BaseEvenniaTest):
+    """Test the ExitCommand class."""
+
+    def _get_exit_cmd(self):
+        """Create an ExitCommand from the test exit object."""
+        cmdset = self.exit.create_exit_cmdset(self.exit)
+        return [cmd for cmd in cmdset.commands if cmd.key == "out"][0]
+
+    def test_get_display_name(self):
+        """ExitCommand.get_display_name should delegate to the exit object."""
+        cmd = self._get_exit_cmd()
+        self.assertEqual(cmd.get_display_name(self.char1), "out")
+
+    def test_get_extra_info_with_destination(self):
+        """ExitCommand.get_extra_info should show destination."""
+        cmd = self._get_exit_cmd()
+        info = cmd.get_extra_info(self.char1)
+        self.assertIn("Room2", info)
+
+    def test_get_extra_info_no_destination(self):
+        """ExitCommand.get_extra_info should return '(exit)' with no destination."""
+        self.exit.destination = None
+        cmd = self._get_exit_cmd()
+        info = cmd.get_extra_info(self.char1)
+        self.assertIn("exit", info)
+
+
 class SubAttributeProperty(AttributeProperty):
     pass
 
