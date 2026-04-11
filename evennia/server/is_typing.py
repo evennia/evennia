@@ -22,13 +22,24 @@ def is_typing_setup(session, *args, **kwargs):
     options = session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 
+    live_report_commands = [
+        cmd for cmd in session.puppet.cmdset.current if hasattr(cmd, "client_live_report_typing")
+    ]
+    commands_and_aliases = []
+    for cmd in live_report_commands:
+        commands_and_aliases.append(cmd.key)
+        commands_and_aliases += cmd.aliases
+
     if not is_typing:
         return
 
     session.msg(
         is_typing={
             "type": "setup",
-            "payload": {"say_aliases": CmdSay.aliases, "talking_timeout": _IS_TYPING_TIMEOUT},
+            "payload": {
+                "live_report_commands": commands_and_aliases,
+                "typing_timeout": _IS_TYPING_TIMEOUT,
+            },
         }
     )
 

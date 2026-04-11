@@ -9,7 +9,7 @@ let is_typing = (function (){
         cleanup_callback: null,
     }
 
-    const sayCommands = ['say']
+    const liveReportCommandss = []
 
     /**
      * Create the containers that house our typing users
@@ -89,8 +89,8 @@ let is_typing = (function (){
             const cmd = escapeRegExp(alias);
 
             // Is it already present?
-            if (sayCommands.indexOf(cmd) === -1){
-                sayCommands.push(escapeRegExp(alias)); // Nope!
+            if (liveReportCommandss.indexOf(cmd) === -1){
+                liveReportCommandss.push(escapeRegExp(alias)); // Nope!
             }
         })
     }
@@ -114,7 +114,7 @@ let is_typing = (function (){
      * @param {KeyboardEvent} event - The typing state, e.g., "typing" or "idle".
      */
     const onKeydown = function (event) {
-        const regex = new RegExp(`^\W*(${sayCommands.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
+        const regex = new RegExp(`^\W*(${liveReportCommandss.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
         const inputfield = $(".inputfield:focus");
 
         // A 'say' command is being used.
@@ -193,9 +193,9 @@ let is_typing = (function (){
         if ('type' in kwargs) {
             switch (kwargs.type) {
                 case 'setup':
-                    const {say_aliases, talking_timeout } = kwargs.payload
-                    timeout = talking_timeout
-                    setSayAliases(say_aliases)
+                    const {live_report_commands, typing_timeout } = kwargs.payload
+                    timeout = typing_timeout
+                    setSayAliases(live_report_commands)
                     break;
 
                 case 'typing':
@@ -249,7 +249,7 @@ let is_typing = (function (){
 
         createDialog();
 
-        console.log('Is Typing plugin initialized');
+        console.log(`Is Typing plugin initialized`);
     }
 
     return {

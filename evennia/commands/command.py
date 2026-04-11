@@ -507,6 +507,7 @@ Command \"{cmdname}\" has no defined `func()` method. Available properties on th
                 ("self.locks", self.locks),
                 ("self.help_category", self.help_category),
                 ("self.cmdset", self.cmdset),
+                ("self.client_live_report_typing", self.client_live_report_typing),
             )
         ]
         output = output_string.format(cmdname=self.key, variables="\n    ".join(variables))
