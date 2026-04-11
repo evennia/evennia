@@ -402,6 +402,39 @@ class TestProtLib(BaseEvenniaTest):
         match = protlib.search_prototype(self.prot["prototype_key"].upper())
         self.assertEqual(match, [self.prot])
 
+    def test_homogenize_prototype_locks_preserved(self):
+        """Test that homogenize_prototype preserves custom prototype_locks. (Bug 3828)"""
+        from evennia.prototypes.prototypes import _PROTOTYPE_FALLBACK_LOCK
+
+        prot_with_locks = {
+            "prototype_key": "test_prot_with_locks",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "prototype_locks": "spawn:perm(Builder);edit:perm(Admin)",
+        }
+        homogenized = protlib.homogenize_prototype(prot_with_locks)
+        self.assertEqual(
+            homogenized["prototype_locks"],
+            "spawn:perm(Builder);edit:perm(Admin)",
+        )
+        self.assertNotEqual(
+            homogenized["prototype_locks"],
+            _PROTOTYPE_FALLBACK_LOCK,
+        )
+
+    def test_homogenize_prototype_locks_default_fallback(self):
+        """Test that homogenize_prototype uses default when prototype_locks not provided."""
+        from evennia.prototypes.prototypes import _PROTOTYPE_FALLBACK_LOCK
+
+        prot_without_locks = {
+            "prototype_key": "test_prot_without_locks",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+        }
+        homogenized = protlib.homogenize_prototype(prot_without_locks)
+        self.assertEqual(
+            homogenized["prototype_locks"],
+            _PROTOTYPE_FALLBACK_LOCK,
+        )
+
 
 class TestProtFuncs(BaseEvenniaTest):
     @override_settings(PROT_FUNC_MODULES=["evennia.prototypes.protfuncs"])
@@ -1044,6 +1077,47 @@ class TestIssue2908(BaseEvenniaTest):
         obj = spawner.spawn(prot, caller=self.char1)
         self.assertEqual(obj[0].location, self.room1)
 
+
+class TestIssue3824(BaseEvenniaTest):
+    """
+    Test that $obj, $objlist, $search, and $dbref callables work correctly when spawning prototypes.
+
+    Regression test for bug where 'prototype' kwarg was passed to search functions causing TypeError.
+    """
+
+    def test_spawn_with_search_callables(self):
+        """Test spawning prototype with $obj, $objlist, $search, and $dbref callables."""
+        # Setup: tag some objects for searching
+        self.room1.tags.add("test_location", category="zone")
+        self.room2.tags.add("test_location", category="zone")
+        self.obj1.tags.add("test_item", category="item_type")
+
+        # Create prototype using all search callables
+        prot = {
+            "prototype_key": "test_search_callables",
+            "typeclass": "evennia.objects.objects.DefaultObject",
+            "key": "test object",
+            "attr_obj": f"$obj({self.obj1.dbref})",
+            "attr_search": "$search(Char)",
+            "attr_objlist": "$objlist(test_location, category=zone, type=tag)",
+            "attr_dbref": f"$dbref({self.obj1.dbref})",
+        }
+
+        # This should not raise TypeError about 'prototype' kwarg
+        objs = spawner.spawn(prot, caller=self.char1)
+
+        self.assertEqual(len(objs), 1)
+        obj = objs[0]
+
+        # Verify all search callables worked correctly
+        self.assertEqual(obj.db.attr_obj, self.obj1)
+        self.assertEqual(obj.db.attr_search, self.char1)
+        self.assertEqual(obj.db.attr_dbref, self.obj1)
+        # attr_objlist should be a list or list-like object with 2 rooms
+        objlist = obj.db.attr_objlist
+        self.assertEqual(len(objlist), 2)
+        self.assertIn(self.room1, objlist)
+        self.assertIn(self.room2, objlist)
 
 class TestIssue3101(EvenniaCommandTest):
     """

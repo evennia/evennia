@@ -14,10 +14,12 @@ log_typemsg(). This is for historical, back-compatible reasons.
 """
 
 import os
+import re
 import time
 from datetime import datetime
 from traceback import format_exc
 
+from django.conf import settings
 from twisted import logger as twisted_logger
 from twisted.internet.threads import deferToThread
 from twisted.python import logfile
@@ -31,6 +33,71 @@ _TIMEZONE = None
 _CHANNEL_LOG_NUM_TAIL_LINES = None
 
 _TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+_SENSITIVE_INPUT_PATTERNS = None
+_SENSITIVE_INPUT_PATTERNS_SIGNATURE = None
+
+
+def _compile_sensitive_input_patterns():
+    """
+    Compile masking regexes from settings.AUDIT_MASKS.
+    """
+    patterns = []
+    masks = getattr(settings, "AUDIT_MASKS", [])
+    signature = repr(masks)
+
+    for mask in masks:
+        # auditing format is list[dict[label -> regex]], but we also
+        # support plain regex strings as a convenience.
+        if isinstance(mask, dict):
+            regexes = mask.values()
+        else:
+            regexes = [mask]
+        for regex in regexes:
+            try:
+                patterns.append(re.compile(regex, re.IGNORECASE))
+            except re.error as err:
+                log_err(f"Invalid AUDIT_MASKS regex '{regex}': {err}")
+
+    return patterns, signature
+
+
+def mask_sensitive_input(msg):
+    """
+    Mask sensitive command arguments in a raw command string.
+
+    Args:
+        msg (str): Raw command line.
+
+    Returns:
+        str: Same string, with sensitive segments replaced by ``*``.
+    """
+    global _SENSITIVE_INPUT_PATTERNS, _SENSITIVE_INPUT_PATTERNS_SIGNATURE
+    if not msg:
+        return msg
+
+    if _SENSITIVE_INPUT_PATTERNS is None:
+        _SENSITIVE_INPUT_PATTERNS, _SENSITIVE_INPUT_PATTERNS_SIGNATURE = (
+            _compile_sensitive_input_patterns()
+        )
+    else:
+        current_signature = repr(getattr(settings, "AUDIT_MASKS", []))
+        if current_signature != _SENSITIVE_INPUT_PATTERNS_SIGNATURE:
+            _SENSITIVE_INPUT_PATTERNS, _SENSITIVE_INPUT_PATTERNS_SIGNATURE = (
+                _compile_sensitive_input_patterns()
+            )
+
+    for pattern in _SENSITIVE_INPUT_PATTERNS:
+        match = pattern.match(msg)
+        if match:
+            if "secret" not in pattern.groupindex:
+                continue
+            start, end = match.span("secret")
+            # Keep rough size information while still obscuring short secrets.
+            masked = "*" * max(8, end - start)
+            return f"{msg[:start]}{masked}{msg[end:]}"
+    return msg
 
 
 def _log(msg, logfunc, prefix="", **kwargs):
@@ -214,6 +281,8 @@ class GetLogObserver:
         log_msg = twisted_logger.formatEventAsClassicLogText(
             event, formatTime=lambda e: twisted_logger.formatTime(e, _TIME_FORMAT)
         )
+        if log_msg is None:
+            return None
         return f"{component_prefix}{log_msg}"
 
     def __call__(self, outfile):

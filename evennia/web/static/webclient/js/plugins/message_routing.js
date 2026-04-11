@@ -52,8 +52,8 @@ let spawns = (function () {
     //
     // display a row with proper editting hooks
     var displayRow = function (formdiv, div, regexstring, tagstring) {
-	var regex = $('<input class="regex" type=text value="'+regexstring+'"/>');
-	var tag = $('<input class="tag" type=text value="'+tagstring+'"/>'); 
+	var regex = $.find('<input class="regex" type=text value="'+regexstring+'"/>');
+	var tag = $.find('<input class="tag" type=text value="'+tagstring+'"/>'); 
 	var del = $('<input class="delete-regex" type=button value="X"/>'); 
         regex.on('change', onAlterTag );
         regex.on('focusin', onFocusIn );

@@ -253,8 +253,10 @@ class CmdDice(default_cmds.MuxCommand):
     def func(self):
         """Mostly parsing for calling the dice roller function"""
 
+        helptxt = "Usage: @dice <nr>d<sides> [modifier] [conditional]"
+
         if not self.args:
-            self.caller.msg("Usage: @dice <nr>d<sides> [modifier] [conditional]")
+            self.caller.msg(helptxt)
             return
         argstring = "".join(str(arg) for arg in self.args)
 
@@ -264,36 +266,48 @@ class CmdDice(default_cmds.MuxCommand):
         conditional = None
 
         if len_parts < 3 or parts[1] != "d":
-            self.caller.msg(
-                "You must specify the die roll(s) as <nr>d<sides>."
-                " For example, 2d6 means rolling a 6-sided die 2 times."
-            )
+            self.caller.msg(f"Malformed input. {helptxt}")
             return
 
         # Limit the number of dice and sides a character can roll to prevent server slow down and crashes
         ndicelimit = 10000  # Maximum number of dice
         nsidelimit = 10000  # Maximum number of sides
-        if int(parts[0]) > ndicelimit or int(parts[2]) > nsidelimit:
-            self.caller.msg("The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit))
+        try:
+            if int(parts[0]) > ndicelimit or int(parts[2]) > nsidelimit:
+                self.caller.msg("The maximum roll allowed is %sd%s." % (ndicelimit, nsidelimit))
+                return
+        except ValueError:
+            self.caller.msg(f"Malformed input. {helptxt}")
             return
 
-        ndice, nsides = parts[0], parts[2]
         if len_parts == 3:
             # just something like 1d6
+            ndice, nsides = parts[0], parts[2]
             pass
         elif len_parts == 5:
             # either e.g. 1d6 + 3  or something like 1d6 > 3
+            ndice, nsides = parts[0], parts[2]
             if parts[3] in ("+", "-", "*", "/"):
                 modifier = (parts[3], parts[4])
-            else:  # assume it is a conditional
+            elif parts[3] in ("<", ">", "<=", ">=", "!=", "=="):
                 conditional = (parts[3], parts[4])
+            else:
+                self.caller.msg(f"Malformed input. {helptxt}")
+                return
         elif len_parts == 7:
             # the whole sequence, e.g. 1d6 + 3 > 5
-            modifier = (parts[3], parts[4])
-            conditional = (parts[5], parts[6])
+            ndice, nsides = parts[0], parts[2]
+            err = parts[3] not in ("+", "-", "*", "/")
+            err = err or parts[5] not in ("<", ">", "<=", ">=", "!=", "==")
+            if err:
+                self.caller.msg(f"Malformed input. {helptxt}")
+                return
+            else:
+                modifier = (parts[3], parts[4])
+                conditional = (parts[5], parts[6])
         else:
             # error
-            self.caller.msg("You must specify a valid die roll")
+            self.caller.msg(f"Malformed input. {helptxt}")
             return
         # do the roll
         try:

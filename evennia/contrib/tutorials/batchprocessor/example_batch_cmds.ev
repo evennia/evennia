@@ -2,9 +2,9 @@
 # This is an example batch build file for Evennia.
 #
 # It allows batch processing of normal Evennia commands.
-# Test it by loading it with @batchcommand:
+# Test it by loading it with batchcommand:
 #
-#   batchcommand[/interactive] examples.batch_example
+#   batchcommand[/interactive] tutorials.batchprocessor.example_batch_cmds
 #
 # A # as the first symbol on a line begins a comment and
 # marks the end of a previous command definition (important!).
@@ -19,7 +19,7 @@
 
 create button:red_button.RedButton
 
-# This comment ends input for @create
+# This comment ends input for create
 # Next command:
 
 set button/desc =
@@ -39,7 +39,7 @@ set button/desc =
   ... It really begs to be pressed, doesn't it? You
 know you want to!
 
-# This ends the @set command. Note that line breaks and extra spaces
+# This ends the set command. Note that line breaks and extra spaces
 # in the argument are not considered. A completely empty line
 # translates to a \n newline in the command; two empty lines will thus
 # create a new paragraph. (note that few commands support it though, you
@@ -50,7 +50,7 @@ know you want to!
 
 teleport #2
 
-#... and drop it (remember, this comment ends input to @teleport, so don't
+#... and drop it (remember, this comment ends input to teleport, so don't
 #forget it!) The very last command in the file need not be ended with #.
 
 drop button

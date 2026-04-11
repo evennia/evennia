@@ -505,7 +505,7 @@ def _delayed_import_trait_classes():
                 if hasattr(cls, "trait_type"):
                     trait_type = cls.trait_type
                 else:
-                    trait_type = str(cls.__name___).lower()
+                    trait_type = str(cls.__name__).lower()
                 _TRAIT_CLASSES[trait_type] = cls
 
 
@@ -883,7 +883,7 @@ class Trait:
 
         if not isinstance(trait_data, _SaverDict):
             logger.log_warn(
-                f"Non-persistent Trait data (type(trait_data)) loaded for {type(self).__name__}."
+                f"Non-persistent Trait data ({type(trait_data).__name__}) loaded for {type(self).__name__}."
             )
 
     @staticmethod
@@ -1197,7 +1197,7 @@ class StaticTrait(Trait):
     def base(self, value):
         if value is None:
             self._data["base"] = self.default_keys["base"]
-        if type(value) in (int, float):
+        if isinstance(value, (int, float)):
             self._data["base"] = value
 
     @property
@@ -1383,7 +1383,7 @@ class CounterTrait(Trait):
     def base(self, value):
         if value is None:
             self._data["base"] = self.default_keys["base"]
-        if type(value) in (int, float):
+        if isinstance(value, (int, float)):
             if self.min is not None and value + self.mod < self.min:
                 value = self.min - self.mod
             if self.max is not None and value + self.mod > self.max:
@@ -1399,7 +1399,7 @@ class CounterTrait(Trait):
         if value is None:
             # unsetting the boundary to default
             self._data["mod"] = self.default_keys["mod"]
-        elif type(value) in (int, float):
+        elif isinstance(value, (int, float)):
             if self.min is not None and value + self.base < self.min:
                 value = self.min - self.base
             if self.max is not None and value + self.base > self.max:
@@ -1428,7 +1428,7 @@ class CounterTrait(Trait):
         if value is None:
             # unsetting the boundary
             self._data["min"] = value
-        elif type(value) in (int, float):
+        elif isinstance(value, (int, float)):
             if self.max is not None:
                 value = min(self.max, value)
             self._data["min"] = min(value, self.base + self.mod)
@@ -1442,7 +1442,7 @@ class CounterTrait(Trait):
         if value is None:
             # unsetting the boundary
             self._data["max"] = value
-        elif type(value) in (int, float):
+        elif isinstance(value, (int, float)):
             if self.min is not None:
                 value = max(self.min, value)
             self._data["max"] = max(value, self.base + self.mod)
@@ -1454,7 +1454,7 @@ class CounterTrait(Trait):
 
     @current.setter
     def current(self, value):
-        if type(value) in (int, float):
+        if isinstance(value, (int, float)):
             self._data["current"] = self._check_and_start_timer(self._enforce_boundaries(value))
 
     @current.deleter
@@ -1614,7 +1614,7 @@ class GaugeTrait(CounterTrait):
     @base.setter
     def base(self, value):
         """Limit so base+mod can never go below min."""
-        if type(value) in (int, float):
+        if isinstance(value, (int, float)):
             if value + self.mod < self.min:
                 value = self.min - self.mod
             self._data["base"] = value
@@ -1626,7 +1626,7 @@ class GaugeTrait(CounterTrait):
     @mod.setter
     def mod(self, value):
         """Limit so base+mod can never go below min."""
-        if type(value) in (int, float):
+        if isinstance(value, (int, float)):
             if value + self.base < self.min:
                 value = self.min - self.base
             self._data["mod"] = value
@@ -1654,7 +1654,7 @@ class GaugeTrait(CounterTrait):
         """Limit so min can never be greater than (base+mod)*mult."""
         if value is None:
             self._data["min"] = self.default_keys["min"]
-        elif type(value) in (int, float):
+        elif isinstance(value, (int, float)):
             self._data["min"] = min(value, (self.base + self.mod) * self.mult)
 
     @property
@@ -1683,7 +1683,7 @@ class GaugeTrait(CounterTrait):
 
     @current.setter
     def current(self, value):
-        if type(value) in (int, float):
+        if isinstance(value, (int, float)):
             self._data["current"] = self._check_and_start_timer(self._enforce_boundaries(value))
 
     @current.deleter

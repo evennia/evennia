@@ -1737,6 +1737,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             try:
                 self.puppet_object(session, self.db._last_puppet)
             except RuntimeError:
+                logger.log_trace("Error during auto-puppet on login")
                 self.msg(_("The Character does not exist."))
                 return
         else:

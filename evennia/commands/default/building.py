@@ -5,11 +5,10 @@ Building and world design commands
 import re
 import typing
 
+import evennia
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Max, Min, Q
-
-import evennia
 from evennia import InterruptCommand
 from evennia.commands.cmdhandler import generate_cmdset_providers, get_and_merge_cmdsets
 from evennia.locks.lockhandler import LockException
@@ -1756,14 +1755,14 @@ class CmdSetAttribute(ObjManipCommand):
     the attribute (if any). The last one (with the star) is a shortcut for
     operating on a player Account rather than an Object.
 
-    If you want <value> to be an object, use $dbef(#dbref) or
+    If you want <value> to be an object, use $dbref(#dbref) or
     $search(key) to assign it. You need control or edit access to
     the object you are adding.
 
     The most common data to save with this command are strings and
     numbers. You can however also set Python primitives such as lists,
     dictionaries and tuples on objects (this might be important for
-    the functionality of certain custom objects).  This is indicated
+    the functionality of certain custom objects). This is indicated
     by you starting your value with one of |c'|n, |c"|n, |c(|n, |c[|n
     or |c{ |n.
 
@@ -1858,12 +1857,21 @@ class CmdSetAttribute(ObjManipCommand):
         nested = False
         for key, nested_keys in self.split_nested_attr(attr):
             nested = True
-            if obj.attributes.has(key):
-                val = obj.attributes.get(key)
-                val = self.do_nested_lookup(val, *nested_keys)
-                if val is not self.not_found:
-                    return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
-        error = f"\nAttribute {obj.name}/|w{attr} [category:{category}] does not exist."
+            if obj.attributes.has(key, category):
+                if nested_keys:
+                    val = obj.attributes.get(key, category=category)
+                    deep = self.do_nested_lookup(val, *nested_keys[:-1])
+                    if deep is not self.not_found:
+                        try:
+                            val = deep[nested_keys[-1]]
+                        except (IndexError, KeyError, TypeError):
+                            continue
+                        return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+                else:
+                    val = obj.attributes.get(key, category=category)
+                    if val:
+                        return f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] = {val}"
+        error = f"\nAttribute {obj.name}/|w{attr}|n [category:{category}] does not exist."
         if nested:
             error += " (Nested lookups attempted)"
         return error
@@ -3889,7 +3897,7 @@ class CmdTeleport(COMMAND_DEFAULT_CLASS):
             return
 
         if not destination:
-            caller.msg("Destination not found.")
+            # Search already reported the error to the caller in parse().
             return
 
         if "loc" in self.switches:
@@ -4241,23 +4249,23 @@ class CmdSpawn(COMMAND_DEFAULT_CLASS):
             # treat as string
             eval_err = err
             prototype = utils.to_str(inp)
-        finally:
-            # it's possible that the input was a prototype-key, in which case
-            # it's okay for the LITERAL_EVAL to fail. Only if the result does not
-            # match the expected type do we have a problem.
-            if not isinstance(prototype, expect):
-                if eval_err:
-                    string = (
-                        f"{inp}\n{eval_err}\n|RCritical Python syntax error in argument. Only"
-                        " primitive Python structures are allowed. \nMake sure to use correct"
-                        " Python syntax. Remember especially to put quotes around all strings"
-                        " inside lists and dicts.|n For more advanced uses, embed funcparser"
-                        " callables ($funcs) in the strings."
-                    )
-                else:
-                    string = f"Expected {expect}, got {type(prototype)}."
-                self.msg(string)
-                return
+
+        # validation - it's possible that the input was a prototype-key, in which case
+        # it's okay for the LITERAL_EVAL to fail. Only if the result does not
+        # match the expected type do we have a problem.
+        if not isinstance(prototype, expect):
+            if eval_err:
+                string = (
+                    f"{inp}\n{eval_err}\n|RCritical Python syntax error in argument. Only"
+                    " primitive Python structures are allowed. \nMake sure to use correct"
+                    " Python syntax. Remember especially to put quotes around all strings"
+                    " inside lists and dicts.|n For more advanced uses, embed funcparser"
+                    " callables ($funcs) in the strings."
+                )
+            else:
+                string = f"Expected {expect}, got {type(prototype)}."
+            self.msg(string)
+            return
 
         if expect == dict:
             # an actual prototype. We need to make sure it's safe,

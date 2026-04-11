@@ -14,7 +14,7 @@ A quest follows a specific development:
 4. At suitable times the quest's _progress_ is checked. This could happen on a timer or when trying to 'hand in' the quest. When checking, the current 'step' is checked against its finish conditions. If ok, that step is closed and the next step is checked until it either hits a step that is not yet complete, or there are no more steps, in which case the entire quest is complete.
 
 ```{sidebar} 
-An example implementation of quests is found under `evennia/contrib/tutorials`, in [evadvanture/quests.py](evennia.contrib.tutorials.evadventure.quests).
+An example implementation of quests is found under `evennia/contrib/tutorials`, in [evadventure/quests.py](evennia.contrib.tutorials.evadventure.quests).
 ```
 To represent quests in code, we need 
 - A convenient flexible way to code how we check the status and current steps of the quest. We want this scripting to be as flexible as possible. Ideally we want to be able to code the quests's logic in full Python.
@@ -32,7 +32,7 @@ We saw the implementation of an on-object handler back in the [lesson about NPC 
 
 ```{code-block} python
 :linenos: 
-:emphasize-lines: 9,10,11,14-18,21,24-28
+:emphasize-lines: 9,10,13-17,20,23-27
 # in evadventure/quests.py
 
 class EvAdventureQuestHandler:
@@ -53,7 +53,7 @@ class EvAdventureQuestHandler:
         )
         # instantiate all quests
         for quest_key, quest_class in self.quest_classes.items():
-            self.quests[quest_key] = quest_class(self.obj)
+            self.quests[quest_key] = quest_class(self.obj, questhandler=self)
 
     def _save(self):
         self.obj.attributes.add(
@@ -70,7 +70,7 @@ class EvAdventureQuestHandler:
 
     def add(self, quest_class):
         self.quest_classes[quest_class.key] = quest_class
-        self.quests[quest_class.key] = quest_class(self.obj)
+        self.quests[quest_class.key] = quest_class(self.obj, questhandler=self)
         self._save()
 
     def remove(self, quest_key):
@@ -173,7 +173,7 @@ We also need a way to represent the quests themselves though!
 
 ```{code-block} python
 :linenos:
-:emphasize-lines: 7,12,13,34-36
+:emphasize-lines: 7,10-14,17,24,31
 # in evadventure/quests.py
 
 # ...
@@ -183,9 +183,10 @@ class EvAdventureQuest:
     key = "base-quest"
     desc = "Base quest"
     start_step = "start"
-    
-    def __init__(self, quester):
+
+    def __init__(self, quester, questhandler=None):
         self.quester = quester
+        self._questhandler = questhandler
         self.data = self.questhandler.load_quest_data(self.key)
         self._current_step = self.get_data("current_step")
 
@@ -205,7 +206,7 @@ class EvAdventureQuest:
     
     @property
     def questhandler(self):
-        return self.quester.quests
+        return self._questhandler if self._questhandler else self.quester.quests
 
     @property
     def current_step(self):
@@ -220,9 +221,10 @@ class EvAdventureQuest:
 
 - **Line 7**: Each class must have a `.key` property unquely identifying the quest. We depend on this in the quest-handler.
 - **Line 12**: `quester` (the Character) is passed into this class when it is initiated inside `EvAdventureQuestHandler._load()`. 
-- **Line 13**: We load the quest data into `self.data` directly using the `questhandler.load_quest-data` method (which in turn loads it from an Attribute on the Character). Note that the `.questhandler` property is defined on **lines 34-36** as a shortcut to get to the handler.
+- **Line 13**: The handler is also passed in during loading, so this quest instance can use it directly without triggering recursion during lazy loading.
+- **Lines 17, 24 and 31**: `add_data` and `remove_data` call back to `questhandler.save_quest_data` so persistence happens in one place.
 
-The `add/get/remove_data` methods are convenient wrappers for getting data in and out of the database using the matching methods on the handler. When we implement a quest we should prefer to use `.get_data`, `add_data` and `remove_data` over manipulating `.data` directly, since the former will make sure to save said that to the database automatically.
+The `add/get/remove_data` methods are convenient wrappers for getting data in and out of the database. When we implement a quest we should prefer to use `.get_data`, `add_data` and `remove_data` over manipulating `.data` directly, since the former will make sure to save said that to the database automatically.
 
 The `current_step` tracks the current quest 'step' we are in; what this means is up to each Quest. We set up convenient properties for setting the `current_state` and also make sure to save it in the data dict as "current_step".
 

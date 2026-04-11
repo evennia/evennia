@@ -17,7 +17,7 @@ more detailed instructions for your platform.
 2. `cd` to some place you want to do your development (like a folder
    `/home/anna/muddev/` on Linux or a folder in your personal user directory on Windows).
 3. `git clone https://github.com/evennia/evennia.git`  (a new folder `evennia` is created)
-4. `python3.11 -m venv evenv`  (a new folder `evenv` is created)
+4. `python3.12 -m venv evenv` (Linux/Mac), `py -3.12 -m venv evenv` (Windows) - a new folder `evenv` is created
 5. `source evenv/bin/activate` (Linux, Mac), `evenv\Scripts\activate` (Windows)
 6. `pip install -e evennia`
 7. `evennia --init mygame`
@@ -38,11 +38,11 @@ It's optional to use a virtualenv, but it's highly recommended. Not only is this
 Python supports virtualenv natively: 
 
 ```{sidebar} Using py on Windows
-If you have older versions of Python installed on Windows, you should instead use `py` here instead of `python`. The `py` launcher automatically selects the latest python version among those you installed.
+On Windows, use the `py` launcher with a version flag (e.g. `py -3.12`) to select the correct Python version. After activating the virtualenv, `python` works the same on all platforms.
 ```
 ```bash
-python3.11 -m venv evenv   (linux/mac)
-python -m venv evenv       (Windows)
+python3.12 -m venv evenv   (Linux/Mac)
+py -3.12 -m venv evenv     (Windows)
 ```
 
 This will create a new folder `evenv` in your current directory. 
@@ -72,7 +72,7 @@ install the requirements:
 
 ```bash
 sudo apt-get update
-sudo apt-get install python3.11 python3.11-venv python3.11-dev gcc
+sudo apt-get install python3.12 python3.12-venv python3.12-dev gcc
 ```
 You should make sure to *not* be `root` after this step, running as `root` is a
 security risk. Now create a folder where you want to do all your Evennia
@@ -112,7 +112,7 @@ Next you can continue initializing your game from the regular [Installation inst
 The Evennia server is a terminal program. Open the terminal e.g. from
 *Applications->Utilities->Terminal*. [Here is an introduction to the Mac terminal](https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line) if you are unsure how it works.
 
-* Python should already be installed but you must make sure it's a high enough version - go for 3.11. ([This](https://docs.python-guide.org/en/latest/starting/install/osx/) discusses how you may upgrade it).
+* Python should already be installed but you must make sure it's a high enough version - go for 3.12. ([This](https://docs.python-guide.org/en/latest/starting/install/osx/) discusses how you may upgrade it).
 * GIT can be obtained with [git-osx-installer](https://code.google.com/p/git-osx-installer/) or via MacPorts [as described here](https://git-scm.com/book/en/Getting-Started-Installing-Git#Installing-on-Mac).
 * If you run into issues with installing `Twisted` later you may need to install `gcc` and the Python headers.
 
@@ -155,9 +155,9 @@ Next you can continue initializing your game from the regular [Installation inst
 
 The Evennia server itself is a command line program. In the Windows launch menu, start *All Programs -> Accessories -> command prompt* and you will get the Windows command line interface. Here is [one of many tutorials on using the Windows command line](https://www.bleepingcomputer.com/tutorials/windows-command-prompt-introduction/) if you are unfamiliar with it.
 
-* Install Python [from the Python homepage](https://www.python.org/downloads/windows/). You will need to be a Windows Administrator to install packages. Get Python **3.11**, 64-bit version. Use the default settings; make sure the `py` launcher gets installed. 
+* Install Python [from the Python homepage](https://www.python.org/downloads/windows/). You will need to be a Windows Administrator to install packages. Get Python **3.12** or later, 64-bit version. Use the default settings; make sure the `py` launcher gets installed.
 * You need to also get [GIT](https://git-scm.com/downloads) and install it. You can use the default install options but when you get asked to "Adjust your PATH environment", you should select the second option "Use Git from the Windows Command Prompt", which gives you more freedom as to where you can use the program.
-* If you run Python 3.11: You must also install the [Windows SDK](https://aka.ms/vs/16/release/vs_buildtools.exe). Download and run the linked installer. Click the  `Individual Components` tab at the top. Search and checkmark the latest `Windows 10 SDK` (also for older and newer Windows versions). Click `Install`. If you later have issues with installing Evennia due to a failure to build the "Twisted wheels", this is where you are missing things. If you have trouble, use Python 3.10 for now (2022)
+* If you have issues installing Evennia due to a failure to build C extensions, you may need the [Visual Studio Build Tools](https://aka.ms/vs/16/release/vs_buildtools.exe). Download and run the installer, click the `Individual Components` tab, and install the latest Windows SDK.
 * You *may* need the [pypiwin32](https://pypi.python.org/pypi/pypiwin32) Python headers. Install these only if you have issues.
 
 You can install Evennia wherever you want. `cd` to that location and create a

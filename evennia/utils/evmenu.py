@@ -691,6 +691,10 @@ class EvMenu:
                 logger.log_trace(_TRACE_PERSISTENT_SAVING)
                 persistent = False
 
+        # Make sure to not stack menu cmdsets across reload-restore cycles.
+        # On reload, ndb is cleared so we can't always close an old menu cleanly first.
+        self.caller.cmdset.remove(EvMenuCmdSet)
+
         # set up the menu command on the caller
         menu_cmdset = EvMenuCmdSet()
         menu_cmdset.mergetype = str(cmdset_mergetype).lower().capitalize() or "Replace"
@@ -1634,17 +1638,19 @@ class CmdYesNoQuestion(Command):
     """
 
     key = _CMD_NOINPUT
-    aliases = [_CMD_NOMATCH, "yes", "no", "y", "n", "a", "abort"]
+    aliases = [_CMD_NOMATCH]
     arg_regex = r"^$"
 
     def _clean(self, caller):
-        del caller.ndb._yes_no_question
-        if not caller.cmdset.has(YesNoQuestionCmdSet) and inherits_from(
-            caller, evennia.DefaultObject
-        ):
-            caller.account.cmdset.remove(YesNoQuestionCmdSet)
-        else:
+        if hasattr(caller.ndb, "_yes_no_question"):
+            del caller.ndb._yes_no_question
+        while caller.cmdset.has(YesNoQuestionCmdSet):
             caller.cmdset.remove(YesNoQuestionCmdSet)
+        if inherits_from(caller, evennia.DefaultObject) and caller.account:
+            if hasattr(caller.account.ndb, "_yes_no_question"):
+                del caller.account.ndb._yes_no_question
+            while caller.account.cmdset.has(YesNoQuestionCmdSet):
+                caller.account.cmdset.remove(YesNoQuestionCmdSet)
 
     def func(self):
         """This is called when user enters anything."""
@@ -1661,13 +1667,16 @@ class CmdYesNoQuestion(Command):
 
             inp = self.cmdname
 
-            if inp == _CMD_NOINPUT:
+            if inp in (_CMD_NOINPUT, _CMD_NOMATCH):
                 raw = self.raw_cmdname.strip()
                 if not raw:
                     # use default
                     inp = yes_no_question.default
                 else:
                     inp = raw
+
+            if isinstance(inp, str):
+                inp = inp.lower()
 
             if inp in ("a", "abort") and yes_no_question.allow_abort:
                 caller.msg(_("Aborted."))
@@ -1816,7 +1825,14 @@ def ask_yes_no(
     caller.ndb._yes_no_question.args = args
     caller.ndb._yes_no_question.kwargs = kwargs
 
-    caller.cmdset.add(YesNoQuestionCmdSet)
+    # Avoid duplicate yes/no cmdsets across account/object command merges.
+    while caller.cmdset.has(YesNoQuestionCmdSet):
+        caller.cmdset.remove(YesNoQuestionCmdSet)
+    if inherits_from(caller, evennia.DefaultObject) and caller.account:
+        while caller.account.cmdset.has(YesNoQuestionCmdSet):
+            caller.account.cmdset.remove(YesNoQuestionCmdSet)
+
+    caller.cmdset.add(YesNoQuestionCmdSet, persistent=False)
     caller.msg(prompt, session=session)
 
 

@@ -19,8 +19,9 @@ needed on the Evennia side.
 """
 
 MSSPTable = {
-    # Required fields
-    "NAME": "Mygame",  # usually the same as SERVERNAME
+    # The NAME field is automatically set from settings.SERVERNAME. To override,
+    # uncomment the line below.
+    # "NAME": "My Custom Name",
     # Generic
     "CRAWL DELAY": "-1",  # limit how often crawler may update the listing. -1 for no limit
     "HOSTNAME": "",  # telnet hostname

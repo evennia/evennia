@@ -235,6 +235,9 @@ def read_batchfile(pythonpath, file_ending=".py"):
     if not text and decoderr:
         raise UnicodeDecodeError("\n".join(decoderr), bytearray(), 0, 0, "")
 
+    if text:
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+
     return text
 
 
