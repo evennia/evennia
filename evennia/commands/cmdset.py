@@ -234,11 +234,13 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         Lazily computed and cached; invalidated when commands are added or removed.
         """
         if self._cached_fingerprint is None:
-            cmd_ids = tuple(
-                sorted(tuple(sorted(cmd._matchset)) for cmd in self.commands)
+            cmd_ids = frozenset(
+                (frozenset(cmd._matchset), cmd.obj)
+                for cmd in self.commands
             )
-            sys_cmd_ids = tuple(
-                sorted(tuple(sorted(cmd._matchset)) for cmd in self.system_commands)
+            sys_cmd_ids = frozenset(
+                (frozenset(cmd._matchset), cmd.obj)
+                for cmd in self.system_commands
             )
             self._cached_fingerprint = (
                 self.key,
@@ -248,7 +250,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 self.no_exits,
                 self.no_objs,
                 self.no_channels,
-                tuple(sorted(self.key_mergetypes.items())) if self.key_mergetypes else (),
+                frozenset(self.key_mergetypes.items()) if self.key_mergetypes else frozenset(),
+                self.cmdsetobj,
                 cmd_ids,
                 sys_cmd_ids,
             )
@@ -709,6 +712,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             else:
                 unique[cmd.key] = cmd
         self.commands = list(unique.values())
+        self._cached_fingerprint = None
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """

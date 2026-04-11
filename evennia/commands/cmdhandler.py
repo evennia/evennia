@@ -51,8 +51,6 @@ _GA = object.__getattribute__
 _CMDSET_MERGE_CACHE = OrderedDict()
 _CMDSET_MERGE_CACHE_MAXSIZE = 1000
 
-
-
 # tracks recursive calls by each caller
 # to avoid infinite loops (commands calling themselves)
 _COMMAND_NESTING = defaultdict(lambda: 0)
