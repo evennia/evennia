@@ -31,6 +31,8 @@
 - [Fix][pull3600]: Handle no armor and no helmet/shield cases in evadventure chargen (jzmiller1)
 - [Fix][pull3850]: Fix potential error from clone-num logic in `DefaultObject.copy` (InspectorCaracal)
 - [Fix][pull3769]: Exit multimatch now shows the exit's display name instead of the search query (JohniFi)
+- [Fix][issue3895]: Update stale batch command processor paths and remove outdated
+  game template placeholder (Griatch)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -54,6 +56,7 @@
 [pull3600]: https://github.com/evennia/evennia/pull/3600
 [pull3769]: https://github.com/evennia/evennia/pull/3769
 [pull3850]: https://github.com/evennia/evennia/pull/3850
+[issue3895]: https://github.com/evennia/evennia/issues/3895
 [mudstandards-ws]: https://mudstandards.org/websocket/
 
 ## Evennia 6.0.0
