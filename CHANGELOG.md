@@ -33,6 +33,8 @@
 - [Fix][pull3769]: Exit multimatch now shows the exit's display name instead of the search query (JohniFi)
 - [Fix][issue3895]: Update stale batch command processor paths and remove outdated
   game template placeholder (Griatch)
+- [Fix][issue3890]: Log RuntimeErrors during auto-puppet on login instead of silently
+  swallowing them (Griatch)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -56,6 +58,7 @@
 [pull3600]: https://github.com/evennia/evennia/pull/3600
 [pull3769]: https://github.com/evennia/evennia/pull/3769
 [pull3850]: https://github.com/evennia/evennia/pull/3850
+[issue3890]: https://github.com/evennia/evennia/issues/3890
 [issue3895]: https://github.com/evennia/evennia/issues/3895
 [mudstandards-ws]: https://mudstandards.org/websocket/
 
