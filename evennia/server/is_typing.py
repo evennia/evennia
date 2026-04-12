@@ -54,7 +54,7 @@ def is_typing_setup(session, *args, **kwargs):
         nick.value[2]  # this is the 'nick'
         for nick in session.puppet.nicks.all()
         if nick.value[1].split(" ")[0] in live_report_commands  # spaced keywords
-        or nick[1][0] in live_report_commands  # handle things like ', ", :
+        or nick.value[1][0] in live_report_commands  # handle things like ', ", :
     ]
 
     session.msg(
