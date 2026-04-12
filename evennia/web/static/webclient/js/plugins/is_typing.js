@@ -9,7 +9,7 @@ let is_typing = (function (){
         cleanup_callback: null,
     }
 
-    const liveReportCommandss = []
+    const liveReportKeywords = []
 
     /**
      * Create the containers that house our typing users
@@ -73,7 +73,7 @@ let is_typing = (function (){
     }
 
     /**
-     * Fetch the "say" command's aliases and the notification timeout
+     * Fetch the live reporting keywords and the notification timeout
      */
     const setup = function() {
         Evennia.msg('is_typing_setup');
@@ -82,15 +82,15 @@ let is_typing = (function (){
     /**
      * Add the provided aliases to the things we listen for
      *
-     * @param {string[]} aliases - Array of "say" commands
+     * @param {string[]} aliases - Array of keywords commands
      */
-    const setSayAliases = function (aliases) {
+    const setLiveReportKeywords = function (aliases) {
         aliases.forEach(alias=>{
             const cmd = escapeRegExp(alias);
 
             // Is it already present?
-            if (liveReportCommandss.indexOf(cmd) === -1){
-                liveReportCommandss.push(escapeRegExp(alias)); // Nope!
+            if (liveReportKeywords.indexOf(cmd) === -1){
+                liveReportKeywords.push(escapeRegExp(alias)); // Nope!
             }
         })
     }
@@ -113,11 +113,10 @@ let is_typing = (function (){
      *
      * @param {KeyboardEvent} event - The typing state, e.g., "typing" or "idle".
      */
-    const onKeydown = function (event) {
-        const regex = new RegExp(`^\W*(${liveReportCommandss.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
+    const onKeyup = function (event) {
+        const regex = new RegExp(`^\W*(${liveReportKeywords.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
         const inputfield = $(".inputfield:focus");
-
-        // A 'say' command is being used.
+        // A live report command is being used.
         if (Evennia.isConnected() &&
             inputfield.length === 1 &&
             event.key.length === 1 &&
@@ -139,6 +138,8 @@ let is_typing = (function (){
         } else if (state.is_typing) {
             stoppedTyping();
         }
+
+        return true
     }
 
     /**
@@ -193,9 +194,9 @@ let is_typing = (function (){
         if ('type' in kwargs) {
             switch (kwargs.type) {
                 case 'setup':
-                    const {live_report_commands, typing_timeout } = kwargs.payload
+                    const {live_report_keywords, typing_timeout } = kwargs.payload
                     timeout = typing_timeout
-                    setSayAliases(live_report_commands)
+                    setLiveReportKeywords(live_report_keywords)
                     break;
 
                 case 'typing':
@@ -255,7 +256,7 @@ let is_typing = (function (){
     return {
         init,
         onLoggedIn,
-        onKeydown,
+        onKeyup,
         onConnectionClose,
         getState
     }

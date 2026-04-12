@@ -72,6 +72,24 @@ var plugin_handler = (function () {
         console.log('NO plugin handled this Keydown');
     }
 
+    // catch all keyboard input, handle special chars
+    var onKeyup = function (event) {
+        // cycle through each plugin's keyup
+        for (let n = 0; n < ordered_plugins.length; n++) {
+            let plugin = ordered_plugins[n];
+            // does this plugin handle keyup events?
+            if ('onKeyup' in plugin) {
+                // yes, does this plugin claim this event exclusively?
+                if (plugin.onKeyup(event)) {
+                    // 'true' claims this event has been handled
+                    return;
+                }
+            }
+        }
+        console.log('NO plugin handled this Keyup');
+    }
+
+
 
     // Ask if user really wants to exit session when closing
     // the tab or reloading the page. Note: the message is not shown
@@ -244,6 +262,7 @@ var plugin_handler = (function () {
 
     return {
         add: add,
+        onKeyup: onKeyup,
         onKeydown: onKeydown,
         onBeforeUnload: onBeforeUnload,
         onLoggedIn: onLoggedIn,
@@ -287,6 +306,7 @@ $(document).ready(function () {
 
     // Event when any key is pressed
     $(document).keydown(plugin_handler.onKeydown)
+    $(document).keyup(plugin_handler.onKeyup)
 
     // set an idle timer to send idle every 3 minutes,
     // to avoid proxy servers timing out on us

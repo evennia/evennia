@@ -1,3 +1,5 @@
+import pprint
+
 """
 This module allows users based on a given condition (defaults to same location) to see
 whether applicable users are typing or not. Currently, only the webclient is supported.
@@ -7,7 +9,7 @@ whether applicable users are typing or not. Currently, only the webclient is sup
 _IS_TYPING_TIMEOUT = 1000 * 5
 
 
-def get_is_typing_audience(session, *args, **kwargs):
+def is_typing_get_audience(session, *args, **kwargs):
     """
     This should return a list of puppets to relay our client live reporting messages.
     The example returns other puppets in the same room as the reporting session with
@@ -36,22 +38,30 @@ def is_typing_setup(session, *args, **kwargs):
     options = session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 
+    if not is_typing:
+        return
+
     live_report_commands = [
         cmd for cmd in session.puppet.cmdset.current if hasattr(cmd, "client_live_report_typing")
     ]
-    commands_and_aliases = []
-    for cmd in live_report_commands:
-        commands_and_aliases.append(cmd.key)
-        commands_and_aliases += cmd.aliases
 
-    if not is_typing:
-        return
+    live_report_keywords = []  # full list
+    for cmd in live_report_commands:
+        live_report_keywords.append(cmd.key)  # actual commands
+        live_report_keywords += cmd.aliases  # aliases
+
+    live_report_keywords += [
+        nick.value[2]  # this is the 'nick'
+        for nick in session.puppet.nicks.all()
+        if nick.value[1].split(" ")[0] in live_report_commands  # spaced keywords
+        or nick[1][0] in live_report_commands  # handle things like ', ", :
+    ]
 
     session.msg(
         is_typing={
             "type": "setup",
             "payload": {
-                "live_report_commands": commands_and_aliases,
+                "live_report_keywords": live_report_keywords,
                 "typing_timeout": _IS_TYPING_TIMEOUT,
             },
         }
@@ -77,7 +87,7 @@ def is_typing_state(session, *args, **kwargs):
 
     state = kwargs.get("state")
 
-    audience = get_is_typing_audience(session=session, args=args, kwargs=kwargs)
+    audience = is_typing_get_audience(session=session, args=args, kwargs=kwargs)
 
     for puppet in audience:
 
