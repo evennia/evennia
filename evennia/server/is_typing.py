@@ -3,11 +3,25 @@ This module allows users based on a given condition (defaults to same location) 
 whether applicable users are typing or not. Currently, only the webclient is supported.
 """
 
-from evennia import DefaultCharacter
-from evennia.commands.default.general import CmdSay
-
 # Notification timeout in milliseconds + <=100ms polling interval in the client.
 _IS_TYPING_TIMEOUT = 1000 * 5
+
+
+def get_is_typing_audience(session, *args, **kwargs):
+    """
+    This should return a list of puppets to relay our client live reporting messages.
+    The example returns other puppets in the same room as the reporting session with
+    the typing puppet filtered out.
+
+    Args:
+        session: The player's current session.
+    """
+
+    audience_including_typer = session.puppet.location.contents_get(content_type="character")
+
+    audience = [puppet for puppet in audience_including_typer if puppet.id != session.puppet.id]
+
+    return audience
 
 
 def is_typing_setup(session, *args, **kwargs):
@@ -63,9 +77,7 @@ def is_typing_state(session, *args, **kwargs):
 
     state = kwargs.get("state")
 
-    audience = DefaultCharacter.objects.filter_family(db_location=session.puppet.location).exclude(
-        db_key=session.puppet.key
-    )
+    audience = get_is_typing_audience(session=session, args=args, kwargs=kwargs)
 
     for puppet in audience:
 
