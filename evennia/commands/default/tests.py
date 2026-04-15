@@ -1748,6 +1748,19 @@ class TestBuilding(BaseEvenniaCommandTest):
             "Found 1 object with tag 'testtag2' (category: 'category1'):",
         )
 
+        # search by category only (no tag key)
+        self.call(
+            building.CmdTag(),
+            "/search :category1",
+            "Found 1 object with tag 'None' (category: 'category1'):",
+        )
+        # search by category with leading space
+        self.call(
+            building.CmdTag(),
+            "/search  :category1",
+            "Found 1 object with tag 'None' (category: 'category1'):",
+        )
+
         self.call(building.CmdTag(), "/del Obj = testtag3", "Removed tag 'testtag3' from Obj.")
         self.call(
             building.CmdTag(),
