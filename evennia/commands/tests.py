@@ -1464,3 +1464,124 @@ class TestIssue2627(TwistedTestCase, BaseEvenniaTest):
 
         d.addCallback(_callback)
         return d
+
+
+class TestCmdSetMergeObjBindings(TestCase):
+    """Test that cmdset merges preserve correct cmd.obj bindings."""
+
+    def test_merge_preserves_obj_from_different_cmdsets(self):
+        """Commands from different objects retain their obj after merge."""
+        from unittest.mock import Mock
+
+        obj1 = Mock(name="Sword")
+        obj2 = Mock(name="Shield")
+
+        cmdset1 = CmdSet(obj1)
+        cmdset1.key = "SwordCmds"
+        cmd_slash = _CmdA("sword")
+        cmd_slash.obj = obj1
+        cmdset1.add(cmd_slash)
+
+        cmdset2 = CmdSet(obj2)
+        cmdset2.key = "ShieldCmds"
+        cmd_block = _CmdB("shield")
+        cmd_block.obj = obj2
+        cmdset2.add(cmd_block)
+
+        merged = cmdset1 + cmdset2
+        cmds = {cmd.key: cmd for cmd in merged.commands}
+
+        self.assertIs(cmds["a"].obj, obj1)
+        self.assertIs(cmds["b"].obj, obj2)
+
+    def test_same_key_different_obj_resolved_by_priority(self):
+        """When two cmdsets share a command key, priority determines which obj wins."""
+        from unittest.mock import Mock
+
+        obj_low = Mock(name="LowPrio")
+        obj_high = Mock(name="HighPrio")
+
+        cmdset_low = CmdSet(obj_low)
+        cmdset_low.key = "LowSet"
+        cmdset_low.priority = 0
+        cmd_low = _CmdA("low")
+        cmd_low.obj = obj_low
+        cmdset_low.add(cmd_low)
+
+        cmdset_high = CmdSet(obj_high)
+        cmdset_high.key = "HighSet"
+        cmdset_high.priority = 1
+        cmd_high = _CmdA("high")
+        cmd_high.obj = obj_high
+        cmdset_high.add(cmd_high)
+
+        merged = cmdset_low + cmdset_high
+        result_cmd = [cmd for cmd in merged.commands if cmd.key == "a"][0]
+
+        self.assertIs(result_cmd.obj, obj_high)
+
+    def test_merge_after_add_reflects_new_command(self):
+        """Adding a command to a cmdset and re-merging includes it with correct obj."""
+        from unittest.mock import Mock
+
+        obj1 = Mock(name="Obj1")
+        obj2 = Mock(name="Obj2")
+
+        cmdset1 = CmdSet(obj1)
+        cmdset1.key = "Set1"
+        cmd_a = _CmdA("set1")
+        cmd_a.obj = obj1
+        cmdset1.add(cmd_a)
+
+        cmdset2 = CmdSet(obj2)
+        cmdset2.key = "Set2"
+        cmd_b = _CmdB("set2")
+        cmd_b.obj = obj2
+        cmdset2.add(cmd_b)
+
+        merged1 = cmdset1 + cmdset2
+        self.assertEqual(len(merged1.commands), 2)
+
+        # add a new command and re-merge
+        cmd_c = _CmdC("set1")
+        cmd_c.obj = obj1
+        cmdset1.add(cmd_c)
+
+        merged2 = cmdset1 + cmdset2
+        self.assertEqual(len(merged2.commands), 3)
+        cmds = {cmd.key: cmd for cmd in merged2.commands}
+        self.assertIn("c", cmds)
+        self.assertIs(cmds["c"].obj, obj1)
+
+    def test_merge_after_remove_excludes_command(self):
+        """Removing a command from a cmdset and re-merging excludes it."""
+        from unittest.mock import Mock
+
+        obj1 = Mock(name="Obj1")
+        obj2 = Mock(name="Obj2")
+
+        cmdset1 = CmdSet(obj1)
+        cmdset1.key = "Set1"
+        cmd_a = _CmdA("set1")
+        cmd_a.obj = obj1
+        cmd_b = _CmdB("set1")
+        cmd_b.obj = obj1
+        cmdset1.add(cmd_a)
+        cmdset1.add(cmd_b)
+
+        cmdset2 = CmdSet(obj2)
+        cmdset2.key = "Set2"
+        cmd_c = _CmdC("set2")
+        cmd_c.obj = obj2
+        cmdset2.add(cmd_c)
+
+        merged1 = cmdset1 + cmdset2
+        self.assertEqual(len(merged1.commands), 3)
+
+        # remove a command and re-merge
+        cmdset1.remove(cmd_b)
+
+        merged2 = cmdset1 + cmdset2
+        self.assertEqual(len(merged2.commands), 2)
+        keys = {cmd.key for cmd in merged2.commands}
+        self.assertNotIn("b", keys)
