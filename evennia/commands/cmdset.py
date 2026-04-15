@@ -231,7 +231,18 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         """
         A hashable, content-based fingerprint of this cmdset. Two cmdsets with
         identical commands and merge properties produce the same fingerprint.
-        Lazily computed and cached; invalidated when commands are added or removed.
+        Lazily computed and cached; invalidated when commands are added/removed
+        or when `make_unique` deduplicates the command list.
+
+        The fingerprint includes `cmd.obj` and `self.cmdsetobj` (the object this
+        cmdset sits on) so that two structurally identical cmdsets on different
+        game objects (e.g. ExitCmdSets with north/south in different rooms) are
+        correctly distinguished. These must be hashable — Evennia's TypedObject
+        (Django model with integer PK) satisfies this; an unhashable obj here
+        would indicate a deeper problem.
+
+        Note: Including live object references means the cache holds strong refs
+        to those objects, preventing garbage collection while the entry exists.
         """
         if self._cached_fingerprint is None:
             cmd_ids = frozenset(

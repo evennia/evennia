@@ -540,6 +540,10 @@ CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "evennia.contrib"]
+# Max number of merged cmdsets to keep cached. When full, the least recently used
+# entry is evicted. Increase if your game has many unique rooms/objects; decrease
+# to save memory.
+CMDSET_MERGE_CACHE_MAXSIZE = 1000
 # Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
 # default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your
 # settings file for it to detect the change.
