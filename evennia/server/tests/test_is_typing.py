@@ -10,7 +10,11 @@ Covers:
 from unittest.mock import MagicMock, patch
 
 from evennia.commands.command import Command
-from evennia.server.is_typing import is_typing_get_audience, is_typing_setup, is_typing_state
+from evennia.server.is_typing import (
+    is_typing_get_audience_common_location,
+    is_typing_setup,
+    is_typing_state,
+)
 from evennia.utils.test_resources import BaseEvenniaTest
 
 
@@ -80,20 +84,20 @@ class TestIsTypingGetAudience(BaseEvenniaTest):
 
     def test_excludes_typer_from_audience(self):
         """Other characters in the same room are returned; the typer is not."""
-        audience = is_typing_get_audience(self.session)
+        audience = is_typing_get_audience_common_location(self.session)
         self.assertIn(self.char2, audience)
         self.assertNotIn(self.char1, audience)
 
     def test_excludes_non_character_objects(self):
         """Non-character objects in the room are not included."""
-        audience = is_typing_get_audience(self.session)
+        audience = is_typing_get_audience_common_location(self.session)
         self.assertNotIn(self.obj1, audience)
         self.assertNotIn(self.obj2, audience)
 
     def test_empty_when_typer_is_alone(self):
         """Audience is empty when no other characters share the location."""
         self.char2.location = self.room2
-        audience = is_typing_get_audience(self.session)
+        audience = is_typing_get_audience_common_location(self.session)
         self.assertEqual(audience, [])
 
     def test_returns_multiple_others(self):
@@ -104,7 +108,7 @@ class TestIsTypingGetAudience(BaseEvenniaTest):
             self.character_typeclass, key="Char3", location=self.room1, home=self.room1
         )
         try:
-            audience = is_typing_get_audience(self.session)
+            audience = is_typing_get_audience_common_location(self.session)
             self.assertIn(self.char2, audience)
             self.assertIn(char3, audience)
             self.assertEqual(len(audience), 2)
@@ -208,11 +212,11 @@ class TestIsTypingSetup(BaseEvenniaTest):
 
     def test_typing_timeout_value(self):
         """The timeout sent matches the module constant."""
-        from evennia.server.is_typing import _IS_TYPING_TIMEOUT
+        from django.conf import settings
 
         is_typing_setup(self.session)
         timeout = self._get_setup_payload()["payload"]["typing_timeout"]
-        self.assertEqual(timeout, _IS_TYPING_TIMEOUT)
+        self.assertEqual(timeout, settings.WEBCLIENT_TYPING_TIMEOUT * 1000)
 
 
 # ---------------------------------------------------------------------------
