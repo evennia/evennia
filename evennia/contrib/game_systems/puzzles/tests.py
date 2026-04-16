@@ -8,11 +8,10 @@ Testing puzzles.
 import itertools
 import re
 
-from mock import Mock
-
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils import search
 from evennia.utils.create import create_object
+from mock import Mock
 
 from . import puzzles
 
@@ -42,7 +41,7 @@ class TestPuzzles(BaseEvenniaCommandTest):
         def _keys(items):
             return [item["key"] for item in items]
 
-        recipes = search.search_script_tag("", category=puzzles._PUZZLES_TAG_CATEGORY)
+        recipes = search.search_script_tag(category=puzzles._PUZZLES_TAG_CATEGORY)
         self.assertEqual(expected_count, len(recipes))
         self.assertEqual(name, recipes[expected_count - 1].db.puzzle_name)
         self.assertEqual(parts, _keys(recipes[expected_count - 1].db.parts))

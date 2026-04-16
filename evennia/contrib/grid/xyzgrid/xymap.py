@@ -624,6 +624,7 @@ class XYMap:
                 # we can re-use the stored data!
                 self.dist_matrix = dist_matrix
                 self.pathfinding_routes = pathfinding_routes
+                return
 
         # build a matrix representing the map graph, with 0s as impassable areas
 

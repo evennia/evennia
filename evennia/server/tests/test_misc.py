@@ -5,11 +5,14 @@ Testing various individual functionalities in the server package.
 
 """
 import unittest
+import gc
+import weakref
 
 from django.test import TestCase
 from django.test.runner import DiscoverRunner
 
 from evennia.server.throttle import Throttle
+from evennia.server.serversession import ServerSession
 from evennia.utils.test_resources import BaseEvenniaTest
 
 from ..deprecations import check_errors
@@ -119,3 +122,28 @@ class ThrottleTest(BaseEvenniaTest):
 
         # Make sure the cache is empty
         self.assertFalse(throttle.get())
+
+
+class TestServerSessionAttributeLifecycle(BaseEvenniaTest):
+    """
+    Regression test for the AttributeHandler/ServerSession retention discussed in #3225.
+    """
+
+    def test_serversession_attributes_do_not_prevent_gc(self):
+        refs = []
+
+        for idx in range(50):
+            sess = ServerSession()
+            sess.init_session("telnet", "127.0.0.1", sessionhandler=None)
+            # Force-create the lazy handler and store an in-memory Attribute.
+            sess.attributes.add("last_cmd", f"quit-{idx}")
+            refs.append(weakref.ref(sess))
+            sess = None
+
+        gc.collect()
+        gc.collect()
+
+        self.assertFalse(
+            any(ref() is not None for ref in refs),
+            "ServerSession instances should be collectable after AttributeHandler use.",
+        )

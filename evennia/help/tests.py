@@ -5,6 +5,7 @@ command test-suite).
 """
 
 from unittest import mock
+
 from parameterized import parameterized
 
 from evennia.help import filehelp

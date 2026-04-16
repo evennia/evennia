@@ -142,9 +142,9 @@ def echo(session, *args, **kwargs):
     Echo test function
     """
     if _STRIP_INCOMING_MXP:
-        txt = strip_mxp(txt)
+        args = [_maybe_strip_incoming_mxp(str(arg)) for arg in args]
 
-    session.data_out(text="Echo returns: %s" % args)
+    session.data_out(text=f"Echo returns: {args}, {kwargs}")
 
 
 def default(session, cmdname, *args, **kwargs):
@@ -499,9 +499,20 @@ def monitored(session, *args, **kwargs):
 
     """
     from evennia.scripts.monitorhandler import MONITOR_HANDLER
+    import pickle
+
+    def _safe_pickle(value):
+        try:
+            pickle.dumps(value, pickle.HIGHEST_PROTOCOL)
+            return value
+        except Exception:
+            return str(value)
 
     obj = session.puppet
-    monitors = MONITOR_HANDLER.all(obj=obj)
+    monitors = []
+    for mon_obj, fieldname, idstring, persistent, monitor_kwargs in MONITOR_HANDLER.all(obj=obj):
+        safe_kwargs = {key: _safe_pickle(val) for key, val in monitor_kwargs.items()}
+        monitors.append((_safe_pickle(mon_obj), fieldname, idstring, persistent, safe_kwargs))
     session.msg(monitored=(monitors, {}))
 
 

@@ -17,6 +17,7 @@ from copy import copy
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
+
 from evennia.locks.lockhandler import LockHandler
 from evennia.utils.dbserialize import from_pickle, to_pickle
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -62,7 +63,7 @@ class IAttribute:
         return LockHandler(self)
 
     key = property(lambda self: self.db_key)
-    strvalue = property(lambda self: getattr(self, 'db_strvalue', None))
+    strvalue = property(lambda self: getattr(self, "db_strvalue", None))
     category = property(lambda self: self.db_category)
     model = property(lambda self: self.db_model)
     attrtype = property(lambda self: self.db_attrtype)
@@ -411,6 +412,7 @@ class Attribute(IAttribute, SharedMemoryModel):
 
     class Meta:
         "Define Django meta options"
+
         verbose_name = "Attribute"
 
     # Wrapper properties to easily set database fields. These are
@@ -1471,7 +1473,7 @@ class DbHolder:
 # Nick templating
 #
 
-"""
+r"""
 This supports the use of replacement templates in nicks:
 
 This happens in two steps:

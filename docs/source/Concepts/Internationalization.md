@@ -117,21 +117,21 @@ find there. You can edit this with a normal text editor but it is easiest if
 you use a special po-file editor from the web (search the web for "po editor"
 for many free alternatives), for example:
 
-    - [gtranslator](https://wiki.gnome.org/Apps/Gtranslator)
-    - [poeditor](https://poeditor.com/)
+- [gtranslator](https://wiki.gnome.org/Apps/Gtranslator)
+- [poeditor](https://poeditor.com/)
 
 The concept of translating is simple, it's just a matter of taking the english
-strings you find in the `**.po` file and add your language's translation best
+strings you find in the `django.po` file and add your language's translation best
 you can. Once you are done, run
 
-    `evennia compilemessages`
+    evennia compilemessages
 
 This will compile all languages. Check your language and also check back to your
 `.po` file in case the process updated it - you may need to fill in some missing
 header fields and should usually note who did the translation.
 
 When you are done, make sure that everyone can benefit from your translation!
-Make a PR against Evennia with the updated `**.po` file. Less ideally (if git is
+Make a PR against Evennia with the updated `django.po` file. Less ideally (if git is
 not your thing) you can also attach it to a new post in our forums.
 
 ### Hints on translation
@@ -161,3 +161,31 @@ English anyway.
                \n(Traceback was logged {timestamp})"
     Swedish:  "Fel medan cmdset laddades: Ingen cmdset-klass med namn '{classname}' i {path}.
                \n(Traceback loggades {timestamp})"
+
+## Marking Strings in Code for Translation
+
+If you modify the Python module code, you can mark strings for translation by passing them to the `gettext()` method. In Evennia, this is usually imported as `_()` for convenience:
+
+```python
+from django.utils.translation import gettext as _
+string = _("Text to translate")
+```
+
+### Formatting Considerations
+
+When using formatted strings, ensure that you pass the "raw" string to `gettext` for translation first and then format the output. Otherwise, placeholders will be replaced before translation occurs, preventing the correct string from being found in the `.po` file. It's also recommended to use named placeholders (e.g., `{char}`) instead of positional ones (e.g., `{}`) for better readability and maintainability.
+
+```python
+# incorrect:
+string2 = _("Hello {char}!".format(char=caller.name))
+
+# correct:
+string2 = _("Hello {char}!").format(char=caller.name)
+```
+
+This is also why f-strings don't work with `gettext`:
+
+```python
+# will not work
+string = _(f"Hello {char}!")
+```

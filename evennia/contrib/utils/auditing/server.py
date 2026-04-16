@@ -23,16 +23,7 @@ AUDIT_CALLBACK = getattr(
 AUDIT_IN = getattr(ev_settings, "AUDIT_IN", False)
 AUDIT_OUT = getattr(ev_settings, "AUDIT_OUT", False)
 AUDIT_ALLOW_SPARSE = getattr(ev_settings, "AUDIT_ALLOW_SPARSE", False)
-AUDIT_MASKS = [
-    {"connect": r"^[@\s]*[connect]{5,8}\s+(\".+?\"|[^\s]+)\s+(?P<secret>.+)"},
-    {"connect": r"^[@\s]*[connect]{5,8}\s+(?P<secret>[\w]+)"},
-    {"create": r"^[^@]?[create]{5,6}\s+(\w+|\".+?\")\s+(?P<secret>[\w]+)"},
-    {"create": r"^[^@]?[create]{5,6}\s+(?P<secret>[\w]+)"},
-    {"userpassword": r"^[@\s]*[userpassword]{11,14}\s+(\w+|\".+?\")\s+=*\s*(?P<secret>[\w]+)"},
-    {"userpassword": r"^.*new password set to '(?P<secret>[^']+)'\."},
-    {"userpassword": r"^.* has changed your password to '(?P<secret>[^']+)'\."},
-    {"password": r"^[@\s]*[password]{6,9}\s+(?P<secret>.*)"},
-] + getattr(ev_settings, "AUDIT_MASKS", [])
+AUDIT_MASKS = getattr(ev_settings, "AUDIT_MASKS", [])
 
 
 if AUDIT_CALLBACK:

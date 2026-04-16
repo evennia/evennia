@@ -37,7 +37,7 @@ Here are the rules of syntax of an `*.ev` file. You'll find it's really, really 
 - The very last command in the file is not required to end with a comment.
 - You *cannot* nest another `batchcommand` statement into your batch file. If you want to link many batch-files together, use the `#INSERT` batch instruction instead. You also cannot launch the `batchcode` command from your batch file, the two batch processors are not compatible.
 
-Below is a version of the example file found in `evennia/contrib/tutorial_examples/batch_cmds.ev`. 
+Below is a version of the example file found in `evennia/contrib/tutorials/batchprocessor/example_batch_cmds.ev`. 
 
 ```bash
     #
@@ -45,10 +45,10 @@ Below is a version of the example file found in `evennia/contrib/tutorial_exampl
     #
     
     # This creates a red button
-    @create button:tutorial_examples.red_button.RedButton
-    # (This comment ends input for @create)
+    create button:red_button.RedButton
+    # (This comment ends input for create)
     # Next command. Let's create something. 
-    @set button/desc = 
+    set button/desc = 
       This is a large red button. Now and then 
       it flashes in an evil, yet strangely tantalizing way. 
     
@@ -70,21 +70,21 @@ Below is a version of the example file found in `evennia/contrib/tutorial_exampl
     #INSERT examples.batch_insert_file
     
       
-    # (This ends the @set command). Note that single line breaks 
+    # (This ends the set command). Note that single line breaks 
     # and extra whitespace in the argument are ignored. Empty lines 
     # translate into line breaks in the output.
     # Now let's place the button where it belongs (let's say limbo #2 is 
     # the evil lair in our example)
-    @teleport #2
-    # (This comments ends the @teleport command.) 
+    teleport #2
+    # (This comments ends the teleport command.) 
     # Now we drop it so others can see it. 
     # The very last command in the file needs not be ended with #.
     drop button
 ```
 
-To test this, run `@batchcommand` on the file: 
+To test this, run `batchcommand` on the file: 
 
-    > batchcommand contrib.tutorial_examples.batch_cmds
+    > batchcommand tutorials.batchprocessor.example_batch_cmds
 
 A button will be created, described and dropped in Limbo. All commands will be executed by the user calling the command.
 
@@ -94,16 +94,16 @@ A button will be created, described and dropped in Limbo. All commands will be e
 
 Interactive mode allows you to more step-wise control over how the batch file is executed. This is useful for debugging and also if you have a large batch file and is only updating a small part of it -- running the entire file again would be a waste of time (and in the case of `create`-ing objects you would to end up with multiple copies of same-named objects, for example). Use `batchcommand` with the `/interactive` flag to enter interactive mode. 
 
-     > @batchcommand/interactive tutorial_examples.batch_cmds
+     > batchcommand/interactive tutorials.batchprocessor.example_batch_cmds
 
 You will see this:
 
-    01/04: @create button:tutorial_examples.red_button.RedButton  (hh for help) 
+    01/04: create button:red_button.RedButton  (hh for help) 
 
-This shows that you are on the `@create` command, the first out of only four commands in this batch file. Observe that the command `@create` has *not* been actually processed at this point!
+This shows that you are on the `create` command, the first out of only four commands in this batch file. Observe that the command `create` has *not* been actually processed at this point!
 
 To take a look at the full command you are about to run, use `ll` (a batch-processor version of
-`look`). Use `pp` to actually process the current command (this will actually `@create` the button) -- and make sure it worked as planned. Use `nn` (next) to go to the next command.  Use `hh` for a list of commands.
+`look`). Use `pp` to actually process the current command (this will actually `create` the button) -- and make sure it worked as planned. Use `nn` (next) to go to the next command.  Use `hh` for a list of commands.
 
 If there are errors, fix them in the batch file, then use `rr` to reload the file. You will still be at the same command and can rerun it easily with `pp` as needed. This makes for a simple debug cycle. It also allows you to rerun individual troublesome commands - as mentioned, in a large batch file this can be very useful. Do note that in many cases, commands depend on the previous ones (e.g. if `create` in the example above had failed, the following commands would have had nothing to operate on).
 

@@ -783,7 +783,7 @@ class BridgeRoom(WeatherRoom):
         This is called at irregular intervals and makes the passage
         over the bridge a little more interesting.
         """
-        if random.random() < 80:
+        if random.random() < 0.8:
             # send a message most of the time
             self.msg_contents("|w%s|n" % random.choice(BRIDGE_WEATHER))
 

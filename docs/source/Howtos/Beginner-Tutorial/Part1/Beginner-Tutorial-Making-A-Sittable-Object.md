@@ -132,7 +132,7 @@ It's fine to sit 'on' a chair. But what if our Sittable is an armchair?
 You sit on armchair.
 ```
 
-This is not grammatically correct, you actually sit "in" an armchair rather than "on" it. It's also possible to both sit 'in' or 'on' a chair depending on the type of chair (English is weird). We want to be able to control this.
+This is not grammatically correct, you actually sit "in" an armchair rather than "on" it. The type of chair matters (English is weird). We want to be able to control this.
 
 We _could_ make a child class of `Sittable` named `SittableIn` that makes this change, but that feels excessive. Instead we will modify what we have: 
 
@@ -154,19 +154,19 @@ class Sittable(Object):
             sitter (Object): The one trying to sit down.
 
         """
-        adjective = self.db.adjective or "on"
+        preposition = self.db.preposition or "on"
         current = self.db.sitter
         if current:
             if current == sitter:
-                sitter.msg(f"You are already sitting {adjective} {self.key}.")
+                sitter.msg(f"You are already sitting {preposition} {self.key}.")
             else:
                 sitter.msg(
-                    f"You can't sit {adjective} {self.key} "
+                    f"You can't sit {preposition} {self.key} "
                     f"- {current.key} is already sitting there!")
             return
         self.db.sitter = sitter
         sitter.db.is_sitting = self
-        sitter.msg(f"You sit {adjective} {self.key}")
+        sitter.msg(f"You sit {preposition} {self.key}")
 
     def do_stand(self, stander):
         """
@@ -178,20 +178,20 @@ class Sittable(Object):
         """
         current = self.db.sitter
         if not stander == current:
-            stander.msg(f"You are not sitting {self.db.adjective} {self.key}.")
+            stander.msg(f"You are not sitting {self.db.preposition} {self.key}.")
         else:
             self.db.sitter = None
             del stander.db.is_sitting
             stander.msg(f"You stand up from {self.key}.")
 ```
 
-- **Line 15**: We grab the `adjective` Attribute. Using `self.db.adjective or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed.
-- **Lines 19,22,27,39, and 43**: We use this adjective to modify the return text we see.  
+- **Line 15**: We grab the `preposition` Attribute. Using `self.db.preposition or "on"` here means that if the Attribute is not set (is `None`/falsy) the default "on" string will be assumed. This is because the `or` relation will return the first true condition. A more explicit way to write this would be to use a [ternary operator](https://www.dataquest.io/blog/python-ternary-operator/) `self.db.preposition if self.db.preposition else "on"`.
+- **Lines 19,22,27,39, and 43**: We use this preposition to modify the return text we see.  
 
 `reload`  the server. An advantage of using Attributes like this is that they can be modified on the fly, in-game. Let's look at how a builder could use this with normal building commands (no need for `py`): 
 
 ```
-> set armchair/adjective = in 
+> set armchair/preposition = in 
 ```
 
 Since we haven't added the `sit` command yet, we must still use `py` to test: 

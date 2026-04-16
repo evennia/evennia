@@ -224,6 +224,49 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # initialize system
         self.at_cmdset_creation()
         self._contains_cache = WeakKeyDictionary()  # {}
+        self._cached_fingerprint = None
+
+    @property
+    def fingerprint(self):
+        """
+        A hashable, content-based fingerprint of this cmdset. Two cmdsets with
+        identical commands and merge properties produce the same fingerprint.
+        Lazily computed and cached; invalidated when commands are added/removed
+        or when `make_unique` deduplicates the command list.
+
+        The fingerprint includes `cmd.obj` and `self.cmdsetobj` (the object this
+        cmdset sits on) so that two structurally identical cmdsets on different
+        game objects (e.g. ExitCmdSets with north/south in different rooms) are
+        correctly distinguished. These must be hashable — Evennia's TypedObject
+        (Django model with integer PK) satisfies this; an unhashable obj here
+        would indicate a deeper problem.
+
+        Note: Including live object references means the cache holds strong refs
+        to those objects, preventing garbage collection while the entry exists.
+        """
+        if self._cached_fingerprint is None:
+            cmd_ids = frozenset(
+                (frozenset(cmd._matchset), cmd.obj)
+                for cmd in self.commands
+            )
+            sys_cmd_ids = frozenset(
+                (frozenset(cmd._matchset), cmd.obj)
+                for cmd in self.system_commands
+            )
+            self._cached_fingerprint = (
+                self.key,
+                self.priority,
+                self.mergetype,
+                self.duplicates,
+                self.no_exits,
+                self.no_objs,
+                self.no_channels,
+                frozenset(self.key_mergetypes.items()) if self.key_mergetypes else frozenset(),
+                self.cmdsetobj,
+                cmd_ids,
+                sys_cmd_ids,
+            )
+        return self._cached_fingerprint
 
     # Priority-sensitive merge operations for cmdsets
 
@@ -248,7 +291,8 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in cmdset_a])
+            existing_commands = set(cmdset_a.commands)
+            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in existing_commands])
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
@@ -487,7 +531,11 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         # print "__add__ for %s (prio %i)  called with %s (prio %i)." % (self.key, self.priority,
         # cmdset_a.key, cmdset_a.priority)
 
-        # return the system commands to the cmdset
+        # Re-add the merged system commands. First strip any that were carried
+        # through via the raw commands[:] copy in the merge methods, so they
+        # don't appear twice.
+        sys_set = set(sys_commands)
+        cmdset_c.commands = [c for c in cmdset_c.commands if c not in sys_set]
         cmdset_c.add(sys_commands, allow_duplicates=True)
         return cmdset_c
 
@@ -548,23 +596,26 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             if not hasattr(cmd, "obj") or cmd.obj is None:
                 cmd.obj = self.cmdsetobj
 
-            # remove duplicates and add new
-            for _dum in range(commands.count(cmd)):
-                commands.remove(cmd)
+            if not allow_duplicates:
+                # remove duplicates and add new
+                for _dum in range(commands.count(cmd)):
+                    commands.remove(cmd)
             commands.append(cmd)
 
             # add system_command to separate list as well,
             # for quick look-up. These have no
             if cmd.key.startswith("__"):
-                # remove same-matches and add new
-                for _dum in range(system_commands.count(cmd)):
-                    system_commands.remove(cmd)
+                if not allow_duplicates:
+                    # remove same-matches and add new
+                    for _dum in range(system_commands.count(cmd)):
+                        system_commands.remove(cmd)
                 system_commands.append(cmd)
 
         if not allow_duplicates:
             # extra run to make sure to avoid doublets
             commands = list(set(commands))
         self.commands = commands
+        self._cached_fingerprint = None
 
     def remove(self, cmd):
         """
@@ -594,6 +645,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
                 pass
         else:
             self.commands = [oldcmd for oldcmd in self.commands if oldcmd != cmd]
+        self._cached_fingerprint = None
 
     def get(self, cmd):
         """
@@ -675,6 +727,7 @@ class CmdSet(object, metaclass=_CmdSetMeta):
             else:
                 unique[cmd.key] = cmd
         self.commands = list(unique.values())
+        self._cached_fingerprint = None
 
     def get_all_cmd_keys_and_aliases(self, caller=None):
         """

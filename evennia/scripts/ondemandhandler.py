@@ -62,6 +62,8 @@ state = ON_DEMAND_HANDLER.get_stage("flowering", last_checked=plant.planted_time
 
 """
 
+import pickle
+
 from evennia.server.models import ServerConfig
 from evennia.utils import logger
 from evennia.utils.utils import is_iter
@@ -398,10 +400,25 @@ class OnDemandHandler:
         Save the on-demand timers to ServerConfig storage. Should be called when Evennia shuts down.
 
         """
+        cleaned_tasks = {}
         for key, category in list(self.tasks.keys()):
             # in case an object was used for categories, and were since deleted, drop the task
             if hasattr(category, "id") and category.id is None:
-                self.tasks.pop((key, category))
+                self.tasks.pop((key, category), None)
+                continue
+
+            task = self.tasks.get((key, category))
+            try:
+                pickle.dumps(task)
+            except Exception as err:
+                logger.log_trace(
+                    f"Error saving on-demand task {key}[{category}] (purging task): {err}"
+                )
+                self.tasks.pop((key, category), None)
+                continue
+            cleaned_tasks[(key, category)] = task
+
+        self.tasks = cleaned_tasks
         ServerConfig.objects.conf(ONDEMAND_HANDLER_SAVE_NAME, self.tasks)
 
     def _build_key(self, key, category):

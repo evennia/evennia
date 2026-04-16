@@ -80,7 +80,7 @@ The `east` exit has a `key` of `east`, a `location` of `Meadow` and a `destinati
     Meadow -> east -> Forest 
 	Forest -> west -> Meadow
 
-In-game you do this with `tunnel` and `dig` commands, bit if you want to ever set up these links in code, you can do it like this: 
+In-game you do this with `tunnel` and `dig` commands, but if you want to set up these links in code, you can do it like this: 
 
 ```python
 from evennia import create_object 

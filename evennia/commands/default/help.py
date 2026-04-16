@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from itertools import chain
 
 from django.conf import settings
+
 from evennia.help.filehelp import FILE_HELP_ENTRIES
 from evennia.help.models import HelpEntry
 from evennia.help.utils import help_search_with_index, parse_entry_for_subcategories
@@ -20,7 +21,13 @@ from evennia.locks.lockhandler import LockException
 from evennia.utils import create, evmore
 from evennia.utils.ansi import ANSIString
 from evennia.utils.eveditor import EvEditor
-from evennia.utils.utils import class_from_module, dedent, format_grid, inherits_from, pad
+from evennia.utils.utils import (
+    class_from_module,
+    dedent,
+    format_grid,
+    inherits_from,
+    pad,
+)
 
 CMD_IGNORE_PREFIXES = settings.CMD_IGNORE_PREFIXES
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -414,7 +421,9 @@ class CmdHelp(COMMAND_DEFAULT_CLASS):
         cmdset.make_unique(caller)
         # retrieve all available commands and database / file-help topics.
         # also check the 'cmd:' lock here
-        cmd_help_topics = [cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd")]
+        cmd_help_topics = [
+            cmd for cmd in cmdset if cmd and cmd.access(caller, "cmd", session=self.session)
+        ]
         # get all file-based help entries, checking perms
         file_help_topics = {topic.key.lower().strip(): topic for topic in FILE_HELP_ENTRIES.all()}
         # get db-based help entries, checking perms

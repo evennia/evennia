@@ -22,8 +22,9 @@ method. Otherwise all text will be returned to all connected sessions.
 import time
 from codecs import lookup as codecs_lookup
 
-import evennia
 from django.conf import settings
+
+import evennia
 from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -655,6 +656,7 @@ class CmdOption(COMMAND_DEFAULT_CLASS):
             "ENCODING": validate_encoding,
             "MCCP": validate_bool,
             "NOGOAHEAD": validate_bool,
+            "NOPROMPTGOAHEAD": validate_bool,
             "MXP": validate_bool,
             "NOCOLOR": validate_bool,
             "NOPKEEPALIVE": validate_bool,

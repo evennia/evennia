@@ -64,7 +64,7 @@ This will connect when the Scene is ready, poll and print the data when we recei
 extends Node
 
 # The URL we will connect to.
-var websocket_url = "ws://localhost:4008"
+var websocket_url = "ws://127.0.0.1:4008"
 var socket := WebSocketPeer.new()
 
 func _ready():
@@ -144,7 +144,7 @@ func _on_button_pressed():
 extends Node
 
 # The URL we will connect to.
-var websocket_url = "ws://localhost:4008"
+var websocket_url = "ws://127.0.0.1:4008"
 var socket := WebSocketPeer.new()
 
 @onready var output_label = $"../Panel/VBoxContainer/RichTextLabel"
@@ -192,6 +192,7 @@ func _exit_tree():
 	socket.close()
 
 ```
+
 
 ----
 

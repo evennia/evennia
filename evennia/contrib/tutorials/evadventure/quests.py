@@ -63,8 +63,9 @@ class EvAdventureQuest:
     help_start = "You need to start first"
     help_end = "You need to end the quest"
 
-    def __init__(self, quester):
+    def __init__(self, quester, questhandler=None):
         self.quester = quester
+        self._questhandler = questhandler
         self.data = self.questhandler.load_quest_data(self.key)
         self._current_step = self.get_data("current_step")
 
@@ -110,7 +111,7 @@ class EvAdventureQuest:
 
     @property
     def questhandler(self):
-        return self.quester.quests
+        return self._questhandler if self._questhandler else self.quester.quests
 
     @property
     def current_step(self):
@@ -256,7 +257,7 @@ class EvAdventureQuestHandler:
         )
         # instantiate all quests
         for quest_key, quest_class in self.quest_classes.items():
-            self.quests[quest_key] = quest_class(self.obj)
+            self.quests[quest_key] = quest_class(self.obj, questhandler=self)
 
     def _save(self):
         self.obj.attributes.add(
@@ -312,7 +313,7 @@ class EvAdventureQuestHandler:
 
         """
         self.quest_classes[quest_class.key] = quest_class
-        self.quests[quest_class.key] = quest_class(self.obj)
+        self.quests[quest_class.key] = quest_class(self.obj, questhandler=self)
         self._save()
 
     def remove(self, quest_key):

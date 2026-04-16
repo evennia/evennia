@@ -1267,7 +1267,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # check if source location lets us go
             try:
                 if source_location and not source_location.at_pre_object_leave(
-                    self, destination, **kwargs
+                    self, destination, move_type=move_type, **kwargs
                 ):
                     return False
             except Exception as err:
@@ -1276,7 +1276,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # check if destination accepts us
             try:
                 if destination and not destination.at_pre_object_receive(
-                    self, source_location, **kwargs
+                    self, source_location, move_type=move_type, **kwargs
                 ):
                     return False
             except Exception as err:
@@ -1382,13 +1382,13 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
             if obj.has_account:
                 if home:
-                    string = "Your current location has ceased to exist,"
-                    string += " moving you to (#{dbid})."
-                    obj.msg(_(string).format(dbid=home.dbid))
+                    string = _(
+                        "Your current location has ceased to exist, moving you to (#{dbid})."
+                    )
+                    obj.msg(string.format(dbid=home.dbid))
                 else:
                     # Famous last words: The account should never see this.
-                    string = "This place should not exist ... contact an admin."
-                    obj.msg(_(string))
+                    obj.msg(_("This place should not exist ... contact an admin."))
             obj.move_to(home, move_type="teleport")
 
     @classmethod
@@ -1481,8 +1481,8 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
                 obj.db.desc = description
 
         except Exception as e:
-            errors.append(f"An error occurred while creating this '{key}' object: {e}")
-            logger.log_err(e)
+            errors.append(f"An error occurred while creating '{key}' object: {e}")
+            logger.log_trace()
 
         return obj, errors
 
@@ -1506,15 +1506,20 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             Append 01, 02 etc to obj.key. Checks next higher number in the
             same location, then adds the next number available
 
-            returns the new clone name on the form keyXX
+            Returns the new clone name on the form keyXX
             """
             key = self.key
-            num = sum(
-                1
+            if not self.location:
+                # no location means no clone numbering
+                return key
+            suffixes = [
+                obj.key.removeprefix(key)
                 for obj in self.location.contents
-                if obj.key.startswith(key) and obj.key.lstrip(key).isdigit()
-            )
-            return "%s%03i" % (key, num)
+            ]
+            num = 1
+            if nums := [int(suffix) for suffix in suffixes if suffix.isdigit()]:
+                num = max(nums) + 1
+            return f"{key}{num:03d}"
 
         new_key = new_key or find_clone_key()
         new_obj = ObjectDB.objects.copy_object(self, new_key=new_key, **kwargs)
@@ -1793,9 +1798,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         exits = self.filter_visible(self.contents_get(content_type="exit"), looker, **kwargs)
         exit_names = (exi.get_display_name(looker, **kwargs) for exi in exits)
-        exit_names = iter_to_str(_sort_exit_names(exit_names))
-
-        return f"|wExits:|n {exit_names}" if exit_names else ""
+        exit_names = iter_to_str(_sort_exit_names(exit_names), endsep=_(", and"))
+        e = _("Exits")
+        return f"|w{e}:|n {exit_names}" if exit_names else ""
 
     def get_display_characters(self, looker, **kwargs):
         """
@@ -1812,10 +1817,10 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             self.contents_get(content_type="character"), looker, **kwargs
         )
         character_names = iter_to_str(
-            char.get_display_name(looker, **kwargs) for char in characters
+            (char.get_display_name(looker, **kwargs) for char in characters), endsep=_(", and")
         )
-
-        return f"|wCharacters:|n {character_names}" if character_names else ""
+        c = _("Characters")
+        return f"|w{c}:|n {character_names}" if character_names else ""
 
     def get_display_things(self, looker, **kwargs):
         """
@@ -1841,8 +1846,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             thing = thinglist[0]
             singular, plural = thing.get_numbered_name(nthings, looker, key=thingname)
             thing_names.append(singular if nthings == 1 else plural)
-        thing_names = iter_to_str(thing_names)
-        return f"|wYou see:|n {thing_names}" if thing_names else ""
+        thing_names = iter_to_str(thing_names, endsep=_(", and"))
+        s = _("You see")
+        return f"|w{s}:|n {thing_names}" if thing_names else ""
 
     def get_display_footer(self, looker, **kwargs):
         """
@@ -2141,7 +2147,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             puppeting this Object.
 
         """
-        self.msg(f"You become |w{self.key}|n.")
+        self.msg(_("You become |w{key}|n.").format(key=self.key))
         self.account.db._last_puppet = self
 
     def at_pre_unpuppet(self, **kwargs):
@@ -2320,7 +2326,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         if msg:
             string = msg
         else:
-            string = "{object} is leaving {origin}, heading for {destination}."
+            string = _("{object} is leaving {origin}, heading for {destination}.")
 
         location = self.location
         exits = [
@@ -2332,9 +2338,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         mapping.update(
             {
                 "object": self,
-                "exit": exits[0] if exits else "somewhere",
-                "origin": location or "nowhere",
-                "destination": destination or "nowhere",
+                "exit": exits[0] if exits else _("somewhere"),
+                "origin": location or _("nowhere"),
+                "destination": destination or _("nowhere"),
             }
         )
 
@@ -2405,9 +2411,9 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         mapping.update(
             {
                 "object": self,
-                "exit": exits[0] if exits else "somewhere",
-                "origin": origin or "nowhere",
-                "destination": destination or "nowhere",
+                "exit": exits[0] if exits else _("somewhere"),
+                "origin": origin or _("nowhere"),
+                "destination": destination or _("nowhere"),
             }
         )
 
@@ -2671,9 +2677,11 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
         """
         if not target.access(self, "view"):
             try:
-                return "Could not view '%s'." % target.get_display_name(self, **kwargs)
+                return _("Could not view '{target_name}'.").format(
+                    target_name=target.get_display_name(self, **kwargs)
+                )
             except AttributeError:
-                return "Could not view '%s'." % target.key
+                return _("Could not view '{target_name}'.").format(target_name=target.key)
 
         description = target.return_appearance(self, **kwargs)
 
@@ -2798,7 +2806,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # TODO: This if-statment will be removed in Evennia 1.0
             return True
         if not self.access(dropper, "drop", default=False):
-            dropper.msg(f"You cannot drop {self.get_display_name(dropper)}")
+            dropper.msg(_("You cannot drop {obj}").format(obj=self.get_display_name(dropper)))
             return False
         return True
 
@@ -2910,15 +2918,15 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             # whisper mode
             msg_type = "whisper"
             msg_self = (
-                '{self} whisper to {all_receivers}, "|n{speech}|n"'
+                _('{self} whisper to {all_receivers}, "|n{speech}|n"')
                 if msg_self is True
                 else msg_self
             )
-            msg_receivers = msg_receivers or '{object} whispers: "|n{speech}|n"'
+            msg_receivers = msg_receivers or _('{object} whispers: "|n{speech}|n"')
             msg_location = None
         else:
-            msg_self = '{self} say, "|n{speech}|n"' if msg_self is True else msg_self
-            msg_location = msg_location or '{object} says, "{speech}"'
+            msg_self = _('{self} say, "|n{speech}|n"') if msg_self is True else msg_self
+            msg_location = msg_location or _('{object} says, "{speech}"')
             msg_receivers = msg_receivers or message
 
         custom_mapping = kwargs.get("mapping", {})
@@ -2927,7 +2935,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if msg_self:
             self_mapping = {
-                "self": "You",
+                "self": _("You"),
                 "object": self.get_display_name(self),
                 "location": location.get_display_name(self) if location else None,
                 "receiver": None,
@@ -2943,7 +2951,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if receivers and msg_receivers:
             receiver_mapping = {
-                "self": "You",
+                "self": _("You"),
                 "object": None,
                 "location": None,
                 "receiver": None,
@@ -2970,7 +2978,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
 
         if self.location and msg_location:
             location_mapping = {
-                "self": "You",
+                "self": _("You"),
                 "object": self,
                 "location": location,
                 "all_receivers": ", ".join(str(recv) for recv in receivers) if receivers else None,
@@ -3148,8 +3156,8 @@ class DefaultCharacter(DefaultObject):
                 obj.db.desc = description
 
         except Exception as e:
-            errors.append(f"An error occurred while creating object '{key} object: {e}")
-            logger.log_err(e)
+            errors.append(f"An error occurred while creating '{key}' object: {e}")
+            logger.log_trace()
 
         return obj, errors
 
@@ -3195,7 +3203,7 @@ class DefaultCharacter(DefaultObject):
 
         """
         if account and cls.objects.filter_family(db_key__iexact=name):
-            return f"|rA character named '|w{name}|r' already exists.|n"
+            return _("|rA character named '|w{name}|r' already exists.|n").format(name=name)
 
     def basetype_setup(self):
         """
@@ -3434,8 +3442,8 @@ class DefaultRoom(DefaultObject):
                 obj.db.desc = description
 
         except Exception as e:
-            errors.append(f"An error occurred while creating this '{key}' object: {e}")
-            logger.log_err(e)
+            errors.append(f"An error occurred while creating '{key}' object: {e}")
+            logger.log_trace()
 
         return obj, errors
 
@@ -3484,6 +3492,9 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
                 # No shorthand error message. Call hook.
                 self.obj.at_failed_traverse(self.caller)
 
+    def get_display_name(self, looker=None, **kwargs):
+        return self.obj.get_display_name(looker, **kwargs)
+
     def get_extra_info(self, caller, **kwargs):
         """
         Shows a bit of information on where the exit leads.
@@ -3499,9 +3510,11 @@ class ExitCommand(_COMMAND_DEFAULT_CLASS):
 
         """
         if self.obj.destination:
-            return " (exit to %s)" % self.obj.destination.get_display_name(caller, **kwargs)
+            return _(" (exit to {destination})").format(
+                destination=self.obj.destination.get_display_name(caller, **kwargs)
+            )
         else:
-            return " (%s)" % self.obj.get_display_name(caller, **kwargs)
+            return _(" (exit)")
 
 
 #

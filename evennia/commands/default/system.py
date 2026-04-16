@@ -7,15 +7,16 @@ System commands
 import code
 import datetime
 import os
+import subprocess
 import sys
 import time
 import traceback
 
 import django
-import evennia
-import subprocess
 import twisted
 from django.conf import settings
+
+import evennia
 from evennia.accounts.models import AccountDB
 from evennia.scripts.taskhandler import TaskHandlerTask
 from evennia.utils import gametime, logger, search, utils
@@ -957,7 +958,7 @@ class CmdTickers(COMMAND_DEFAULT_CLASS):
     locks = "cmd:perm(tickers) or perm(Builder)"
 
     def func(self):
-        from evennia import TICKER_HANDLER
+        from evennia.scripts.tickerhandler import TICKER_HANDLER
 
         all_subs = TICKER_HANDLER.all_display()
         if not all_subs:

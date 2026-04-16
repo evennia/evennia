@@ -252,3 +252,9 @@ this directly). |
 `<RETURN>` to repeat it). |
 
 If you want to learn more about debugging with Pdb, you will find an [interesting tutorial on that topic here](https://pymotw.com/3/pdb/).
+
+## Debugging with debugpy
+
+If you use Visual Studio Code and would like to debug Evennia using a graphical debugger, please follow the instructions here:
+
+[debugpy contrib](https://github.com/evennia/evennia/tree/main/evennia/contrib/utils/debugpy)

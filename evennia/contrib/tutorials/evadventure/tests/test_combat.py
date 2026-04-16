@@ -7,11 +7,7 @@ from unittest.mock import Mock, call, patch
 
 from evennia.utils import create
 from evennia.utils.ansi import strip_ansi
-from evennia.utils.test_resources import (
-    BaseEvenniaTest,
-    EvenniaCommandTestMixin,
-    EvenniaTestCase,
-)
+from evennia.utils.test_resources import BaseEvenniaTest, EvenniaCommandTestMixin, EvenniaTestCase
 
 from .. import combat_base, combat_turnbased, combat_twitch
 from ..characters import EvAdventureCharacter
@@ -632,7 +628,7 @@ class TestEvAdventureTwitchCombatHandler(EvenniaCommandTestMixin, _CombatTestBas
     @patch("evennia.contrib.tutorials.evadventure.combat_twitch.repeat", new=Mock())
     def test_attack(self):
         """Test attack action in the twitch combathandler"""
-        self.call(combat_twitch.CmdAttack(), self.target.key, "You attack testmonster!")
+        self.call(combat_twitch.CmdAttack(), self.target.key, "You attack Testmonster!")
         self.assertEqual(
             self.combatant_combathandler.action_dict,
             {"key": "attack", "target": self.target, "dt": 3, "repeat": True},

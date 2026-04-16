@@ -21,12 +21,15 @@ import textwrap
 import threading
 import traceback
 import types
+import pytz
 from ast import literal_eval
 from collections import OrderedDict, defaultdict
 from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
 from string import punctuation
 from unicodedata import east_asian_width
+from collections.abc import Callable
+from typing import Generic, TypeVar, overload
 
 from django.apps import apps
 from django.conf import settings
@@ -247,13 +250,13 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     is_ansi = isinstance(text, _ANSISTRING)
     lb = _ANSISTRING("\n") if is_ansi else "\n"
 
-    def _process_line(line):
+    def _process_line(line, line_word_length, line_gaps):
         """
         helper function that distributes extra spaces between words. The number
         of gaps is nwords - 1 but must be at least 1 for single-word lines. We
         distribute odd spaces to one of the gaps.
         """
-        line_rest = width - (wlen + ngaps)
+        line_rest = width - (line_word_length + line_gaps)
 
         gap = _ANSISTRING(" ") if is_ansi else " "
 
@@ -275,8 +278,8 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
                 else:
                     line[-1] = line[-1] + pad + sp * (line_rest % 2)
             else:  # align 'f'
-                gap += sp * (line_rest // max(1, ngaps))
-                rest_gap = line_rest % max(1, ngaps)
+                gap += sp * (line_rest // max(1, line_gaps))
+                rest_gap = line_rest % max(1, line_gaps)
                 for i in range(rest_gap):
                     line[i] += sp
         elif not any(line):
@@ -300,49 +303,61 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
 
     # all other aligns requires splitting into paragraphs and words
 
-    # split into paragraphs and words
-    paragraphs = [text]  # re.split("\n\s*?\n", text, re.MULTILINE)
-    words = []
-    for ip, paragraph in enumerate(paragraphs):
-        if ip > 0:
-            words.append(("\n", 0))
-        words.extend((word, m_len(word)) for word in paragraph.split())
+    def _justify_paragraph(words):
+        ngaps = 0
+        wlen = 0
+        line = []
+        lines = []
 
-    if not words:
-        # Just whitespace!
-        return sp * width
-
-    ngaps = 0
-    wlen = 0
-    line = []
-    lines = []
-
-    while words:
-        if not line:
-            # start a new line
-            word = words.pop(0)
-            wlen = word[1]
-            line.append(word[0])
-        elif (words[0][1] + wlen + ngaps) >= width:
-            # next word would exceed word length of line + smallest gaps
-            lines.append(_process_line(line))
-            ngaps, wlen, line = 0, 0, []
-        else:
-            # put a new word on the line
-            word = words.pop(0)
-            line.append(word[0])
-            if word[1] == 0:
-                # a new paragraph, process immediately
-                lines.append(_process_line(line))
+        while words:
+            if not line:
+                # start a new line
+                word = words.pop(0)
+                wlen = word[1]
+                line.append(word[0])
+            elif (words[0][1] + wlen + ngaps) >= width:
+                # next word would exceed word length of line + smallest gaps
+                lines.append(_process_line(line, wlen, ngaps))
                 ngaps, wlen, line = 0, 0, []
             else:
+                # put a new word on the line
+                word = words.pop(0)
+                line.append(word[0])
                 wlen += word[1]
                 ngaps += 1
 
-    if line:  # catch any line left behind
-        lines.append(_process_line(line))
+        if line:  # catch any line left behind
+            lines.append(_process_line(line, wlen, ngaps))
+
+        return lines
+
+    paragraphs = []
+    paragraph_words = []
+    for input_line in text.split("\n"):
+        line_words = [(word, m_len(word)) for word in input_line.split()]
+        if line_words:
+            paragraph_words.extend(line_words)
+        else:
+            if paragraph_words:
+                paragraphs.append(paragraph_words)
+                paragraph_words = []
+            paragraphs.append(None)
+    if paragraph_words:
+        paragraphs.append(paragraph_words)
+
+    if not paragraphs:
+        # Just whitespace!
+        return sp * width
+
+    blank_line = _ANSISTRING(sp * width) if is_ansi else sp * width
+    lines = []
+    for paragraph in paragraphs:
+        if paragraph is None:
+            lines.append(blank_line)
+        else:
+            lines.extend(_justify_paragraph(paragraph[:]))
+
     indentstring = sp * indent
-    out = lb.join([indentstring + line for line in lines])
     return lb.join([indentstring + line for line in lines])
 
 
@@ -494,7 +509,7 @@ def compress_whitespace(text, max_linebreaks=1, max_spacing=2):
     # this allows the blank-line compression to eliminate them if needed
     text = re_empty.sub("\n\n", text)
     # replace groups of extra spaces with the maximum number of spaces
-    text = re.sub(fr"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
+    text = re.sub(rf"(?<=\S) {{{max_spacing},}}", " " * max_spacing, text)
     # replace groups of extra newlines with the maximum number of newlines
     text = re.sub(f"\n{{{max_linebreaks},}}", "\n" * max_linebreaks, text)
     return text
@@ -668,21 +683,26 @@ def time_format(seconds, style=0):
     return retval.strip()
 
 
-def datetime_format(dtobj):
+def datetime_format(dtobj, time_zone=None):
     """
     Pretty-prints the time since a given time.
 
     Args:
-        dtobj (datetime): An datetime object, e.g. from Django's
-            `DateTimeField`.
+        dtobj (datetime): A datetime object, e.g. from Django's
+            ``DateTimeField``.
+        time_zone (pytz.timezone, optional): If provided, the current
+            time is converted to this time zone before comparing
+            against ``dtobj``. Use this when ``dtobj`` has already been
+            converted to a local time zone via ``utc_to_local``.
 
     Returns:
-        deltatime (str): A string describing how long ago `dtobj`
-            took place.
+        str: A string describing how long ago ``dtobj`` took place.
 
     """
 
     now = timezone.now()
+    if time_zone:
+        now = utc_to_local(now, time_zone)
 
     if dtobj.year < now.year:
         # another year (Apr 5, 2019)
@@ -2180,8 +2200,10 @@ def deepsize(obj, max_depth=4):
 # lazy load handler
 _missing = object()
 
+TProp = TypeVar("TProp")
 
-class lazy_property:
+
+class lazy_property(Generic[TProp]):
     """
     Delays loading of property until first access. Credit goes to the
     Implementation in the werkzeug suite:
@@ -2202,18 +2224,24 @@ class lazy_property:
 
     """
 
-    def __init__(self, func, name=None, doc=None):
+    def __init__(self, func: Callable[..., TProp], name=None, doc=None):
         """Store all properties for now"""
         self.__name__ = name or func.__name__
         self.__module__ = func.__module__
         self.__doc__ = doc or func.__doc__
         self.func = func
 
-    def __get__(self, obj, type=None):
+    @overload
+    def __get__(self, obj: None, type=None) -> "lazy_property": ...
+
+    @overload
+    def __get__(self, obj, type=None) -> TProp: ...
+
+    def __get__(self, obj, type=None) -> TProp | "lazy_property":
         """Triggers initialization"""
         if obj is None:
             return self
-        value = obj.__dict__.get(self.__name__, _missing)
+        value: TProp = obj.__dict__.get(self.__name__, _missing)
         if value is _missing:
             value = self.func(obj)
         obj.__dict__[self.__name__] = value
@@ -2301,22 +2329,21 @@ def calledby(callerdepth=1):
 
 def m_len(target):
     """
-    Provides length checking for strings with MXP patterns, and falls
-    back to normal len for other objects.
+    Provides display-width length checking for strings, taking into account
+    MXP patterns and east-asian character widths.  Falls back to normal
+    ``len`` for non-string objects.
 
     Args:
         target (str): A string with potential MXP components
             to search.
 
     Returns:
-        length (int): The length of `target`, ignoring MXP components.
+        length (int): The visible width of `target`, ignoring MXP components
+            and counting east-asian characters as width 2.
 
     """
-    # Would create circular import if in module root.
-    from evennia.utils.ansi import ANSI_PARSER
-
-    if inherits_from(target, str) and "|lt" in target:
-        return len(ANSI_PARSER.strip_mxp(target))
+    if inherits_from(target, str):
+        return display_len(target)
     return len(target)
 
 
@@ -2400,29 +2427,30 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         # group results by display name to properly disambiguate
         grouped_matches = defaultdict(list)
         for item in matches:
-            group_key = (
-                    item.get_display_name(caller)
-                    if hasattr(item, "get_display_name")
-                    else query
-                )
-            grouped_matches[group_key].append(item)
+            item_key = (
+                item.get_display_name(caller) if hasattr(item, "get_display_name") else query
+            )
+            # the actual searching is case-insensitive, so we force grouping keys to lower
+            grouped_matches[item_key.lower()].append( (item_key, item) )
 
         for key, match_list in grouped_matches.items():
-            for num, result in enumerate(match_list):
+            for num, (result_key, result) in enumerate(match_list):
                 # we need to consider that result could be a Command, where .aliases
                 # is a list of strings
                 if hasattr(result.aliases, "all"):
                     # result is a typeclassed entity where `.aliases` is an AliasHandler.
                     aliases = result.aliases.all(return_objs=True)
                     # remove pluralization aliases
-                    aliases = [alias.db_key for alias in aliases if alias.db_category != "plural_key"]
+                    aliases = [
+                        alias.db_key for alias in aliases if alias.db_category != "plural_key"
+                    ]
                 else:
                     # result is likely a Command, where `.aliases` is a list of strings.
                     aliases = result.aliases
 
                 error += _MULTIMATCH_TEMPLATE.format(
                     number=num + 1,
-                    name=key,
+                    name=result_key,
                     aliases=" [{alias}]".format(alias=";".join(aliases)) if aliases else "",
                     info=result.get_extra_info(caller),
                 )
@@ -3102,3 +3130,28 @@ def value_is_integer(value):
         return False
 
     return True
+
+
+def utc_to_local(dtobj, time_zone):
+    """
+    Convert a datetime to a local time zone.
+
+    Handles both aware (with tzinfo) and naive datetimes. Naive
+    datetimes are assumed to be UTC (Evennia's default with
+    ``USE_TZ=True``).
+
+    Args:
+        dtobj (datetime): The datetime to convert.
+        time_zone (pytz.timezone): The target time zone.
+
+    Returns:
+        datetime: The converted datetime, or the original if
+            ``time_zone`` is falsy.
+
+    """
+    if not time_zone:
+        return dtobj
+    if dtobj.tzinfo is None:
+        # naive datetime — assume UTC
+        dtobj = pytz.utc.localize(dtobj)
+    return dtobj.astimezone(time_zone)
