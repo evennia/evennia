@@ -1,3 +1,15 @@
+r"""
+Database Backup - helpme 2024
+
+This adds a `backup` command which can be used to schedule automatic database backups,
+or trigger one immediately. Backups are saved to your game's `server/backups` folder.
+
+Currently supports sqlite3 (the Evennia default) and PostgreSQL. SQLite backups use
+Python's built-in sqlite3 backup API, which is safe to run against a live database.
+
+See the README for full installation instructions, settings, and restoration steps.
+"""
+
 from django.conf import settings
 
 from evennia import CmdSet, DefaultScript
@@ -7,7 +19,6 @@ from evennia.utils import logger, search
 
 import datetime
 import os
-import shutil
 import subprocess
 import sqlite3
 
@@ -45,14 +56,18 @@ class DatabaseBackupScript(DefaultScript):
         """
         Run `pg_dump` on the postgreSQL database and save the output.
         """
-
         output_file_path += ".sql"
-        with open(output_file_path, "w") as output_file:
-            subprocess.run(
-                ["pg_dump", "-U", db_user, "-F", "p", db_name],
-                stdout=output_file,
-                check=True,
-            )
+        try:
+            with open(output_file_path, "w") as output_file:
+                subprocess.run(
+                    ["pg_dump", "-U", db_user, "-F", "p", db_name],
+                    stdout=output_file,
+                    check=True,
+                )
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            if os.path.exists(output_file_path):
+                os.remove(output_file_path)
+            raise
         self.log(f"|wpostgresql db backed up in: {BACKUP_FOLDER}|n")
 
     def backup_sqlite3(self, db_name, output_file_path):
@@ -62,24 +77,25 @@ class DatabaseBackupScript(DefaultScript):
 
         output_file_path += ".db3"
         os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
-        shutil.copy(db_name, output_file_path)
 
-        # Check the integrity of the copied db
-        con = sqlite3.connect(output_file_path)
-        cur = con.cursor()
+        src = sqlite3.connect(db_name)
+        dst = sqlite3.connect(output_file_path)
         try:
-            cur.execute("PRAGMA integrity_check")
-            result = cur.fetchone()
-            if result[0] != "ok":
-                self.log(f"|rsqlite3 db backup to {BACKUP_FOLDER} failed: integrity check failed|n")
-                con.close()
-                return
+            src.backup(dst)
         except sqlite3.DatabaseError:
-            self.log(f"|rsqlite3 db backup to {BACKUP_FOLDER} failed: integrity check failed|n")
-            con.close()
+            dst.close()
+            src.close()
+            try:
+                os.remove(output_file_path)
+            except FileNotFoundError:
+                pass
+            self.log(f"|rsqlite3 db backup to {BACKUP_FOLDER} failed|n")
             return
+        finally:
+            dst.close()
+            src.close()
+
         self.log(f"|wsqlite3 db backed up in: {BACKUP_FOLDER}|n")
-        con.close()
 
     def at_repeat(self):
         databases = settings.DATABASES
@@ -118,15 +134,16 @@ class CmdBackup(MuxCommand):
     locks = "cmd:pperm(Developer)"
 
     def get_latest_backup(self):
-        """
-        Returns:
-            str: Name of the most recent backup
-        """
         try:
             files = os.listdir(BACKUP_FOLDER)
-            paths = [os.path.join(BACKUP_FOLDER, basename) for basename in files]
-            last_backup = max(paths, key=os.path.getctime)
-            return last_backup
+            paths = [
+                os.path.join(BACKUP_FOLDER, basename)
+                for basename in files
+                if basename.endswith((".db3", ".sql"))
+            ]
+            if not paths:
+                return ""
+            return max(paths, key=os.path.getctime)
         except Exception:
             return ""
 
@@ -147,6 +164,18 @@ class CmdBackup(MuxCommand):
         if script:
             return script[0]
 
+    def at_pre_cmd(self):
+        databases = settings.DATABASES
+        db = databases["default"]
+        engine = db.get("ENGINE")
+
+        if "postgres" not in engine and "sqlite3" not in engine:
+            self.caller.msg(
+                f"|rDatabase backup failed: unsupported engine '{engine}'. Contrib supports postgres and sqlite3.|n"
+            )
+            return True
+        return super().at_pre_cmd()
+
     def func(self):
         """
         Database backup functionality
@@ -166,6 +195,14 @@ class CmdBackup(MuxCommand):
             caller.msg("DB backup script deleted.")
             return
 
+        # Manually trigger the backup
+        if "force" in self.switches:
+            if not script:
+                self.create_script(interval)
+                script = self.get_script()
+            script.at_repeat()
+            return
+
         # Create new backup script
         if not script:
             self.create_script(interval)
@@ -175,11 +212,6 @@ class CmdBackup(MuxCommand):
         original_interval = script.interval
         if args and original_interval != interval:
             self.create_script(interval)
-            return
-
-        if "force" in self.switches:
-            # Manually trigger the backup
-            script.at_repeat()
             return
 
         latest_backup = self.get_latest_backup()
