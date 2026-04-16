@@ -1,15 +1,13 @@
-import pprint
-
 """
 This module allows users based on a given condition (defaults to same location) to see
 whether applicable users are typing or not. Currently, only the webclient is supported.
 """
 
-# Notification timeout in milliseconds + <=100ms polling interval in the client.
-_IS_TYPING_TIMEOUT = 1000 * 5
+from django.conf import settings
+from evennia.utils.utils import class_from_module
 
 
-def is_typing_get_audience(session, *args, **kwargs):
+def is_typing_get_audience_common_location(session, *args, **kwargs):
     """
     This should return a list of puppets to relay our client live reporting messages.
     The example returns other puppets in the same room as the reporting session with
@@ -18,6 +16,9 @@ def is_typing_get_audience(session, *args, **kwargs):
     Args:
         session: The player's current session.
     """
+
+    if session.puppet is None:
+        return []
 
     audience_including_typer = session.puppet.location.contents_get(content_type="character")
 
@@ -28,7 +29,7 @@ def is_typing_get_audience(session, *args, **kwargs):
 
 def is_typing_setup(session, *args, **kwargs):
     """
-    This fetches any aliases for the "say" command and the
+    This fetches any commands/aliases/nicks that we want to monitor and the
     specified notification timeout in milliseconds.
 
     Args:
@@ -45,16 +46,14 @@ def is_typing_setup(session, *args, **kwargs):
         cmd for cmd in session.puppet.cmdset.current if hasattr(cmd, "client_live_report_typing")
     ]
 
-    live_report_keywords = []  # full list
-    for cmd in live_report_commands:
-        live_report_keywords.append(cmd.key)  # actual commands
-        live_report_keywords += cmd.aliases  # aliases
+    # Commands and aliases
+    live_report_keywords = [kw for kw in live_report_commands for kw in (kw.key, *kw.aliases)]
 
     live_report_keywords += [
         nick.value[2]  # this is the 'nick'
         for nick in session.puppet.nicks.all()
-        if nick.value[1].split(" ")[0] in live_report_commands  # spaced keywords
-        or nick.value[1][0] in live_report_commands  # handle things like ', ", :
+        if nick.value[3].split(" ")[0] in live_report_commands  # spaced keywords
+        or nick.value[3][0] in live_report_commands  # handle things like ', ", :
     ]
 
     session.msg(
@@ -62,7 +61,7 @@ def is_typing_setup(session, *args, **kwargs):
             "type": "setup",
             "payload": {
                 "live_report_keywords": live_report_keywords,
-                "typing_timeout": _IS_TYPING_TIMEOUT,
+                "typing_timeout": settings.WEBCLIENT_TYPING_TIMEOUT * 1000,
             },
         }
     )
@@ -85,9 +84,14 @@ def is_typing_state(session, *args, **kwargs):
     if not is_typing:
         return
 
+    audience_getter = class_from_module(
+        settings.WEBCLIENT_TYPING_AUDIENCE_GETTER
+        or "evennia.server.is_typing.is_typing_get_audience_common_location"
+    )
+
     state = kwargs.get("state")
 
-    audience = is_typing_get_audience(session=session, args=args, kwargs=kwargs)
+    audience = audience_getter(session=session, args=args, kwargs=kwargs)
 
     for puppet in audience:
 

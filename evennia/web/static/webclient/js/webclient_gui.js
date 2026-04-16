@@ -86,7 +86,6 @@ var plugin_handler = (function () {
                 }
             }
         }
-        console.log('NO plugin handled this Keyup');
     }
 
 

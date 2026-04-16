@@ -10,6 +10,7 @@ let is_typing = (function (){
     }
 
     const liveReportKeywords = []
+    let regex = null
 
     /**
      * Create the containers that house our typing users
@@ -23,7 +24,7 @@ let is_typing = (function (){
             '</div>'
         ].join('\n')
 
-        $('body').append(ele)
+        $('#messagewindow').append(ele)
     }
 
     const playerElement =(name)=> `<div id="istyping-${name}" class="player-is-typing">${name}</div>`
@@ -80,17 +81,17 @@ let is_typing = (function (){
     }
 
     /**
-     * Add the provided aliases to the things we listen for
+     * Add the provided keywords to the things we listen for
      *
-     * @param {string[]} aliases - Array of keywords commands
+     * @param {string[]} keywords - Array of keywords
      */
-    const setLiveReportKeywords = function (aliases) {
-        aliases.forEach(alias=>{
-            const cmd = escapeRegExp(alias);
+    const setLiveReportKeywords = function (keywords) {
+        keywords.forEach(kw=>{
+            const cmd = escapeRegExp(kw);
 
             // Is it already present?
             if (liveReportKeywords.indexOf(cmd) === -1){
-                liveReportKeywords.push(escapeRegExp(alias)); // Nope!
+                liveReportKeywords.push(escapeRegExp(kw)); // Nope!
             }
         })
     }
@@ -114,7 +115,6 @@ let is_typing = (function (){
      * @param {KeyboardEvent} event - The typing state, e.g., "typing" or "idle".
      */
     const onKeyup = function (event) {
-        const regex = new RegExp(`^\W*(${liveReportKeywords.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
         const inputfield = $(".inputfield:focus");
         // A live report command is being used.
         if (Evennia.isConnected() &&
@@ -139,7 +139,7 @@ let is_typing = (function (){
             stoppedTyping();
         }
 
-        return true
+        return false
     }
 
     /**
@@ -170,7 +170,7 @@ let is_typing = (function (){
         state.typing_players.forEach((player, index)=>{
             if (player.timeout < now) {
                 timedOut.push(index)
-                $(`#istyping-${player}`).remove()
+                $(`#istyping-${player.name}`).remove()
             }
         })
 
@@ -197,6 +197,8 @@ let is_typing = (function (){
                     const {live_report_keywords, typing_timeout } = kwargs.payload
                     timeout = typing_timeout
                     setLiveReportKeywords(live_report_keywords)
+
+                    regex = new RegExp(`^\W*(${liveReportKeywords.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
                     break;
 
                 case 'typing':

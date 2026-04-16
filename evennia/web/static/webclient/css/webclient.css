@@ -347,9 +347,9 @@ div {margin:0px;}
 }
 
 #istyping {
-    position: fixed;
-    top: 25px;
-    right: 25px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
     width: auto;
     height: auto;
     display: none;

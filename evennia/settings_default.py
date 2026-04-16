@@ -1034,6 +1034,9 @@ STATICFILES_IGNORE_PATTERNS = ["README.md"]
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"
 WEBCLIENT_TEMPLATE = "webclient"
+# Number of seconds for the "typing" notification to timeout.
+WEBCLIENT_TYPING_TIMEOUT = 5
+WEBCLIENT_TYPING_AUDIENCE_GETTER = "evennia.server.is_typing.is_typing_get_audience_common_location"
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [
     {

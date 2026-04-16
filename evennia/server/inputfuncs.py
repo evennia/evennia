@@ -25,7 +25,6 @@ from codecs import lookup as codecs_lookup
 
 from django.conf import settings
 
-from evennia import ObjectDB, DefaultCharacter
 from evennia.commands.cmdhandler import cmdhandler
 from evennia.commands.default.general import CmdSay
 from evennia.utils.logger import log_err
