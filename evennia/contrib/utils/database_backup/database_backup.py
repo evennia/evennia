@@ -1,6 +1,5 @@
 from django.conf import settings
 
-from evennia.comms.models import ChannelDB
 from evennia import CmdSet, DefaultScript
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils.create import create_script
@@ -13,7 +12,7 @@ import subprocess
 import sqlite3
 
 _MUDINFO_CHANNEL = None
-BACKUP_FOLDER = "server/backups"
+BACKUP_FOLDER = os.path.join(settings.GAME_DIR, "server", "backups")
 DATETIME_FORMAT_STR = "%Y-%m-%d.%H_%M_%S"
 DEFAULT_INTERVAL = 86400
 
@@ -48,11 +47,12 @@ class DatabaseBackupScript(DefaultScript):
         """
 
         output_file_path += ".sql"
-        subprocess.run(
-            ["pg_dump", "-U", db_user, "-F", "p", db_name],
-            stdout=open(output_file_path, "w"),
-            check=True,
-        )
+        with open(output_file_path, "w") as output_file:
+            subprocess.run(
+                ["pg_dump", "-U", db_user, "-F", "p", db_name],
+                stdout=output_file,
+                check=True,
+            )
         self.log(f"|wpostgresql db backed up in: {BACKUP_FOLDER}|n")
 
     def backup_sqlite3(self, db_name, output_file_path):
@@ -69,11 +69,17 @@ class DatabaseBackupScript(DefaultScript):
         cur = con.cursor()
         try:
             cur.execute("PRAGMA integrity_check")
+            result = cur.fetchone()
+            if result[0] != "ok":
+                self.log(f"|rsqlite3 db backup to {BACKUP_FOLDER} failed: integrity check failed|n")
+                con.close()
+                return
         except sqlite3.DatabaseError:
             self.log(f"|rsqlite3 db backup to {BACKUP_FOLDER} failed: integrity check failed|n")
             con.close()
             return
         self.log(f"|wsqlite3 db backed up in: {BACKUP_FOLDER}|n")
+        con.close()
 
     def at_repeat(self):
         databases = settings.DATABASES
@@ -85,7 +91,7 @@ class DatabaseBackupScript(DefaultScript):
         try:
             # Create the output folder if it doesn't exist
             os.makedirs(BACKUP_FOLDER, exist_ok=True)
-            output_file = datetime.datetime.now().replace(microsecond=0).isoformat()
+            output_file = datetime.datetime.now().strftime(DATETIME_FORMAT_STR)
             output_file_path = os.path.join(BACKUP_FOLDER, output_file)
 
             if "postgres" in engine:
@@ -108,7 +114,7 @@ class CmdBackup(MuxCommand):
     """
 
     key = "backup"
-    aliases = "backups"
+    aliases = ["backups"]
     locks = "cmd:pperm(Developer)"
 
     def get_latest_backup(self):
@@ -176,8 +182,9 @@ class CmdBackup(MuxCommand):
             script.at_repeat()
             return
 
-        if self.get_latest_backup():
-            caller.msg(f"Most recent database backup: {self.get_latest_backup()}.")
+        latest_backup = self.get_latest_backup()
+        if latest_backup:
+            caller.msg(f"Most recent database backup: {latest_backup}.")
         else:
             caller.msg(f"No database backups found in {BACKUP_FOLDER}")
 
