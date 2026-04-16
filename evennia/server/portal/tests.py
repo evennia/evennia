@@ -394,3 +394,42 @@ class TestWebSocket(BaseEvenniaTest):
         args, kwargs = call_args
         is_binary = kwargs.get("is_binary", args[1] if len(args) > 1 else False)
         self.assertFalse(is_binary)
+
+
+@mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+def test_naws_resize_syncs_updated_width(self):
+    """
+    Verify that a NAWS resize packet causes sessionhandler.sync to be called
+    AFTER negotiate_sizes has updated SCREENWIDTH, not before.
+    Regression test for the ordering bug introduced in #3498.
+    """
+    self.transport.client = ["localhost"]
+    self.transport.setTcpKeepAlive = Mock()
+    self.proto.makeConnection(self.transport)
+
+    # Complete NAWS handshake: client says WILL NAWS -> sets AUTORESIZE=True
+    self.proto.dataReceived(IAC + WILL + NAWS)
+    self.assertTrue(self.proto.protocol_flags["AUTORESIZE"])
+
+    # Initial size from handshake (120 wide, 40 tall)
+    self.proto.dataReceived(b"".join([IAC, SB, NAWS, b"\x00\x78", b"\x00\x28", IAC, SE]))
+    self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"][0], 120)
+
+    # Now simulate a terminal resize to 160 wide, 50 tall
+    # Patch sync to capture what SCREENWIDTH the server sees
+    synced_widths = []
+    original_sync = self.proto.sessionhandler.sync
+
+    def capturing_sync(session):
+        synced_widths.append(session.protocol_flags["SCREENWIDTH"][0])
+        return original_sync(session)
+
+    self.proto.sessionhandler.sync = capturing_sync
+    self.proto.dataReceived(b"".join([IAC, SB, NAWS, b"\x00\xa0", b"\x00\x32", IAC, SE]))
+
+    # SCREENWIDTH must be updated to 160 BEFORE sync fires
+    self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"][0], 160)
+    self.assertEqual(synced_widths, [160])  # sync saw the NEW width, not 120
+
+    self.proto.nop_keep_alive.stop()
+    self.proto._handshake_delay.cancel()
