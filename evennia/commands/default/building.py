@@ -3991,10 +3991,11 @@ class CmdTag(COMMAND_DEFAULT_CLASS):
             return
         if "search" in self.switches:
             # search by tag
-            tag = self.args
+            tag = self.args.strip()
             category = None
             if ":" in tag:
                 tag, category = [part.strip() for part in tag.split(":", 1)]
+            tag = tag or None  # pass None instead of "" to match all keys
             objs = search.search_tag(tag, category=category)
             nobjs = len(objs)
             if nobjs > 0:

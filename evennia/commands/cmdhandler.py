@@ -28,7 +28,7 @@ command line. The processing of a command works as follows:
 """
 
 import types
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from copy import copy
 from itertools import chain
 from traceback import format_exc
@@ -48,7 +48,17 @@ _IN_GAME_ERRORS = settings.IN_GAME_ERRORS
 
 __all__ = ("cmdhandler", "InterruptCommand")
 _GA = object.__getattribute__
-_CMDSET_MERGE_CACHE = {}
+# Cache mapping content-based fingerprint tuples to merged CmdSet results.
+# When full, the least recently used entry is evicted.
+# On a cache hit the *same* CmdSet instance is returned to every caller whose
+# cmdsets match the fingerprint.  This is safe because cmdhandler copies each
+# command before execution (copy(cmd) at dispatch time).  Code that inspects
+# `merged_from` on a cached result will see the cmdsets from the *original*
+# cache miss, not the current caller's — the content is equivalent.
+# Note: this cache holds strong references to the merged CmdSets (and
+# transitively to the cmd.obj / cmdsetobj stored in each fingerprint).
+_CMDSET_MERGE_CACHE = OrderedDict()
+_CMDSET_MERGE_CACHE_MAXSIZE = settings.CMDSET_MERGE_CACHE_MAXSIZE
 
 # tracks recursive calls by each caller
 # to avoid infinite loops (commands calling themselves)
@@ -448,10 +458,14 @@ def get_and_merge_cmdsets(
             ]
 
         if cmdsets:
-            # faster to do tuple on list than to build tuple directly
-            mergehash = tuple([id(cmdset) for cmdset in cmdsets])
+            # each cmdset caches its own fingerprint, so this is just a tuple lookup
+            mergehash = tuple(cmdset.fingerprint for cmdset in cmdsets)
             if mergehash in _CMDSET_MERGE_CACHE:
-                # cached merge exist; use that
+                # cached merge exists; mark as recently used.
+                # Note: the cached cmdset's `merged_from` still references the
+                # cmdset objects from the original miss — not the current caller's.
+                # Content is equivalent (same fingerprint), so this is harmless.
+                _CMDSET_MERGE_CACHE.move_to_end(mergehash)
                 cmdset = _CMDSET_MERGE_CACHE[mergehash]
             else:
                 # we group and merge all same-prio cmdsets separately (this avoids
@@ -475,8 +489,10 @@ def get_and_merge_cmdsets(
                     cmdset = yield cmdset + merging_cmdset
                 # store the original, ungrouped set for diagnosis
                 cmdset.merged_from = cmdsets
-                # cache
+                # cache; evict oldest entry if full
                 _CMDSET_MERGE_CACHE[mergehash] = cmdset
+                if len(_CMDSET_MERGE_CACHE) > _CMDSET_MERGE_CACHE_MAXSIZE:
+                    _CMDSET_MERGE_CACHE.popitem(last=False)
         else:
             cmdset = None
         for cset in (cset for cset in local_obj_cmdsets if cset):
