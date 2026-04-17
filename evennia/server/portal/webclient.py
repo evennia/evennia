@@ -306,6 +306,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         self.protocol_flags["TRUECOLOR"] = True
         self.protocol_flags["XTERM256"] = True
         self.protocol_flags["ANSI"] = True
+        self.protocol_flags["ISTYPING"] = True
 
         # watch for dead links
         self.transport.setTcpKeepAlive(1)

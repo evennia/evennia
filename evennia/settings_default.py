@@ -481,7 +481,11 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs")
 # Module holding handlers for managing incoming data from the client. These
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
-INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
+INPUT_FUNC_MODULES = [
+    "evennia.server.inputfuncs",
+    "server.conf.inputfuncs",
+    "evennia.server.is_typing",
+]
 # Modules that contain prototypes for use with the spawner mechanism.
 PROTOTYPE_MODULES = ["world.prototypes"]
 # Modules containining Prototype functions able to be embedded in prototype
@@ -1034,6 +1038,9 @@ STATICFILES_IGNORE_PATTERNS = ["README.md"]
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"
 WEBCLIENT_TEMPLATE = "webclient"
+# Number of seconds for the "typing" notification to timeout.
+WEBCLIENT_TYPING_TIMEOUT = 5
+WEBCLIENT_TYPING_AUDIENCE_GETTER = "evennia.server.is_typing.is_typing_get_audience_common_location"
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [
     {
