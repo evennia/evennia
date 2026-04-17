@@ -10,6 +10,12 @@ sessions etc.
 import re
 
 from django.conf import settings
+from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
+from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
+from evennia.server.portal.mxp import Mxp, mxp_parse
+from evennia.server.portal.naws import NAWS
+from evennia.utils import ansi
+from evennia.utils.utils import class_from_module, to_bytes
 from twisted.conch.telnet import (
     ECHO,
     GA,
@@ -27,13 +33,6 @@ from twisted.conch.telnet import (
 )
 from twisted.internet import protocol
 from twisted.internet.task import LoopingCall
-
-from evennia.server.portal import mssp, naws, suppress_ga, telnet_oob, ttype
-from evennia.server.portal.mccp import MCCP, Mccp, mccp_compress
-from evennia.server.portal.mxp import Mxp, mxp_parse
-from evennia.server.portal.naws import NAWS
-from evennia.utils import ansi
-from evennia.utils.utils import class_from_module, to_bytes
 
 _RE_N = re.compile(r"\|n$")
 _RE_LEND = re.compile(rb"\n$|\r$|\r\n$|\r\x00$|", re.MULTILINE)
@@ -95,16 +94,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         try:
             # Do we have a NAWS update? A NAWS subneg packet is exactly
             # IAC SB NAWS <w-hi> <w-lo> <h-hi> <h-lo> IAC SE = 9 bytes.
-            if (
+            is_naws_resize = (
                 NAWS in data
                 and len(data) == 9
                 and
                 # Is auto resizing on?
                 self.protocol_flags.get("AUTORESIZE")
-            ):
+            )
+            super().dataReceived(data)
+            if is_naws_resize:
                 self.sessionhandler.sync(self.sessionhandler.get(self.sessid))
 
-            super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
 

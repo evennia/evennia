@@ -259,7 +259,7 @@ def client_options(session, *args, **kwargs):
         elif key == "screenwidth":
             flags["SCREENWIDTH"] = validate_size(value)
         elif key == "autoresize":
-            flags["AUTORESIZE"] = validate_size(value)
+            flags["AUTORESIZE"] = validate_bool(value)
         elif key == "inputdebug":
             flags["INPUTDEBUG"] = validate_bool(value)
         elif key == "nocolor":

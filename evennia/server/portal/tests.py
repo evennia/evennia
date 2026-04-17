@@ -341,6 +341,49 @@ class TestTelnet(TwistedTestCase):
         self.assertIn("fish & chips", result)
         self.assertNotIn("&amp;", result)
 
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+    def test_naws_resize_syncs_updated_width(self):
+        """
+        Verify that a NAWS resize packet causes sessionhandler.sync to be called
+        AFTER negotiate_sizes has updated SCREENWIDTH, not before.
+        Regression test for the ordering bug introduced in #3498.
+        """
+
+        self.transport.client = ["localhost"]
+        self.transport.setTcpKeepAlive = Mock()
+        d = self.proto.makeConnection(self.transport)
+        self.addCleanup(self.proto.nop_keep_alive.stop)
+        self.addCleanup(self.proto._handshake_delay.cancel)
+
+        # Complete NAWS handshake: client says WILL NAWS -> sets AUTORESIZE=True
+        self.proto.dataReceived(IAC + WILL + NAWS)
+        self.assertTrue(self.proto.protocol_flags["AUTORESIZE"])
+
+        # Patch sync before any NAWS subneg so it never tries sessionhandler.get()
+        # (the session isn't reachable via get() in this test setup). Capture
+        # SCREENWIDTH at the moment sync is called to assert ordering.
+        synced_widths = []
+
+        def capturing_sync(session):
+            synced_widths.append(self.proto.protocol_flags["SCREENWIDTH"][0])
+
+        self.proto.sessionhandler.sync = capturing_sync
+
+        # Initial size from handshake (120 wide, 40 tall)
+        self.proto.dataReceived(b"".join([IAC, SB, NAWS, b"\x00\x78", b"\x00\x28", IAC, SE]))
+        self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"][0], 120)
+
+        synced_widths.clear()
+
+        # Simulate a terminal resize to 160 wide, 50 tall
+        self.proto.dataReceived(b"".join([IAC, SB, NAWS, b"\x00\xa0", b"\x00\x32", IAC, SE]))
+
+        # SCREENWIDTH must be updated to 160 BEFORE sync fires
+        self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"][0], 160)
+        self.assertEqual(synced_widths, [160])  # sync saw the NEW width, not 120
+
+        return d
+
 
 class TestWebSocket(BaseEvenniaTest):
     def setUp(self):
