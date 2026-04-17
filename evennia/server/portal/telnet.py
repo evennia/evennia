@@ -93,16 +93,17 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         """
         try:
             # Do we have a NAWS update?
-            if (
+            is_naws_resize = (
                 NAWS in data
                 and len([data[i : i + 1] for i in range(0, len(data))]) == 9
                 and
                 # Is auto resizing on?
                 self.protocol_flags.get("AUTORESIZE")
-            ):
+            )
+            super().dataReceived(data)
+            if is_naws_resize:
                 self.sessionhandler.sync(self.sessionhandler.get(self.sessid))
 
-            super().dataReceived(data)
         except ValueError as err:
             from evennia.utils import logger
 
