@@ -352,6 +352,8 @@ class TestTelnet(TwistedTestCase):
         self.transport.client = ["localhost"]
         self.transport.setTcpKeepAlive = Mock()
         d = self.proto.makeConnection(self.transport)
+        self.addCleanup(self.proto.nop_keep_alive.stop)
+        self.addCleanup(self.proto._handshake_delay.cancel)
 
         # Complete NAWS handshake: client says WILL NAWS -> sets AUTORESIZE=True
         self.proto.dataReceived(IAC + WILL + NAWS)
@@ -379,9 +381,6 @@ class TestTelnet(TwistedTestCase):
         # SCREENWIDTH must be updated to 160 BEFORE sync fires
         self.assertEqual(self.proto.protocol_flags["SCREENWIDTH"][0], 160)
         self.assertEqual(synced_widths, [160])  # sync saw the NEW width, not 120
-
-        self.proto.nop_keep_alive.stop()
-        self.proto._handshake_delay.cancel()
 
         return d
 
