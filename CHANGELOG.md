@@ -38,6 +38,7 @@
 - Fix: MSSP game name now uses settings.SERVERNAME instead of hardcoded "Mygame" default (Griatch)
 - [Fix][pull3911]: Fix cmdset merge cache, improving performance up to 500x (kvmet)
 - [Fix][pull3913]: Fix tag/search failing when searching by category only (blongden)
+- [Fix][pull3914]: Fix NAWS stale-width on terminal resize and 'autoresize' client-option validation (michaelfaith84)
 - Docs: Griatch, BigJMoney
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
@@ -58,6 +59,7 @@
 [pull3910]: https://github.com/evennia/evennia/pull/3910
 [pull3911]: https://github.com/evennia/evennia/pull/3911
 [pull3913]: https://github.com/evennia/evennia/pull/3913
+[pull3914]: https://github.com/evennia/evennia/pull/3914
 [pull3504]: https://github.com/evennia/evennia/pull/3504
 [pull3511]: https://github.com/evennia/evennia/pull/3511
 [pull3600]: https://github.com/evennia/evennia/pull/3600

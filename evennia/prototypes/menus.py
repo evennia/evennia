@@ -628,9 +628,7 @@ def node_index(caller):
        only.  They can also be nested for combined effects.
 
        {pfuncs}
-       """.format(
-        pfuncs=_format_protfuncs()
-    )
+       """.format(pfuncs=_format_protfuncs())
 
     # If a prototype is being edited, show its key and
     # prototype_key under the title
@@ -741,9 +739,7 @@ def node_prototype_key(caller):
 
         (To set a new value, just write it and press enter)
 
-        {current}""".format(
-        current=_get_current_value(caller, "prototype_key")
-    )
+        {current}""".format(current=_get_current_value(caller, "prototype_key"))
 
     helptext = """
         The prototype-key is not itself used when spawnng the new object, but is only used for
@@ -1007,9 +1003,7 @@ def node_key(caller):
         The |cKey|n is the given name of the object to spawn. This will retain the given case.
 
         {current}
-    """.format(
-        current=_get_current_value(caller, "key")
-    )
+    """.format(current=_get_current_value(caller, "key"))
 
     helptext = """
         The key should often not be identical for every spawned object. Using a randomising
@@ -1018,9 +1012,7 @@ def node_key(caller):
 
         |c$protfuncs|n
         {pfuncs}
-    """.format(
-        pfuncs=_format_protfuncs()
-    )
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
@@ -1109,9 +1101,7 @@ def node_aliases(caller):
         |c$protfuncs|n
 
         {pfuncs}
-    """.format(
-        pfuncs=_format_protfuncs()
-    )
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
@@ -1306,9 +1296,7 @@ def node_attrs(caller):
         |c$protfuncs
 
         {pfuncs}
-    """.format(
-        pfuncs=_format_protfuncs()
-    )
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
@@ -1480,9 +1468,7 @@ def node_tags(caller):
         All objects created with this prototype will automatically get assigned a tag named the same
         as the |cprototype_key|n and with a category "{tag_category}". This allows the spawner to
         optionally update previously spawned objects when their prototype changes.
-    """.format(
-        tag_category=protlib.PROTOTYPE_TAG_CATEGORY
-    )
+    """.format(tag_category=protlib.PROTOTYPE_TAG_CATEGORY)
 
     text = (text, helptext)
     options = _wizard_options("tags", "attrs", "locks")
@@ -1598,9 +1584,7 @@ def node_locks(caller):
         |cAvailable lockfuncs:|n
 
         {lfuncs}
-    """.format(
-        lfuncs=_format_lockfuncs()
-    )
+    """.format(lfuncs=_format_lockfuncs())
 
     text = (text, helptext)
 
@@ -1722,9 +1706,7 @@ def node_permissions(caller):
 
         For example, a |clock|n string like "edit:perm(Builder)" will grant access to accessors
         having the |cpermission|n "Builder" or higher.
-    """.format(
-        permissions=", ".join(settings.PERMISSION_HIERARCHY)
-    )
+    """.format(permissions=", ".join(settings.PERMISSION_HIERARCHY))
 
     text = (text, helptext)
 
@@ -1743,9 +1725,7 @@ def node_location(caller):
         inventory of |c{caller}|n by default.
 
         {current}
-    """.format(
-        caller=caller.key, current=_get_current_value(caller, "location")
-    )
+    """.format(caller=caller.key, current=_get_current_value(caller, "location"))
 
     helptext = """
         You get the most control by not specifying the location - you can then teleport the spawned
@@ -1754,9 +1734,7 @@ def node_location(caller):
 
         |c$protfuncs|n
         {pfuncs}
-    """.format(
-        pfuncs=_format_protfuncs()
-    )
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
@@ -1782,9 +1760,7 @@ def node_home(caller):
         If unset, the global home default (|w{default}|n) will be used.
 
         {current}
-        """.format(
-        default=settings.DEFAULT_HOME, current=_get_current_value(caller, "home")
-    )
+        """.format(default=settings.DEFAULT_HOME, current=_get_current_value(caller, "home"))
     helptext = """
         The home can be given as a #dbref but can also be specified using the protfunc
         '$obj(name)'. Use |wSE|nearch to find objects in the database.
@@ -1794,9 +1770,7 @@ def node_home(caller):
 
         |c$protfuncs|n
         {pfuncs}
-    """.format(
-        pfuncs=_format_protfuncs()
-    )
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
@@ -1819,9 +1793,7 @@ def node_destination(caller):
         the exit 'leads to'. It's usually unset for all other types of objects.
 
         {current}
-    """.format(
-        current=_get_current_value(caller, "destination")
-    )
+    """.format(current=_get_current_value(caller, "destination"))
 
     helptext = """
         The destination can be given as a #dbref but can also be specified using the protfunc
@@ -1829,9 +1801,7 @@ def node_destination(caller):
 
         |c$protfuncs|n
         {pfuncs}
-    """.format(
-        pfuncs=_format_protfuncs()
-    )
+    """.format(pfuncs=_format_protfuncs())
 
     text = (text, helptext)
 
@@ -1853,9 +1823,7 @@ def node_prototype_desc(caller):
         The |cPrototype-Description|n briefly describes the prototype when it's viewed in listings.
 
         {current}
-        """.format(
-        current=_get_current_value(caller, "prototype_desc")
-    )
+        """.format(current=_get_current_value(caller, "prototype_desc"))
 
     helptext = """
         Giving a brief description helps you and others to locate the prototype for use later.
@@ -1976,9 +1944,7 @@ def node_prototype_tags(caller):
         Using prototype-tags is a good way to organize and group large numbers of prototypes by
         genre, type etc. Under the hood, prototypes' tags will all be stored with the category
         '{tagmetacategory}'.
-    """.format(
-        tagmetacategory=protlib._PROTOTYPE_TAG_META_CATEGORY
-    )
+    """.format(tagmetacategory=protlib._PROTOTYPE_TAG_META_CATEGORY)
 
     text = (text, helptext)
 

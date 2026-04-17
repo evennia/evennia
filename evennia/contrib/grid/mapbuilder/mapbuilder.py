@@ -278,6 +278,7 @@ EXAMPLE2_LEGEND = {
 
 ---
 """
+
 from django.conf import settings
 from typeclasses import exits
 

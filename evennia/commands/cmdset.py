@@ -245,13 +245,9 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         to those objects, preventing garbage collection while the entry exists.
         """
         if self._cached_fingerprint is None:
-            cmd_ids = frozenset(
-                (frozenset(cmd._matchset), cmd.obj)
-                for cmd in self.commands
-            )
+            cmd_ids = frozenset((frozenset(cmd._matchset), cmd.obj) for cmd in self.commands)
             sys_cmd_ids = frozenset(
-                (frozenset(cmd._matchset), cmd.obj)
-                for cmd in self.system_commands
+                (frozenset(cmd._matchset), cmd.obj) for cmd in self.system_commands
             )
             self._cached_fingerprint = (
                 self.key,

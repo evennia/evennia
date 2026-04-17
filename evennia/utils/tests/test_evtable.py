@@ -302,7 +302,9 @@ class TestEvTable(EvenniaTestCase):
         content[1].add_rows("Item 3")
         content[1].add_rows("Item 4")
 
-        left_table = evtable.EvTable(table=content, border="cells", header=False, width=24, align="l")
+        left_table = evtable.EvTable(
+            table=content, border="cells", header=False, width=24, align="l"
+        )
         right_table = evtable.EvTable(
             table=content, border="cells", header=False, width=24, align="r"
         )

@@ -949,11 +949,9 @@ class SmartTeleporterMapLink(MapLink):
         if not self.paired_teleporter:
             # find the matching teleporter via pre-built symbol map
             found_teleporters = [
-                comp
-                for comp in self.xymap.symbol_map.get(self.symbol, [])
-                if comp is not self
+                comp for comp in self.xymap.symbol_map.get(self.symbol, []) if comp is not self
             ]
-            
+
             if not found_teleporters:
                 raise MapParserError("found no matching teleporter to link to.", self)
             if len(found_teleporters) > 1:

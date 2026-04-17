@@ -63,13 +63,10 @@ def encode_gmcp(cmdname, *args, **kwargs):
         gmcp_cmdname = EVENNIA_TO_GMCP[cmdname]
     elif "_" in cmdname:
         gmcp_cmdname = ".".join(
-            word.capitalize() if not word.isupper() else word
-            for word in cmdname.split("_")
+            word.capitalize() if not word.isupper() else word for word in cmdname.split("_")
         )
     else:
-        gmcp_cmdname = "Core.%s" % (
-            cmdname if cmdname.istitle() else cmdname.capitalize()
-        )
+        gmcp_cmdname = "Core.%s" % (cmdname if cmdname.istitle() else cmdname.capitalize())
 
     if not (args or kwargs):
         return gmcp_cmdname

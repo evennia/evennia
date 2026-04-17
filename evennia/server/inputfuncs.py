@@ -498,8 +498,9 @@ def monitored(session, *args, **kwargs):
     Report on what is being monitored
 
     """
-    from evennia.scripts.monitorhandler import MONITOR_HANDLER
     import pickle
+
+    from evennia.scripts.monitorhandler import MONITOR_HANDLER
 
     def _safe_pickle(value):
         try:

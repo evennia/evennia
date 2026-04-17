@@ -5,11 +5,11 @@ Test the funcparser module.
 """
 
 import time
-import inflect
 import unittest
 from ast import literal_eval
 from unittest.mock import MagicMock, patch
 
+import inflect
 from django.test import TestCase, override_settings
 from parameterized import parameterized
 from simpleeval import simple_eval
@@ -404,7 +404,9 @@ class TestFuncParser(TestCase):
         ret = parser.parse("This is a $foo(foo=moo) string", foo="bar")
         self.assertEqual("This is a _test(test=foo, foo=bar) string", ret)
 
+
 _INFLECT = inflect.engine()
+
 
 class _DummyObj:
     def __init__(self, name):
@@ -415,6 +417,7 @@ class _DummyObj:
 
     def get_numbered_name(self, *args, **kwargs):
         return _INFLECT.an(self.name)
+
 
 class TestDefaultCallables(TestCase):
     """
@@ -633,6 +636,7 @@ class TestDefaultCallables(TestCase):
         """
         ret = self.parser.parse(string, raise_errors=True)
         self.assertEqual(expected, ret)
+
     def test_you_article(self):
         """
         Test article kwarg passed to $You/$you
@@ -640,17 +644,13 @@ class TestDefaultCallables(TestCase):
         """
         self.obj1.name = "mouse"
         string = "$You() $conj(run) around"
-        ret = self.parser.parse(
-            string, caller=self.obj1, receiver=self.obj2, raise_errors=True
-        )
+        ret = self.parser.parse(string, caller=self.obj1, receiver=self.obj2, raise_errors=True)
         # $You() auto-capitalizes for third-person receivers
         self.assertEqual("Mouse runs around", ret)
 
         self.obj1.name = "mouse"
         string = "$You(article=True) $conj(run) around"
-        ret = self.parser.parse(
-            string, caller=self.obj1, receiver=self.obj2, raise_errors=True
-        )
+        ret = self.parser.parse(string, caller=self.obj1, receiver=self.obj2, raise_errors=True)
         # $You() with article auto-capitalizes: "a mouse" -> "A mouse"
         self.assertEqual("A mouse runs around", ret)
 

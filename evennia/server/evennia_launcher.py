@@ -20,12 +20,12 @@ import shutil
 import signal
 import sys
 from argparse import ArgumentParser
-from packaging.version import Version
 from subprocess import DEVNULL, STDOUT, CalledProcessError, Popen, call, check_output
 
 import django
 from django.core.management import execute_from_command_line
 from django.db.utils import ProgrammingError
+from packaging.version import Version
 from twisted.internet import endpoints, reactor
 from twisted.protocols import amp
 
@@ -216,9 +216,7 @@ ERROR_SETTINGS = """
            errors mentioning 'DJANGO_SETTINGS_MODULE'. If you run a
            virtual machine, it might be worth to restart it to see if
            this resolves the issue.
-    """.format(
-    settingspath=SETTINGS_PATH
-)
+    """.format(settingspath=SETTINGS_PATH)
 
 ERROR_INITSETTINGS = """
 u   ERROR: 'evennia --initsettings' must be called from the root of
@@ -850,12 +848,12 @@ def start_evennia(pprofiler=False, sprofiler=False):
                 Popen(portal_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window)
             else:
                 Popen(
-                    portal_cmd, 
-                    env=getenv(), 
-                    bufsize=-1, 
-                    stdin=DEVNULL, 
-                    stdout=DEVNULL, 
-                    stderr=DEVNULL
+                    portal_cmd,
+                    env=getenv(),
+                    bufsize=-1,
+                    stdin=DEVNULL,
+                    stdout=DEVNULL,
+                    stderr=DEVNULL,
                 )
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))

@@ -422,7 +422,6 @@ class TestObjectManager(BaseEvenniaTest):
         copied4 = self.obj1.copy()
         self.assertEqual(copied4.key, "CopyMe002")
 
-
     def test_copy_object_no_location(self):
         self.obj1.location = None
         # we just want to make sure this doesn't error

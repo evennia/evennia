@@ -26,8 +26,7 @@ class TestBatchprocessorErrors(TestCase):
 class TestBatchCommandProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_2_commands(self, mocked_read):
-        mocked_read.return_value = textwrap.dedent(
-            r"""
+        mocked_read.return_value = textwrap.dedent(r"""
         @create rock
         #
 
@@ -35,8 +34,7 @@ class TestBatchCommandProcessor(TestCase):
         A big rock. You can tell is ancient.
         #
 
-        """
-        )
+        """)
         commands = batchprocessors.BATCHCMD.parse_file("foopath")
         self.assertEqual(
             ["@create rock", "@set rock/desc =\nA big rock. You can tell is ancient."], commands
@@ -45,24 +43,20 @@ class TestBatchCommandProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_INSERT(self, mocked_read):
         mocked_read.side_effect = [
-            textwrap.dedent(
-                r"""
+            textwrap.dedent(r"""
             @create sky
             #
             #INSERT another.ev
             #
             @create sun
             #
-            """
-            ),
-            textwrap.dedent(
-                r"""
+            """),
+            textwrap.dedent(r"""
             @create bird
             #
             @create cloud
             #
-            """
-            ),
+            """),
         ]
         commands = batchprocessors.BATCHCMD.parse_file("foopath")
         self.assertEqual(commands, ["@create sky", "@create bird", "@create cloud", "@create sun"])
@@ -74,16 +68,14 @@ class TestBatchCommandProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_INSERT_raises_IOError(self, mocked_read):
         mocked_read.side_effect = [
-            textwrap.dedent(
-                r"""
+            textwrap.dedent(r"""
             @create sky
             #
             #INSERT x
             #
             @create sun
             #
-            """
-            ),
+            """),
             IOError,
         ]
         with self.assertRaises(IOError, msg="#INSERT x failed."):
@@ -92,6 +84,7 @@ class TestBatchCommandProcessor(TestCase):
             mocked_read.mock_calls,
             [mock.call("foopath", file_ending=".ev"), mock.call("x", file_ending=".ev")],
         )
+
 
 class TestReadBatchFile(TestCase):
     """Test read_batchfile line ending normalization."""
@@ -125,26 +118,22 @@ class TestReadBatchFile(TestCase):
 class TestBatchCodeProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_one_codeblock(self, mocked_read):
-        mocked_read.return_value = textwrap.dedent(
-            r"""
+        mocked_read.return_value = textwrap.dedent(r"""
         print("Hello")
-        """
-        )
+        """)
         commands = batchprocessors.BATCHCODE.parse_file("foopath")
         self.assertEqual(['# batchcode code:\n\nprint("Hello")\n'], commands)
 
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_codeblocks(self, mocked_read):
-        mocked_read.return_value = textwrap.dedent(
-            r"""
+        mocked_read.return_value = textwrap.dedent(r"""
         #CODE
         print("Hello")
         #CODE
         a = 1
         b = [1,
         2, 3]
-        """
-        )
+        """)
         commands = batchprocessors.BATCHCODE.parse_file("foopath")
         self.assertEqual(
             [
@@ -157,8 +146,7 @@ class TestBatchCodeProcessor(TestCase):
 
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_header_and_two_codeblock(self, mocked_read):
-        mocked_read.return_value = textwrap.dedent(
-            r"""
+        mocked_read.return_value = textwrap.dedent(r"""
         #HEADER
         a = 100
         #CODE
@@ -166,8 +154,7 @@ class TestBatchCodeProcessor(TestCase):
         #CODE
         a += 100
         a == 100
-        """
-        )
+        """)
         commands = batchprocessors.BATCHCODE.parse_file("foopath")
         self.assertEqual(
             [
@@ -181,17 +168,13 @@ class TestBatchCodeProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_INSERT(self, mocked_read):
         mocked_read.side_effect = [
-            textwrap.dedent(
-                r"""
+            textwrap.dedent(r"""
             a = 1
             #INSERT another.py
-            """
-            ),
-            textwrap.dedent(
-                r"""
+            """),
+            textwrap.dedent(r"""
             print("Hello")
-            """
-            ),
+            """),
         ]
         commands = batchprocessors.BATCHCODE.parse_file("foopath")
         self.assertEqual(
@@ -214,11 +197,9 @@ class TestBatchCodeProcessor(TestCase):
     @mock.patch.object(batchprocessors, "read_batchfile")
     def test_parses_INSERT_raises_IOError(self, mocked_read):
         mocked_read.side_effect = [
-            textwrap.dedent(
-                r"""
+            textwrap.dedent(r"""
             #INSERT x
-            """
-            ),
+            """),
             IOError,
         ]
         with self.assertRaises(IOError, msg="#INSERT x failed."):

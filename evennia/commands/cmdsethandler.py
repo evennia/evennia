@@ -87,35 +87,25 @@ _CMDSET_FALLBACKS = settings.CMDSET_FALLBACKS
 
 # Output strings
 
-_ERROR_CMDSET_IMPORT = _(
-    """{traceback}
+_ERROR_CMDSET_IMPORT = _("""{traceback}
 Error loading cmdset '{path}'
-(Traceback was logged {timestamp})"""
-)
+(Traceback was logged {timestamp})""")
 
-_ERROR_CMDSET_KEYERROR = _(
-    """Error loading cmdset: No cmdset class '{classname}' in '{path}'.
-(Traceback was logged {timestamp})"""
-)
+_ERROR_CMDSET_KEYERROR = _("""Error loading cmdset: No cmdset class '{classname}' in '{path}'.
+(Traceback was logged {timestamp})""")
 
-_ERROR_CMDSET_SYNTAXERROR = _(
-    """{traceback}
+_ERROR_CMDSET_SYNTAXERROR = _("""{traceback}
 SyntaxError encountered when loading cmdset '{path}'.
-(Traceback was logged {timestamp})"""
-)
+(Traceback was logged {timestamp})""")
 
-_ERROR_CMDSET_EXCEPTION = _(
-    """{traceback}
+_ERROR_CMDSET_EXCEPTION = _("""{traceback}
 Compile/Run error when loading cmdset '{path}'.
-(Traceback was logged {timestamp})"""
-)
+(Traceback was logged {timestamp})""")
 
-_ERROR_CMDSET_FALLBACK = _(
-    """
+_ERROR_CMDSET_FALLBACK = _("""
 Error encountered for cmdset at path '{path}'.
 Replacing with fallback '{fallback_path}'.
-"""
-)
+""")
 
 _ERROR_CMDSET_NO_FALLBACK = _("""Fallback path '{fallback_path}' failed to generate a cmdset.""")
 

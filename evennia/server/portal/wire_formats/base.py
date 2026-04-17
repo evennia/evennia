@@ -137,9 +137,7 @@ class WireFormat:
                 Returns None if the message should be silently ignored.
 
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement decode_incoming()"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} must implement decode_incoming()")
 
     def encode_text(self, *args, protocol_flags=None, **kwargs):
         """
@@ -212,6 +210,4 @@ class WireFormat:
                 doesn't support OOB).
 
         """
-        raise NotImplementedError(
-            f"{self.__class__.__name__} must implement encode_default()"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__} must implement encode_default()")

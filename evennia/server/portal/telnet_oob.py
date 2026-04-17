@@ -30,10 +30,8 @@ import weakref
 # General Telnet
 from twisted.conch.telnet import IAC, SB, SE
 
-from .gmcp_utils import (
-    decode_gmcp as _decode_gmcp,
-    encode_gmcp as _encode_gmcp_str,
-)
+from .gmcp_utils import decode_gmcp as _decode_gmcp
+from .gmcp_utils import encode_gmcp as _encode_gmcp_str
 
 # MSDP-relevant telnet cmd/opt-codes
 MSDP = bytes([69])

@@ -10,10 +10,11 @@ import time
 import typing
 from collections import defaultdict
 
-import evennia
 import inflect
 from django.conf import settings
 from django.utils.translation import gettext as _
+
+import evennia
 from evennia.commands import cmdset
 from evennia.commands.cmdsethandler import CmdSetHandler
 from evennia.objects.manager import ObjectManager
@@ -1512,10 +1513,7 @@ class DefaultObject(ObjectDB, metaclass=TypeclassBase):
             if not self.location:
                 # no location means no clone numbering
                 return key
-            suffixes = [
-                obj.key.removeprefix(key)
-                for obj in self.location.contents
-            ]
+            suffixes = [obj.key.removeprefix(key) for obj in self.location.contents]
             num = 1
             if nums := [int(suffix) for suffix in suffixes if suffix.isdigit()]:
                 num = max(nums) + 1

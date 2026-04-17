@@ -289,10 +289,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         if self.wire_format is None:
             from evennia.utils import logger
 
-            logger.log_err(
-                "WebSocketClient: No wire formats available. "
-                "Closing connection."
-            )
+            logger.log_err("WebSocketClient: No wire formats available. " "Closing connection.")
             self.sendClose(CLOSE_NORMAL, "No wire formats available")
             return
 
@@ -511,9 +508,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
         nocolor = options.get("nocolor", flags.get("NOCOLOR", False))
         screenreader = options.get("screenreader", flags.get("SCREENREADER", False))
         prompt = options.get("send_prompt", False)
-        _RE = re.compile(
-            r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE
-        )
+        _RE = re.compile(r"%s" % settings.SCREENREADER_REGEX_STRIP, re.DOTALL + re.MULTILINE)
         if screenreader:
             text = parse_ansi(text, strip_ansi=True, xterm256=False, mxp=False)
             text = _RE.sub("", text)

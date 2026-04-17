@@ -8,10 +8,11 @@ Testing puzzles.
 import itertools
 import re
 
+from mock import Mock
+
 from evennia.commands.default.tests import BaseEvenniaCommandTest
 from evennia.utils import search
 from evennia.utils.create import create_object
-from mock import Mock
 
 from . import puzzles
 

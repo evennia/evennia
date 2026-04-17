@@ -2,6 +2,7 @@ import unittest
 
 from django.conf import settings
 from django.test import override_settings
+
 from evennia import DefaultScript
 from evennia.utils import containers
 from evennia.utils.utils import class_from_module

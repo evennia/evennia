@@ -17,7 +17,7 @@ import json
 from evennia.utils.ansi import parse_ansi
 from evennia.utils.text2html import parse_html
 
-from .base import WireFormat, _RE_SCREENREADER_REGEX
+from .base import _RE_SCREENREADER_REGEX, WireFormat
 
 
 class EvenniaV1Format(WireFormat):

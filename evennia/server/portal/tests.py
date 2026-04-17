@@ -311,7 +311,7 @@ class TestTelnet(TwistedTestCase):
         Test that mxp_parse correctly converts Evennia MXP markup to MXP escape sequences,
         and leaves messages without MXP markup untouched.
         """
-        from evennia.server.portal.mxp import mxp_parse, MXP_TEMPSECURE
+        from evennia.server.portal.mxp import MXP_TEMPSECURE, mxp_parse
 
         # no MXP markup - should be returned unchanged
         self.assertEqual(mxp_parse("hello world"), "hello world")

@@ -8,8 +8,8 @@ import time
 import traceback
 
 import django
-from django.conf import settings
 import django.db
+from django.conf import settings
 from django.db import connection
 from django.db.utils import OperationalError
 from django.utils.translation import gettext as _

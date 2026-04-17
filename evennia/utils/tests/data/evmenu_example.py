@@ -79,8 +79,7 @@ def test_set_node(caller):
     string "_default", meaning it will catch any input, in this case
     to return to the main menu.  So you can e.g. press <return> to go
     back now.
-    """
-        % caller.db.menuattrtest,  # optional help text for this node
+    """ % caller.db.menuattrtest,  # optional help text for this node
         """
     This is the help entry for this node. It is created by returning
     the node text as a tuple - the second string in that tuple will be
@@ -93,8 +92,7 @@ def test_set_node(caller):
 
 
 def test_view_node(caller, **kwargs):
-    text = (
-        """
+    text = """
     Your name is |g%s|n!
 
     click |lclook|lthere|le to trigger a look command under MXP.
@@ -102,9 +100,7 @@ def test_view_node(caller, **kwargs):
     set), and so gets assigned a number automatically. You can infact
     -always- use numbers (1...N) to refer to listed options also if you
     don't see a string option key (try it!).
-    """
-        % caller.key
-    )
+    """ % caller.key
     if kwargs.get("executed_from_dynamic_node", False):
         # we are calling this node as a exec, skip return values
         caller.msg("|gCalled from dynamic node:|n \n {}".format(text))
@@ -115,8 +111,7 @@ def test_view_node(caller, **kwargs):
 
 
 def test_displayinput_node(caller, raw_string):
-    text = (
-        """
+    text = """
     You entered the text:
 
         "|w%s|n"
@@ -128,9 +123,7 @@ def test_displayinput_node(caller, raw_string):
     makes it hidden from view. It catches all input (except the
     in-menu help/quit commands) and will, in this case, bring you back
     to the start node.
-    """
-        % raw_string.rstrip()
-    )
+    """ % raw_string.rstrip()
     options = {"key": "_default", "goto": "test_start_node"}
     return text, options
 
@@ -158,9 +151,7 @@ def test_dynamic_node(caller, **kwargs):
     text = """
     This is a dynamic node with input:
         {}
-    """.format(
-        kwargs
-    )
+    """.format(kwargs)
     options = (
         {
             "desc": "pass a new random number to this node",

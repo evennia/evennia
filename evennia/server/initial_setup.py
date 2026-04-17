@@ -26,17 +26,14 @@ ERROR_NO_SUPERUSER = """
     """
 
 
-LIMBO_DESC = _(
-    """
+LIMBO_DESC = _("""
 Welcome to your new |wEvennia|n-based game! Visit https://www.evennia.com if you need
 help, want to contribute, report issues or just join the community.
 
 As a privileged user, write |wbatchcommand tutorial_world.build|n to build
 tutorial content. Once built, try |wintro|n for starting help and |wtutorial|n to
 play the demo game.
-"""
-)
-
+""")
 
 
 def _get_superuser_account():

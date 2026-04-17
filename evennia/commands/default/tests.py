@@ -11,6 +11,7 @@ main test suite started with
  > python game/manage.py test.
 
 """
+
 import datetime
 from unittest.mock import MagicMock, Mock, patch
 
@@ -33,7 +34,11 @@ from evennia.commands.default import (
     general,
 )
 from evennia.commands.default import help as help_module
-from evennia.commands.default import syscommands, system, unloggedin
+from evennia.commands.default import (
+    syscommands,
+    system,
+    unloggedin,
+)
 from evennia.commands.default.cmdset_character import CharacterCmdSet
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.objects.models import ObjectDB
@@ -2295,6 +2300,7 @@ class TestSystemCommands(BaseEvenniaCommandTest):
         multimatch.matches = matches
 
         self.call(multimatch, "look", "")
+
 
 class TestPreCmdOutputTestable(BaseEvenniaCommandTest):
     def test_pre_cmd(self):
