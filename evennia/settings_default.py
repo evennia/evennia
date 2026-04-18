@@ -314,6 +314,10 @@ AUDIT_MASKS = [
 ]
 # Broadcast "Server restart"-like messages to all sessions.
 BROADCAST_SERVER_RESTART_MESSAGES = True
+# Messages broadcast to all sessions on server lifecycle events.
+SERVER_RELOAD_INITIATE_MSG = " Server restart initiated {reason}..."
+SERVER_RESET_MSG = " Server resetting/restarting ..."
+SERVER_RESTART_MSG = " ... Server restarted."
 
 ######################################################################
 # Evennia Database config

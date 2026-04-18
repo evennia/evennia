@@ -39,6 +39,7 @@ from evennia.utils.utils import (
 
 _FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED = settings.FUNCPARSER_PARSE_OUTGOING_MESSAGES_ENABLED
 _BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES
+_SERVER_RESTART_MSG = settings.SERVER_RESTART_MSG
 
 # delayed imports
 _AccountDB = None
@@ -415,7 +416,7 @@ class ServerSessionHandler(SessionHandler):
         evennia.EVENNIA_SERVER_SERVICE.at_post_portal_sync(mode)
         # announce the reconnection
         if _BROADCAST_SERVER_RESTART_MESSAGES:
-            self.announce_all(_(" ... Server restarted."))
+            self.announce_all(_(_SERVER_RESTART_MSG))
 
     def portal_disconnect(self, session):
         """

@@ -28,6 +28,8 @@ from evennia.utils.utils import class_from_module, iter_to_str
 COMMAND_DEFAULT_CLASS = class_from_module(settings.COMMAND_DEFAULT_CLASS)
 _TASK_HANDLER = None
 _BROADCAST_SERVER_RESTART_MESSAGES = settings.BROADCAST_SERVER_RESTART_MESSAGES
+_SERVER_RELOAD_INITIATE_MSG = settings.SERVER_RELOAD_INITIATE_MSG
+_SERVER_RESET_MSG = settings.SERVER_RESET_MSG
 
 # delayed imports
 _RESOURCE = None
@@ -79,7 +81,7 @@ class CmdReload(COMMAND_DEFAULT_CLASS):
         if self.args:
             reason = "(Reason: %s) " % self.args.rstrip(".")
         if _BROADCAST_SERVER_RESTART_MESSAGES:
-            evennia.SESSION_HANDLER.announce_all(f" Server restart initiated {reason}...")
+            evennia.SESSION_HANDLER.announce_all(_SERVER_RELOAD_INITIATE_MSG.format(reason=reason))
         evennia.SESSION_HANDLER.portal_restart_server()
 
 
@@ -112,7 +114,7 @@ class CmdReset(COMMAND_DEFAULT_CLASS):
         """
         Reload the system.
         """
-        evennia.SESSION_HANDLER.announce_all(" Server resetting/restarting ...")
+        evennia.SESSION_HANDLER.announce_all(_SERVER_RESET_MSG)
         evennia.SESSION_HANDLER.portal_reset_server()
 
 
