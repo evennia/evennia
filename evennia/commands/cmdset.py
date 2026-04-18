@@ -248,8 +248,42 @@ class CmdSet(object, metaclass=_CmdSetMeta):
         if cmdset_a.duplicates and cmdset_a.priority == cmdset_b.priority:
             cmdset_c.commands.extend(cmdset_b.commands)
         else:
-            existing_commands = set(cmdset_a.commands)
-            cmdset_c.commands.extend([cmd for cmd in cmdset_b if cmd not in existing_commands])
+            import copy
+
+            # Get all reservec names from the higher priority cmdset A
+            a_names = set()
+            for cmd in cmdset_a.commands:
+                a_names.add(cmd.key)
+                a_names.update(cmd.aliases)
+            
+            for cmd in cmdset_b.commands:
+                b_names = set([cmd.key] + list(cmd.aliases))
+
+                # If there is no clash at all, add it normally 
+                if not b_names.intersection(a_names):
+                    cmdset_c.commands.append(cmd)
+                else:
+                    # clash deteched
+                    # If all names (key and aliases) are clobbered, drop the command entirely
+                    if b_names.issubset(a_names):
+                        continue
+
+                    # Otherwise, copy the command so we can safely modify it 
+                    cmd_copy = copy.copy(cmd)
+
+                    # strip the clobbered aliases
+                    cmd_copy.aliases = [al for al in cmd_copy.aliases if al not in a_names]
+
+                    # if the main key was clobbered, swap it with a surviving alias
+                    if cmd_copy.key in a_names:
+                        cmd_copy.key = cmd_copy.aliases.pop(0)
+                    
+                    # Rebuild the internal tuple Evennia uses for matching
+                    cmd_copy._keyaliases = tuple([cmd_copy.key] + cmd_copy.aliases)
+
+                    # add the fixed command to the final set
+                    cmdset_c.commands.append(cmd_copy)
+
         return cmdset_c
 
     def _intersect(self, cmdset_a, cmdset_b):
