@@ -41,7 +41,7 @@ You will need to install Evennia to a *python virtual environment*, so the first
     $ python -m venv evenv
 
 ```{note}
-**Windows Only**: The recommended way to run python from the Windows command line is the `py` launcher command, so you will most likely want to use `py` instead of `python` here and for the rest of the instructions. However, you can also directly reference the python version. Consult the official Python for Windows documentation for more information.
+**Windows Only**: The recommended way to run python from the Windows command line is the `py` launcher command, so you will most likely want to use `py` instead of `python` here and for the rest of the instructions. However, you can also directly reference the python version. Consult the official [Python on Windows](https://docs.python.org/3/faq/windows.html) documentation for more information.
 ```
     
 This will create a new directory named `evenv` containing the *virtual environment* - a set of python packages and executables installed locally, rather than system-wide. Doing this prevents permissions and conflict issues later.
