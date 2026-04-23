@@ -27,7 +27,13 @@ let multimedia_plugin = (function () {
 
         var mwins = window.plugins["goldenlayout"].routeMessage(args, kwargs);
         mwins.forEach( function (mwin) {
-            mwin.append("<img src='"+ args[0] +"'/>");
+            var html = "<img src='"+ args[0] +"'/>";
+            var method = mwin.attr("updateMethod");
+            if (method === "replace") {
+                mwin.html(html);
+            } else {
+                mwin.append(html);
+            }
             mwin.scrollTop(mwin[0].scrollHeight);
         });
     }
@@ -40,9 +46,15 @@ let multimedia_plugin = (function () {
         // create an HTML5 audio control (only .mp3 is fully compatible with all major browsers)
         var mwins = window.plugins["goldenlayout"].routeMessage(args, kwargs);
         mwins.forEach( function (mwin) {
-            mwin.append("<audio controls='' autoplay='' style='height:17px;width:175px'>" +
+            var html = "<audio controls='' autoplay='' style='height:17px;width:175px'>" +
                         "<source src='"+ args[0] +"'/>" +
-                        "</audio>");
+                        "</audio>";
+            var method = mwin.attr("updateMethod");
+            if (method === "replace") {
+                mwin.html(html);
+            } else {
+                mwin.append(html);
+            }
             mwin.scrollTop(mwin[0].scrollHeight);
         });
     }
@@ -55,9 +67,15 @@ let multimedia_plugin = (function () {
         // create an HTML5 video element (only h264 .mp4 is compatible with all major browsers)
         var mwins = window.plugins["goldenlayout"].routeMessage(args, kwargs);
         mwins.forEach( function (mwin) {
-            mwin.append("<video controls='' autoplay=''>" +
+            var html = "<video controls='' autoplay=''>" +
                         "<source src='"+ args[0] +"'/>" +
-                        "</video>");
+                        "</video>";
+            var method = mwin.attr("updateMethod");
+            if (method === "replace") {
+                mwin.html(html);
+            } else {
+                mwin.append(html);
+            }
             mwin.scrollTop(mwin[0].scrollHeight);
         });
     }
