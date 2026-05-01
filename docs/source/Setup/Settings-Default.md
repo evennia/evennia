@@ -503,7 +503,7 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs")
 INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
 # Modules that contain prototypes for use with the spawner mechanism.
 PROTOTYPE_MODULES = ["world.prototypes"]
-# Modules containining Prototype functions able to be embedded in prototype
+# Modules containing Prototype functions able to be embedded in prototype
 # definitions from in-game.
 PROT_FUNC_MODULES = ["evennia.prototypes.protfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
