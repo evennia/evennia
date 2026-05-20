@@ -1790,7 +1790,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_msg_receive(self, text=None, from_obj=None, **kwargs):
+    def at_msg_receive(self, text=None, from_obj=None, **kwargs) -> bool:
         """
         This hook is called whenever someone sends a message to this
         object using the `msg` method.

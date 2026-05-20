@@ -481,7 +481,7 @@ class ServerSession(_BASE_SESSION_CLASS):
 
     # Mock access method for the session (there is no lock info
     # at this stage, so we just present a uniform API)
-    def access(self, *args, **kwargs):
+    def access(self, *args, **kwargs) -> bool:
         """
         Dummy method to mimic the logged-in API.
 

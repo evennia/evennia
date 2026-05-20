@@ -686,7 +686,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             message = f"{senders}{message}"
             logger.log_file(message, log_file)
 
-    def pre_join_channel(self, joiner, **kwargs):
+    def pre_join_channel(self, joiner, **kwargs) -> bool:
         """
         Hook method. Runs right before a channel is joined. If this
         returns a false value, channel joining is aborted.
@@ -719,7 +719,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
         for key_or_alias in key_and_aliases:
             self.add_user_channel_alias(joiner, key_or_alias, **kwargs)
 
-    def pre_leave_channel(self, leaver, **kwargs):
+    def pre_leave_channel(self, leaver, **kwargs) -> bool:
         """
         Hook method. Runs right before a user leaves a channel. If this returns a false
         value, leaving the channel will be aborted.
