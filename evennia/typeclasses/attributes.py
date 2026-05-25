@@ -12,7 +12,9 @@ which is a non-db version of Attributes.
 import fnmatch
 import re
 from collections import defaultdict
+from collections.abc import Callable
 from copy import copy
+from typing import Any, Generic, Self, TypeVar, overload
 
 from django.conf import settings
 from django.db import models
@@ -25,6 +27,8 @@ from evennia.utils.picklefield import PickledObjectField
 from evennia.utils.utils import is_iter, lazy_property, make_iter, to_str
 
 _TYPECLASS_AGGRESSIVE_CACHE = settings.TYPECLASS_AGGRESSIVE_CACHE
+
+T = TypeVar("T")
 
 # -------------------------------------------------------------
 #
@@ -162,7 +166,7 @@ class InMemoryAttribute(IAttribute):
     value = property(__value_get, __value_set, __value_del)
 
 
-class AttributeProperty:
+class AttributeProperty(Generic[T]):
     """
     AttributeProperty.
 
@@ -170,6 +174,36 @@ class AttributeProperty:
 
     attrhandler_name = "attributes"
     cached_default_name_template = "_property_attribute_default_{key}"
+
+    @overload
+    def __init__(
+        self: "AttributeProperty[Any]",
+        *,
+        category: str | None = ...,
+        strattr: bool = ...,
+        lockstring: str = ...,
+        autocreate: bool = ...,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        default: Callable[[], T],
+        category: str | None = ...,
+        strattr: bool = ...,
+        lockstring: str = ...,
+        autocreate: bool = ...,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        default: T,
+        category: str | None = ...,
+        strattr: bool = ...,
+        lockstring: str = ...,
+        autocreate: bool = ...,
+    ) -> None: ...
 
     def __init__(self, default=None, category=None, strattr=False, lockstring="", autocreate=True):
         """
@@ -236,6 +270,12 @@ class AttributeProperty:
             setattr(attrhandler, self.cached_default_name_template.format(key=self._key), value)
         return value
 
+    @overload
+    def __get__(self, instance: None, owner: type) -> Self: ...
+
+    @overload
+    def __get__(self, instance: Any, owner: type) -> T: ...
+
     def __get__(self, instance, owner):
         """
         Called when the attrkey is retrieved from the instance.
@@ -262,7 +302,7 @@ class AttributeProperty:
                 raise
         return value
 
-    def __set__(self, instance, value):
+    def __set__(self, instance: Any, value: T) -> None:
         """
         Called when assigning to the property (and when auto-creating an Attribute).
 
@@ -330,7 +370,7 @@ class AttributeProperty:
         return value
 
 
-class NAttributeProperty(AttributeProperty):
+class NAttributeProperty(AttributeProperty[T]):
     """
     NAttribute property descriptor. Allows for specifying NAttributes as Django-like 'fields'
     on the class level.
