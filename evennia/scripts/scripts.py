@@ -511,7 +511,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         """
         pass
 
-    def at_script_delete(self):
+    def at_script_delete(self) -> bool:
         """
         Called when script is deleted, before the script timer stops.
 
@@ -521,7 +521,7 @@ class ScriptBase(ScriptDB, metaclass=TypeclassBase):
         """
         return True
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         If returning False, `at_repeat` will not be called and timer will stop
         updating.
@@ -795,7 +795,7 @@ class DefaultScript(ScriptBase):
         """
         pass
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         """
         Is called to check if the script's timer is valid to run at this time.
         Should return a boolean. If False, the timer will be stopped.
@@ -853,7 +853,7 @@ class DefaultScript(ScriptBase):
         """
         pass
 
-    def at_script_delete(self):
+    def at_script_delete(self) -> bool:
         """
         Called when the Script is deleted, before stopping the timer.
 
