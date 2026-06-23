@@ -119,7 +119,7 @@ let is_typing = (function (){
         // A live report command is being used.
         if (Evennia.isConnected() &&
             inputfield.length === 1 &&
-            event.key.length === 1 &&
+            // event.key.length === 1 &&
             inputfield.val().match(regex)) {
             // Enter. Message sent. Reset.
             if (event.which === 13) {
@@ -129,10 +129,9 @@ let is_typing = (function (){
             } else if (!state.is_typing) {
                 startedTyping();
 
-            // Expiration is nearing. Update timeout.
-            } else if (Date.now() + timeout > state.timeout) {
+            // Expiration is nearing. Update timeout. Default is 5 seconds.
+            } else if (Date.now() > state.timeout - timeout * .2) {
                 stillTyping();
-
             }
         // Not talking anymore but state hasn't been updated yet.
         } else if (state.is_typing) {
@@ -198,7 +197,9 @@ let is_typing = (function (){
                     timeout = typing_timeout
                     setLiveReportKeywords(live_report_keywords)
 
-                    regex = new RegExp(`^\W*(${liveReportKeywords.reduce((acc, cur)=> acc + "|" + cur, "").substring(1)})`)
+                    const wordCmds = liveReportKeywords.filter(kw => kw.length > 1).join("|");
+                    const charCmds = liveReportKeywords.filter(kw => kw.length === 1).join("|");
+                    regex = new RegExp(`^\\W*((${wordCmds})(\\s|$)|(${charCmds}))`)
                     break;
 
                 case 'typing':

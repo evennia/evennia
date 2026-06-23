@@ -1,6 +1,19 @@
 """
 This module allows users based on a given condition (defaults to same location) to see
 whether applicable users are typing or not. Currently, only the webclient is supported.
+
+Relevant Settings:
+    WEBCLIENT_TYPING_TIMEOUT - the timeout in seconds between polling intervals.
+    WEBCLIENT_TYPING_AUDIENCE_GETTER - the path to the method that returns the sessions
+                                       that should receive typing updates. Must return
+                                       a list of session objects.
+
+Upon the webclient loading the is_typing plugin, it will request setup from the server
+(is_typing_setup) which will return the timeout and what words to watch for. Anytime
+the client uses a relevant word, it will notify the server of the relevant session and
+its state (typing or not typing). The server then fetches that session's relevant (if
+any) other sessions based on the criteria of the audience_getter and passes on the state
+update to the fetched audience.
 """
 
 from django.conf import settings
@@ -18,13 +31,22 @@ def is_typing_get_audience_common_location(session, *args, **kwargs):
     """
 
     if session.puppet is None:
-        return []
+       return []
 
     audience_including_typer = session.puppet.location.contents_get(content_type="character")
 
     audience = [puppet for puppet in audience_including_typer if puppet.id != session.puppet.id]
 
     return audience
+
+
+# A utility to fetch the method used to get the relevant audience for client live
+# reporting commands. The retrieved method should return a list of session objects.
+# Sessions without a puppet will be ignored.
+audience_getter = class_from_module(
+    settings.WEBCLIENT_TYPING_AUDIENCE_GETTER
+    or "evennia.server.is_typing.is_typing_get_audience_common_location"
+)
 
 
 def is_typing_setup(session, *args, **kwargs):
@@ -39,7 +61,7 @@ def is_typing_setup(session, *args, **kwargs):
     options = session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 
-    if not is_typing:
+    if not is_typing or session.puppet is None:
         return
 
     live_report_commands = [
@@ -67,7 +89,7 @@ def is_typing_setup(session, *args, **kwargs):
     )
 
 
-def is_typing_state(session, *args, **kwargs):
+def is_typing_state(user_session, *args, **kwargs):
     """
     Broadcasts a typing state update from the session's puppet
     to all other characters meeting the configured conditions
@@ -78,31 +100,31 @@ def is_typing_state(session, *args, **kwargs):
         **kwargs:
             - state (bool): The typing state to broadcast.
     """
-    options = session.protocol_flags
+    global audience_getter
+
+    options = user_session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 
-    if not is_typing:
+    if not is_typing or user_session.puppet is None:
         return
-
-    audience_getter = class_from_module(
-        settings.WEBCLIENT_TYPING_AUDIENCE_GETTER
-        or "evennia.server.is_typing.is_typing_get_audience_common_location"
-    )
 
     state = kwargs.get("state")
 
-    audience = audience_getter(session=session, args=args, kwargs=kwargs)
+    audience = audience_getter(session=user_session, args=args, kwargs=kwargs)
 
-    for puppet in audience:
+    # Filter out clients not interested in updates
+    relevant_sessions = [
+        puppet_session
+        for puppet in audience
+        for puppet_session in puppet.sessions.all()
+        if puppet_session.protocol_flags.get("ISTYPING", True)
+    ] # Potential timeout adjustment based on audience size
 
-        for puppet_session in puppet.sessions.all():
-            puppet_session_options = puppet_session.protocol_flags
-            puppet_session_is_typing = puppet_session_options.get("ISTYPING", True)
-
-            if puppet_session_is_typing:
-                puppet_session.msg(
-                    is_typing={
-                        "type": "typing",
-                        "payload": {"name": session.puppet.name, "state": state},
-                    }
-                )
+    # Update relevant clients
+    for puppet_session in relevant_sessions:
+        puppet_session.msg(
+            is_typing={
+                "type": "typing",
+                "payload": {"name": user_session.puppet.name, "state": state},
+            }
+        )
