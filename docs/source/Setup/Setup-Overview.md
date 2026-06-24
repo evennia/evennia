@@ -14,6 +14,7 @@ Installation-Troubleshooting
 Installation-Android
 Installation-Upgrade
 Installation-Non-Interactive
+Create-Game-Dir
 Running-Evennia
 Updating-Evennia
 ```
