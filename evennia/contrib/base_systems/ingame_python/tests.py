@@ -210,16 +210,12 @@ class TestEventHandler(BaseEvenniaTest):
         self.char2.key = "two"
 
         # Add an callback
-        code = dedent(
-            """
+        code = dedent("""
             if character.key == "one":
                 character.db.health = 50
             else:
                 character.db.health = 0
-        """.strip(
-                "\n"
-            )
-        )
+        """.strip("\n"))
         self.handler.add_callback(self.room1, "dummy", code, author=self.char1, valid=True)
 
         # Call the dummy callback
@@ -345,19 +341,13 @@ class TestCmdCallback(BaseEvenniaCommandTest):
         self.assertIsNotNone(editor)
 
         # Edit the callback
-        editor.update_buffer(
-            dedent(
-                """
+        editor.update_buffer(dedent("""
             if character.key == "one":
                 character.msg("You can pass.")
             else:
                 character.msg("You can't pass.")
                 deny()
-        """.strip(
-                    "\n"
-                )
-            )
-        )
+        """.strip("\n")))
         editor.save_buffer()
         editor.quit()
         callback = self.exit.callbacks.get("traverse")[0]
@@ -372,15 +362,9 @@ class TestCmdCallback(BaseEvenniaCommandTest):
         self.assertIsNotNone(editor)
 
         # Edit the callback
-        editor.update_buffer(
-            dedent(
-                """
+        editor.update_buffer(dedent("""
             character.msg("No way.")
-        """.strip(
-                    "\n"
-                )
-            )
-        )
+        """.strip("\n")))
         editor.save_buffer()
         editor.quit()
         callback = self.exit.callbacks.get("traverse")[1]
@@ -420,15 +404,9 @@ class TestCmdCallback(BaseEvenniaCommandTest):
         self.assertIsNotNone(editor)
 
         # Edit the callback
-        editor.update_buffer(
-            dedent(
-                """
+        editor.update_buffer(dedent("""
             room.msg_contents("It's 8 PM, everybody up!")
-        """.strip(
-                    "\n"
-                )
-            )
-        )
+        """.strip("\n")))
         editor.save_buffer()
         editor.quit()
         callback = self.room1.callbacks.get("time")[0]
@@ -485,17 +463,13 @@ class TestDefaultCallbacks(BaseEvenniaCommandTest):
     def test_exit(self):
         """Test the callbacks of an exit."""
         self.char1.key = "char1"
-        code = dedent(
-            """
+        code = dedent("""
             if character.key == "char1":
                 character.msg("You can leave.")
             else:
                 character.msg("You cannot leave.")
                 deny()
-        """.strip(
-                "\n"
-            )
-        )
+        """.strip("\n"))
         # Enforce self.exit.destination since swapping typeclass lose it
         self.exit.destination = self.room2
 

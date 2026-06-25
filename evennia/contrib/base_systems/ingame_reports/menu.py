@@ -45,10 +45,7 @@ def menunode_list_reports(caller, raw_string, **kwargs):
         new_report_list = report_list.filter(db_tags__db_key=kwargs["status"])
         # we don't filter reports if there are no reports under that filter
         if not new_report_list:
-            text = _(
-                "(No {status} reports)\n"
-                "{text}"
-            ).format(status=status, text=text)
+            text = _("(No {status} reports)\n" "{text}").format(status=status, text=text)
         else:
             report_list = new_report_list
             text = _("Managing {status} {hub_name}").format(status=status, hub_name=hub_name)
@@ -85,10 +82,12 @@ def menunode_list_reports(caller, raw_string, **kwargs):
         options.append(
             {
                 "key": (
-                    _("|uP|nrevious {_REPORTS_PER_PAGE}").format(_REPORTS_PER_PAGE, _REPORTS_PER_PAGE),
+                    _("|uP|nrevious {_REPORTS_PER_PAGE}").format(
+                        _REPORTS_PER_PAGE, _REPORTS_PER_PAGE
+                    ),
                     _("previous"),
                     _("prev"),
-                    _("p")
+                    _("p"),
                 ),
                 "goto": (
                     "menunode_list_reports",
@@ -102,7 +101,7 @@ def menunode_list_reports(caller, raw_string, **kwargs):
                 "key": (
                     _("|uN|next {_REPORTS_PER_PAGE}").format(_REPORTS_PER_PAGE=_REPORTS_PER_PAGE),
                     _("next"),
-                    _("n")
+                    _("n"),
                 ),
                 "goto": (
                     "menunode_list_reports",
@@ -151,16 +150,12 @@ def menunode_manage_report(caller, raw_string, report, **kwargs):
     else:
         about_clause = ""
 
-    text = _(
-        "{message}\n"
-        "{timestamp} by {senders}{about_clause}\n"
-        "{tags}"
-    ).format(
+    text = _("{message}\n" "{timestamp} by {senders}{about_clause}\n" "{tags}").format(
         message=message,
         timestamp=timestamp,
         senders=senders_str,
         about_clause=about_clause,
-        tags=tags_str
+        tags=tags_str,
     )
 
     options = []

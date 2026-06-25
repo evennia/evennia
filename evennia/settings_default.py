@@ -153,6 +153,10 @@ EVENNIA_ADMIN = True
 AMP_HOST = "localhost"
 AMP_PORT = 4006
 AMP_INTERFACE = "127.0.0.1"
+# Timeout (seconds) for the launcher's connection to the Portal's AMP port when
+# sending start/stop/status instructions. This is a loopback connection, so a
+# live Portal accepts in well under a millisecond.
+AMP_CONNECT_TIMEOUT = 2
 
 
 # Path to the lib directory containing the bulk of the codebase's code.
@@ -314,6 +318,10 @@ AUDIT_MASKS = [
 ]
 # Broadcast "Server restart"-like messages to all sessions.
 BROADCAST_SERVER_RESTART_MESSAGES = True
+# Messages broadcast to all sessions on server lifecycle events.
+SERVER_RELOAD_INITIATE_MSG = " Server restart initiated {reason}..."
+SERVER_RESET_MSG = " Server resetting/restarting ..."
+SERVER_RESTART_MSG = " ... Server restarted."
 
 ######################################################################
 # Evennia Database config

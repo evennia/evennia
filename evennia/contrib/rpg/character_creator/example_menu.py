@@ -75,8 +75,7 @@ _INFLECT = inflect.engine()
 
 def menunode_welcome(caller):
     """Starting page."""
-    text = dedent(
-        """\
+    text = dedent("""\
         |wWelcome to Character Creation!|n
 
         This is the starting node for all brand new characters. It's a good place to
@@ -85,8 +84,7 @@ def menunode_welcome(caller):
 
         A brief overview of the game could be a good idea here, too, or a link to your
         game wiki if you have one.
-    """
-    )
+    """)
     help = "You can explain the commands for exiting and resuming more specifically here."
     options = {"desc": "Let's begin!", "goto": "menunode_info_base"}
     return (text, help), options
@@ -101,24 +99,20 @@ def menunode_welcome(caller):
 # e.g. wherever you have the classes actually defined, so later updates only happen in one place.
 _CLASS_INFO_DICT = {
     # The keys here are the different options you can choose, and the values are the info pages
-    "warrior": dedent(
-        """\
+    "warrior": dedent("""\
         Most warriors specialize in melee weapons, although ranged combat
         is not unheard of.
 
         Warriors like to compete by beating each other up for fun.
-        """
-    ),
-    "mage": dedent(
-        """\
+        """),
+    "mage": dedent("""\
         Mages prefer less combative lines of work, such as showmanship or
         selling enchanted charms. Those who choose to be a battle mage are
         highly sought after by adventuring parties.
 
         Mage schools, being led by the most academic-minded of mages, are
         notorious for intellectual snobbery.
-        """
-    ),
+        """),
 }
 
 
@@ -127,14 +121,12 @@ def menunode_info_base(caller):
     # this is a base node for a decision, so we want to save the character's progress here
     caller.new_char.db.chargen_step = "menunode_info_base"
 
-    text = dedent(
-        """\
+    text = dedent("""\
         |wInformational Pages|n
 
         Sometimes you'll want to let players read more about options before choosing
         one of them. This is especially useful for big choices like race or class.
-    """
-    )
+    """)
     help = "A link to your wiki for more information on classes could be useful here."
     options = []
     # Build your options from your info dict so you don't need to update this to add new options
@@ -229,15 +221,13 @@ def menunode_categories(caller, **kwargs):
     # this is a new decision step, so save your resume point here
     caller.new_char.db.chargen_step = "menunode_categories"
 
-    text = dedent(
-        """\
+    text = dedent("""\
         |wOption Categories|n
 
         Some character attributes are part of the same mechanic or decision,
         but need to be divided up into sub-categories. Character appearance
         details are an example of where this can be useful.
-        """
-    )
+        """)
 
     help = "Some helpful extra information on what's affected by these choices works well here."
     options = []
@@ -342,8 +332,7 @@ def menunode_multi_choice(caller, raw_string, **kwargs):
     # this is again just a simple attribute, but you could retrieve this list however
     selected = kwargs.get("selected") or char.attributes.get("skill_list", [])
 
-    text = dedent(
-        """\
+    text = dedent("""\
         |wMultiple Choice|n
 
         Sometimes you want players to be able to pick more than one option -
@@ -351,8 +340,7 @@ def menunode_multi_choice(caller, raw_string, **kwargs):
 
         You can easily define it as a minimum, maximum, or exact number of
         selected options.
-    """
-    )
+    """)
 
     help = (
         "This is a good place to specify how many choices are allowed or required. This example"
@@ -452,15 +440,13 @@ def menunode_choose_objects(caller, raw_string, **kwargs):
     # another decision, so save the resume point
     char.db.chargen_step = "menunode_choose_objects"
 
-    text = dedent(
-        """\
+    text = dedent("""\
         |wStarting Objects|n
 
         Whether it's a cosmetic outfit, a starting weapon, or a professional
         tool kit, you probably want to let your players have a choice in
         what objects they start out with.
-        """
-    )
+        """)
 
     help = (
         "An overview of what the choice affects - whether it's purely aesthetic or mechanical, and"
@@ -523,8 +509,7 @@ def menunode_choose_name(caller, raw_string, **kwargs):
 
     # this will print every time the player is prompted to choose a name,
     # including the prompt text defined above
-    text = dedent(
-        f"""\
+    text = dedent(f"""\
         |wChoosing a Name|n
 
         Especially for roleplaying-centric games, being able to choose your
@@ -532,8 +517,7 @@ def menunode_choose_name(caller, raw_string, **kwargs):
         is really useful.
 
         {prompt_text}
-        """
-    )
+        """)
 
     help = "You'll have a chance to change your mind before confirming, even if the name is free."
     # since this is a free-text field, we just have the one
@@ -597,11 +581,9 @@ def menunode_end(caller, raw_string):
 
     # clear in-progress status
     caller.new_char.attributes.remove("chargen_step")
-    text = dedent(
-        """
+    text = dedent("""
         Congratulations!
 
         You have completed character creation. Enjoy the game!
-    """
-    )
+    """)
     return text, None

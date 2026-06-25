@@ -6,6 +6,7 @@ They provide some useful string and conversion methods that might
 be of use when designing your own game.
 
 """
+
 import gc
 import importlib
 import importlib.machinery
@@ -21,16 +22,16 @@ import textwrap
 import threading
 import traceback
 import types
-import pytz
 from ast import literal_eval
 from collections import OrderedDict, defaultdict
+from collections.abc import Callable
 from inspect import getmembers, getmodule, getmro, ismodule, trace
 from os.path import join as osjoin
 from string import punctuation
-from unicodedata import east_asian_width
-from collections.abc import Callable
 from typing import Generic, TypeVar, overload
+from unicodedata import east_asian_width
 
+import pytz
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -2427,11 +2428,9 @@ def at_search_result(matches, caller, query="", quiet=False, **kwargs):
         # group results by display name to properly disambiguate
         grouped_matches = defaultdict(list)
         for item in matches:
-            item_key = (
-                item.get_display_name(caller) if hasattr(item, "get_display_name") else query
-            )
+            item_key = item.get_display_name(caller) if hasattr(item, "get_display_name") else query
             # the actual searching is case-insensitive, so we force grouping keys to lower
-            grouped_matches[item_key.lower()].append( (item_key, item) )
+            grouped_matches[item_key.lower()].append((item_key, item))
 
         for key, match_list in grouped_matches.items():
             for num, (result_key, result) in enumerate(match_list):

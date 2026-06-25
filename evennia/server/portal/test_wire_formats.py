@@ -11,7 +11,6 @@ import json
 from unittest import TestCase
 from unittest.mock import MagicMock, Mock
 
-
 # ---------------------------------------------------------------------------
 # GMCP utilities
 # ---------------------------------------------------------------------------
@@ -238,9 +237,7 @@ class TestEvenniaV1Format(TestCase):
         self.assertIsNone(result)
 
     def test_encode_text_prompt(self):
-        result = self.fmt.encode_text(
-            "HP: 100", protocol_flags={}, options={"send_prompt": True}
-        )
+        result = self.fmt.encode_text("HP: 100", protocol_flags={}, options={"send_prompt": True})
         data, is_binary = result
         parsed = json.loads(data)
         self.assertEqual(parsed[0], "prompt")
@@ -655,9 +652,7 @@ class TestWebSocketSubprotocolNegotiation(TestCase):
     def test_mixed_known_and_unknown(self):
         """Client offers unknown + known → known is selected."""
         client = self._make_client()
-        request = self._make_request(
-            protocols=["unknown.protocol", "terminal.mudstandards.org"]
-        )
+        request = self._make_request(protocols=["unknown.protocol", "terminal.mudstandards.org"])
         result = client.onConnect(request)
         self.assertEqual(result, "terminal.mudstandards.org")
 
@@ -877,17 +872,13 @@ class TestBaseWireFormatHelpers(TestCase):
     def test_extract_text_and_flags_raw_protocol_flag(self):
         """RAW protocol flag should be used when option is absent."""
         kwargs = {}
-        result = self.base._extract_text_and_flags(
-            ("hello",), kwargs, {"RAW": True}
-        )
+        result = self.base._extract_text_and_flags(("hello",), kwargs, {"RAW": True})
         self.assertEqual(result, ("hello", True, False, False))
 
     def test_extract_text_and_flags_from_protocol_flags(self):
         """Protocol flags should be used when options are absent."""
         kwargs = {}
-        result = self.base._extract_text_and_flags(
-            ("hello",), kwargs, {"NOCOLOR": True}
-        )
+        result = self.base._extract_text_and_flags(("hello",), kwargs, {"NOCOLOR": True})
         self.assertEqual(result, ("hello", False, True, False))
 
     def test_process_ansi_normal(self):

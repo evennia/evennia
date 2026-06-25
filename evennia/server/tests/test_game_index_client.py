@@ -32,8 +32,14 @@ class _RecordingAgent:
     }
 )
 class TestGameIndexClient(TestCase):
-    @patch("evennia.server.game_index_client.client.AccountDB.objects.num_total_accounts", return_value=0)
-    @patch("evennia.server.game_index_client.client.evennia.SESSION_HANDLER.account_count", return_value=0)
+    @patch(
+        "evennia.server.game_index_client.client.AccountDB.objects.num_total_accounts",
+        return_value=0,
+    )
+    @patch(
+        "evennia.server.game_index_client.client.evennia.SESSION_HANDLER.account_count",
+        return_value=0,
+    )
     @patch("evennia.server.game_index_client.client.Agent", _RecordingAgent)
     def test_backslash_n_in_long_description_becomes_newline(self, *_):
         client = EvenniaGameIndexClient()

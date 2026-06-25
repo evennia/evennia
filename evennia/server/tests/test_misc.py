@@ -4,15 +4,16 @@
 Testing various individual functionalities in the server package.
 
 """
-import unittest
+
 import gc
+import unittest
 import weakref
 
 from django.test import TestCase
 from django.test.runner import DiscoverRunner
 
-from evennia.server.throttle import Throttle
 from evennia.server.serversession import ServerSession
+from evennia.server.throttle import Throttle
 from evennia.utils.test_resources import BaseEvenniaTest
 
 from ..deprecations import check_errors

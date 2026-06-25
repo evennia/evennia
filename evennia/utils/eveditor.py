@@ -66,8 +66,7 @@ _DEFAULT_WIDTH = settings.CLIENT_DEFAULT_WIDTH
 #
 # -------------------------------------------------------------
 
-_HELP_TEXT = _(
-    f"""
+_HELP_TEXT = _(f"""
  <txt>  - any non-command is appended to the end of the buffer.
  :  <l> - view buffer or only line(s) <l>
  :: <l> - raw-view buffer or only line(s) <l>
@@ -106,67 +105,52 @@ _HELP_TEXT = _(
  :fd <l>    - de-indent entire buffer or line <l>
 
  :echo - turn echoing of the input on/off (helpful for some clients)
-"""
-)
+""")
 
-_HELP_LEGEND = _(
-    """
+_HELP_LEGEND = _("""
     Legend:
     <l>   - line number, like '5' or range, like '3:7'.
     <w>   - a single word, or multiple words with quotes around them.
     <txt> - longer string, usually not needing quotes.
-"""
-)
+""")
 
-_HELP_CODE = _(
-    """
+_HELP_CODE = _("""
  :!    - Execute code buffer without saving
  :<    - Decrease the level of automatic indentation for the next lines
  :>    - Increase the level of automatic indentation for the next lines
  :=    - Switch automatic indentation on/off
-""".lstrip(
-        "\n"
-    )
-)
+""".lstrip("\n"))
 
-_ERROR_LOADFUNC = _(
-    """
+_ERROR_LOADFUNC = _("""
 {error}
 
 |rBuffer load function error. Could not load initial data.|n
-"""
-)
+""")
 
-_ERROR_SAVEFUNC = _(
-    """
+_ERROR_SAVEFUNC = _("""
 {error}
 
 |rSave function returned an error. Buffer not saved.|n
-"""
-)
+""")
 
 _ERROR_NO_SAVEFUNC = _("|rNo save function defined. Buffer cannot be saved.|n")
 
 _MSG_SAVE_NO_CHANGE = _("No changes need saving")
 _DEFAULT_NO_QUITFUNC = _("Exited editor.")
 
-_ERROR_QUITFUNC = _(
-    """
+_ERROR_QUITFUNC = _("""
 {error}
 
 |rQuit function gave an error. Skipping.|n
-"""
-)
+""")
 
-_ERROR_PERSISTENT_SAVING = _(
-    """
+_ERROR_PERSISTENT_SAVING = _("""
 {error}
 
 |rThe editor state could not be saved for persistent mode. Switching
 to non-persistent mode (which means the editor session won't survive
 an eventual server reload - so save often!)|n
-"""
-)
+""")
 
 _TRACE_PERSISTENT_SAVING = _(
     "EvEditor persistent-mode error. Commonly, this is because one or "

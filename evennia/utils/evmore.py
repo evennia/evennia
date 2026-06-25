@@ -36,6 +36,7 @@ the `caller.msg()` construct every time the page is updated.
 ----
 
 """
+
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models.query import QuerySet

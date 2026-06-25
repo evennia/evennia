@@ -45,7 +45,14 @@ import re
 
 from evennia import AccountDB, ObjectDB, default_cmds
 from evennia.comms.models import Msg
-from evennia.utils import create, datetime_format, evtable, inherits_from, make_iter, utc_to_local
+from evennia.utils import (
+    create,
+    datetime_format,
+    evtable,
+    inherits_from,
+    make_iter,
+    utc_to_local,
+)
 
 _HEAD_CHAR = "|015-|n"
 _SUB_HEAD_CHAR = "-"
@@ -299,8 +306,7 @@ class CmdMail(default_cmds.MuxAccountCommand):
                         day = message.db_date_created.day
                         date_created = utc_to_local(message.db_date_created, time_zone)
                         messageForm.append(
-                            "|wSent:|n %s"
-                            % date_created.strftime(f"%b {day}, %Y - %H:%M:%S")
+                            "|wSent:|n %s" % date_created.strftime(f"%b {day}, %Y - %H:%M:%S")
                         )
                         messageForm.append("|wSubject:|n %s" % message.header)
                         messageForm.append(_SUB_HEAD_CHAR * _WIDTH)

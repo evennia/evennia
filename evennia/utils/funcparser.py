@@ -1263,7 +1263,7 @@ def funcparser_callable_you(
             )
 
     # a specified format overrides 'capitalize' and also applies to "you"
-    fmt = kwargs.get('format')
+    fmt = kwargs.get("format")
     if fmt:
         try:
             name = _YOU_FORMAT_FUNCS[fmt](name)
@@ -1352,7 +1352,7 @@ def funcparser_callable_your(
             )
 
     # a specified format overrides 'capitalize' and also applies to "your"
-    fmt = kwargs.get('format')
+    fmt = kwargs.get("format")
     if fmt:
         try:
             name = _YOU_FORMAT_FUNCS[fmt](name)

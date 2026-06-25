@@ -1376,7 +1376,9 @@ class TestCmdSet(BaseEvenniaTest):
 
         duplicate_cmds = [cmd for cmd in cmdset.commands if cmd.key == "duplicate"]
         self.assertEqual(len(duplicate_cmds), 2)
-        self.assertEqual({cmd.__class__ for cmd in duplicate_cmds}, {_CmdDuplicateA, _CmdDuplicateB})
+        self.assertEqual(
+            {cmd.__class__ for cmd in duplicate_cmds}, {_CmdDuplicateA, _CmdDuplicateB}
+        )
 
 
 class _CmdG(Command):

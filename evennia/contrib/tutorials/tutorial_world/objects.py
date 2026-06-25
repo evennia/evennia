@@ -1152,14 +1152,12 @@ class TutorialWeaponRack(TutorialObject):
         self.db.rack_id = "weaponrack_1"
         # these are prototype names from the prototype
         # dictionary above.
-        self.db.get_weapon_msg = dedent(
-            """
+        self.db.get_weapon_msg = dedent("""
             You find |c%s|n. While carrying this weapon, these actions are available:
               |wstab/thrust/pierce <target>|n - poke at the enemy. More damage but harder to hit.
               |wslash/chop/bash <target>|n - swipe at the enemy. Less damage but easier to hit.
               |wdefend/parry|n - protect yourself and make yourself harder to hit.)
-            """
-        ).strip()
+            """).strip()
 
         self.db.no_more_weapons_msg = "you find nothing else of use."
         self.db.available_weapons = ["knife", "dagger", "sword", "club"]

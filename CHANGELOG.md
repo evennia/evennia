@@ -10,6 +10,10 @@
   Existing clients are unaffected. (daiimus)
 - [Feat][pull3511]: Add `article` and `format` kwargs to `$You()`/`$you()`/`$Your()`/`$your()`.
   `$You()` now auto-capitalizes names for third-person receivers. (chiizujin)
+- [Feat][pull3939]: Make AttributeProperty and NAttributeProperty generic for type inference (Problematic)
+- [Feat][pull3940]: Add @overload signatures to TagHandler.get() for type narrowing (Problematic)
+- [Feat][pull3917]: Add configurable server lifecycle broadcast messages (blongden)
+- [Feat][pull3644]: Add database_backup contrib for scheduled database backups (aMiss-aWry)
 - [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
 - [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
 - Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
@@ -38,7 +42,11 @@
 - Fix: MSSP game name now uses settings.SERVERNAME instead of hardcoded "Mygame" default (Griatch)
 - [Fix][pull3911]: Fix cmdset merge cache, improving performance up to 500x (kvmet)
 - [Fix][pull3913]: Fix tag/search failing when searching by category only (blongden)
-- Docs: Griatch, BigJMoney
+- [Fix][pull3914]: Fix NAWS stale-width on terminal resize and 'autoresize' client-option validation (michaelfaith84)
+- [Fix][pull3936]: Add -> bool return annotations to override-intended hook methods (Problematic)
+- [Fix][pull3938]: Fix ReferenceError in notifications plugin when window unfocused (Problematic)
+- [Fix][pull3942]: Add AMP_CONNECT_TIMEOUT for portal probe (jaborsh)
+- Docs: Griatch, BigJMoney, dicnunz, pikammmmm
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
 [pull3867]: https://github.com/evennia/evennia/pull/3867
@@ -58,6 +66,14 @@
 [pull3910]: https://github.com/evennia/evennia/pull/3910
 [pull3911]: https://github.com/evennia/evennia/pull/3911
 [pull3913]: https://github.com/evennia/evennia/pull/3913
+[pull3914]: https://github.com/evennia/evennia/pull/3914
+[pull3936]: https://github.com/evennia/evennia/pull/3936
+[pull3938]: https://github.com/evennia/evennia/pull/3938
+[pull3939]: https://github.com/evennia/evennia/pull/3939
+[pull3940]: https://github.com/evennia/evennia/pull/3940
+[pull3917]: https://github.com/evennia/evennia/pull/3917
+[pull3644]: https://github.com/evennia/evennia/pull/3644
+[pull3942]: https://github.com/evennia/evennia/pull/3942
 [pull3504]: https://github.com/evennia/evennia/pull/3504
 [pull3511]: https://github.com/evennia/evennia/pull/3511
 [pull3600]: https://github.com/evennia/evennia/pull/3600

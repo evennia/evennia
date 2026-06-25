@@ -1119,6 +1119,7 @@ class TestIssue3824(BaseEvenniaTest):
         self.assertIn(self.room1, objlist)
         self.assertIn(self.room2, objlist)
 
+
 class TestIssue3101(EvenniaCommandTest):
     """
     Spawning and using create_object should store the same `typeclass_path` if using

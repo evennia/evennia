@@ -40,7 +40,7 @@ let notifications_plugin = (function () {
                         if(result === "granted") {
                             var title = originalTitle === "" ? "Evennia" : originalTitle;
                             var options = {
-                                body: text.replace(/(<([^>]+)>)/ig,""),
+                                body: args[0].replace(/(<([^>]+)>)/ig,""),
                                 icon: "/static/website/images/evennia_logo.png"
                             }
 

@@ -20,12 +20,12 @@ import shutil
 import signal
 import sys
 from argparse import ArgumentParser
-from packaging.version import Version
 from subprocess import DEVNULL, STDOUT, CalledProcessError, Popen, call, check_output
 
 import django
 from django.core.management import execute_from_command_line
 from django.db.utils import ProgrammingError
+from packaging.version import Version
 from twisted.internet import endpoints, reactor
 from twisted.protocols import amp
 
@@ -81,6 +81,7 @@ NO_REACTOR_STOP = False
 AMP_PORT = None
 AMP_HOST = None
 AMP_INTERFACE = None
+AMP_CONNECT_TIMEOUT = None
 AMP_CONNECTION = None
 
 SRELOAD = chr(14)  # server reloading (have portal start a new server)
@@ -216,9 +217,7 @@ ERROR_SETTINGS = """
            errors mentioning 'DJANGO_SETTINGS_MODULE'. If you run a
            virtual machine, it might be worth to restart it to see if
            this resolves the issue.
-    """.format(
-    settingspath=SETTINGS_PATH
-)
+    """.format(settingspath=SETTINGS_PATH)
 
 ERROR_INITSETTINGS = """
 u   ERROR: 'evennia --initsettings' must be called from the root of
@@ -664,7 +663,9 @@ def send_instruction(operation, arguments, callback=None, errback=None):
         return _send()
     else:
         # we must connect first, send once connected
-        point = endpoints.TCP4ClientEndpoint(reactor, AMP_HOST, AMP_PORT)
+        point = endpoints.TCP4ClientEndpoint(
+            reactor, AMP_HOST, AMP_PORT, timeout=AMP_CONNECT_TIMEOUT
+        )
         deferred = endpoints.connectProtocol(point, AMPLauncherProtocol())
         deferred.addCallbacks(_on_connect, _on_connect_fail)
         REACTOR_RUN = True
@@ -850,12 +851,12 @@ def start_evennia(pprofiler=False, sprofiler=False):
                 Popen(portal_cmd, env=getenv(), bufsize=-1, creationflags=create_no_window)
             else:
                 Popen(
-                    portal_cmd, 
-                    env=getenv(), 
-                    bufsize=-1, 
-                    stdin=DEVNULL, 
-                    stdout=DEVNULL, 
-                    stderr=DEVNULL
+                    portal_cmd,
+                    env=getenv(),
+                    bufsize=-1,
+                    stdin=DEVNULL,
+                    stdout=DEVNULL,
+                    stderr=DEVNULL,
                 )
         except Exception as e:
             print(PROCESS_ERROR.format(component="Portal", traceback=e))
@@ -1814,7 +1815,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
         return
 
     # set up the Evennia executables and log file locations
-    global AMP_PORT, AMP_HOST, AMP_INTERFACE
+    global AMP_PORT, AMP_HOST, AMP_INTERFACE, AMP_CONNECT_TIMEOUT
     global SERVER_PY_FILE, PORTAL_PY_FILE
     global SERVER_LOGFILE, PORTAL_LOGFILE, HTTP_LOGFILE
     global SERVER_PIDFILE, PORTAL_PIDFILE
@@ -1824,6 +1825,7 @@ def init_game_directory(path, check_db=True, need_gamedir=True):
     AMP_PORT = settings.AMP_PORT
     AMP_HOST = settings.AMP_HOST
     AMP_INTERFACE = settings.AMP_INTERFACE
+    AMP_CONNECT_TIMEOUT = settings.AMP_CONNECT_TIMEOUT
 
     SERVER_PY_FILE = os.path.join(EVENNIA_LIB, "server", "server.py")
     PORTAL_PY_FILE = os.path.join(EVENNIA_LIB, "server", "portal", "portal.py")
