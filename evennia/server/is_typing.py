@@ -65,7 +65,7 @@ def is_typing_setup(session, *args, **kwargs):
         return
 
     live_report_commands = [
-        cmd for cmd in session.puppet.cmdset.current if hasattr(cmd, "client_live_report_typing")
+        cmd for cmd in session.puppet.cmdset.current if cmd.client_live_report_typing
     ]
 
     # Commands and aliases

@@ -199,7 +199,7 @@ let is_typing = (function (){
 
                     const wordCmds = liveReportKeywords.filter(kw => kw.length > 1).join("|");
                     const charCmds = liveReportKeywords.filter(kw => kw.length === 1).join("|");
-                    regex = new RegExp(`^\\W*((${wordCmds})(\\s|$)|(${charCmds}))`)
+                    regex = new RegExp(`^\\W*((${wordCmds})(\\s|$)|(${charCmds})).`)
                     break;
 
                 case 'typing':
