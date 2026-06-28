@@ -655,6 +655,8 @@ class CmdSay(COMMAND_DEFAULT_CLASS):
     # don't require a space after `say/'/"`
     arg_regex = None
 
+    client_live_report_typing = True
+
     def func(self):
         """Run the say command"""
 
@@ -744,6 +746,8 @@ class CmdPose(COMMAND_DEFAULT_CLASS):
     # we want to be able to pose without whitespace between
     # the command/alias and the pose (e.g. :pose)
     arg_regex = None
+
+    client_live_report_typing = True
 
     def parse(self):
         """
