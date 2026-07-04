@@ -48,7 +48,7 @@
 - [Fix][pull3938]: Fix ReferenceError in notifications plugin when window unfocused (Problematic)
 - [Fix][pull3942]: Add AMP_CONNECT_TIMEOUT for portal probe (jaborsh)
 - Fix: Resolve UnhandledCommand race on server start (Griatch)
-- Docs: Griatch, BigJMoney, dicnunz, pikammmmm
+- Docs: Griatch, BigJMoney, dicnunz, pikammmmm, InspectorCaracal
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
 [pull3867]: https://github.com/evennia/evennia/pull/3867
