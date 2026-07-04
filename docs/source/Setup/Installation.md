@@ -1,6 +1,6 @@
 # Installation
 
-Evennia requires having [Python](https://www.python.org/downloads/) and pip installed. The current recommended versions are 3.12 or 3.13.
+Evennia requires having [Python](https://www.python.org/downloads/) and pip installed. Python 3.12, 3.13 and 3.14 are supported (3.14 is recommended).
 
 ```{note}
 As this is not a Python installation guide, please consult the instructions for installing Python+pip for your operating system if it is not already installed.
@@ -19,7 +19,7 @@ Make sure you have a supported Python version installed, navigate to your develo
 #### Windows
 
     py -m venv evenv
-    .\evenv\lib\activate
+    .\evenv\Scripts\activate
     pip install evennia
     py -m evennia
 
@@ -54,7 +54,7 @@ Linux/Mac:
 
 Windows:
 
-    .\evenv\lib\activate
+    .\evenv\Scripts\activate
 
 
 You'll need to do this step - activating the environment - every time you open a new terminal to work on your Evennia game.
@@ -89,4 +89,4 @@ This will upgrade evennia and all its dependencies to the latest version. If you
 
 ## Next Steps
 
-That's it! Check out the guide for [setting up a new game](./Creating-Game-Dir.md) to get started developing!
+That's it! Check out the guide for [setting up a new game](./Create-Game-Dir.md) to get started developing!

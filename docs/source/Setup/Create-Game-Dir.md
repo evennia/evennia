@@ -76,7 +76,7 @@ To let the world know that you are working on a new Evennia-based game, you may 
 
 Then, just follow the prompts. You don't have to be open for players to do this &mdash; simply mark your game as closed and "pre-alpha."
 
-See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](http:games.evennia.com)  beforehand to make sure you don't pick a game name that is already taken &mdash; be nice!
+See [here](./Evennia-Game-Index.md) for more instructions and please [check out the index](https://games.evennia.com)  beforehand to make sure you don't pick a game name that is already taken &mdash; be nice!
 
 ## Next Steps
 
