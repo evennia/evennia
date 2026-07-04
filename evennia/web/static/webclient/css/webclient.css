@@ -346,14 +346,21 @@ div {margin:0px;}
   text-decoration: underline;
 }
 
+/* Typing indicator. Docked bottom-left (opposite the top-right #toolbar) and
+   anchored to the viewport so it survives GoldenLayout's pane rebuilds. */
 #istyping {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: auto;
-    height: auto;
+    position: fixed;
+    left: .5rem;
+    bottom: 3rem;
+    z-index: 5;
+    max-width: 40%;
+    max-height: 30%;
+    overflow-y: auto;
     display: none;
+    padding: .25rem .5rem;
     color: white;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: .25rem;
 }
 
 #istypingdivider {

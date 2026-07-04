@@ -115,6 +115,18 @@ class TestIsTypingGetAudience(BaseEvenniaTest):
         finally:
             char3.delete()
 
+    def test_empty_when_puppet_has_no_location(self):
+        """Audience is empty (no crash) when the puppet has no location."""
+        self.char1.location = None
+        audience = is_typing_get_audience_common_location(self.session)
+        self.assertEqual(audience, [])
+
+    def test_empty_when_no_puppet(self):
+        """Audience is empty when the session has no puppet."""
+        self.session.puppet = None
+        audience = is_typing_get_audience_common_location(self.session)
+        self.assertEqual(audience, [])
+
 
 # ---------------------------------------------------------------------------
 # is_typing_setup

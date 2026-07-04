@@ -30,12 +30,13 @@ def is_typing_get_audience_common_location(session, *args, **kwargs):
         session: The player's current session.
     """
 
-    if session.puppet is None:
-       return []
+    puppet = session.puppet
+    if puppet is None or puppet.location is None:
+        return []
 
-    audience_including_typer = session.puppet.location.contents_get(content_type="character")
+    audience_including_typer = puppet.location.contents_get(content_type="character")
 
-    audience = [puppet for puppet in audience_including_typer if puppet.id != session.puppet.id]
+    audience = [obj for obj in audience_including_typer if obj.id != puppet.id]
 
     return audience
 
@@ -96,12 +97,10 @@ def is_typing_state(user_session, *args, **kwargs):
     (defaults to same location).
 
     Args:
-        session (Session): The player's current session.
+        user_session (Session): The player's current session.
         **kwargs:
             - state (bool): The typing state to broadcast.
     """
-    global audience_getter
-
     options = user_session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 
@@ -110,7 +109,7 @@ def is_typing_state(user_session, *args, **kwargs):
 
     state = kwargs.get("state")
 
-    audience = audience_getter(session=user_session, args=args, kwargs=kwargs)
+    audience = audience_getter(user_session, *args, **kwargs)
 
     # Filter out clients not interested in updates
     relevant_sessions = [
@@ -118,7 +117,7 @@ def is_typing_state(user_session, *args, **kwargs):
         for puppet in audience
         for puppet_session in puppet.sessions.all()
         if puppet_session.protocol_flags.get("ISTYPING", True)
-    ] # Potential timeout adjustment based on audience size
+    ]  # Potential timeout adjustment based on audience size
 
     # Update relevant clients
     for puppet_session in relevant_sessions:

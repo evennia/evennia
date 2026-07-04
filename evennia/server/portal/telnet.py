@@ -333,7 +333,6 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
             data = [_IDLE_COMMAND]
         else:
             data = _RE_LINEBREAK.split(data)
-
             if len(data) > 2 and _HTTP_REGEX.match(data[0]):
                 # guard against HTTP request on the Telnet port; we
                 # block and kill the connection.

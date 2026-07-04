@@ -18,13 +18,15 @@ let is_typing = (function (){
     const createDialog = function() {
         const ele =[
             '<div id="istyping" class="content">',
-            '<h5>Who\'s typing?</h4>',
+            '<h5>Who\'s typing?</h5>',
             '<hr id="istypingdivider" />',
             '<div id="typingplayers"></div>',
             '</div>'
         ].join('\n')
 
-        $('#messagewindow').append(ele)
+        // Append to <body> (as popups.js does) so the indicator survives
+        // GoldenLayout rebuilding the message/input panes at runtime.
+        $('body').append(ele)
     }
 
     const playerElement =(name)=> `<div id="istyping-${name}" class="player-is-typing">${name}</div>`
