@@ -14,6 +14,7 @@
 - [Feat][pull3940]: Add @overload signatures to TagHandler.get() for type narrowing (Problematic)
 - [Feat][pull3917]: Add configurable server lifecycle broadcast messages (blongden)
 - [Feat][pull3644]: Add database_backup contrib for scheduled database backups (aMiss-aWry)
+- [Feat][pull3510]: Webclient is-typing indicator when others are typing emotes in same location (michaelfaith84)
 - [Fix][pull3866]: Fix 'None' showing up in Evennia startup log (jaborsh)
 - [Fix][pull3869]: Handle `evennia -l &` for non-Windows systems (jaborsh)
 - Fix: Improve indentation/formatting for east-asian languages (Griatch, with inspiration from hhsiao)
@@ -80,6 +81,7 @@
 [pull3600]: https://github.com/evennia/evennia/pull/3600
 [pull3769]: https://github.com/evennia/evennia/pull/3769
 [pull3850]: https://github.com/evennia/evennia/pull/3850
+[pull3510]: https://github.com/evennia/evennia/pull/3510
 [issue3890]: https://github.com/evennia/evennia/issues/3890
 [issue3895]: https://github.com/evennia/evennia/issues/3895
 [mudstandards-ws]: https://mudstandards.org/websocket/

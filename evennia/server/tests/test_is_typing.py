@@ -9,6 +9,8 @@ Covers:
 
 from unittest.mock import MagicMock, patch
 
+from django.test import override_settings
+
 from evennia.commands.command import Command
 from evennia.server.is_typing import (
     is_typing_get_audience_common_location,
@@ -16,7 +18,6 @@ from evennia.server.is_typing import (
     is_typing_state,
 )
 from evennia.utils.test_resources import BaseEvenniaTest
-
 
 # ---------------------------------------------------------------------------
 # Minimal test commands with client_live_report_typing
@@ -173,6 +174,12 @@ class TestIsTypingSetup(BaseEvenniaTest):
         is_typing_setup(self.session)
         self.session.msg.assert_called_once()
 
+    @override_settings(WEBCLIENT_TYPING_ENABLED=False)
+    def test_disabled_globally_sends_nothing(self):
+        """No setup message is sent when the feature is disabled in settings."""
+        is_typing_setup(self.session)
+        self.session.msg.assert_not_called()
+
     def test_includes_command_key(self):
         """The key of a live-reporting command is in the keywords."""
         is_typing_setup(self.session)
@@ -272,6 +279,12 @@ class TestIsTypingState(BaseEvenniaTest):
     def test_sender_istyping_false_sends_nothing(self):
         """If the sender has ISTYPING disabled, no messages are dispatched."""
         self.session.protocol_flags["ISTYPING"] = False
+        is_typing_state(self.session, state=True)
+        self.char2_session.msg.assert_not_called()
+
+    @override_settings(WEBCLIENT_TYPING_ENABLED=False)
+    def test_disabled_globally_sends_nothing(self):
+        """No state is broadcast when the feature is disabled in settings."""
         is_typing_state(self.session, state=True)
         self.char2_session.msg.assert_not_called()
 

@@ -59,6 +59,9 @@ def is_typing_setup(session, *args, **kwargs):
         session: The player's current session.
     """
 
+    if not settings.WEBCLIENT_TYPING_ENABLED:
+        return
+
     options = session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 
@@ -101,6 +104,9 @@ def is_typing_state(user_session, *args, **kwargs):
         **kwargs:
             - state (bool): The typing state to broadcast.
     """
+    if not settings.WEBCLIENT_TYPING_ENABLED:
+        return
+
     options = user_session.protocol_flags
     is_typing = options.get("ISTYPING", True)
 

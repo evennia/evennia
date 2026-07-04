@@ -139,6 +139,12 @@ let is_typing = (function (){
      * @param {KeyboardEvent} event - The typing state, e.g., "typing" or "idle".
      */
     const onKeyup = function (event) {
+        // `regex` is only set once the server sends setup keywords. If the
+        // feature is disabled server-side (WEBCLIENT_TYPING_ENABLED = False)
+        // setup never arrives, so we stay dormant and send no keystroke traffic.
+        if (regex === null) {
+            return false
+        }
         const inputfield = $(".inputfield:focus");
         // A live report command is being used.
         if (Evennia.isConnected() &&

@@ -1046,6 +1046,10 @@ STATICFILES_IGNORE_PATTERNS = ["README.md"]
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"
 WEBCLIENT_TEMPLATE = "webclient"
+# Whether the webclient "is typing" notification feature is active at all. Set
+# to False to disable it completely (server stops responding to typing events
+# and the client stays dormant, sending no per-keystroke traffic).
+WEBCLIENT_TYPING_ENABLED = True
 # Number of seconds for the "typing" notification to timeout.
 WEBCLIENT_TYPING_TIMEOUT = 5
 WEBCLIENT_TYPING_AUDIENCE_GETTER = "evennia.server.is_typing.is_typing_get_audience_common_location"
