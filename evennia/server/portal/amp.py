@@ -520,11 +520,24 @@ class AMPMultiConnectionProtocol(amp.AMP):
             Data will be sent across the wire pickled as a tuple
             (sessid, kwargs).
 
+            The launcher connects to the Portal's AMP endpoint too, but its
+            protocol (`AMPLauncherProtocol`) only handles launcher-directed
+            commands. Broadcasting a server-directed command (e.g.
+            `AdminPortal2Server`) to it would raise an `UnhandledCommand` on
+            the launcher side, which is then logged as a spurious AMP error on
+            every startup. We therefore skip the launcher connection here. The
+            Server-side factory has no `launcher_connection`, hence the
+            `getattr` guard.
+
         """
         deferreds = []
         # print("broadcast: {} {}: {}".format(command, sessid, kwargs))
 
+        launcher_connection = getattr(self.factory, "launcher_connection", None)
+
         for protcl in self.factory.broadcasts:
+            if protcl is launcher_connection:
+                continue
             deferreds.append(
                 protcl.callRemote(command, **kwargs).addErrback(self.errback, command.key)
             )
