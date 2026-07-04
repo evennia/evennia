@@ -131,3 +131,30 @@ class TestAMPClientRecv(_TestAMP):
         evennia.SERVER_SESSION_HANDLER.portal_disconnect_all = MagicMock()
         self.amp_client.dataReceived(wire_data)
         evennia.SERVER_SESSION_HANDLER.portal_disconnect_all.assert_called()
+
+    def test_broadcast_skips_launcher_connection(self, mocktransport):
+        """
+        When no dedicated `server_connection` is set yet (a window during
+        startup), `data_to_server` falls back to `broadcast`. This must not
+        send the server-directed command to the launcher connection, whose
+        protocol cannot handle it. Regression test for the spurious
+        `UnhandledCommand: AdminPortal2Server` logged on every startup.
+
+        """
+        from twisted.internet import defer
+
+        launcher_conn = MagicMock()
+        launcher_conn.callRemote.return_value = defer.succeed(None)
+        server_conn = MagicMock()
+        server_conn.callRemote.return_value = defer.succeed(None)
+
+        factory = self.amp_server.factory
+        factory.launcher_connection = launcher_conn
+        factory.server_connection = None
+        factory.broadcasts = [launcher_conn, server_conn]
+
+        self.amp_server.send_AdminPortal2Server(self.session, operation=amp.PSYNC)
+
+        # the real (server) connection is reached, the launcher is skipped
+        server_conn.callRemote.assert_called_once()
+        launcher_conn.callRemote.assert_not_called()

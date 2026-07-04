@@ -46,6 +46,7 @@
 - [Fix][pull3936]: Add -> bool return annotations to override-intended hook methods (Problematic)
 - [Fix][pull3938]: Fix ReferenceError in notifications plugin when window unfocused (Problematic)
 - [Fix][pull3942]: Add AMP_CONNECT_TIMEOUT for portal probe (jaborsh)
+- Fix: Resolve UnhandledCommand race on server start (Griatch)
 - Docs: Griatch, BigJMoney, dicnunz, pikammmmm
 
 [pull3866]: https://github.com/evennia/evennia/pull/3866
