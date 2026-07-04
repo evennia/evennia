@@ -346,29 +346,34 @@ div {margin:0px;}
   text-decoration: underline;
 }
 
-/* Typing indicator. Docked bottom-left (opposite the top-right #toolbar) and
-   anchored to the viewport so it survives GoldenLayout's pane rebuilds. */
+/* Typing indicator. A compact pill sitting just above the top-right of the
+   input pane. The is_typing plugin sets `bottom` in JS to the top edge of the
+   live (resizable) input pane; the gap above it is `margin-bottom` here (tweak
+   that to shift it up/down). `bottom` below is only an initial fallback before
+   the plugin runs. Sized to its content, anchored to the viewport so it
+   survives GoldenLayout's pane rebuilds, and kept clear of the top-right
+   #toolbar (which is at top: .5rem). */
 #istyping {
     position: fixed;
-    left: .5rem;
-    bottom: 3rem;
+    right: 1.7rem;
+    bottom: 4.5rem;
+    margin-bottom: -1.7rem;
     z-index: 5;
+    width: fit-content;
     max-width: 40%;
-    max-height: 30%;
+    max-height: 30vh;
     overflow-y: auto;
     display: none;
-    padding: .25rem .5rem;
-    color: white;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: .25rem;
-}
-
-#istypingdivider {
-    color: white;
-    border-color: white;
+    padding: .3rem .6rem;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.75);
+    border-radius: .35rem;
+    font-size: .85rem;
+    line-height: 1.35;
 }
 
 .player-is-typing {
+    white-space: nowrap;
     animation: isTyping 2s ease 0s infinite normal forwards;
 }
 @keyframes isTyping {

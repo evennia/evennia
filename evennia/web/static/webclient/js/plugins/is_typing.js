@@ -17,9 +17,7 @@ let is_typing = (function (){
      */
     const createDialog = function() {
         const ele =[
-            '<div id="istyping" class="content">',
-            '<h5>Who\'s typing?</h5>',
-            '<hr id="istypingdivider" />',
+            '<div id="istyping">',
             '<div id="typingplayers"></div>',
             '</div>'
         ].join('\n')
@@ -29,7 +27,31 @@ let is_typing = (function (){
         $('body').append(ele)
     }
 
-    const playerElement =(name)=> `<div id="istyping-${name}" class="player-is-typing">${name}</div>`
+    const playerElement =(name)=> `<div id="istyping-${name}" class="player-is-typing">${name} is typing…</div>`
+
+    /**
+     * Anchor the indicator just above the top edge of the input pane. The input
+     * pane is user-resizable (GoldenLayout), so we measure the live input
+     * element rather than using a fixed offset. Falls back to the CSS `bottom`
+     * value if no input is found.
+     */
+    const positionIndicator = function () {
+        const $ist = $('#istyping')
+        if (!$ist.length) {
+            return
+        }
+        let input = $('.inputfieldwrapper:visible').last()
+        if (!input.length) {
+            input = $('.inputfield:visible').last()
+        }
+        if (!input.length) {
+            return
+        }
+        // Anchor the pill's bottom to the top edge of the input pane. The gap
+        // above it is presentation and lives in CSS (#istyping margin-bottom).
+        const rect = input[0].getBoundingClientRect()
+        $ist.css('bottom', Math.round(window.innerHeight - rect.top) + 'px')
+    }
 
     /**
      * The user has just started typing--set our flag, start our timeout callback, and
@@ -233,6 +255,11 @@ let is_typing = (function (){
                         state.cleanup_callback = null;
                         $('#istyping').hide();
                     }
+
+                    // re-anchor above the (resizable) input pane on each update
+                    if (state.typing_players.length > 0) {
+                        positionIndicator();
+                    }
                     break;
 
                 default:
@@ -254,6 +281,9 @@ let is_typing = (function (){
         Evennia.emitter.on("is_typing", is_typing);
 
         createDialog();
+
+        // keep the indicator anchored above the input pane on window resize
+        $(window).on("resize", positionIndicator);
 
         console.log(`Is Typing plugin initialized`);
     }
