@@ -24,7 +24,7 @@ July 5, 2026
 - [Fix][pull3877]: Fixes multimatch numbering display to be case insensitive (InspectorCaracal)
 - [Fix][pull3883]: Taskhandler: Fix TaskHandlerTask stale references & clean up (jaborsh)
 - [Feat][pull3884]: Formally support PostgreSQL with psycopg3 (jaborsh)
-- [Fix][pull3885]: Is_ooc(): Thread session through lock system in multi-session mode (jaborsh)
+- [Fix][pull3885]: `is_ooc()`: Thread session through lock system in multi-session mode (jaborsh)
 - Fix: Add deprecation warning for custom cmdparsers missing `session` kwarg (Griatch)
 - [Fix][pull3888]: Close stale DB connections before first query (jaborsh)
 - [Fix][pull3898]: Pass caller to purge_processor in CmdStateCC cc command (saschabuehrle)
@@ -48,7 +48,7 @@ July 5, 2026
 - [Fix][pull3914]: Fix NAWS stale-width on terminal resize and 'autoresize' client-option validation (michaelfaith84)
 - [Fix][pull3936]: Add -> bool return annotations to override-intended hook methods (Problematic)
 - [Fix][pull3938]: Fix ReferenceError in notifications plugin when window unfocused (Problematic)
-- [Fix][pull3942]: Add AMP_CONNECT_TIMEOUT for portal probe (jaborsh)
+- [Fix][pull3942]: Add `AMP_CONNECT_TIMEOUT` for portal probe (jaborsh)
 - Fix: Resolve UnhandledCommand race on server start (Griatch)
 - Docs: Griatch, BigJMoney, dicnunz, pikammmmm, InspectorCaracal
 
