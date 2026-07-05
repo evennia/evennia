@@ -18,6 +18,7 @@ evennia.server
    evennia.server.evennia_launcher
    evennia.server.initial_setup
    evennia.server.inputfuncs
+   evennia.server.is_typing
    evennia.server.manager
    evennia.server.models
    evennia.server.server

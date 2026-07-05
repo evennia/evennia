@@ -12,6 +12,7 @@ evennia.contrib.utils
    :maxdepth: 6
 
    evennia.contrib.utils.auditing
+   evennia.contrib.utils.database_backup
    evennia.contrib.utils.debugpy
    evennia.contrib.utils.fieldfill
    evennia.contrib.utils.git_integration

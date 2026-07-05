@@ -172,6 +172,10 @@ EVENNIA_ADMIN = True
 AMP_HOST = "localhost"
 AMP_PORT = 4006
 AMP_INTERFACE = "127.0.0.1"
+# Timeout (seconds) for the launcher's connection to the Portal's AMP port when
+# sending start/stop/status instructions. This is a loopback connection, so a
+# live Portal accepts in well under a millisecond.
+AMP_CONNECT_TIMEOUT = 2
 
 
 # Path to the lib directory containing the bulk of the codebase's code.
@@ -333,6 +337,10 @@ AUDIT_MASKS = [
 ]
 # Broadcast "Server restart"-like messages to all sessions.
 BROADCAST_SERVER_RESTART_MESSAGES = True
+# Messages broadcast to all sessions on server lifecycle events.
+SERVER_RELOAD_INITIATE_MSG = " Server restart initiated {reason}..."
+SERVER_RESET_MSG = " Server resetting/restarting ..."
+SERVER_RESTART_MSG = " ... Server restarted."
 
 ######################################################################
 # Evennia Database config
@@ -500,10 +508,14 @@ LOCK_FUNC_MODULES = ("evennia.locks.lockfuncs", "server.conf.lockfuncs")
 # Module holding handlers for managing incoming data from the client. These
 # will be loaded in order, meaning functions in later modules may overload
 # previous ones if having the same name.
-INPUT_FUNC_MODULES = ["evennia.server.inputfuncs", "server.conf.inputfuncs"]
+INPUT_FUNC_MODULES = [
+    "evennia.server.inputfuncs",
+    "server.conf.inputfuncs",
+    "evennia.server.is_typing",
+]
 # Modules that contain prototypes for use with the spawner mechanism.
 PROTOTYPE_MODULES = ["world.prototypes"]
-# Modules containing Prototype functions able to be embedded in prototype
+# Modules containining Prototype functions able to be embedded in prototype
 # definitions from in-game.
 PROT_FUNC_MODULES = ["evennia.prototypes.protfuncs"]
 # Module holding settings/actions for the dummyrunner program (see the
@@ -559,6 +571,10 @@ CMDSET_ACCOUNT = "commands.default_cmdsets.AccountCmdSet"
 
 # Location to search for cmdsets if full path not given
 CMDSET_PATHS = ["commands", "evennia", "evennia.contrib"]
+# Max number of merged cmdsets to keep cached. When full, the least recently used
+# entry is evicted. Increase if your game has many unique rooms/objects; decrease
+# to save memory.
+CMDSET_MERGE_CACHE_MAXSIZE = 1000
 # Fallbacks for cmdset paths that fail to load. Note that if you change the path for your
 # default cmdsets, you will also need to copy CMDSET_FALLBACKS after your change in your
 # settings file for it to detect the change.
@@ -1049,6 +1065,13 @@ STATICFILES_IGNORE_PATTERNS = ["README.md"]
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"
 WEBCLIENT_TEMPLATE = "webclient"
+# Whether the webclient "is typing" notification feature is active at all. Set
+# to False to disable it completely (server stops responding to typing events
+# and the client stays dormant, sending no per-keystroke traffic).
+WEBCLIENT_TYPING_ENABLED = True
+# Number of seconds for the "typing" notification to timeout.
+WEBCLIENT_TYPING_TIMEOUT = 5
+WEBCLIENT_TYPING_AUDIENCE_GETTER = "evennia.server.is_typing.is_typing_get_audience_common_location"
 # We setup the location of the website template as well as the admin site.
 TEMPLATES = [
     {

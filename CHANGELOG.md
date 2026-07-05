@@ -1,6 +1,8 @@
 # Changelog
 
-## Main branch
+## Evennia 6.1.0
+
+July 5, 2026
 
 - Feat: Add AGENTS.md and .agents context files to aid AI agent development (Griatch)
 - Feat: Add `uv.lock` for Evennia library developers wanting to use the `uv` tool (Griatch)
