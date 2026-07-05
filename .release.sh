@@ -35,7 +35,7 @@ echo "Preparing and Building PyPi package ..."
 rm -Rf dist/
 git clean -xdf
 pip install --upgrade pip
-pip install build twine
+pip install --upgrade build "twine>=6.1.0" "packaging>=24.2"
 python -m build --sdist --wheel --outdir dist/ .
 
 echo "Uploading PyPi package (requires PyPi credentials) ..."
