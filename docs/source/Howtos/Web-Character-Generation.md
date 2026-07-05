@@ -44,7 +44,7 @@ Assuming your game is named "mygame", navigate to your `mygame/` directory, and 
     cd web
     evennia startapp chargen
 
-This will initialize a new Django app we choose to call "chargen" in `mygame/web/`. We put it under `web/` to keep all web stuff together, but you can organize however you like. It is directory containing some basic starting things Django needs. 
+This will initialize a new Django app we choose to call "chargen" in `mygame/web/`. We put it under `web/` to keep all web stuff together, but you can organize however you like. It is directory containing some basic starting things Django needs.
 
 Next, navigate to `mygame/server/conf/settings.py` and add or edit the following line to make Evennia (and Django) aware of our new app:
 
@@ -457,7 +457,7 @@ mygame/web/chargen/templates/chargen/detail.html
 Once you have all these files stand in your `mygame/`folder and run:
 
 ```bash
-evennia makemigrations
+evennia makemigrations chargen
 evennia migrate
 ```
 
