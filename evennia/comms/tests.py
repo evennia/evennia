@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from django.test import SimpleTestCase
 
 from evennia.commands.default.comms import CmdChannel
@@ -86,3 +88,36 @@ class ChannelWholistTests(BaseEvenniaTest):
         expected = "Obj, |wChar|n"
         result = self.default_channel.wholist
         self.assertEqual(expected, result)
+
+
+class ChannelMessageDistributionTests(BaseEvenniaTest):
+    def setUp(self):
+        super().setUp()
+        self.channel, _ = DefaultChannel.create("testchannel", description="Test channel.")
+        self.channel.send_to_online_only = False
+
+    def test_message_distribution_flow(self):
+        """Verify message distribution continues if one subscriber returns False."""
+        for sub in [self.obj1, self.obj2, self.char1]:
+            self.channel.connect(sub)
+            sub.at_pre_channel_msg = MagicMock(return_value="test message")
+            sub.channel_msg = MagicMock()
+            sub.at_post_channel_msg = MagicMock()
+        self.obj2.at_pre_channel_msg.return_value = False
+        self.channel.msg("test message")
+
+        # obj1 should have received the message (hooks called)
+        self.obj1.at_pre_channel_msg.assert_called_once()
+        self.obj1.channel_msg.assert_called_once()
+        self.obj1.at_post_channel_msg.assert_called_once()
+
+        # obj2's at_pre_channel_msg is called, but because it returned False,
+        # its channel_msg and at_post_channel_msg should NOT be called.
+        self.obj2.at_pre_channel_msg.assert_called_once()
+        self.obj2.channel_msg.assert_not_called()
+        self.obj2.at_post_channel_msg.assert_not_called()
+
+        # char1 should still have received the message
+        self.char1.at_pre_channel_msg.assert_called_once()
+        self.char1.channel_msg.assert_called_once()
+        self.char1.at_post_channel_msg.assert_called_once()
