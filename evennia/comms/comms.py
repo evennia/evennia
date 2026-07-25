@@ -656,7 +656,7 @@ class DefaultChannel(ChannelDB, metaclass=TypeclassBase):
             try:
                 recv_message = receiver.at_pre_channel_msg(message, self, **send_kwargs)
                 if recv_message in (None, False):
-                    return
+                    continue
 
                 receiver.channel_msg(recv_message, self, **send_kwargs)
 
