@@ -31,8 +31,8 @@ uv run evennia test --keepdb evennia.server.tests   # from inside .test_game_dir
 # make (requires `evennia` on PATH):
 make test                                        # full suite
 make testp                                       # parallel (4 cores)
-make tests=evennia.objects.tests test             # specific module
-make tests=evennia.commands.tests.test_command test  # specific test file
+make TESTS=evennia.objects.tests test             # specific module
+make TESTS=evennia.commands.tests.test_command test  # specific test file
 ```
 
 ## Formatting

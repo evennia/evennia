@@ -47,8 +47,8 @@ These targets handle init/migrate automatically but require `evennia` installed 
 ```bash
 make test                                        # full suite
 make testp                                       # parallel (4 cores)
-make tests=evennia.objects.tests test             # specific module
-make tests=evennia.commands.tests.test_command test  # specific test file
+make TESTS=evennia.objects.tests test             # specific module
+make TESTS=evennia.commands.tests.test_command test  # specific test file
 ```
 
 The Makefile creates `.test_game_dir/`, runs `evennia migrate`, then `evennia test --keepdb`.
