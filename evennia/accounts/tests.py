@@ -427,6 +427,26 @@ class TestDefaultAccountEv(BaseEvenniaTest):
             self.account.puppet_object(self.session, self.char1)
             self.account.msg.assert_called_with("You are already puppeting this object.")
 
+    def test_puppet_limit(self):
+        "Test that PERMISSION_MULTIPLE_PUPPETS controls who can bypass the puppet limit."
+        self.account.msg = MagicMock()
+        self.char2.locks.add("puppet:all()")
+        with (
+            patch.object(self.account, "get_all_puppets", return_value=[MagicMock()]),
+            patch("evennia.accounts.accounts._MULTISESSION_MODE", 2),
+            patch("evennia.accounts.accounts._MAX_NR_SIMULTANEOUS_PUPPETS", 1),
+            patch("evennia.accounts.accounts._PERMISSION_MULTIPLE_PUPPETS", "Developer"),
+        ):
+            self.account.is_superuser = False
+            self.account.permissions.remove("Developer")
+            self.account.puppet_object(self.session, self.char2)
+            self.account.msg.assert_called_with("You cannot control any more puppets (max 1)")
+
+            self.account.msg.reset_mock()
+            self.account.permissions.add("Developer")
+            self.account.puppet_object(self.session, self.char2)
+            self.account.msg.assert_not_called()
+
     @patch("evennia.accounts.accounts.time.time", return_value=10000)
     def test_idle_time(self, mock_time):
         self.session.cmd_last_visible = 10000 - 10

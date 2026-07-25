@@ -810,6 +810,8 @@ AUTO_PUPPET_ON_LOGIN = True
 # How many *different* characters an account can puppet *at the same time*. A value
 # above 1 only makes a difference together with MULTISESSION_MODE > 1.
 MAX_NR_SIMULTANEOUS_PUPPETS = 1
+# The permission required to bypass MAX_NR_SIMULTANEOUS_PUPPETS.
+PERMISSION_MULTIPLE_PUPPETS = "Developer"
 # The maximum number of characters allowed by be created by the default ooc
 # char-creation command. This can be seen as how big of a 'stable' of characters
 # an account can have (not how many you can puppet at the same time). Set to
