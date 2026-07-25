@@ -1165,12 +1165,17 @@ class EvMenu:
         Format the node's help text
 
         Args:
-            helptext (str): The unformatted help text for the node.
+            helptext (str or dict): The unformatted help text for the node. A dict
+                maps a tooltip command to its own help text; each entry is
+                formatted separately.
 
         Returns:
-            helptext (str): The formatted help text.
+            helptext (str or dict): The formatted help text, of the same type as
+                the input.
 
         """
+        if isinstance(helptext, dict):
+            return {key: self.helptext_formatter(entry) for key, entry in helptext.items()}
         return dedent(helptext.strip("\n"), baseline_index=0).rstrip()
 
     def options_formatter(self, optionlist):
