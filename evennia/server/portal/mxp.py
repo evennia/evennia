@@ -26,6 +26,7 @@ URL_SUB = re.compile(r"\|lu(.*?)\|lt(.*?)\|le", re.DOTALL)
 MXP = bytes([91])  # b"\x5b"
 
 MXP_TEMPSECURE = "\x1b[4z"
+MXP_LOCK_LOCKED = b"\x1b[7z"
 MXP_SEND = MXP_TEMPSECURE + '<SEND HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</SEND>"
 MXP_URL = MXP_TEMPSECURE + '<A HREF="\\1">' + "\\2" + MXP_TEMPSECURE + "</A>"
 
@@ -103,6 +104,10 @@ class Mxp:
         if settings.MXP_ENABLED:
             self.protocol().protocol_flags["MXP"] = True
             self.protocol().requestNegotiation(MXP, b"")
+            # Switch client to permanently-locked mode so plain text containing
+            # '<' is never parsed as MXP. Actual clickable links use \x1b[4z
+            # (TEMP_SECURE) wrappers from mxp_parse(), which work fine from here.
+            self.protocol().sendLine(MXP_LOCK_LOCKED)
         else:
             self.protocol().wont(MXP)
         self.protocol().handshake_done()
