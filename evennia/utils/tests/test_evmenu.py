@@ -394,3 +394,16 @@ class TestEvMenuDictHelptext(BaseEvenniaTest):
             menu.helptext,
             {"foo": "help about foo", "bar": "help about bar", "baz": "help about bar"},
         )
+
+    def test_help_fallback_renders_dict(self):
+        """Typing 'help' on a dict-helptext node shows a readable listing, not a raw dict."""
+        self.char1.msg = MagicMock()
+        menu = evmenu.EvMenu(self.char1, {"start": _tooltip_menu_start}, session=self.session)
+        self.char1.msg.reset_mock()
+
+        menu.parse_input("help")
+
+        sent = self.char1.msg.call_args.kwargs["text"][0]
+        self.assertIsInstance(sent, str)
+        self.assertIn("help about foo", sent)
+        self.assertIn("help about bar", sent)

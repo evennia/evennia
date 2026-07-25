@@ -21,6 +21,25 @@ uv run evennia test --keepdb evennia                        # full suite
 
 If `.test_game_dir/` already exists with migrations applied, skip straight to the test command.
 
+#### Fallback: private index / auth errors
+
+If `uv run` fails while resolving or building packages with a keyring,
+gcloud, or `Missing password for <url>` error, your user-level uv config
+(`~/.config/uv/uv.toml`) likely points at a private, authenticated package
+index. Evennia itself declares no custom index, so add `--no-config` (or set
+`UV_NO_CONFIG=1`) to make uv ignore config files and fall back to public
+PyPI:
+
+```bash
+UV_NO_CONFIG=1 uv run --no-config evennia --init .test_game_dir
+cd .test_game_dir
+UV_NO_CONFIG=1 uv run --no-config evennia migrate
+UV_NO_CONFIG=1 uv run --no-config evennia test --keepdb evennia.utils.tests.test_evmenu
+```
+
+The same flag works for formatting: `uv run --no-config isort --profile black .`
+and `uv run --no-config black evennia`.
+
 ### Using `make` (requires `evennia` on PATH)
 
 These targets handle init/migrate automatically but require `evennia` installed in the current environment (e.g., via `pip install -e .` or an activated virtualenv):

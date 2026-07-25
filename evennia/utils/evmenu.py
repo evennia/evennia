@@ -1140,7 +1140,12 @@ class EvMenu:
         self.msg(self.nodetext)
 
     def display_helptext(self):
-        self.msg(self.helptext)
+        helptext = self.helptext
+        if isinstance(helptext, dict):
+            # a dict holds per-command tooltips; render it as a readable listing
+            # rather than sending the raw mapping to the caller.
+            helptext = "\n".join(f"|w{key}|n: {entry}" for key, entry in helptext.items())
+        self.msg(helptext)
 
     def display_tooltip(self, cmd):
         self.msg(self.helptext.get(cmd))
