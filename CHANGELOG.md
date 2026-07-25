@@ -1,5 +1,15 @@
 # Changelog
 
+## Evennia Main branch
+
+- [Feat][pull3963]: Allow customizing permission required to bypass max puppet limit (owllex)
+- [Fix][pull3922]: Fix MXP OPEN mode eating unknown tags like <username> in plain text (blongden)
+- [Fix][pull3962]: Prevent aborting channel message distribution when at_pre_channel_msg returns False/None (owllex)
+
+[pull3922]: https://github.com/evennia/evennia/pull/3922
+[pull3962]: https://github.com/evennia/evennia/pull/3962
+[pull3963]: https://github.com/evennia/evennia/pull/3963
+
 ## Evennia 6.1.0
 
 July 5, 2026
