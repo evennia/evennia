@@ -88,7 +88,7 @@ class CmdMore(Command):
 
         cmd = self.cmdstring
 
-        if cmd in ("abort", "a", "q"):
+        if cmd in ("quit", "q", "abort", "a"):
             more.page_quit()
         elif cmd in ("previous", "p"):
             more.page_back()
