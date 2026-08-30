@@ -596,7 +596,7 @@ class IAttributeBackend:
         except KeyError:
             attr = None
 
-        if attr and (not hasattr(attr, "pk") and attr.pk is None):
+        if attr and (not hasattr(attr, "pk") or attr.pk is None):
             # clear out Attributes deleted from elsewhere. We must search this anew.
             attr = None
             cachefound = False

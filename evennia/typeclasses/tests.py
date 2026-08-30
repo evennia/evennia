@@ -103,6 +103,26 @@ class TestAttributes(BaseEvenniaTest):
         self.assertEqual(attrobj.category, "category4")
         self.assertEqual(attrobj.locks.all(), ["attrread:id(1)"])
 
+    def test_stale_attribute_is_evicted_from_cache(self):
+        """
+        An Attribute deleted from elsewhere (pk set to None) must be dropped
+        from the handler cache, otherwise the next write reuses the pk-less
+        object and Django raises "Cannot force an update in save() with no
+        primary key".
+
+        """
+        key = "staleattr"
+        self.obj1.attributes.add(key, "value1")
+        # make sure the Attribute is in the handler cache
+        cached = self.obj1.attributes.get(key, return_obj=True)
+        # delete it "from elsewhere" - Django sets .pk to None on the instance
+        cached.delete()
+        self.assertIsNone(cached.pk)
+
+        # writing again must re-query rather than reuse the stale cached object
+        self.obj1.attributes.add(key, "value2")
+        self.assertEqual(self.obj1.attributes.get(key), "value2")
+
     def test_value_vs_strvalue(self):
         self.obj1.attributes.add("test", "one")
         self.assertEqual(self.obj1.attributes.get("test"), "one")
