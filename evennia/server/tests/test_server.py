@@ -4,6 +4,7 @@ Test the main server component
 """
 
 from unittest import TestCase
+from time import time
 
 from django.test import override_settings
 from mock import DEFAULT, MagicMock, call, patch
@@ -239,3 +240,47 @@ class TestInitHooks(TestCase):
 
             for hook in (reload, cold):
                 hook.assert_called()
+
+
+class TestLimiter(TestCase):
+    def setUp(self):
+        from evennia.server.rate import Limiter
+
+        self.limiter = Limiter(limit=5, burst=10)
+
+    def test_init(self):
+        self.assertEqual(self.limiter.limit, 5)
+        self.assertEqual(self.limiter.burst, 10)
+        self.assertEqual(self.limiter.tokens, 10.0)
+        self.assertIsNone(self.limiter.last)
+        self.assertIsNone(self.limiter.last_event)
+
+    def test_advance(self):
+        current_time = time()
+        new_time, new_tokens = self.limiter.advance(current_time + 1)
+        self.assertAlmostEqual(new_time, current_time + 1, places=2)
+        self.assertAlmostEqual(new_tokens, 10.0, places=2)  # Burst limit
+
+    def test_allow(self):
+        self.assertTrue(self.limiter.allow())
+
+    def test_allowN(self):
+        current_time = time()
+        self.assertTrue(self.limiter.allowN(current_time, 5))
+        self.assertFalse(self.limiter.allowN(current_time, 11))
+
+    def test_ok(self):
+        from evennia.server.rate import RateLimitException
+
+        for run in range(10):
+            self.assertTrue(self.limiter.ok())
+        with self.assertRaises(RateLimitException):
+            self.limiter.ok()
+
+    def test_mark_last(self):
+        self.limiter.mark_last()
+        self.assertIsNotNone(self.limiter.last)
+
+    def test_tokens_from_duration(self):
+        self.assertEqual(self.limiter.tokens_from_duration(2), 10)
+        self.assertEqual(self.limiter.tokens_from_duration(0), 0)
