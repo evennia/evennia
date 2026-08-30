@@ -47,6 +47,27 @@ class TestAttributes(BaseEvenniaTest):
         self.assertEqual(self.obj1.db.testattr, value)
         self.assertEqual(self.obj1.attributes.get("testattr"), value)
 
+    def test_attrhandler_evicts_attribute_deleted_from_elsewhere(self):
+        """An Attribute deleted elsewhere must not be served from the cache."""
+        key = "staleattr"
+        self.obj1.attributes.add(key, "value1")
+
+        backend = self.obj1.attributes.backend
+        cachekey = f"{key}-None"
+        attr = backend._cache[cachekey]
+
+        # delete the Attribute row 'from elsewhere'; the cached object survives
+        # with pk set to None.
+        attr.delete()
+        self.assertIsNone(attr.pk)
+
+        # the stale, pk-less object must not be returned ...
+        self.assertIsNone(self.obj1.attributes.get(key))
+        # ... nor reused for the next write (which would raise
+        # "Cannot force an update in save() with no primary key.")
+        self.obj1.attributes.add(key, "value2")
+        self.assertEqual(self.obj1.attributes.get(key), "value2")
+
     @override_settings(TYPECLASS_AGGRESSIVE_CACHE=False)
     @patch("evennia.typeclasses.attributes._TYPECLASS_AGGRESSIVE_CACHE", False)
     def test_attrhandler_nocache(self):
