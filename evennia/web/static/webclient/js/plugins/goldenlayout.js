@@ -669,12 +669,12 @@ let goldenlayout = (function () {
         let atBottom = false;
         let updateMethod = textDiv.attr("updateMethod");
 
+        var cls = (kwargs === undefined) || (kwargs['cls'] === undefined) ? 'out' : kwargs['cls'];
         if ( updateMethod === "replace" ) {
-            textDiv.html(message);
+            textDiv.html("<div class='" + cls + "'>" + message + "</div>");
         } else if ( updateMethod === "append" ) {
-            textDiv.append(message);
+            textDiv.append("<div class='" + cls + "'>" + message + "</div>");
         } else {  // line feed
-            var cls = (kwargs === undefined) || (kwargs['cls'] === undefined) ? 'out' : kwargs['cls'];
             textDiv.append("<div class='" + cls + "'>" + message + "</div>");
         }
 
