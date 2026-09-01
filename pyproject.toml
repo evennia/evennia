@@ -68,7 +68,7 @@ dependencies = [
   "django >= 6.0.2, < 6.1",
   "twisted >= 24.11.0, < 25",
   "pytz >= 2022.6",
-  "djangorestframework >= 3.16, < 3.17",
+  "djangorestframework>=3.16,<3.18",
   "pyyaml >= 6.0",
   "django-filter == 25.2",
   "django-sekizai == 2.0.0",
