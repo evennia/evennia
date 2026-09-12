@@ -1,0 +1,132 @@
+{% load static aetos_tags %}<!DOCTYPE HTML>
+{% comment %}
+Aetos base template.
+
+Aetos deliberately does NOT extend Evennia's `webclient/base.html`. That template
+loads eight third-party resources -- jQuery, Bootstrap, Popper, Favico and
+GoldenLayout -- for the benefit of the stock GUI. Aetos is vanilla JavaScript and
+uses none of them, and loading them anyway would mean:
+
+  * the client breaks on an offline or firewalled network
+  * every player's browser contacts five third parties to play a MUD
+  * one of the URLs is unpinned (`golden-layout.com/files/latest/`), so an
+    upstream change could break every Aetos install without warning
+  * one host (cdn.rawgit.com) is a deprecated service
+
+Blueprint section 2.2 sets a core-only dependency target. This page therefore
+loads nothing but Evennia's own static files and Aetos's own.
+
+What this template does replicate is the transport bootstrap: the four template
+variables `evennia.js` expects, and the script tag that loads it. That file is
+Evennia's own, served unmodified from Evennia's own static directory -- Aetos
+neither copies nor patches it, and Evennia's Portal is untouched. The variables
+come from Evennia's documented webclient view and context processor
+(`game_name`, `websocket_enabled`, `websocket_port`, `websocket_url`,
+`browser_sessid`).
+{% endcomment %}
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    {% comment %}
+    Content-Security-Policy, declared in the document rather than sent as a
+    header, and first in the head because a meta policy governs only what the
+    parser has not yet reached.
+
+    A contrib cannot set a response header without owning the view or installing
+    middleware, and middleware would apply this to the game's entire website --
+    front page, admin, wiki -- which is not a decision a webclient makes on a
+    game's behalf. A meta policy applies to exactly this page.
+
+    What that costs, stated rather than glossed: `frame-ancestors`, `report-uri`
+    and `sandbox` are ignored in a meta policy. Clickjacking protection needs a
+    real header, and README.md says so.
+
+    A game extends it with AETOS_CSP, or sets AETOS_CSP = False to declare none.
+    {% endcomment %}
+    {% aetos_csp as aetos_policy %}{% if aetos_policy %}<meta http-equiv="Content-Security-Policy" content="{{ aetos_policy }}" />
+    {% endif %}
+    <title>{{ game_name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content="Aetos Web Client" />
+    <meta name="color-scheme" content="dark light" />
+
+    {% comment %}
+    Referrer policy.
+
+    Media a game declares may be hosted anywhere, and the browser fetches it
+    directly -- so a third-party host learns the player's IP address, which is
+    inherent to showing remote media and not something a client should silently
+    prevent. What it need not learn is the URL of the page they were on.
+
+    A small improvement, stated as one: this matches what modern browsers
+    already default to, and pins it for those that defaulted to sending the full
+    URL. `no-referrer` would be stricter and is not used, because media hosts
+    commonly refuse requests with no referrer and the failure would look to a
+    game like "Aetos does not show my images".
+    {% endcomment %}
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    {% comment %}
+    This page must not be cached.
+
+    It embeds `browser_sessid` as the websocket's `csessid`, so a cached copy
+    hands the transport a session that no longer exists -- presenting as a client
+    that connects and then does nothing. Caching also pins the asset URLs, so an
+    upgraded Aetos keeps being ignored until the visitor clears their cache,
+    which they have no reason to suspect.
+
+    The stock webclient view sets no cache headers, and a contrib cannot add
+    response headers without owning the view, so this is declared in the document.
+    {% endcomment %}
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    {% comment %}
+    Inline favicon. Without one the browser requests /favicon.ico on every load,
+    which Evennia redirects to a media path that does not exist in a fresh game,
+    producing a 404 in every player's console. A data URI costs no request.
+    {% endcomment %}
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>&#9679;</text></svg>" />
+
+    {% block styles %}{% endblock %}
+
+    {% comment %}
+    Transport parameters for `evennia.js`, as data rather than as code.
+
+    These were an inline `<script>` until M26. It was the only inline script in
+    the whole client, and one inline script is all it takes to force a game into
+    `script-src 'unsafe-inline'` -- which is the same as having no script policy
+    at all. Carried as `<meta>` and read by `transport_bootstrap.js`, the client
+    runs under a strict policy. See `csp.py`.
+
+    Names and semantics still match Evennia's stock webclient base template
+    exactly; only the delivery changed.
+    {% endcomment %}
+    <meta name="aetos-websocket-active" content="{% if websocket_enabled %}true{% else %}false{% endif %}" />
+    <meta name="aetos-browser-sessid" content="{{ browser_sessid|default_if_none:"" }}" />
+    <meta name="aetos-websocket-url" content="{{ websocket_url|default_if_none:"" }}" />
+    <meta name="aetos-websocket-port" content="{{ websocket_port }}" />
+
+    <script defer src={% aetos_static "aetos/js/transport_bootstrap.js" %} type="text/javascript" charset="utf-8"></script>
+
+    <!-- Minimal shim for the single jQuery call at the end of evennia.js.
+         Must load before it. See compat.js for the reasoning. -->
+    <script defer src={% aetos_static "aetos/js/compat.js" %} type="text/javascript" charset="utf-8"></script>
+
+    <!-- Evennia's own transport library, unmodified, from Evennia's static files. -->
+    <script defer src={% static "webclient/js/evennia.js" %} type="text/javascript" charset="utf-8"></script>
+
+    {% block scripts %}{% endblock %}
+  </head>
+  <body>
+    <noscript>
+      <p class="aetos-noscript">
+        The Aetos web client requires JavaScript. Enable it, or connect with a
+        telnet MUD client instead.
+      </p>
+    </noscript>
+
+    {% block client %}{% endblock %}
+  </body>
+</html>

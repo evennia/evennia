@@ -1,0 +1,2206 @@
+/*
+ * Aetos Web Client -- shell styles.
+ *
+ * Theme values are declared as custom properties so that the theme engine
+ * (blueprint section 44) can later swap palettes without touching widget CSS.
+ * Nothing here assumes a genre.
+ */
+
+:root {
+    --aetos-bg: #14171c;
+    --aetos-panel: #1b1f26;
+    /* 3.38:1 against the background, 3.11:1 against a panel.
+       Raised from #2b313b, which was 1.37:1 -- and since a panel differs from
+       the page by only 1.09:1, the border is the *only* thing separating one
+       region from another. At that ratio there were effectively no panel edges
+       for anyone with reduced contrast sensitivity. WCAG 1.4.11 requires 3:1
+       for a boundary carrying that much; found by the A11Y-VIS-003 validator
+       turned on its own shipped themes at M19, having been wrong since M4. */
+    --aetos-border: #616c7d;
+    --aetos-text: #d7dce3;
+    --aetos-text-muted: #8d97a5;
+    --aetos-accent: #5aa9e6;
+    /* Declared rather than left to the `var(--aetos-focus, --aetos-accent)`
+       fallback, so the contrast validator can see it. A token the validator
+       cannot find is a token nobody checks. 7.06:1 against the background. */
+    --aetos-focus: #5aa9e6;
+    --aetos-success: #4caf72;
+    --aetos-warning: #d8a13a;
+    --aetos-danger: #d2564b;
+    --aetos-font-mono: "Cascadia Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+
+    /*
+     * Two faces, and the split between them is a decision rather than a style.
+     * A12.
+     *
+     * Until A12 there was one family on all 86 text-bearing elements in the
+     * client -- game output, button labels, and 242 words of explanatory prose
+     * in the accessibility panel, all monospaced. Measured, not assumed.
+     *
+     * The research does not agree with itself, which is why this is a token and
+     * not a replacement. Vision Australia and APA Style both say avoid
+     * monospace for long passages; Rello and Baeza-Yates, measuring dyslexic
+     * readers directly, found monospace *significantly improved* reading
+     * performance. Those are two populations wanting opposite things, so any
+     * single answer is wrong for somebody.
+     *
+     * So: proportional for prose the client writes, monospace wherever
+     * character alignment carries meaning -- game output, the map, tables,
+     * anything the server aligned by counting characters. And `visual.typeface`
+     * lets a player put prose back into monospace, which is the only honest
+     * response to evidence that splits.
+     *
+     * A system stack, because the contrib ships no font files and loads nothing
+     * from a CDN. `system-ui` first so it matches whatever the player's OS
+     * already renders text in.
+     */
+    --aetos-font-ui: system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+
+    /*
+     * Body copy leading.  WCAG 1.4.8 asks for at least 1.5 inside a paragraph.
+     *
+     * The console was `line-height: normal` -- about 1.2 -- through every
+     * milestone of accessibility work, because nothing we measured had an
+     * opinion about it. It is among the cheapest changes here and among the
+     * largest for low vision and dyslexia.
+     */
+    --aetos-line-height: 1.5;
+
+    /*
+     * The reading line.  WCAG 1.4.8 asks for no more than 80 characters.
+     *
+     * There *was* a cap -- `max-width: 120ch` -- but only under
+     * `data-aetos-size="wide"`, and measurement found that a 1920x1080 monitor
+     * does not qualify: at 16px text `effectiveWidth` is 1680, which is inside
+     * the 1800 boundary for `desktop`. So on the commonest large screen there
+     * is no cap at all, and the console measured **127 characters** a line.
+     *
+     * Worse, raising the type floor above would have pushed `wide` further out
+     * of reach and made it rarer still. A breakpoint was the wrong mechanism:
+     * the question "is this line too long to track back from" is about
+     * characters, so the answer is in `ch` and applies at every size. Below
+     * 80ch a viewport is narrower than the cap and it simply does nothing.
+     *
+     * 80 is also the width most game text is already wrapped to server-side,
+     * so this cuts almost nothing off in practice.
+     */
+    --aetos-measure: 80ch;
+
+    --aetos-radius: 4px;
+
+    /*
+     * Fluid tokens.
+     *
+     * Spacing and type scale with the viewport rather than stepping at a
+     * breakpoint, so the client looks deliberate at every size instead of
+     * only at the sizes someone remembered to test.
+     *
+     * `clamp` bounds both ends: text never shrinks below readable, and never
+     * grows into something cartoonish on a large monitor.
+     */
+    --aetos-space: clamp(6px, 0.6vw, 12px);
+    /* Floor raised from 13px at A12. Low-vision guidance treats running text
+       below about 9pt as a barrier, and 13px UI prose is close enough to it
+       that the first thing anybody did was reach for browser zoom -- which is
+       the thing `visual.scale` exists to make unnecessary. */
+    --aetos-font-size: clamp(15px, 0.85vw, 17px);
+
+    /* Side columns are a proportion of the width, bounded so they stay useful
+       on a small screen and do not sprawl on a large one. */
+    --aetos-column: clamp(200px, 20vw, 340px);
+
+    /*
+     * The smallest a target may be.  WCAG 2.5.8, and A12.
+     *
+     * This was `0px`, raised to 44px only under `pointer: coarse` -- so a mouse
+     * user had **no floor at all**, and twelve controls measured under 24x24.
+     * They passed 2.5.8 even so, but on the *spacing* exception: they are far
+     * apart rather than big. A 20px checkbox is still 20px to somebody with a
+     * tremor, and passing on a technicality is not the same as being hittable.
+     *
+     * 24px is the criterion. 44px stays for coarse pointers below, where it is
+     * the smallest most people can hit reliably (section 49).
+     */
+    --aetos-target: 24px;
+}
+
+/*
+ * The client fills the window, and the window is dark all the way out.
+ *
+ * `html` needs the background too. Setting it only on `body` leaves any area the
+ * body does not cover painted the browser's default white, which shows as a
+ * bright L-shape around the client -- glaring against a dark UI, and the first
+ * thing anyone notices.
+ *
+ * The root is fixed to the viewport rather than sized at 100vh. On mobile
+ * browsers 100vh is the *largest* viewport height, so a page sized that way is
+ * taller than the visible area while the address bar is showing, pushing the
+ * command input off-screen. `inset: 0` tracks the actual viewport instead.
+ */
+html {
+    height: 100%;
+    background: var(--aetos-bg);
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--aetos-bg);
+    color: var(--aetos-text);
+}
+
+.aetos-root {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--aetos-bg);
+    color: var(--aetos-text);
+    /*
+     * The shell is prose, so the shell is proportional.  A12.
+     *
+     * Game output is not, and takes the monospace face back explicitly wherever
+     * the server aligned something by counting characters -- the console, the
+     * map, tables, the history. See `--aetos-font-ui` for why this is a split
+     * rather than a replacement, and why `visual.typeface` can undo it.
+     */
+    font-family: var(--aetos-font-ui);
+    font-size: var(--aetos-font-size);
+    line-height: var(--aetos-line-height);
+}
+
+/*
+ * Put prose back into monospace on request.
+ *
+ * Set by `visual.typeface`. It exists because the evidence genuinely splits:
+ * monospace measured *better* for dyslexic readers in Rello and Baeza-Yates
+ * while the low-vision guidance says the opposite, and a client that picks one
+ * and calls it accessibility has just chosen which of its players to be wrong
+ * about.
+ */
+.aetos-root[data-aetos-typeface="monospace"] {
+    font-family: var(--aetos-font-mono);
+}
+
+/* Status bar ---------------------------------------------------------- */
+
+/*
+ * The status bar wraps.  A8, WCAG 1.4.10 and 2.4.11.
+ *
+ * It did not, and at 320px its contents -- the connection indicator, the game
+ * name, Edit Layout, Help and the Accessibility toggle -- were 589px wide in a
+ * 320px viewport. `body` has `overflow-x: hidden`, so they were not merely
+ * off-screen: there was no scrollbar and `window.scrollTo` refused to move.
+ * They were unreachable by pointer or touch entirely, and focusing one by
+ * keyboard put focus on something nobody could see.
+ *
+ * M20's responsive work has phone rules for the workspace and the widgets and
+ * none for the header, which is how a whole row of controls stayed off the end
+ * of a phone screen through four milestones of accessibility work.
+ *
+ * `wrap` unconditionally rather than inside a media query: it changes nothing
+ * when the row fits, and a breakpoint would only be another number to be wrong
+ * about at some width nobody tested.
+ */
+.aetos-statusbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aetos-space);
+    padding: calc(var(--aetos-space) * 0.75) calc(var(--aetos-space) * 1.5);
+    /* No surface of its own. A hairline is enough to end the row, and a second
+       raised slab above the console made the client read as stacked boxes. */
+    border-bottom: 1px solid var(--aetos-border);
+}
+
+/* Now an <h1> (M24), so the browser's heading defaults have to be undone --
+   the status bar is one line and a 2em bold heading would dominate it. The
+   element is a heading for structure, not for emphasis. */
+.aetos-statusbar__title {
+    margin: 0 0 0 auto;
+    font-size: inherit;
+    font-weight: normal;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-connection {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.aetos-connection__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--aetos-text-muted);
+}
+
+/*
+ * Connection state is always carried by the adjacent text label as well as the
+ * dot colour. Colour is never the only channel (blueprint section 45).
+ */
+.aetos-connection--open .aetos-connection__dot {
+    background: var(--aetos-success);
+}
+
+.aetos-connection--pending .aetos-connection__dot {
+    background: var(--aetos-warning);
+}
+
+.aetos-connection--closed .aetos-connection__dot {
+    background: var(--aetos-danger);
+}
+
+/* Workspace ----------------------------------------------------------- */
+
+/*
+ * The workspace is a grid, not a flex row.
+ *
+ * As a single flex row a "bottom" region sat beside `main` and competed with it
+ * for width, squeezing the console -- the primary reading surface -- into a
+ * narrow column. A grid lets `bottom` span the full width underneath, which is
+ * what "bottom" means.
+ *
+ * `main` takes 1fr so the console gets whatever the side columns do not, and the
+ * side columns collapse to nothing when their region is empty.
+ */
+.aetos-workspace {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "sidebar main aside"
+        "bottom  bottom bottom";
+    gap: var(--aetos-space);
+    min-height: 0;
+    padding: var(--aetos-space);
+}
+
+.aetos-region--sidebar { grid-area: sidebar; }
+.aetos-region--main { grid-area: main; }
+.aetos-region--aside { grid-area: aside; }
+.aetos-region--bottom { grid-area: bottom; }
+
+/*
+ * THE ONE FRAME.
+ *
+ * Gary: *"our ui needs to be slick, clean and beautiful to look at"*.
+ *
+ * Every widget used to be a bordered, filled card, including the console -- so
+ * the transcript, which is what a MUD client is *for*, had exactly the same
+ * visual weight as the sound widget. Boxes inside boxes inside a bordered
+ * status bar is why it read as a debug dashboard.
+ *
+ * Now the console slab is the only framed object on the page. Side panels are
+ * set directly on the background and separated from each other by a hairline;
+ * the status bar is a row with a rule under it. Hierarchy is carried by the
+ * frame rather than by borders on everything equally.
+ *
+ * This is a decision about *decoration*, and it is reversed wherever the boxes
+ * are doing real work -- see the high-contrast rules further down, where the
+ * surface and the border come back. Somebody who needs edges to find the edges
+ * gets edges.
+ */
+.aetos-widget {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.aetos-widget--console {
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-border);
+    border-radius: 6px;
+    /* The frame must clip, or the composer's corners square off the bottom of
+       the slab and the whole point of it being one object is lost. */
+    overflow: hidden;
+}
+
+/* Panels are unframed and separated by a rule, not by a box each. The rule goes
+   on the second and later panels so a column does not open with a stray line. */
+.aetos-region > .aetos-widget--panel + .aetos-widget--panel {
+    border-top: 1px solid var(--aetos-border);
+    padding-top: calc(var(--aetos-space) * 1.5);
+}
+
+/*
+ * The console and the composer share one frame, and it is the only frame on the
+ * page. Everything else -- the side panels, the status bar, the hotbar -- is
+ * unframed, because the transcript is what the client is *for* and the rest is
+ * instrumentation. Boxing all of it equally is what made this read as a
+ * dashboard of widgets rather than as something you read.
+ */
+.aetos-console {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--aetos-space) calc(var(--aetos-space) * 1.5);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: var(--aetos-line-height);
+    /*
+     * Monospace, unconditionally and regardless of `visual.typeface`.
+     *
+     * This is the one place the face is not a preference. Game text arrives
+     * pre-aligned by the server -- ASCII maps, score tables, box drawing, the
+     * `====` rules in Evennia's own connection screen -- and all of it is laid
+     * out by counting characters. A proportional face does not make that
+     * prettier, it makes it wrong.
+     */
+    font-family: var(--aetos-font-mono);
+}
+
+.aetos-console:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: -2px;
+}
+
+.aetos-console__line {
+    padding: 1px 0;
+}
+
+/* Composer ------------------------------------------------------------
+ *
+ * The bottom edge of the console slab, not a bar under the client. It carries
+ * no background of its own: the hairline above it is the whole separation, so
+ * the transcript and the reply to it look like one surface.
+ */
+
+.aetos-composer {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--aetos-space) * 0.75);
+    padding: calc(var(--aetos-space) * 0.75) calc(var(--aetos-space) * 1.5);
+    border-top: 1px solid var(--aetos-border);
+}
+
+/* The prompt. One glyph, in the accent, marking where you type -- the oldest
+   convention this subject has. Hidden from assistive technology, which has the
+   field's label instead. */
+.aetos-composer__prompt {
+    flex: 0 0 auto;
+    color: var(--aetos-accent);
+    font-size: 1.1em;
+    line-height: 1;
+    user-select: none;
+}
+
+.aetos-input {
+    flex: 1 1 auto;
+    resize: none;
+    padding: 6px 8px;
+    background: var(--aetos-bg);
+    color: var(--aetos-text);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    /*
+     * Monospace, like the transcript it feeds.  A12.
+     *
+     * What you type appears in the console a moment later, and typing it in a
+     * different face makes the echo look like somebody else said it. It is also
+     * the field where character alignment matters most to the person using it:
+     * counting arguments, matching quotes, spotting the space in `get all from
+     * chest`.
+     */
+    font-family: var(--aetos-font-mono);
+    font-size: inherit;
+    line-height: var(--aetos-line-height);
+}
+
+/*
+ * SCROLLBARS.
+ *
+ * There are fewer of them now, and the ones that remain were drawn in the
+ * browser's default light grey -- three bright vertical bars down a dark client,
+ * which is a large part of why Gary's screenshot read as a maze even where the
+ * scrolling was legitimate.
+ *
+ * Thin, in the client's own palette, and stated twice: `scrollbar-width` and
+ * `scrollbar-color` are the standard properties (Firefox 64, Chrome 121), and
+ * the `::-webkit-scrollbar` block covers the older Chrome and Safari inside the
+ * declared support floor. Neither raises that floor -- a browser that
+ * understands neither gets its own scrollbars, which is exactly today's
+ * behaviour.
+ */
+/* `scrollbar-color` inherits; `scrollbar-width` does not, so the descendant
+   selector is not redundant. */
+.aetos-root,
+.aetos-root * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--aetos-border) transparent;
+}
+
+.aetos-root ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.aetos-root ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.aetos-root ::-webkit-scrollbar-thumb {
+    background: var(--aetos-border);
+    border: 3px solid transparent;
+    border-radius: 6px;
+    /* Painted inside the border box, which is what leaves the 3px gap either
+       side rather than a bar hard against the content. */
+    background-clip: content-box;
+}
+
+.aetos-root ::-webkit-scrollbar-thumb:hover {
+    background: var(--aetos-text-muted);
+    background-clip: content-box;
+}
+
+/*
+ * A scrollbar is how somebody knows there is more, so it must stay findable when
+ * more contrast has been asked for. Thin and low-contrast is a decoration
+ * choice, and this is where it is given back.
+ */
+@media (prefers-contrast: more) {
+    .aetos-root,
+    .aetos-root * {
+        scrollbar-width: auto;
+        scrollbar-color: var(--aetos-text-muted) var(--aetos-panel);
+    }
+
+    .aetos-root ::-webkit-scrollbar-thumb {
+        background: var(--aetos-text-muted);
+        border: none;
+        background-clip: border-box;
+    }
+}
+
+:root[data-aetos-contrast="high"] .aetos-root,
+:root[data-aetos-contrast="high"] .aetos-root * {
+    scrollbar-width: auto;
+    scrollbar-color: var(--aetos-text-muted) var(--aetos-panel);
+}
+
+/* Inside the composer the field is the surface rather than a control on one.
+   Elsewhere -- dialogs, the map search, history filters -- `.aetos-input` keeps
+   its border, because there it genuinely is one control among several. */
+.aetos-composer .aetos-input {
+    background: transparent;
+    border-color: transparent;
+    padding-left: 0;
+}
+
+/*
+ * A field with no edges is a field somebody has to already know is there. Asked
+ * for more contrast, the composer's box comes back -- the same trade the panels
+ * make above, for the same reason.
+ */
+@media (prefers-contrast: more) {
+    .aetos-composer .aetos-input {
+        background: var(--aetos-bg);
+        border-color: var(--aetos-border);
+        padding-left: 8px;
+    }
+}
+
+:root[data-aetos-contrast="high"] .aetos-composer .aetos-input {
+    background: var(--aetos-bg);
+    border-color: var(--aetos-border);
+    padding-left: 8px;
+}
+
+.aetos-input:focus-visible,
+.aetos-send:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 1px;
+}
+
+.aetos-send {
+    padding: 6px 16px;
+    background: var(--aetos-accent);
+    color: #0d1117;
+    border: none;
+    border-radius: var(--aetos-radius);
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Utilities ----------------------------------------------------------- */
+
+.aetos-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/*
+ * Reduced motion lives in accessibility.css, not here.
+ *
+ * M4 put a blanket reduced-motion media query in this file, matching every
+ * element. A0 later added a version that honours an explicit player choice in
+ * both directions -- because somebody may want motion their operating system is
+ * suppressing, and overriding them "for their own good" is the same paternalism
+ * pointed the other way.
+ *
+ * The two disagreed, and this one won wherever the other did not match: a
+ * player who deliberately chose full motion still had it removed. Deleted at
+ * M29 rather than duplicated. The rule that reads the preference is the only
+ * one that should exist.
+ */
+
+/* Sidebar and surroundings widgets ------------------------------------ */
+
+
+
+.aetos-widget--panel {
+    flex: 0 0 auto;
+    padding: var(--aetos-space);
+}
+
+/*
+ * A panel title is the client speaking, not the game. Small caps, wide tracking
+ * and the muted colour keep it legible as a label while leaving the loud end of
+ * the page to the transcript -- which is the only thing here the player did not
+ * ask to see twice.
+ */
+.aetos-widget__title {
+    margin: 0 0 8px 0;
+    /* `em`, not `px`: the text-size setting scales `.aetos-root`, and a panel
+       title in `px` stays small while everything it labels grows. */
+    font-size: 0.85em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-room__name {
+    margin: 0 0 4px 0;
+    font-weight: 600;
+    color: var(--aetos-accent);
+}
+
+.aetos-room__description {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--aetos-text);
+}
+
+.aetos-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.aetos-list__button {
+    padding: 3px 8px;
+    background: var(--aetos-bg);
+    color: var(--aetos-text);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+.aetos-list__button:hover:not(:disabled) {
+    border-color: var(--aetos-accent);
+    color: var(--aetos-accent);
+}
+
+.aetos-list__button:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 1px;
+}
+
+.aetos-list__button:disabled {
+    cursor: default;
+    color: var(--aetos-text-muted);
+}
+
+/* ======================================================================
+ * Responsive layout
+ *
+ * Driven by `data-aetos-size` on the root, which responsive.js sets from a
+ * ResizeObserver on the client element itself. Keying off the element rather
+ * than a media query means the layout is also correct when something outside
+ * the page takes width -- a browser side panel, a devtools dock, an embedding
+ * frame -- which a `@media` rule cannot see.
+ * ====================================================================== */
+
+/* --- Phone: one column -------------------------------------------------
+ *
+ * The side regions STACK rather than being hidden. Hiding them would remove
+ * the only non-visual route to exits and room contents, which is precisely
+ * what a screen-reader user on a phone depends on (sections 46, 53).
+ *
+ * Each region is capped and scrolls, so the console -- the thing a player is
+ * actually reading -- always keeps the majority of the screen.
+ */
+.aetos-root[data-aetos-size="phone"] .aetos-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    /*
+     * `main` is given a floor of 45vh and takes the remaining space.
+     *
+     * Without the floor, several stacked side panels squeeze the console down
+     * to a few lines -- and the console is the thing the player is actually
+     * reading. On a phone the surroundings are a reference you glance at; the
+     * game text is the game.
+     */
+    grid-template-rows: auto minmax(45vh, 1fr) auto auto;
+    grid-template-areas:
+        "sidebar"
+        "main"
+        "aside"
+        "bottom";
+    /*
+     * When the stack genuinely does not fit -- a short window, or large text, or
+     * both -- the workspace scrolls as one. The alternative is what it did
+     * before: shrink every region until each of them needs a scrollbar of its
+     * own, none of which shows you where you are.
+     *
+     * WCAG 1.4.10 asks that content reflow without scrolling in *two*
+     * directions. One vertical scrollbar on the page is the reflow working;
+     * three nested ones are the failure it is about.
+     */
+    overflow-y: auto;
+}
+
+.aetos-root[data-aetos-size="phone"] .aetos-region--sidebar,
+.aetos-root[data-aetos-size="phone"] .aetos-region--aside {
+    width: auto;
+    /*
+     * Each strip is capped and scrolls internally, so adding a widget never
+     * steals height from the console.
+     *
+     * The floor is in `em` because `vh` does not know the text got bigger: at
+     * 250% type an 18vh strip is shorter than one line, so every panel in it was
+     * clipped through the middle of its own letters. Whole ems, so what is shown
+     * is whole lines -- a strip that shows one line looks deliberate, and one
+     * that shows one and a half looks broken.
+     *
+     * The `min-height` is the half that matters. A strip scrolls its own
+     * contents, and an element that scrolls has a min-content height of zero, so
+     * a grid short of space squeezed these to whatever was left -- 52px, and a
+     * row of panels cut through the middle of their first line. With a floor
+     * they hold their size and the workspace scrolls instead (below), which is
+     * one honest scrollbar rather than three lying ones.
+     */
+    max-height: max(18vh, 4em);
+    min-height: 4em;
+}
+
+/* Compact panels when stacked: a phone cannot afford a title line plus
+   generous padding on every widget. */
+.aetos-root[data-aetos-size="phone"] .aetos-widget--panel {
+    padding: 4px 6px;
+}
+
+.aetos-root[data-aetos-size="phone"] .aetos-widget__title {
+    margin-bottom: 2px;
+    font-size: 0.78em;
+}
+
+/*
+ * On a phone the side strips scroll HORIZONTALLY, one panel per swipe.
+ *
+ * Stacking them vertically inside a short strip buries the later widgets: the
+ * map ended up below the fold of an 18vh box, reachable only by noticing that
+ * the box scrolled. A horizontal strip keeps every widget one familiar gesture
+ * away, and is what section 53 means by swipeable panels.
+ *
+ * This matters beyond convenience. On a phone these panels are the only
+ * non-visual route to exits and room contents, so a widget that is hard to
+ * reach is a widget a screen-reader user effectively loses.
+ */
+.aetos-root[data-aetos-size="phone"] .aetos-region--sidebar,
+.aetos-root[data-aetos-size="phone"] .aetos-region--aside {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    /* Snap so a swipe lands on a panel rather than between two. */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.aetos-root[data-aetos-size="phone"] .aetos-widget--panel {
+    /* At 250% text a 260px card is eight characters wide. The `em` floor keeps a
+       card wide enough to read a label in, whatever size the text is. */
+    flex: 0 0 min(78%, max(260px, 13em));
+    scroll-snap-align: start;
+    overflow-y: auto;
+}
+
+/* --- Tablet: two columns ------------------------------------------------
+ *
+ * The aside folds into the sidebar rather than being dropped, so no widget
+ * disappears just because the screen got narrower.
+ */
+.aetos-root[data-aetos-size="tablet"] .aetos-workspace {
+    grid-template-columns: var(--aetos-column) minmax(0, 1fr);
+    grid-template-areas:
+        "sidebar main"
+        "aside   main"
+        "bottom  bottom";
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.aetos-root[data-aetos-size="tablet"] .aetos-region--aside {
+    width: var(--aetos-column);
+}
+
+/* --- Keep the reading line sane, at every size --------------------------
+ *
+ * A12: this was `[data-aetos-size="wide"]` only, and measurement found that a
+ * 1920x1080 monitor is `desktop`, not `wide` -- so the cap never fired on the
+ * commonest large screen and the console ran to 127 characters. Unconditional
+ * and in `ch`, so it is the *line* that is bounded rather than the window.
+ *
+ * The composer is capped with it so the input stays aligned under the
+ * transcript rather than running the full width beneath a narrower column.
+ */
+/*
+ * A17: the cap moved from the contents to the FRAME.
+ *
+ * Capping `.aetos-console` and `.aetos-composer` bounded the reading line
+ * correctly and looked wrong doing it: the frame is `.aetos-widget--console`,
+ * so the border went on spanning the whole window while the text sat in an
+ * 80-character column in the middle of it. At 175% text that is a narrow ribbon
+ * of words floating in a very large empty box, with the Send button stranded
+ * far from the right-hand edge it appears to belong to.
+ *
+ * Capping the frame instead means the box hugs the column it contains, which is
+ * what UI1 meant by the console being the one framed object on the page. The
+ * line length is bounded by the same token either way -- slightly under 80
+ * characters now, because the frame's padding is inside the cap, and 80 is a
+ * maximum rather than a target.
+ */
+.aetos-widget--console {
+    max-width: var(--aetos-measure);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+/* --- Short viewports ----------------------------------------------------
+ *
+ * A phone in landscape, or a short window. Vertical space is the scarce
+ * resource, so the stacked regions shrink and the hotbar tightens.
+ */
+.aetos-root[data-aetos-short="true"] .aetos-region--sidebar,
+.aetos-root[data-aetos-short="true"] .aetos-region--aside {
+    /* `vh` alone does not know the text got bigger. At 200% scale a 22vh column
+       became a two-line peephole with a scrollbar in it. The `em` floor grows
+       with the type; the `min()` stops it growing past a third of a short
+       window, which would take the space back off the console. */
+    max-height: min(max(22vh, 8em), 34vh);
+}
+
+.aetos-root[data-aetos-short="true"] .aetos-widget__title {
+    margin-bottom: 2px;
+}
+
+/* --- The target floor, on every pointer ---------------------------------
+ *
+ * A12. These rules used to live only inside the `pointer: coarse` block below,
+ * which is how the token spent its whole life as a no-op on a mouse.
+ */
+.aetos-list__button,
+.aetos-hotbar__button,
+.aetos-menu__item,
+.aetos-send,
+.aetos-statusbar__button,
+.aetos-input {
+    min-height: var(--aetos-target);
+}
+
+/* --- Touch input --------------------------------------------------------
+ *
+ * Not "small screen": a touchscreen laptop needs large targets at desktop
+ * width, and a phone driven by a mouse does not. `pointer: coarse` asks the
+ * right question.
+ *
+ * 44px is the smallest target most people can hit reliably (section 49).
+ */
+@media (pointer: coarse) {
+    :root {
+        --aetos-target: 44px;
+    }
+
+    .aetos-list__button,
+    .aetos-hotbar__button,
+    .aetos-menu__item,
+    .aetos-send,
+    .aetos-statusbar__button {
+        min-height: var(--aetos-target);
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .aetos-input {
+        min-height: var(--aetos-target);
+        /* 16px prevents iOS zooming the page when the field is focused, which
+           would leave the player zoomed in with no obvious way back. */
+        font-size: max(16px, var(--aetos-font-size));
+    }
+}
+
+/* --- Respect an explicit request for less motion or more contrast -------- */
+@media (prefers-contrast: more) {
+    :root {
+        --aetos-border: #6d7684;
+        --aetos-text-muted: #b7c0cc;
+    }
+}
+
+/*
+ * The unframed panels are a decoration decision, and it is the wrong one for
+ * anybody who needs an edge to tell where one thing stops and the next starts.
+ * Asked for more contrast -- by the operating system, or by the client's own
+ * high-contrast setting -- every panel gets its surface and its border back.
+ *
+ * Not merely "also fine": for these two audiences the boxed layout is the better
+ * one, and this is the rule that says so rather than leaving them with a
+ * prettier client they cannot parse.
+ */
+@media (prefers-contrast: more) {
+    /*
+     * Panels only. The status bar is deliberately not here: M20 found a whole
+     * row of controls off the end of a phone screen because its layout was
+     * conditional on a media query, and `test_reflow` now guards against any
+     * rule for it inside one. It does not need the surface anyway -- it is a
+     * single row with a rule under it, and `--aetos-border` lightens under this
+     * same query, so the rule strengthens on its own.
+     */
+    .aetos-widget--panel {
+        background: var(--aetos-panel);
+        border: 1px solid var(--aetos-border);
+        border-radius: var(--aetos-radius);
+    }
+
+    .aetos-region > .aetos-widget--panel + .aetos-widget--panel {
+        padding-top: var(--aetos-space);
+    }
+}
+
+:root[data-aetos-contrast="high"] .aetos-widget--panel {
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+}
+
+:root[data-aetos-contrast="high"] .aetos-region
+    > .aetos-widget--panel + .aetos-widget--panel {
+    padding-top: var(--aetos-space);
+}
+
+/* Regions, panels and Edit Layout ------------------------------------- */
+
+.aetos-region {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aetos-space);
+    min-height: 0;
+}
+
+.aetos-region--sidebar,
+.aetos-region--aside {
+    width: var(--aetos-column);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.aetos-region--main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+
+
+/* An empty region must not reserve space, or a game with few widgets shows
+   large blank columns. */
+.aetos-region:empty { display: none; }
+
+.aetos-statusbar__button {
+    padding: 3px 10px;
+    margin-left: var(--aetos-space);
+    background: transparent;
+    color: var(--aetos-text-muted);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    font-family: inherit;
+    font-size: 0.85em;
+    cursor: pointer;
+}
+
+.aetos-statusbar__button:hover,
+.aetos-statusbar__button[aria-pressed="true"] {
+    color: var(--aetos-accent);
+    border-color: var(--aetos-accent);
+}
+
+.aetos-statusbar__button:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 1px;
+}
+
+/*
+ * Edit mode. The selected panel is marked with a border AND aria-current, so
+ * the selection is available to assistive technology rather than being a purely
+ * visual cue (blueprint sections 45, 49).
+ */
+.aetos-editing .aetos-widget--panel {
+    outline: 1px dashed var(--aetos-border);
+}
+
+.aetos-editing .aetos-widget--selected {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 2px;
+}
+
+.aetos-widget--panel:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 2px;
+}
+
+.aetos-noscript {
+    padding: var(--aetos-space);
+    color: var(--aetos-danger);
+    font-family: var(--aetos-font-mono);
+}
+
+/*
+ * The `hidden` attribute must beat our own display rules.
+ *
+ * `.aetos-widget { display: flex }` is an author rule and therefore wins over
+ * the user-agent's `[hidden] { display: none }`. Without this, a widget that
+ * hides itself because it has nothing to show still rendered as an empty box --
+ * exactly the clutter blueprint section 11 says must not appear.
+ */
+[hidden] {
+    display: none !important;
+}
+
+/*
+ * ONE SCROLL PER COLUMN.
+ *
+ * Panel bodies used to scroll (`overflow-y: auto`) inside panels that clipped
+ * (`overflow: hidden`) inside regions that also scrolled. Gary, having turned
+ * the text size up: *"its creating a scroll bar maze from hell"*.
+ *
+ * The nesting was defensive rather than needed. Panels are `flex: 0 0 auto`, so
+ * they already grow to their content; the inner scrollbars only ever appeared
+ * once something *else* -- a saved pixel height, a `max-height` -- had squeezed
+ * the panel below its content, and the answer to that is to stop squeezing it.
+ *
+ * So the body no longer scrolls and the panel no longer clips. A panel is as
+ * tall as what is in it, and the region it sits in is the single scroll
+ * container for that column. Nothing is truncated, which was the original worry,
+ * and larger text now pushes the column longer instead of producing a nest of
+ * little windows.
+ *
+ * `min-height: 0` stays: it is what lets the body shrink inside the flex column
+ * instead of forcing the panel taller than the space it has.
+ */
+.aetos-widget__body {
+    min-height: 0;
+}
+
+/* Widget palette (Edit Layout mode) ------------------------------------ */
+
+.aetos-palette {
+    padding: var(--aetos-space);
+    background: var(--aetos-panel);
+    border-top: 1px solid var(--aetos-border);
+}
+
+.aetos-palette__unavailable {
+    display: inline-block;
+    padding: 3px 8px;
+    color: var(--aetos-text-muted);
+    font-style: italic;
+}
+
+/* Shown/hidden is carried by a text marker and aria-pressed, not colour alone. */
+.aetos-palette .aetos-list__button[aria-pressed="true"] {
+    border-color: var(--aetos-accent);
+    color: var(--aetos-accent);
+}
+
+.aetos-palette .aetos-list__button[aria-pressed="true"]::before {
+    content: "\2713\00a0";
+}
+
+.aetos-palette .aetos-list__button[aria-pressed="false"]::before {
+    content: "\002b\00a0";
+}
+
+/* Resources ------------------------------------------------------------ */
+
+.aetos-resource {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px var(--aetos-space);
+    align-items: baseline;
+    padding: 3px 0;
+}
+
+.aetos-resource__label {
+    color: var(--aetos-text-muted);
+}
+
+.aetos-resource__value {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Severity is stated in words by the markup; colour only reinforces it. */
+.aetos-resource__severity {
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.04em;
+}
+
+.aetos-resource--warning .aetos-resource__value { color: var(--aetos-warning); }
+.aetos-resource--critical .aetos-resource__value { color: var(--aetos-danger); }
+
+.aetos-resource__track {
+    grid-column: 1 / -1;
+    height: 6px;
+    background: var(--aetos-bg);
+    border: 1px solid var(--aetos-border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.aetos-resource__fill {
+    height: 100%;
+    background: var(--aetos-accent);
+}
+
+.aetos-resource--warning .aetos-resource__fill { background: var(--aetos-warning); }
+.aetos-resource--critical .aetos-resource__fill { background: var(--aetos-danger); }
+
+.aetos-resource--vertical .aetos-resource__track { height: 48px; }
+
+/* Inventory, equipment, effects and target (M16) ------------------------
+
+   Every distinction here is carried by text in the markup as well. Colour and
+   weight reinforce meaning; they never are the meaning. */
+
+.aetos-list__count {
+    color: var(--aetos-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.aetos-equipment {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px var(--aetos-space);
+    align-items: baseline;
+    margin: 0;
+}
+
+.aetos-equipment__slot {
+    color: var(--aetos-text-muted);
+}
+
+.aetos-equipment__item {
+    margin: 0;
+    min-width: 0;
+}
+
+/* An empty slot is dimmed and italicised, but it still says "empty" -- the
+   styling is a shortcut for a sighted player, not the information itself. */
+.aetos-equipment__item[data-aetos-empty-slot="true"] {
+    color: var(--aetos-text-muted);
+    font-style: italic;
+}
+
+.aetos-effects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.aetos-effect {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 4px;
+    padding: 3px 0 3px 8px;
+    /* A left rule rather than a background wash: it survives a high-contrast
+       theme, where background colours are frequently overridden away. */
+    border-left: 3px solid var(--aetos-border);
+}
+
+.aetos-effect--helpful { border-left-color: var(--aetos-success); }
+.aetos-effect--harmful { border-left-color: var(--aetos-danger); }
+
+.aetos-effect__kind {
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 0.04em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-effect__stacks,
+.aetos-effect__remaining {
+    color: var(--aetos-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* The client's own estimate has run out and the server has not confirmed the
+   effect is gone. Shown as uncertain rather than removed, because removing it
+   would be the client asserting something only the server knows. */
+.aetos-effect[data-aetos-expiring="true"] {
+    opacity: 0.6;
+}
+
+.aetos-effect__description {
+    flex-basis: 100%;
+    color: var(--aetos-text-muted);
+    font-size: 0.9em;
+}
+
+.aetos-target__name {
+    margin: 0;
+    font-weight: 600;
+}
+
+.aetos-target__relationship {
+    font-weight: 400;
+    color: var(--aetos-text-muted);
+}
+
+/* The target's own bars sit inside the target panel, using the identical
+   resource styling as the player's -- deliberately, so one reading skill
+   serves both. */
+.aetos-target .aetos-resource {
+    padding-left: 0;
+}
+
+/* In-client help (documentation overlay) --------------------------------
+
+   A two-pane reading surface. Both panes scroll independently so a long topic
+   never scrolls the topic list out of reach. */
+
+.aetos-help__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--aetos-space);
+    background: rgba(0, 0, 0, 0.6);
+    /* Overlays attach to <body>, outside the client root, so they must state
+       their own typography rather than inheriting it. */
+    font-family: var(--aetos-font-mono);
+    font-size: var(--aetos-font-size);
+    color: var(--aetos-text);
+}
+
+.aetos-help {
+    display: flex;
+    flex-direction: column;
+    width: min(1000px, 100%);
+    height: min(760px, 100%);
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    overflow: hidden;
+}
+
+.aetos-help__header {
+    display: flex;
+    align-items: center;
+    gap: var(--aetos-space);
+    padding: var(--aetos-space);
+    border-bottom: 1px solid var(--aetos-border);
+}
+
+.aetos-help__brand {
+    margin: 0;
+    font-size: 1em;
+    white-space: nowrap;
+}
+
+.aetos-help__search { flex: 1; min-width: 0; }
+
+.aetos-help__body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) 1fr;
+    min-height: 0;
+}
+
+.aetos-help__nav {
+    overflow-y: auto;
+    padding: var(--aetos-space);
+    border-right: 1px solid var(--aetos-border);
+}
+
+.aetos-help__group {
+    margin: var(--aetos-space) 0 4px;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-help__nav .aetos-list__button { width: 100%; text-align: left; }
+
+/* The current topic is marked with a rule as well as colour, so it is still
+   identifiable without colour perception. */
+.aetos-help__nav .aetos-list__button[aria-current="page"] {
+    border-left: 3px solid var(--aetos-accent);
+    color: var(--aetos-accent);
+}
+
+.aetos-help__content {
+    overflow-y: auto;
+    padding: calc(var(--aetos-space) * 2);
+}
+
+.aetos-help__article:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 4px;
+}
+
+.aetos-help__title { margin: 0 0 4px; font-size: 1.3em; }
+
+.aetos-help__summary {
+    margin: 0 0 var(--aetos-space);
+    color: var(--aetos-text-muted);
+}
+
+.aetos-help__section { margin-bottom: calc(var(--aetos-space) * 2); }
+
+.aetos-help__heading {
+    margin: 0 0 6px;
+    font-size: 1em;
+    color: var(--aetos-accent);
+}
+
+.aetos-help__section p {
+    margin: 0 0 var(--aetos-space);
+    max-width: 68ch;
+    line-height: 1.55;
+}
+
+/* Examples are meant to be copied, so they stay selectable text and scroll
+   sideways rather than wrapping code at arbitrary points. */
+.aetos-help__example {
+    margin: 0 0 var(--aetos-space);
+    padding: var(--aetos-space);
+    background: var(--aetos-bg);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.5;
+}
+
+/* An example is a focus stop because it is a scroll region (see help.js), so it
+   needs to look like one when it is focused. Without this the caret lands
+   somewhere invisible and the arrow keys start moving something the player
+   cannot see. */
+.aetos-help__example:focus-visible {
+    outline: 2px solid var(--aetos-focus);
+    outline-offset: 2px;
+}
+
+.aetos-help__keys {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px var(--aetos-space);
+    margin: 0 0 var(--aetos-space);
+    align-items: baseline;
+}
+
+.aetos-help__keys dt { margin: 0; }
+.aetos-help__keys dd { margin: 0; color: var(--aetos-text-muted); }
+
+.aetos-help__keys kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    background: var(--aetos-bg);
+    border: 1px solid var(--aetos-border);
+    border-radius: 3px;
+    white-space: nowrap;
+}
+
+.aetos-help__none { color: var(--aetos-text-muted); }
+
+/* On a phone the topic list stacks above the article rather than squeezing
+   both into columns too narrow to read. */
+@media (max-width: 700px) {
+    .aetos-help__body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .aetos-help__nav {
+        border-right: none;
+        border-bottom: 1px solid var(--aetos-border);
+        max-height: 30%;
+    }
+}
+
+/* Map ------------------------------------------------------------------ */
+
+.aetos-map__svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: var(--aetos-space);
+}
+
+.aetos-map__link {
+    stroke: var(--aetos-border);
+    stroke-width: 2;
+}
+
+.aetos-map__room {
+    fill: var(--aetos-panel);
+    stroke: var(--aetos-border);
+    stroke-width: 1.5;
+}
+
+.aetos-map__room--walkable { cursor: pointer; }
+.aetos-map__room--walkable:hover { stroke: var(--aetos-accent); }
+
+/* The current room is marked by a heavier stroke as well as colour, so it is
+   still distinguishable without colour perception. */
+.aetos-map__room--current {
+    fill: var(--aetos-accent);
+    stroke: var(--aetos-text);
+    stroke-width: 3;
+}
+
+.aetos-map__location {
+    margin: 0 0 6px 0;
+}
+
+.aetos-map__subheading {
+    margin: 8px 0 4px 0;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-map__note {
+    margin: 8px 0 0 0;
+    color: var(--aetos-warning);
+    font-size: 0.9em;
+}
+
+/* Context menu --------------------------------------------------------- */
+
+.aetos-menu {
+    position: absolute;
+    z-index: 40;
+    min-width: 150px;
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-accent);
+    border-radius: var(--aetos-radius);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.aetos-menu__item {
+    display: block;
+    width: 100%;
+    padding: 5px 10px;
+    background: transparent;
+    color: var(--aetos-text);
+    border: none;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.aetos-menu__item:hover,
+.aetos-menu__item:focus {
+    background: var(--aetos-bg);
+    color: var(--aetos-accent);
+}
+
+.aetos-menu__item:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: -2px;
+}
+
+/* An element that opens a menu says so, so the affordance is not mouse-only. */
+.aetos-list__button[aria-haspopup="menu"]::after {
+    content: "\00a0\25be";
+    color: var(--aetos-text-muted);
+}
+
+/* Menu groups ---------------------------------------------------------- */
+
+.aetos-menu__separator {
+    height: 1px;
+    margin: 4px 2px;
+    background: var(--aetos-border);
+}
+
+/* Local actions are visually distinct as well as separated, because they do
+   something categorically different: they never reach the game. */
+.aetos-menu__item--local {
+    font-style: italic;
+}
+
+/* Notes ---------------------------------------------------------------- */
+
+.aetos-notes__search {
+    width: 100%;
+    margin-bottom: var(--aetos-space);
+}
+
+.aetos-notes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.aetos-notes__empty {
+    margin: 0;
+    color: var(--aetos-text-muted);
+    font-style: italic;
+}
+
+.aetos-note {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--aetos-border);
+}
+
+.aetos-note__subject {
+    margin: 0 0 2px 0;
+    font-size: 0.95em;
+    color: var(--aetos-accent);
+}
+
+.aetos-note__tags {
+    margin: 0 0 4px 0;
+    font-size: 0.85em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-note__body {
+    margin: 0 0 4px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.aetos-note__controls {
+    display: flex;
+    gap: 4px;
+}
+
+/* Dialog --------------------------------------------------------------- */
+
+.aetos-dialog__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.aetos-dialog {
+    width: min(480px, 92vw);
+    max-height: 86vh;
+    overflow-y: auto;
+    padding: var(--aetos-space);
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-accent);
+    border-radius: var(--aetos-radius);
+}
+
+.aetos-dialog__title {
+    margin: 0 0 4px 0;
+    font-size: 1.15em;
+}
+
+.aetos-dialog__description {
+    margin: 0 0 var(--aetos-space) 0;
+    color: var(--aetos-text-muted);
+    font-size: 0.9em;
+}
+
+.aetos-dialog__field {
+    margin-bottom: var(--aetos-space);
+}
+
+.aetos-dialog__label {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.85em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-dialog__field .aetos-input {
+    width: 100%;
+}
+
+.aetos-dialog__field input[type="checkbox"].aetos-input {
+    width: auto;
+}
+
+.aetos-dialog__controls {
+    display: flex;
+    gap: var(--aetos-space);
+}
+
+/* Hotbar --------------------------------------------------------------- */
+
+.aetos-hotbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.aetos-hotbar__button {
+    padding: 5px 12px;
+    background: var(--aetos-bg);
+    color: var(--aetos-text);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+.aetos-hotbar__button:hover {
+    border-color: var(--aetos-accent);
+    color: var(--aetos-accent);
+}
+
+.aetos-hotbar__button:focus-visible {
+    outline: 2px solid var(--aetos-accent);
+    outline-offset: 1px;
+}
+
+
+
+/*
+ * A widget hides itself when it has nothing to show.
+ *
+ * Separate from `[hidden]`, which is the player's own show/hide choice. Both
+ * must win over the panel's own `display: flex`, which is an author rule and
+ * would otherwise beat the user agent's hiding.
+ */
+[data-aetos-empty="true"] {
+    display: none !important;
+}
+
+/* Command palette ------------------------------------------------------- */
+
+.aetos-palette-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 12vh;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.aetos-palette-box {
+    width: min(560px, 92vw);
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-accent);
+    border-radius: var(--aetos-radius);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.aetos-palette__input {
+    margin: var(--aetos-space);
+    width: auto;
+}
+
+.aetos-palette__results {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--aetos-space) var(--aetos-space);
+    overflow-y: auto;
+}
+
+.aetos-palette__option {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0 var(--aetos-space);
+    padding: 6px 8px;
+    border-radius: var(--aetos-radius);
+    cursor: pointer;
+}
+
+/* Selection is marked by aria-selected, so the styling follows the state
+   rather than being maintained separately. */
+.aetos-palette__option[aria-selected="true"] {
+    background: var(--aetos-bg);
+    outline: 1px solid var(--aetos-accent);
+}
+
+.aetos-palette__label {
+    color: var(--aetos-text);
+}
+
+.aetos-palette__shortcut {
+    color: var(--aetos-text-muted);
+    font-family: inherit;
+    font-size: 0.85em;
+}
+
+.aetos-palette__description {
+    grid-column: 1 / -1;
+    color: var(--aetos-text-muted);
+    font-size: 0.85em;
+}
+
+/* Privacy panel --------------------------------------------------------- */
+
+.aetos-privacy__list {
+    list-style: none;
+    margin: 0 0 var(--aetos-space) 0;
+    padding: 0;
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.aetos-privacy__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--aetos-border);
+}
+
+.aetos-privacy__count {
+    font-variant-numeric: tabular-nums;
+    color: var(--aetos-accent);
+}
+
+/*
+ * Overlays are appended to <body>, outside `.aetos-root`, so they do not
+ * inherit the client's font or colours. Without this the palette and dialogs
+ * render in the browser's default serif -- visibly not part of the client.
+ */
+.aetos-dialog__overlay,
+.aetos-palette-overlay {
+    font-family: var(--aetos-font-mono);
+    font-size: var(--aetos-font-size);
+    color: var(--aetos-text);
+}
+
+/* Current State View (A2) --------------------------------------------------
+
+   Arranged for reading rather than glancing: heading, then list, in a fixed
+   order every time. A screen-reader user navigating by heading gets the same
+   shape on every game, so the structure is learned once. */
+
+.aetos-state__heading {
+    margin: var(--aetos-space) 0 2px;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--aetos-text-muted);
+}
+
+.aetos-state__heading:first-child { margin-top: 0; }
+
+.aetos-state__location {
+    margin: 0;
+    font-weight: 600;
+}
+
+.aetos-state__line { margin: 0; }
+
+.aetos-state__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Tabular figures so a column of resources lines up. On a braille display the
+   alignment is irrelevant; on screen it is the difference between scanning and
+   reading. */
+.aetos-state__list li {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Map: route preview and places search (A3) --------------------------------- */
+
+.aetos-map__search { margin-bottom: 6px; }
+.aetos-map__search .aetos-input { width: 100%; }
+
+.aetos-map__route {
+    margin: var(--aetos-space) 0;
+    padding-left: 8px;
+    border-left: 3px solid var(--aetos-accent);
+}
+
+.aetos-map__route-summary {
+    margin: 0 0 4px;
+    color: var(--aetos-text-muted);
+}
+
+/* An ordered list, because the order IS the information -- a screen reader
+   announcing "3 of 5" gives the player their position in the journey. */
+.aetos-map__route-steps {
+    margin: 0;
+    padding-left: 1.6em;
+}
+
+.aetos-map__empty { color: var(--aetos-text-muted); }
+
+/* Event history (M17) ------------------------------------------------------- */
+
+.aetos-history__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.aetos-history__controls .aetos-input { flex: 1 1 8em; min-width: 0; }
+
+.aetos-history__filters { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* The pressed filter is marked with a rule as well as a tint, because the
+   player most likely to be reading history rather than the console is the one
+   least able to rely on a colour. */
+.aetos-history__filter[aria-pressed="true"] {
+    border-bottom: 2px solid var(--aetos-accent);
+    color: var(--aetos-accent);
+}
+
+.aetos-history__rows { overflow-y: auto; max-height: 22em; }
+
+.aetos-history__list { list-style: none; margin: 0; padding: 0; }
+
+.aetos-history__row {
+    display: grid;
+    grid-template-columns: 5.5em 1fr;
+    gap: var(--aetos-space);
+    padding: 2px 0;
+    align-items: baseline;
+}
+
+/* The channel is a word, not a colour. */
+.aetos-history__channel {
+    color: var(--aetos-text-muted);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.aetos-history__row--tell .aetos-history__channel { color: var(--aetos-accent); }
+.aetos-history__row--combat .aetos-history__channel { color: var(--aetos-warning); }
+
+.aetos-history__text { min-width: 0; overflow-wrap: anywhere; }
+
+.aetos-history__pager {
+    display: flex;
+    align-items: center;
+    gap: var(--aetos-space);
+    margin-top: 6px;
+}
+
+.aetos-history__page, .aetos-history__empty { color: var(--aetos-text-muted); }
+
+/* Display rules (E2) -------------------------------------------------------
+
+   A highlight carries an accessible name in the markup; these tokens only
+   decide what it looks like. Colour is never the meaning. */
+
+.aetos-console__mark {
+    background: transparent;
+    color: inherit;
+    /* An underline as well as a colour, so the mark survives a high-contrast
+       theme and is visible without colour perception. */
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+.aetos-console__mark--mark { text-decoration-color: var(--aetos-accent); }
+.aetos-console__mark--warning { text-decoration-color: var(--aetos-warning); }
+.aetos-console__mark--danger { text-decoration-color: var(--aetos-danger); }
+.aetos-console__mark--success { text-decoration-color: var(--aetos-success); }
+
+/* Collapsed, not hidden: still readable, just visually de-emphasised. A player
+   who collapsed something chose to see less of it, not none of it. */
+.aetos-console__line--collapsed {
+    opacity: 0.65;
+    font-size: 0.92em;
+}
+
+/*
+ * Section headings inside a dialog body (A5).
+ *
+ * A real <h3> rather than a styled paragraph, so a screen reader can jump
+ * between the sections of a reorientation summary -- which is the whole point
+ * of the panel for the person most likely to open it.
+ */
+.aetos-dialog__subheading {
+    margin: 10px 0 2px;
+    font-size: 0.95em;
+    color: var(--aetos-accent);
+}
+
+/*
+ * Focus Mode.  Addendum A.47.
+ *
+ * The client drops to its essentials: the game text and the input the player
+ * types into. Everything else is hidden.
+ *
+ * `display: none` rather than visual hiding, deliberately. A panel that is
+ * merely invisible is still in the tab order and still read by a screen
+ * reader, which would make Focus Mode a trap -- the clutter a sighted player
+ * wanted gone would remain in full for everyone else, plus a screenful of
+ * controls nobody could see to explain.
+ *
+ * Nothing the game sends can set this attribute. It follows one preference the
+ * player owns, so a layout never rearranges itself under somebody -- A11Y-COG-007
+ * for workspaces, and the same reasoning here.
+ */
+/*
+ * Selected from the document element, because that is where the accessibility
+ * layer writes its preference attributes -- the same place `data-aetos-quiet`,
+ * `data-aetos-contrast` and `data-aetos-motion` land. Writing this against
+ * `.aetos-root` looked right and matched nothing at all.
+ */
+[data-aetos-focus-mode="true"] .aetos-region--sidebar,
+[data-aetos-focus-mode="true"] .aetos-region--aside,
+[data-aetos-focus-mode="true"] .aetos-region--bottom {
+    display: none;
+}
+
+/*
+ * The grid lives on the workspace, not the root.
+ *
+ * A17: given enough specificity to actually win.
+ *
+ * The first attempt at this fix was itself wrong, and wrong in a way worth
+ * recording: it scoped the selector through `.aetos-root[data-aetos-focus-mode]`,
+ * but the attribute is set on `document.documentElement` -- `<html>` -- so that
+ * selector matched nothing at all and changed nothing. Caught by re-measuring
+ * rather than by reading it back.
+ *
+ * It was `[data-aetos-focus-mode="true"] .aetos-workspace` -- specificity
+ * (0,2,0) -- against the responsive templates at
+ * `.aetos-root[data-aetos-size="tablet"] .aetos-workspace`, which is (0,3,0)
+ * and therefore won. So focus mode collapsed the grid to one column only at
+ * the sizes that had no template of their own.
+ *
+ * Invisible at ordinary text sizes and obvious at large ones, because the
+ * breakpoints are measured in text: at 175% a 1600px window computes as
+ * "tablet", the tablet template restored a `--aetos-column` sidebar track, and
+ * focus mode dutifully hid the region inside it -- leaving a dead 339px column
+ * and a console frame that looked badly off-centre for no visible reason.
+ *
+ * Measured: main started at x=339 in a 1600px viewport with every side region
+ * `display: none`.
+ */
+:root[data-aetos-focus-mode="true"] .aetos-root .aetos-workspace {
+    grid-template-areas: "main";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+}
+
+/*
+ * Sound and captions.  M18.
+ *
+ * The caption list is styled like the console rather than like a status panel,
+ * because that is what it is: a transcript of everything the game said in
+ * sound. It scrolls, so it is focusable.
+ */
+.aetos-media__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.aetos-media__slider {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.aetos-media__slider label {
+    flex: 0 0 9em;
+    font-size: 0.9em;
+}
+
+.aetos-media__slider input[type="range"] {
+    flex: 1 1 auto;
+    min-width: 5em;
+}
+
+.aetos-media__captions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    max-height: 14em;
+}
+
+.aetos-caption {
+    display: flex;
+    gap: 6px;
+    padding: 2px 0;
+    border-bottom: 1px solid var(--aetos-border);
+}
+
+/* The category is a label, not a colour. Colour never carries meaning alone. */
+.aetos-caption__category {
+    flex: 0 0 5em;
+    color: var(--aetos-accent);
+    font-size: 0.85em;
+}
+
+.aetos-caption__text { flex: 1 1 auto; }
+
+.aetos-media__image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/*
+ * Picture communication board.  A7, Addendum A.64–A.66.
+ *
+ * Keys are sized generously: A.57 asks for 44x44 CSS pixel targets wherever
+ * practical, and this is the surface where that matters most -- the population
+ * most likely to use a communication board includes people with limited fine
+ * motor control, and a mis-tap here does not mean a wasted click, it means
+ * saying the wrong word.
+ */
+.aetos-aac__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    overflow-y: auto;
+    max-height: 14em;
+}
+
+.aetos-aac__key {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 4px 8px;
+    background: var(--aetos-panel);
+    color: var(--aetos-text);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    font: inherit;
+    cursor: pointer;
+}
+
+.aetos-aac__symbol {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.aetos-aac__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin: 6px 0 4px;
+}
+
+/*
+ * The sentence, set larger than the keys.
+ *
+ * It is the thing being checked before it is said in public under somebody's
+ * name, so it should not be the smallest text on screen.
+ */
+.aetos-aac__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    list-style: none;
+    margin: 0 0 4px;
+    padding: 4px;
+    min-height: 2.5em;
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    font-size: 1.15em;
+}
+
+.aetos-aac__strip-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 4px;
+    background: var(--aetos-panel);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+}
+
+.aetos-aac__strip-empty { color: var(--aetos-text-muted); }
+
+.aetos-aac__strip-button {
+    min-width: 28px;
+    min-height: 28px;
+    background: transparent;
+    color: var(--aetos-text);
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    font: inherit;
+    cursor: pointer;
+}
+
+.aetos-aac__actions {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+/* The preview, larger again: it is the last chance to catch a wrong word. */
+.aetos-aac__preview {
+    font-size: 1.3em;
+    padding: 8px;
+    border: 1px solid var(--aetos-border);
+    border-radius: var(--aetos-radius);
+    background: var(--aetos-panel);
+    word-break: break-word;
+}
+
+/*
+ * A widget that failed and was switched off.  M22, C.20.
+ *
+ * Text, not an icon. A player needs to know the difference between "you are
+ * carrying nothing" and "this panel is broken", and an empty panel says the
+ * first while meaning the second.
+ *
+ * The danger colour is used, but the sentence carries the meaning on its own --
+ * colour is never the only signal.
+ */
+.aetos-widget__failed {
+    margin: 0 0 4px;
+    color: var(--aetos-danger);
+}
+
+.aetos-widget__failed-detail {
+    margin: 0 0 6px;
+    color: var(--aetos-text-muted);
+    font-size: 0.9em;
+    word-break: break-word;
+}
+
+/*
+ * A declared resource whose value has not arrived yet.  M23.
+ *
+ * Muted, but the word "waiting" carries the meaning -- a player who cannot
+ * distinguish the colour still reads that it is pending rather than zero.
+ */
+.aetos-resource--pending .aetos-resource__value,
+.aetos-resource--pending .aetos-resource__label {
+    color: var(--aetos-text-muted);
+    font-style: italic;
+}
+
+/*
+ * Stale state, during a disconnect.  M24.
+ *
+ * Dimmed, and paired with a sentence rather than relying on the dimming --
+ * "slightly greyer" is not a message, and it is exactly the kind of signal that
+ * disappears at high contrast, in bright sunlight, or for anyone whose
+ * perception of the difference is not what the designer's was.
+ *
+ * Deliberately restrained: the panels must stay *readable*. Their content is
+ * the last thing the player was told and remains the best information they
+ * have -- this says it is old, not that it is worthless.
+ */
+[data-aetos-stale="true"] .aetos-workspace {
+    opacity: 0.72;
+}
+
+.aetos-stale-notice {
+    margin: 0;
+    padding: 4px var(--aetos-space);
+    color: var(--aetos-warning);
+    border-bottom: 1px solid var(--aetos-border);
+}
+
+/* Settings dashboard ---------------------------------------------------- */
+
+.aetos-settings__group {
+    margin-bottom: var(--aetos-space);
+}
+
+.aetos-settings__heading {
+    margin: 0 0 4px;
+    /* `em`, not `rem`.  A12.
+       Text size is applied as `--aetos-scale`, a multiplier on the client's
+       own font-size. `rem` resolves against the browser root, which that
+       multiplier deliberately never touches -- so a heading sized in `rem`
+       stays put while everything around it grows. Measured at 150%: the
+       group headings in the accessibility panel were *smaller* than the
+       option labels beneath them, in the panel where the setting lives. */
+    font-size: 1.15em;
+}
+
+.aetos-settings__detail {
+    margin: 0 0 8px;
+    /* A12: was `var(--aetos-text-dim)`, a token defined nowhere in the
+       client. With no fallback the declaration is invalid at computed-value
+       time, so these have always rendered at full strength -- and for an
+       explanatory sentence that is the right answer, so it is now said
+       rather than inherited by accident. */
+    color: var(--aetos-text);
+    font-size: 0.9em;
+}
+
+/*
+ * The button carries the name and the sentence under it carries the
+ * explanation, so the row stacks rather than sitting side by side -- at a large
+ * text size a two-column row leaves a one-word column and a ragged one.
+ */
+.aetos-settings__row {
+    margin-bottom: 8px;
+}
+
+.aetos-settings__button {
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+.aetos-settings__row .aetos-settings__detail {
+    margin: 2px 0 0;
+}

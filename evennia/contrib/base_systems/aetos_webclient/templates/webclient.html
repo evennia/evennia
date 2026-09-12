@@ -1,0 +1,345 @@
+{% extends "aetos/base.html" %}
+{% load static aetos_tags %}
+
+{% comment %}
+Aetos Web Client page.
+
+This template wins over Evennia's own `webclient.html` because a game prepends
+the Aetos template directory to `TEMPLATES[0]["DIRS"]` (see README.md). It cannot
+be found by the app-directory loader alone: Django searches every DIRS entry
+before any installed app, and Evennia always has its own webclient template
+directory in DIRS.
+
+Aetos extends its own base (`aetos/base.html`) rather than Evennia's stock
+`webclient/base.html`. The stock base loads eight third-party CDN resources for
+the benefit of the stock GUI; Aetos is vanilla JavaScript and uses none of them.
+See `aetos/base.html` for the full reasoning.
+
+Evennia's transport is still entirely untouched: `evennia.js` is loaded
+unmodified from Evennia's own static files, and the Portal is not involved.
+{% endcomment %}
+
+{% block styles %}
+    {% comment %}
+    The web app manifest, and the theme colour a browser paints its own chrome
+    with before any CSS runs.
+
+    Both point at URLs a game only has if it added Aetos's optional urls.py. A
+    missing manifest is a 404 the browser ignores silently and nothing else --
+    which is the intended behaviour, since the PWA is optional and a game that
+    did not opt in should get no part of it rather than a broken part.
+
+    The colour is stated literally rather than read from a token: it is consumed
+    before the stylesheet loads, so a variable would be undefined at the one
+    moment it matters. It matches --aetos-bg, and a test asserts they agree.
+    {% endcomment %}
+    <link rel="manifest" href="aetos-manifest.json" />
+    <meta name="theme-color" content="#14171c" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href={% aetos_static "aetos/css/ansi.css" %} />
+    <link rel="stylesheet" type="text/css" media="screen" href={% aetos_static "aetos/css/aetos.css" %} />
+    <link rel="stylesheet" type="text/css" media="screen" href={% aetos_static "aetos/css/accessibility.css" %} />
+{% endblock %}
+
+{% block scripts %}
+    {% comment %}
+    The accessibility subsystem loads before everything else. Every module
+    after it may announce, trap focus or register a shortcut, and one that
+    loads late is one the rest of the client silently did without.
+    {% endcomment %}
+    <script defer src={% aetos_static "aetos/js/accessibility/preferences.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/speech.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/announcer.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/focus.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/shortcuts.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/orientation.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/cognitive.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/panel.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/accessibility/accessibility.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/store.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/events/canonical_log.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/events/pipeline.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/events/review.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/automation/groups.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/automation/validator.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/presentation/rules.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/developer/capture.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/developer/replay.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/developer/diagnostics.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/storage.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/profile.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/widgets.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/layout.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/resources.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/timers.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/scripting.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/aliases.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/triggers.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/queue.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/macros.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/dialog.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/relationships.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/notes.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/menu.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/map.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/builtins.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/character.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/state_view.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/history.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/developer/inspector.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/pwa.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/gestures.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/aac/concepts.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/aac/symbols.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/aac/board.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/themes/contrast.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/themes/themes.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/media/audio.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/media/captions.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/workspaces.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/help.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/palette.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/settings.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/settings_dashboard.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/responsive.js" %} type="text/javascript" charset="utf-8"></script>
+    <script defer src={% aetos_static "aetos/js/aetos.js" %} type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+
+{% block client %}
+{% comment %}
+Skip links. A11Y-NAV-001.
+
+First in the document, because that is the only position that helps: a skip
+link a keyboard user reaches after tabbing through the interface has skipped
+nothing. They are visually hidden until focused, so they cost sighted players
+nothing and save keyboard players the entire widget tree.
+
+Ordered by how often someone needs them. The command input comes first because
+it is where a player wants to be nearly every time.
+{% endcomment %}
+<nav class="aetos-skiplinks" aria-label="Skip links">
+  <a class="aetos-skiplink" href="#aetos-input">Skip to command input</a>
+  <a class="aetos-skiplink" href="#aetos-console">Skip to game output</a>
+  <a class="aetos-skiplink" href="#aetos-workspace">Skip to widgets</a>
+  <a class="aetos-skiplink" href="#aetos-toolbar">Skip to navigation</a>
+</nav>
+
+<div id="aetos-root" class="aetos-root" data-aetos-protocol="1">
+
+  <header class="aetos-statusbar">
+    {% comment %}
+    Only the connection indicator is a live region, not the whole bar. Wrapping
+    the bar would re-announce the static game name on every status change.
+    {% endcomment %}
+    <span id="aetos-connection" class="aetos-connection aetos-connection--pending"
+          role="status" aria-atomic="true">
+      <span class="aetos-connection__dot" aria-hidden="true"></span>
+      <span id="aetos-connection-label" class="aetos-connection__label">Connecting</span>
+    </span>
+    {% comment %}
+    The page's one <h1>, and the game's name is the right thing for it to be.
+
+    A page with no h1 gives a screen reader user nothing to jump to and no
+    statement of what they are looking at -- the client had none from M4 until
+    axe flagged it at M24. It stays a visible title rather than becoming a
+    hidden one, because the name was already on screen and a heading that
+    exists only for assistive technology is a heading nobody maintains.
+    {% endcomment %}
+    <h1 class="aetos-statusbar__title">{{ game_name }}</h1>
+
+    {% comment %}
+    A11Y-DOM-002 and A.7: the client stays an ordinary document, so a screen
+    reader can jump by landmark. This is the navigation landmark, and A.50
+    requires that it stay in the same place regardless of which workspace is
+    active -- someone who is lost should not have to find the help button
+    somewhere new.
+
+    role="toolbar" would be wrong here: these are unrelated controls, not a
+    group sharing one arrow-key model.
+    {% endcomment %}
+    <nav id="aetos-toolbar" class="aetos-statusbar__nav" aria-label="Aetos navigation">
+      <button id="aetos-edit-layout" class="aetos-statusbar__button" type="button"
+              aria-pressed="false">Edit Layout</button>
+      <button id="aetos-open-help" class="aetos-statusbar__button" type="button">Help</button>
+      {% comment %}
+      Settings had no button at all until now -- every panel behind it (privacy,
+      themes, automation groups, reminders, symbol packs, diagnostics) was
+      reachable only by knowing to press Ctrl+K and what to search for.
+
+      That is the same discovery problem A9 was built to answer, one layer over.
+      It opens the command palette with "settings" already typed, rather than
+      introducing a second list of destinations to build, style, keyboard-enable
+      and keep in step with the one that already exists.
+      {% endcomment %}
+      <button id="aetos-open-settings" class="aetos-statusbar__button"
+              type="button">Settings</button>
+    </nav>
+
+    {% comment %}
+    The mode switch. A9, then A10.
+
+    OUTSIDE THE NAVIGATION LANDMARK, and last, so it sits at the top right on
+    its own. It is not navigation -- it does not take you anywhere, it changes
+    which interface you are in -- and grouping it with Edit Layout and Help made
+    it read as a third button rather than as the control it is.
+
+    A SWITCH, NOT A BUTTON. `role="switch"` with `aria-checked` announces "on"
+    and "off", which is what this does; `aria-pressed` would announce "pressed",
+    which describes the act rather than the state. The visible track and thumb
+    say the same thing to somebody who can see it, and the thumb's *position* --
+    not its colour -- is what carries the state.
+
+    THE ONE CONTROL THAT MUST STAY FINDABLE. Since A10 it is the way back from
+    standard mode, so its size, position and wording are deliberately not
+    governed by the mode: identical whichever one you are in. The floor lives in
+    `accessibility.css`, above the target-size rule it has to beat.
+
+    It says words rather than showing an icon. An icon here would be a symbol
+    somebody has to recognise before they can ask for help reading symbols.
+    {% endcomment %}
+    <div class="aetos-modeswitch">
+      <button id="aetos-accessibility-toggle"
+              class="aetos-statusbar__button aetos-statusbar__button--mode"
+              type="button" role="switch" aria-checked="false">
+        <span class="aetos-modeswitch__label">Accessible mode</span>
+        <span class="aetos-modeswitch__track" aria-hidden="true">
+          <span class="aetos-modeswitch__thumb"></span>
+        </span>
+      </button>
+      {% comment %}
+      The options are a separate button, and only appear once accessible mode is
+      on.
+
+      They were behind the switch itself until it was pointed out that flipping
+      the switch presented a panel of options rather than switching a mode --
+      which is what it looked like, because it was. A control that does two
+      things is read as whichever one you notice first.
+
+      So the switch switches, and this asks for the settings. Hidden in standard
+      mode because there is nothing there to configure: the accommodations are
+      not applied, and offering to adjust them would be offering to adjust
+      something that is off.
+      {% endcomment %}
+      <button id="aetos-accessibility-options"
+              class="aetos-statusbar__button"
+              type="button" aria-expanded="false" hidden>Options</button>
+    </div>
+  </header>
+
+  {% comment %}
+  Where the accessibility panel renders. Empty and hidden until asked for.
+
+  Directly after the status bar and before the workspace, so that a keyboard or
+  screen-reader user who has just activated the toggle reaches its contents next
+  rather than after every widget.
+  {% endcomment %}
+  <div id="aetos-accessibility-host"></div>
+
+  {% comment %}
+  The two announcement regions. Addendum A.15, A11Y-ANN-001.
+
+  These are the only live regions in Aetos. Widgets never create their own: a
+  player has one pair of ears and one braille display, so thirty independent
+  live regions do not produce thirty conversations, they produce one
+  conversation with thirty interruptions in render order.
+
+  The urgent region interrupts and is reserved for connection and session
+  failure. Gameplay never reaches it -- a channel that interrupts constantly
+  stops being an interruption, and then the one message that truly needed to
+  interrupt is the one that gets ignored.
+  {% endcomment %}
+  <div id="aetos-announcer" class="aetos-visually-hidden" role="status"
+       aria-live="polite" aria-atomic="true"></div>
+  <div id="aetos-announcer-urgent" class="aetos-visually-hidden" role="alert"
+       aria-atomic="true"></div>
+
+  {% comment %}
+  The workspace announces staleness for a screen reader.
+
+  `aria-describedby` rather than a live region: this is a *property* of what
+  is on screen, not an event. The disconnection itself is announced once
+  through the ordinary announcer; this is what somebody hears when they
+  navigate into a panel afterwards and need to know the number they are
+  reading is the last one that arrived.
+  {% endcomment %}
+  <main id="aetos-workspace" class="aetos-workspace"
+        aria-describedby="aetos-stale-notice">
+
+    {% comment %}
+    Inside the landmark it describes, not before it.
+
+    Placed outside, it was content belonging to no region at all -- which axe
+    flags and which means a screen reader user navigating by landmark skips
+    straight past it. Being inside the thing it describes is also simply true.
+    {% endcomment %}
+    <p id="aetos-stale-notice" class="aetos-stale-notice" hidden>
+      Not connected. Everything shown is the last state received.
+    </p>
+
+    {% comment %}
+    Regions are created by the layout adapter, and widgets are mounted into them
+    from the registry -- see builtins.js. The markup is no longer hardcoded here,
+    so a widget can be added, moved or removed without touching this template.
+
+    Blueprint section 46 requires named regions for a screen-reader layout; the
+    adapter gives every widget panel a heading and an accessible name, so the
+    landmark structure survives the move to dynamic mounting.
+    {% endcomment %}
+
+    <section id="aetos-console-widget" class="aetos-widget aetos-widget--console"
+             aria-labelledby="aetos-console-heading">
+      <h2 id="aetos-console-heading" class="aetos-visually-hidden">Game output</h2>
+      {% comment %}
+      aria-live is explicitly "off". role="log" carries an implicit polite live
+      region, which would make a screen reader announce every line of game output
+      -- unusable during combat spam or a long room listing. The log stays
+      navigable and readable on demand; announcements are opt-in and go through
+      the announcer above instead. Blueprint sections 48 and 100.
+      {% endcomment %}
+      <div id="aetos-console" class="aetos-console" role="log" aria-live="off"
+           tabindex="0" aria-label="Game output, scrollable"></div>
+
+      {% comment %}
+      The composer sits inside the console's frame rather than under the whole
+      client. Gary: *"move the text input and send button into the actual text
+      output frame"*.
+
+      It is also the truer reading of the interface. What you type is a reply to
+      what you have just read, and the two were the full height of the client
+      apart with every panel of instrumentation between them. Inside the frame
+      they are one object -- a terminal -- and the console scrolls above a
+      composer that never scrolls away from it.
+
+      Still a `<footer>`, now scoped to the game-output section rather than to
+      the client. It was never a `contentinfo` landmark in either position (that
+      requires being a direct child of `<body>`), so no landmark changed; what
+      changed is which region a screen reader says it belongs to, and "the end
+      of Game output" is the accurate answer.
+      {% endcomment %}
+      <footer class="aetos-composer">
+        {% comment %}
+        The prompt glyph is a real element with aria-hidden rather than CSS
+        generated content, because generated content is exposed to some screen
+        readers and "greater than sign" before every command is noise.
+        {% endcomment %}
+        <span class="aetos-composer__prompt" aria-hidden="true">&rsaquo;</span>
+        <label for="aetos-input" class="aetos-visually-hidden">Command input</label>
+        <textarea id="aetos-input" class="aetos-input" rows="1" autocomplete="off"
+                  autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+        <button id="aetos-send" class="aetos-send" type="button">Send</button>
+      </footer>
+    </section>
+  </main>
+
+  {% comment %}
+  Widget palette, shown only in Edit Layout mode. Hiding a widget must be
+  reversible without discarding the rest of the layout, so the palette is part
+  of the hide operation rather than an extra.
+  {% endcomment %}
+  <aside id="aetos-palette" class="aetos-palette" aria-labelledby="aetos-palette-heading" hidden>
+    <h2 id="aetos-palette-heading" class="aetos-widget__title">Widgets</h2>
+    <ul id="aetos-palette-list" class="aetos-list"></ul>
+  </aside>
+
+</div>
+{% endblock %}
