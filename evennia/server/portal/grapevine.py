@@ -228,7 +228,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
     # send_* method are automatically callable through .msg(heartbeat={}) etc
 
-    def send_authenticate(self, *args, **kwargs):
+    def send_authenticate(self, /, *args, **kwargs):
         """
         Send grapevine authentication. This should be send immediately upon connection.
 
@@ -249,7 +249,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         self._send_json(data)
 
-    def send_heartbeat(self, *args, **kwargs):
+    def send_heartbeat(self, /, *args, **kwargs):
         """
         Send heartbeat to remote grapevine server.
 
@@ -263,7 +263,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
 
         self._send_json(data)
 
-    def send_subscribe(self, channelname, *args, **kwargs):
+    def send_subscribe(self, /, channelname, *args, **kwargs):
         """
         Subscribe to new grapevine channel
 
@@ -272,7 +272,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
         data = {"event": "channels/subscribe", "payload": {"channel": channelname}}
         self._send_json(data)
 
-    def send_unsubscribe(self, channelname, *args, **kwargs):
+    def send_unsubscribe(self, /, channelname, *args, **kwargs):
         """
         Un-subscribe to a grapevine channel
 
@@ -281,7 +281,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
         data = {"event": "channels/unsubscribe", "payload": {"channel": channelname}}
         self._send_json(data)
 
-    def send_channel(self, text, channel, sender, *args, **kwargs):
+    def send_channel(self, /, text, channel, sender, *args, **kwargs):
         """
         Send text type Evennia -> grapevine
 
@@ -297,7 +297,7 @@ class GrapevineClient(WebSocketClientProtocol, Session):
         }
         self._send_json(data)
 
-    def send_default(self, *args, **kwargs):
+    def send_default(self, /, *args, **kwargs):
         """
         Ignore other outputfuncs
 

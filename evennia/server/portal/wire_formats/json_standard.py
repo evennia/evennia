@@ -146,7 +146,7 @@ class JsonStandardFormat(WireFormat):
                 return None
             return {funcname: [args, kwargs]}
 
-    def encode_prompt(self, *args, protocol_flags=None, **kwargs):
+    def encode_prompt(self, /, *args, protocol_flags=None, **kwargs):
         """
         Encode a prompt.
 
@@ -171,7 +171,7 @@ class JsonStandardFormat(WireFormat):
         }
         return (json.dumps(envelope).encode("utf-8"), False)
 
-    def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
+    def encode_default(self, cmdname, /, *args, protocol_flags=None, **kwargs):
         """
         Encode an OOB command as a GMCP-in-JSON envelope.
 

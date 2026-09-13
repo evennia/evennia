@@ -417,7 +417,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
 
     # send_* methods
 
-    def send_text(self, *args, **kwargs):
+    def send_text(self, /, *args, **kwargs):
         """
         Send text data. This is an in-band telnet operation.
 
@@ -520,7 +520,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
                     linetosend = mxp_parse(linetosend)
                 self.sendLine(linetosend)
 
-    def send_prompt(self, *args, **kwargs):
+    def send_prompt(self, /, *args, **kwargs):
         """
         Send a prompt - a text without a line end. See send_text for argument options.
 
@@ -528,7 +528,7 @@ class TelnetProtocol(Telnet, StatefulTelnetProtocol, _BASE_SESSION_CLASS):
         kwargs["options"].update({"send_prompt": True})
         self.send_text(*args, **kwargs)
 
-    def send_default(self, cmdname, *args, **kwargs):
+    def send_default(self, cmdname, /, *args, **kwargs):
         """
         Send other oob data
 

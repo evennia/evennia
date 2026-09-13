@@ -276,7 +276,7 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
         """
         self.sessionhandler.data_out(self, **kwargs)
 
-    def send_text(self, *args, **kwargs):
+    def send_text(self, /, *args, **kwargs):
         """
         Send text data. This is an in-band telnet operation.
 
@@ -334,10 +334,10 @@ class SshProtocol(Manhole, _BASE_SESSION_CLASS):
             )
             self.sendLine(linetosend)
 
-    def send_prompt(self, *args, **kwargs):
+    def send_prompt(self, /, *args, **kwargs):
         self.send_text(*args, **kwargs)
 
-    def send_default(self, *args, **kwargs):
+    def send_default(self, /, *args, **kwargs):
         pass
 
 

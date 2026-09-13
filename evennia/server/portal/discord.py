@@ -478,7 +478,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
             # we didn't get a response since the last heartbeat; reconnect
             self.factory.reconnect()
 
-    def send_channel(self, text, channel_id, **kwargs):
+    def send_channel(self, /, text, channel_id, **kwargs):
         """
         Send a message from an Evennia channel to a Discord channel.
 
@@ -490,7 +490,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         data.update(kwargs)
         self._post_json(f"channels/{channel_id}/messages", data)
 
-    def send_nickname(self, text, guild_id, user_id, **kwargs):
+    def send_nickname(self, /, text, guild_id, user_id, **kwargs):
         """
         Changes a user's nickname on a Discord server.
 
@@ -501,11 +501,11 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
         data.update(kwargs)
         self._post_json(f"guilds/{guild_id}/members/{user_id}", data, type="PATCH")
 
-    def send_role(self, role_id, guild_id, user_id, **kwargs):
+    def send_role(self, /, role_id, guild_id, user_id, **kwargs):
         data = kwargs
         self._post_json(f"guilds/{guild_id}/members/{user_id}/roles/{role_id}", data, type="PUT")
 
-    def send_default(self, *args, **kwargs):
+    def send_default(self, /, *args, **kwargs):
         """
         Ignore other outputfuncs
 

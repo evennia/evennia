@@ -61,7 +61,7 @@ class TerminalFormat(WireFormat):
 
         return {"text": [[text], {}]}
 
-    def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
+    def encode_default(self, cmdname, /, *args, protocol_flags=None, **kwargs):
         """
         OOB commands are not supported in terminal mode.
 

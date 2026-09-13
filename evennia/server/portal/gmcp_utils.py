@@ -27,7 +27,7 @@ EVENNIA_TO_GMCP = {
 GMCP_TO_EVENNIA = {v: k for k, v in EVENNIA_TO_GMCP.items()}
 
 
-def encode_gmcp(cmdname, *args, **kwargs):
+def encode_gmcp(cmdname, /, *args, **kwargs):
     """
     Encode an Evennia command into a GMCP message string.
 

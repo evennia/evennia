@@ -27,7 +27,7 @@ class GodotWebSocketClient(webclient.WebSocketClient):
         super().__init__(*args, **kwargs)
         self.protocol_key = "godotclient/websocket"
 
-    def send_text(self, *args, **kwargs):
+    def send_text(self, /, *args, **kwargs):
         """
         Send text data. This will pre-process the text for
         color-replacement, conversion to bbcode etc.

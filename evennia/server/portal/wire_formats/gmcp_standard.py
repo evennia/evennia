@@ -73,7 +73,7 @@ class GmcpStandardFormat(WireFormat):
                 return None
             return decode_gmcp(gmcp_data)
 
-    def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
+    def encode_default(self, cmdname, /, *args, protocol_flags=None, **kwargs):
         """
         Encode an OOB command as a GMCP message in a TEXT frame.
 

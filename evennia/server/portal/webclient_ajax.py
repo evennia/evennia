@@ -128,7 +128,7 @@ class AjaxWebClientSession(session.Session):
         """
         self.sessionhandler.data_out(self, **kwargs)
 
-    def send_text(self, *args, **kwargs):
+    def send_text(self, /, *args, **kwargs):
         """
         Send text data. This will pre-process the text for
         color-replacement, conversion to html etc.
@@ -176,11 +176,11 @@ class AjaxWebClientSession(session.Session):
         # send to client on required form [cmdname, args, kwargs]
         self.client.lineSend(self.csessid, [cmd, args, kwargs])
 
-    def send_prompt(self, *args, **kwargs):
+    def send_prompt(self, /, *args, **kwargs):
         kwargs["options"].update({"send_prompt": True})
         self.send_text(*args, **kwargs)
 
-    def send_default(self, cmdname, *args, **kwargs):
+    def send_default(self, cmdname, /, *args, **kwargs):
         """
         Data Evennia -> User.
 

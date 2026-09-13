@@ -60,7 +60,7 @@ class EvenniaV1Format(WireFormat):
             return {cmdarray[0]: [cmdarray[1], cmdarray[2]]}
         return None
 
-    def encode_text(self, *args, protocol_flags=None, **kwargs):
+    def encode_text(self, /, *args, protocol_flags=None, **kwargs):
         """
         Encode text output as HTML-converted JSON.
 
@@ -102,7 +102,7 @@ class EvenniaV1Format(WireFormat):
 
         return (json.dumps([cmd, args, kwargs]).encode("utf-8"), False)
 
-    def encode_prompt(self, *args, protocol_flags=None, **kwargs):
+    def encode_prompt(self, /, *args, protocol_flags=None, **kwargs):
         """
         Encode a prompt as HTML-converted JSON with send_prompt flag.
 
@@ -115,7 +115,7 @@ class EvenniaV1Format(WireFormat):
         kwargs["options"] = options
         return self.encode_text(*args, protocol_flags=protocol_flags, **kwargs)
 
-    def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
+    def encode_default(self, cmdname, /, *args, protocol_flags=None, **kwargs):
         """
         Encode any OOB command as a JSON array.
 

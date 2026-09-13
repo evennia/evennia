@@ -452,7 +452,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
 
         self.sessionhandler.data_in(self, **kwargs)
 
-    def send_text(self, *args, **kwargs):
+    def send_text(self, /, *args, **kwargs):
         """
         Send text data. Delegates to the active wire format's encode_text()
         method, which handles ANSI processing and framing. The exact output
@@ -481,7 +481,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             # Fallback: legacy behavior
             self._send_text_legacy(*args, **kwargs)
 
-    def _send_text_legacy(self, *args, **kwargs):
+    def _send_text_legacy(self, /, *args, **kwargs):
         """
         Legacy send_text fallback for when no wire format is set.
 
@@ -523,7 +523,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             args[0] = parse_html(text, strip_ansi=nocolor)
         self.sendLine(json.dumps([cmd, args, kwargs]))
 
-    def send_prompt(self, *args, **kwargs):
+    def send_prompt(self, /, *args, **kwargs):
         """
         Send a prompt to the client.
 
@@ -549,7 +549,7 @@ class WebSocketClient(WebSocketServerProtocol, _BASE_SESSION_CLASS):
             kwargs.setdefault("options", {}).update({"send_prompt": True})
             self.send_text(*args, **kwargs)
 
-    def send_default(self, cmdname, *args, **kwargs):
+    def send_default(self, cmdname, /, *args, **kwargs):
         """
         Data Evennia -> User.
 

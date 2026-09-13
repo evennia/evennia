@@ -7,6 +7,9 @@
 - [Fix][pull3962]: Prevent aborting channel message distribution when at_pre_channel_msg returns False/None (owllex)
 - [Fix][pull3968]: EvMenu: format dict helptext per entry (Sanjays2402)
 - Fix: EvMenu: render dict helptext as a readable list on 'help' instead of a raw dict (Griatch)
+- Fix: Portal crashed with `TypeError` (and dropped the message) when an outputfunc payload
+  had a key named `self` or `cmdname`; protocol `send_*` and wire-format `encode_*` methods now
+  take these as positional-only arguments
 
 [pull3922]: https://github.com/evennia/evennia/pull/3922
 [pull3962]: https://github.com/evennia/evennia/pull/3962

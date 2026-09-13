@@ -915,3 +915,55 @@ class TestBaseWireFormatHelpers(TestCase):
         # The || escape produces a literal pipe; the |n appends a reset.
         # The important thing is the literal pipe is not lost.
         self.assertIn("|", text.replace("\033[0m", ""))
+
+
+# ---------------------------------------------------------------------------
+# Payload keys colliding with method parameter names
+# ---------------------------------------------------------------------------
+
+
+class TestReservedPayloadKeys(TestCase):
+    """
+    Outputfunc kwargs are unpacked with ** into encode_* methods, so payload
+    keys such as "self" or "cmdname" must not collide with parameter names.
+
+    """
+
+    PAYLOAD = {"id": 1, "self": {"name": "me"}, "cmdname": "clash"}
+
+    def _formats(self):
+        from evennia.server.portal.wire_formats.evennia_v1 import EvenniaV1Format
+        from evennia.server.portal.wire_formats.gmcp_standard import GmcpStandardFormat
+        from evennia.server.portal.wire_formats.json_standard import JsonStandardFormat
+        from evennia.server.portal.wire_formats.terminal import TerminalFormat
+
+        return [EvenniaV1Format(), GmcpStandardFormat(), JsonStandardFormat(), TerminalFormat()]
+
+    def test_gmcp_utils_encode_gmcp(self):
+        from evennia.server.portal.gmcp_utils import encode_gmcp
+
+        result = encode_gmcp("gfx_room", **self.PAYLOAD)
+        package, data = result.split(None, 1)
+        self.assertEqual(package, "Gfx.Room")
+        self.assertEqual(json.loads(data), self.PAYLOAD)
+
+    def test_encode_default(self):
+        for fmt in self._formats():
+            with self.subTest(fmt=fmt.name):
+                fmt.encode_default("gfx_room", protocol_flags={}, **dict(self.PAYLOAD))
+
+    def test_encode_text_and_prompt(self):
+        for fmt in self._formats():
+            with self.subTest(fmt=fmt.name):
+                fmt.encode_text("hello", protocol_flags={}, **dict(self.PAYLOAD))
+                fmt.encode_prompt("hello", protocol_flags={}, **dict(self.PAYLOAD))
+
+    def test_json_standard_encode_default_keeps_payload(self):
+        from evennia.server.portal.wire_formats.json_standard import JsonStandardFormat
+
+        data, _ = JsonStandardFormat().encode_default(
+            "gfx_room", protocol_flags={}, **dict(self.PAYLOAD)
+        )
+        envelope = json.loads(data)
+        self.assertEqual(envelope["id"], "Gfx.Room")
+        self.assertEqual(json.loads(envelope["data"]), self.PAYLOAD)

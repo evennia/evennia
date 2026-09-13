@@ -139,7 +139,7 @@ class WireFormat:
         """
         raise NotImplementedError(f"{self.__class__.__name__} must implement decode_incoming()")
 
-    def encode_text(self, *args, protocol_flags=None, **kwargs):
+    def encode_text(self, /, *args, protocol_flags=None, **kwargs):
         """
         Encode text output for sending to the client.
 
@@ -168,7 +168,7 @@ class WireFormat:
         text = self._process_ansi(text, raw, nocolor, screenreader)
         return (text.encode("utf-8"), True)
 
-    def encode_prompt(self, *args, protocol_flags=None, **kwargs):
+    def encode_prompt(self, /, *args, protocol_flags=None, **kwargs):
         """
         Encode a prompt for sending to the client.
 
@@ -191,7 +191,7 @@ class WireFormat:
         kwargs["options"] = options
         return self.encode_text(*args, protocol_flags=protocol_flags, **kwargs)
 
-    def encode_default(self, cmdname, *args, protocol_flags=None, **kwargs):
+    def encode_default(self, cmdname, /, *args, protocol_flags=None, **kwargs):
         """
         Encode a non-text OOB command for sending to the client.
 

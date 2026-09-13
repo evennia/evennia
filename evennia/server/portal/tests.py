@@ -384,6 +384,40 @@ class TestTelnet(TwistedTestCase):
 
         return d
 
+    def test_oob_payload_with_reserved_keys(self):
+        """
+        OOB kwargs named like method parameters ("self", "cmdname") must not
+        crash the telnet OOB encoders.
+
+        """
+        from .telnet_oob import GMCP, TelnetOOB
+
+        proto = Mock()
+        oob = TelnetOOB.__new__(TelnetOOB)
+        oob.protocol = lambda: proto
+        oob.MSDP = True
+        oob.GMCP = True
+        payload = {"id": 1, "self": {"name": "me"}, "cmdname": "clash"}
+        oob.data_out("gfx_room", **dict(payload))
+        self.assertEqual(proto._write.call_count, 2)
+        gmcp_bytes = proto._write.call_args_list[1][0][0]
+        self.assertIn(GMCP, gmcp_bytes)
+        self.assertIn(b"Gfx.Room", gmcp_bytes)
+        self.assertIn(b'"self"', gmcp_bytes)
+
+        # the telnet session's send_* methods must accept these keys too
+        # (Mock can't be used here; it has its own `self` collision)
+        calls = []
+
+        class _RecordingOOB:
+            def data_out(self, cmdname, /, *args, **kwargs):
+                calls.append((cmdname, args, kwargs))
+
+        session = TelnetProtocol()
+        session.oob = _RecordingOOB()
+        session.send_default("gfx_room", **dict(payload))
+        self.assertEqual(calls, [("gfx_room", (), payload)])
+
 
 class TestWebSocket(BaseEvenniaTest):
     def setUp(self):
@@ -437,3 +471,35 @@ class TestWebSocket(BaseEvenniaTest):
         args, kwargs = call_args
         is_binary = kwargs.get("is_binary", args[1] if len(args) > 1 else False)
         self.assertFalse(is_binary)
+
+    @mock.patch("evennia.server.portal.portalsessionhandler.reactor", new=MagicMock())
+    def test_data_out_payload_with_reserved_keys(self):
+        """
+        An outputfunc payload with keys named like method parameters ("self",
+        "cmdname") must be delivered, not crash inside the Portal.
+
+        """
+        from .wire_formats.json_standard import JsonStandardFormat
+
+        self.proto.onOpen()
+        self.proto.wire_format = JsonStandardFormat()
+        self.proto.sendEncoded = MagicMock()
+        payload = {"id": 1, "self": {"name": "me"}, "cmdname": "clash"}
+        self.proto.sessionhandler.data_out(self.proto, gfx_room=[[], dict(payload)])
+        self.proto.sendEncoded.assert_called_once()
+        envelope = json.loads(self.proto.sendEncoded.call_args[0][0])
+        self.assertEqual(envelope["id"], "Gfx.Room")
+        self.assertEqual(json.loads(envelope["data"]), payload)
+
+        # send_text/send_prompt go through a different path
+        self.proto.sendEncoded.reset_mock()
+        self.proto.sessionhandler.data_out(
+            self.proto, text=[["hi"], dict(payload)], prompt=[["> "], dict(payload)]
+        )
+        self.assertEqual(self.proto.sendEncoded.call_count, 2)
+
+        # legacy (no wire format) path
+        self.proto.wire_format = None
+        self.proto.sendLine = MagicMock()
+        self.proto.sessionhandler.data_out(self.proto, gfx_room=[[], dict(payload)])
+        self.assertEqual(json.loads(self.proto.sendLine.call_args[0][0]), ["gfx_room", [], payload])

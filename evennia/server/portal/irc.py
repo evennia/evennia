@@ -283,7 +283,7 @@ class IRCBot(irc.IRCClient, Session):
         """
         self.sessionhandler.data_in(self, bot_data_in=[parse_irc_to_ansi(text), kwargs])
 
-    def send_channel(self, *args, **kwargs):
+    def send_channel(self, /, *args, **kwargs):
         """
         Send channel text to IRC channel (visible to all). Note that
         we don't handle the "text" send (it's rerouted to send_default
@@ -300,7 +300,7 @@ class IRCBot(irc.IRCClient, Session):
             text = parse_ansi_to_irc(text)
             self.say(self.channel, text)
 
-    def send_privmsg(self, *args, **kwargs):
+    def send_privmsg(self, /, *args, **kwargs):
         """
         Send message only to specific user.
 
@@ -318,7 +318,7 @@ class IRCBot(irc.IRCClient, Session):
             text = parse_ansi_to_irc(text)
             self.msg(user, text)
 
-    def send_request_nicklist(self, *args, **kwargs):
+    def send_request_nicklist(self, /, *args, **kwargs):
         """
         Send a request for the channel nicklist. The return (handled
         by `self.irc_RPL_ENDOFNAMES`) will be sent back as a message
@@ -326,21 +326,21 @@ class IRCBot(irc.IRCClient, Session):
         """
         self.get_nicklist()
 
-    def send_ping(self, *args, **kwargs):
+    def send_ping(self, /, *args, **kwargs):
         """
         Send a ping. The return (handled by `self.pong`) will be sent
         back as a message of type 'ping'.
         """
         self.ping(self.nickname)
 
-    def send_reconnect(self, *args, **kwargs):
+    def send_reconnect(self, /, *args, **kwargs):
         """
         The server instructs us to rebuild the connection by force,
         probably because the client silently lost connection.
         """
         self.factory.reconnect()
 
-    def send_default(self, *args, **kwargs):
+    def send_default(self, /, *args, **kwargs):
         """
         Ignore other types of sends.
 

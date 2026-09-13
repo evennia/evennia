@@ -137,7 +137,7 @@ class TelnetOOB:
 
     # encoders
 
-    def encode_msdp(self, cmdname, *args, **kwargs):
+    def encode_msdp(self, cmdname, /, *args, **kwargs):
         """
         Encode into a valid MSDP command.
 
@@ -208,7 +208,7 @@ class TelnetOOB:
         # print("msdp_string:", msdp_string)  # DEBUG
         return msdp_string.encode()
 
-    def encode_gmcp(self, cmdname, *args, **kwargs):
+    def encode_gmcp(self, cmdname, /, *args, **kwargs):
         """
         Encode into GMCP messages.
 
@@ -348,7 +348,7 @@ class TelnetOOB:
 
     # access methods
 
-    def data_out(self, cmdname, *args, **kwargs):
+    def data_out(self, cmdname, /, *args, **kwargs):
         """
         Return a MSDP- or GMCP-valid subnegotiation across the protocol.
 
