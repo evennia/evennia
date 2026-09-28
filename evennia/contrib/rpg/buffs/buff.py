@@ -421,8 +421,7 @@ class BuffHandler:
     def all(self):
         """Returns dictionary of instanced buffs equivalent to ALL buffs on this handler,
         regardless of state, type, or anything else."""
-        _a = self.get_all()
-        return _a
+        return self.get()
 
     # endregion
 
@@ -524,250 +523,84 @@ class BuffHandler:
         if b["duration"] > -1:
             utils.delay(b["duration"], self.cleanup, persistent=True)
 
-    # region removers
-    def remove(self, key, stacks=0, loud=True, dispel=False, expire=False, context=None):
-        """Remove a buff or effect with matching key from this object. Normally calls at_remove,
-        calls at_expire if the buff expired naturally, and optionally calls at_dispel. Can also
-        remove stacks instead of the entire buff (still calls at_remove). Typically called via a helper method
-        on the buff instance, or other methods on the handler.
-
-        Args:
-            key:        The buff key
-            loud:       (optional) Calls at_remove when True. (default: True)
-            dispel:     (optional) Calls at_dispel when True. (default: False)
-            expire:     (optional) Calls at_expire when True. (default: False)
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
-        """
-        if not context:
-            context = {}
-        if key not in self.buffcache:
-            return
-
-        buff: BaseBuff = self.buffcache[key]
-        instance: BaseBuff = buff["ref"](self, key, buff)
-
-        if loud:
-            if dispel:
-                instance.at_dispel(**context)
-            elif expire:
-                instance.at_expire(**context)
-            instance.at_remove(**context)
-
-        del instance
-        if not stacks:
-            del self.buffcache[key]
-        elif stacks:
-            self.buffcache[key]["stacks"] -= stacks
-            if self.buffcache[key]["stacks"] <= 0:
-                del self.buffcache[key]
-
-    def remove_by_type(
-        self,
-        bufftype: BaseBuff,
-        loud=True,
-        dispel=False,
-        expire=False,
-        context=None,
-    ):
-        """Removes all buffs of a specified type from this object. Functionally similar to remove, but takes a type instead.
-
-        Args:
-            bufftype:   The buff class to remove
-            loud:       (optional) Calls at_remove when True. (default: True)
-            dispel:     (optional) Calls at_dispel when True. (default: False)
-            expire:     (optional) Calls at_expire when True. (default: False)
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
-        """
-        _remove = self.get_by_type(bufftype)
-        if not _remove:
-            return
-        self._remove_via_dict(_remove, loud, dispel, expire, context)
-
-    def remove_by_stat(
-        self,
-        stat,
-        loud=True,
-        dispel=False,
-        expire=False,
-        context=None,
-    ):
-        """Removes all buffs modifying the specified stat from this object.
-
-        Args:
-            stat:       The stat string to search for
-            loud:       (optional) Calls at_remove when True. (default: True)
-            dispel:     (optional) Calls at_dispel when True. (default: False)
-            expire:     (optional) Calls at_expire when True. (default: False)
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
-        """
-        _remove = self.get_by_stat(stat)
-        if not _remove:
-            return
-        self._remove_via_dict(_remove, loud, dispel, expire, context)
-
-    def remove_by_trigger(
-        self,
-        trigger,
-        loud=True,
-        dispel=False,
-        expire=False,
-        context=None,
-    ):
-        """Removes all buffs with the specified trigger from this object.
-
-        Args:
-            trigger:    The stat string to search for
-            loud:       (optional) Calls at_remove when True. (default: True)
-            dispel:     (optional) Calls at_dispel when True. (default: False)
-            expire:     (optional) Calls at_expire when True. (default: False)
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
-        """
-        _remove = self.get_by_trigger(trigger)
-        if not _remove:
-            return
-        self._remove_via_dict(_remove, loud, dispel, expire, context)
-
-    def remove_by_source(
-        self,
-        source,
-        loud=True,
-        dispel=False,
-        expire=False,
-        context=None,
-    ):
-        """Removes all buffs from the specified source from this object.
-
-        Args:
-            source:     The source to search for
-            loud:       (optional) Calls at_remove when True. (default: True)
-            dispel:     (optional) Calls at_dispel when True. (default: False)
-            expire:     (optional) Calls at_expire when True. (default: False)
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
-        """
-        _remove = self.get_by_source(source)
-        if not _remove:
-            return
-        self._remove_via_dict(_remove, loud, dispel, expire, context)
-
-    def remove_by_cachevalue(
-        self,
-        key,
-        value=None,
-        loud=True,
-        dispel=False,
-        expire=False,
-        context=None,
-    ):
-        """Removes all buffs with the cachevalue from this object. Functionally similar to remove, but checks the buff's cache values instead.
-
-        Args:
-            key:         The key of the cache value to check
-            value:      (optional) The value to match to. If None, merely checks to see if the value exists
-            loud:       (optional) Calls at_remove when True. (default: True)
-            dispel:     (optional) Calls at_dispel when True. (default: False)
-            expire:     (optional) Calls at_expire when True. (default: False)
-            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
-        """
-        _remove = self.get_by_cachevalue(key, value)
-        if not _remove:
-            return
-        self._remove_via_dict(_remove, loud, dispel, expire, context)
+    def remove(
+            self,
+            key: str = None,
+            stacks: int = 0,
+            buffref: BaseBuff = None,
+            stat: str = None,
+            trigger: str = None,
+            source=None,
+            loud=True,
+            dispel=False,
+            expire=False,
+            context=None,
+        ):
+            """
+            Combines the functionality of all removers into one.
+    
+            Args:
+                key:        (optional) The buff key. Supersedes all other removers
+                stacks:     (optional) The amount of stacks to remove; if unspecified, will remove the buff completely
+                tag:        (optional) The tag string to search for
+                bufftype:   (optional) The buff class to remove
+                stat:       (optional) The stat string to search for
+                trigger:    (optional) The trigger string to search for
+                source:     (optional) The source to search for
+                loud:       Calls all removal hooks when True. (default: True)
+                dispel:     Calls at_dispel when True. (default: False)
+                expire:     Calls at_expire when True. (default: False)
+                context:    A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+            """
+            
+            _buffs = self.get(key=key, buffref=buffref, stat=stat, trigger=trigger, source=source)
+            self._remove_via_dict(_buffs, stacks, loud, dispel, expire, context)
 
     def clear(self, loud=True, dispel=False, expire=False, context=None):
         """Removes all buffs on this handler"""
-        cache = self.all
-        self._remove_via_dict(cache, loud, dispel, expire, context)
+        self.remove(loud=loud, dispel=dispel, expire=expire, context=context)
 
-    # endregion
-    # region getters
-    def get(self, key: str):
-        """If the specified key is on this handler, return the instanced buff. Otherwise return None.
-        You should delete this when you're done with it, so that garbage collection doesn't have to.
+    def get(self, key: str=None, buffref: BaseBuff=None, stat: str=None, trigger: str=None, source=None, to_filter=None) -> dict:
+        """Grabs buffs according to the specified arguments. If no arguments are specified, grabs all buffs instead. Always returns a dictionary, even if only a single buff is found.
 
         Args:
-            key:    The key for the buff you wish to get"""
-        buff = self.buffcache.get(key)
-        if buff:
-            return buff["ref"](self, key, buff)
-        else:
-            return None
-
-    def get_all(self):
-        """Returns a dictionary of instanced buffs (all of them) on this handler in the format {buffkey: instance}"""
-        _cache = dict(self.buffcache)
-        if not _cache:
-            return {}
-        return {k: buff["ref"](self, k, buff) for k, buff in _cache.items()}
-
-    def get_by_type(self, buff: BaseBuff, to_filter=None):
-        """Finds all buffs matching the given type.
-
-        Args:
-            buff:       The buff class to search for
+            key:        (optional) The key for the buff you wish to get. Supersedes all other getters.
+            buffref:    (optional) The buff class to search for
+            stat:       (optional) The string identifier to find relevant mods
+            trigger:    (optional) The string identifier to find relevant buffs
+            source:     (optional) The source you want to filter buffs by
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
+            
+            """
 
-        Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}.
-        """
-        _cache = self.get_all() if not to_filter else to_filter
-        return {k: _buff for k, _buff in _cache.items() if isinstance(_buff, buff)}
+        # get cache and instance all buffs in it
+        _buffs = {}
+        _cache = dict(self.buffcache) if not to_filter else to_filter
+        if not _cache: return {}
+        _buffs = {k: b["ref"](self, k, b) for k, b in _cache.items()}
 
-    def get_by_stat(self, stat: str, to_filter=None):
-        """Finds all buffs which contain a Mod object that modifies the specified stat.
+        # find by key. supersedes all other get categories
+        if key:
+            _buff = _buffs.get(key)
+            if _buff: return {key: _buff}
+            else: return {}
 
-        Args:
-            stat:       The string identifier to find relevant mods
-            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
-
-        Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}.
-        """
-        _cache = self.traits if not to_filter else to_filter
-        buffs = {k: buff for k, buff in _cache.items() for m in buff.mods if m.stat == stat}
-        return buffs
-
-    def get_by_trigger(self, trigger: str, to_filter=None):
-        """Finds all buffs with the matching string in their triggers.
-
-        Args:
-            trigger:    The string identifier to find relevant buffs
-            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
-
-        Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}.
-        """
-        _cache = self.effects if not to_filter else to_filter
-        buffs = {k: buff for k, buff in _cache.items() if trigger in buff.triggers}
-        return buffs
-
-    def get_by_source(self, source, to_filter=None):
-        """Find all buffs with the matching source.
-
-        Args:
-            source: The source you want to filter buffs by
-            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
-
-        Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}.
-        """
-        _cache = self.all if not to_filter else to_filter
-        buffs = {k: buff for k, buff in _cache.items() if buff.source == source}
-        return buffs
-
-    def get_by_cachevalue(self, key, value=None, to_filter=None):
-        """Find all buffs with a matching {key: value} pair in its cache. Allows you to search buffs by arbitrary cache values
-
-        Args:
-            key:    The key of the cache value to check
-            value:  (optional) The value to match to. If None, merely checks to see if the value exists
-            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
-
-        Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}.
-        """
-        _cache = self.all if not to_filter else to_filter
-        if not value:
-            buffs = {k: buff for k, buff in _cache.items() if buff.cache.get(key)}
-        elif value:
-            buffs = {k: buff for k, buff in _cache.items() if buff.cache.get(key) == value}
-        return buffs
-
-    # endregion
+        # dictionary slices
+        if buffref: _buffs = {k: _buff 
+                              for k, _buff in _buffs.items() 
+                              if isinstance(_buff, buffref)}
+        if stat: _buffs = {k: _buff 
+                           for k, _buff in _buffs.items() 
+                           for m in _buff.mods 
+                           if m.stat == stat}
+        if trigger: _buffs = {k: _buff 
+                              for k, _buff in _buffs.items() 
+                              if trigger in _buff.triggers}
+        if source: _buffs = {k: _buff 
+                             for k, _buff in _buffs.items() 
+                             if _buff.source == source}
+            
+        return _buffs
 
     def has(self, buff=None) -> bool:
         """Checks if the specified buff type or key exists on the handler.
@@ -1082,12 +915,13 @@ class BuffHandler:
             )
         return final
 
-    def _remove_via_dict(self, buffs: dict, loud=True, dispel=False, expire=False, context=None):
-        """Removes buffs within the provided dictionary from this handler. Used for remove methods besides the basic remove."""
+    def _remove_via_dict(self, buffs: dict, stacks:int=0, loud=True, dispel=False, expire=False, context=None):
+        """Removes buffs within the provided dictionary from this handler. Used for all remove methods."""
         if not context:
             context = {}
         if not buffs:
             return
+        
         for k, instance in buffs.items():
             instance: BaseBuff
             if loud:
@@ -1096,10 +930,241 @@ class BuffHandler:
                 elif expire:
                     instance.at_expire(**context)
                 instance.at_remove(**context)
-            del instance
-            del self.buffcache[k]
+
+            if not stacks:
+                del self.buffcache[k]
+            elif stacks:
+                self.buffcache[k]["stacks"] -= stacks
+                if self.buffcache[k]["stacks"] <= 0:
+                    del instance
+                    del self.buffcache[k]
 
     # endregion
+    # endregion
+    # region deprecated
+    def old_remove(self, key, stacks=0, loud=True, dispel=False, expire=False, context=None):
+        """Remove a buff or effect with matching key from this object. Normally calls at_remove,
+        calls at_expire if the buff expired naturally, and optionally calls at_dispel. Can also
+        remove stacks instead of the entire buff (still calls at_remove). Typically called via a helper method
+        on the buff instance, or other methods on the handler.
+
+        Args:
+            key:        The buff key
+            loud:       (optional) Calls at_remove when True. (default: True)
+            dispel:     (optional) Calls at_dispel when True. (default: False)
+            expire:     (optional) Calls at_expire when True. (default: False)
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+        """
+        if not context:
+            context = {}
+        if key not in self.buffcache:
+            return
+
+        buff: BaseBuff = self.buffcache[key]
+        instance: BaseBuff = buff["ref"](self, key, buff)
+
+        if loud:
+            if dispel:
+                instance.at_dispel(**context)
+            elif expire:
+                instance.at_expire(**context)
+            instance.at_remove(**context)
+
+        del instance
+        if not stacks:
+            del self.buffcache[key]
+        elif stacks:
+            self.buffcache[key]["stacks"] -= stacks
+            if self.buffcache[key]["stacks"] <= 0:
+                del self.buffcache[key]
+    
+    def get_all(self):
+        """Returns a dictionary of instanced buffs (all of them) on this handler in the format {buffkey: instance}"""
+        _cache = dict(self.buffcache)
+        if not _cache:
+            return {}
+        return {k: buff["ref"](self, k, buff) for k, buff in _cache.items()}
+
+    def get_by_type(self, buff: BaseBuff, to_filter=None):
+        """Finds all buffs matching the given type.
+
+        Args:
+            buff:       The buff class to search for
+            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
+
+        Returns a dictionary of instanced buffs of the specified type in the format {buffkey: instance}.
+        """
+        _cache = self.get() if not to_filter else to_filter
+        return {k: _buff for k, _buff in _cache.items() if isinstance(_buff, buff)}
+
+    def get_by_stat(self, stat: str, to_filter=None):
+        """Finds all buffs which contain a Mod object that modifies the specified stat.
+
+        Args:
+            stat:       The string identifier to find relevant mods
+            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
+
+        Returns a dictionary of instanced buffs which modify the specified stat in the format {buffkey: instance}.
+        """
+        _cache = self.traits if not to_filter else to_filter
+        buffs = {k: buff for k, buff in _cache.items() for m in buff.mods if m.stat == stat}
+        return buffs
+
+    def get_by_trigger(self, trigger: str, to_filter=None):
+        """Finds all buffs with the matching string in their triggers.
+
+        Args:
+            trigger:    The string identifier to find relevant buffs
+            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
+
+        Returns a dictionary of instanced buffs which fire off the designated trigger, in the format {buffkey: instance}.
+        """
+        _cache = self.effects if not to_filter else to_filter
+        buffs = {k: buff for k, buff in _cache.items() if trigger in buff.triggers}
+        return buffs
+
+    def get_by_source(self, source, to_filter=None):
+        """Find all buffs with the matching source.
+
+        Args:
+            source: The source you want to filter buffs by
+            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
+
+        Returns a dictionary of instanced buffs which came from the provided source, in the format {buffkey: instance}.
+        """
+        _cache = self.get() if not to_filter else to_filter
+        buffs = {k: buff for k, buff in _cache.items() if buff.source == source}
+        return buffs
+
+    def get_by_cachevalue(self, key, value=None, to_filter=None):
+        """Find all buffs with a matching {key: value} pair in its cache. Allows you to search buffs by arbitrary cache values
+
+        Args:
+            key:    The key of the cache value to check
+            value:  (optional) The value to match to. If None, merely checks to see if the value exists
+            to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
+
+        Returns a dictionary of instanced buffs with cache values matching the specified value, in the format {buffkey: instance}.
+        """
+        _cache = self.all if not to_filter else to_filter
+        if not value:
+            buffs = {k: buff for k, buff in _cache.items() if buff.cache.get(key)}
+        elif value:
+            buffs = {k: buff for k, buff in _cache.items() if buff.cache.get(key) == value}
+        return buffs
+
+    def remove_by_type(
+            self,
+            bufftype: BaseBuff,
+            loud=True,
+            dispel=False,
+            expire=False,
+            context=None,
+        ):
+            """Removes all buffs of a specified type from this object. Functionally similar to remove, but takes a type instead.
+    
+            Args:
+                bufftype:   The buff class to remove
+                loud:       (optional) Calls at_remove when True. (default: True)
+                dispel:     (optional) Calls at_dispel when True. (default: False)
+                expire:     (optional) Calls at_expire when True. (default: False)
+                context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+            """
+            _remove = self.get_by_type(bufftype)
+            if not _remove:
+                return
+            self._remove_via_dict(_remove, loud, dispel, expire, context)
+    
+    def remove_by_stat(
+        self,
+        stat,
+        loud=True,
+        dispel=False,
+        expire=False,
+        context=None,
+    ):
+        """Removes all buffs modifying the specified stat from this object.
+
+        Args:
+            stat:       The stat string to search for
+            loud:       (optional) Calls at_remove when True. (default: True)
+            dispel:     (optional) Calls at_dispel when True. (default: False)
+            expire:     (optional) Calls at_expire when True. (default: False)
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+        """
+        _remove = self.get_by_stat(stat)
+        if not _remove:
+            return
+        self._remove_via_dict(_remove, loud, dispel, expire, context)
+
+    def remove_by_trigger(
+        self,
+        trigger,
+        loud=True,
+        dispel=False,
+        expire=False,
+        context=None,
+    ):
+        """Removes all buffs with the specified trigger from this object.
+
+        Args:
+            trigger:    The stat string to search for
+            loud:       (optional) Calls at_remove when True. (default: True)
+            dispel:     (optional) Calls at_dispel when True. (default: False)
+            expire:     (optional) Calls at_expire when True. (default: False)
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+        """
+        _remove = self.get_by_trigger(trigger)
+        if not _remove:
+            return
+        self._remove_via_dict(_remove, loud, dispel, expire, context)
+
+    def remove_by_source(
+        self,
+        source,
+        loud=True,
+        dispel=False,
+        expire=False,
+        context=None,
+    ):
+        """Removes all buffs from the specified source from this object.
+
+        Args:
+            source:     The source to search for
+            loud:       (optional) Calls at_remove when True. (default: True)
+            dispel:     (optional) Calls at_dispel when True. (default: False)
+            expire:     (optional) Calls at_expire when True. (default: False)
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+        """
+        _remove = self.get_by_source(source)
+        if not _remove:
+            return
+        self._remove_via_dict(_remove, loud, dispel, expire, context)
+
+    def remove_by_cachevalue(
+        self,
+        key,
+        value=None,
+        loud=True,
+        dispel=False,
+        expire=False,
+        context=None,
+    ):
+        """Removes all buffs with the cachevalue from this object. Functionally similar to remove, but checks the buff's cache values instead.
+
+        Args:
+            key:         The key of the cache value to check
+            value:      (optional) The value to match to. If None, merely checks to see if the value exists
+            loud:       (optional) Calls at_remove when True. (default: True)
+            dispel:     (optional) Calls at_dispel when True. (default: False)
+            expire:     (optional) Calls at_expire when True. (default: False)
+            context:    (optional) A dictionary you wish to pass to the at_remove/at_dispel/at_expire method as kwargs
+        """
+        _remove = self.get_by_cachevalue(key, value)
+        if not _remove:
+            return
+        self._remove_via_dict(_remove, loud, dispel, expire, context)
+
     # endregion
 
 
@@ -1176,7 +1241,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
         context = {}
 
     # Instantiate the buff and tickrate
-    buff: BaseBuff = handler.get(buffkey)
+    buff: BaseBuff = handler.get(buffkey)[buffkey]
     tr = max(1, buff.tickrate)
 
     # This stops the old ticking process if you refresh/stack the buff
