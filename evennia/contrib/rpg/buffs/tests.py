@@ -183,8 +183,8 @@ class TestBuffsAndHandler(EvenniaTest):
         handler.add(_TestModBuff, source=self.obj2)
         handler.add(_TestTrigBuff, to_cache={"ttbcache": True})
         # normal getter
-        self.assertTrue(isinstance(handler.get("tmb")["tmb"], _TestModBuff))
-        self.assertFalse("ttb" in handler.get("tmb").keys())
+        self.assertTrue(isinstance(handler.get("tmb"), _TestModBuff))
+        self.assertFalse(isinstance(handler.get("ttb"), _TestModBuff))
         # stat getters
         self.assertTrue(isinstance(handler.get(stat="stat1")["tmb"], _TestModBuff))
         self.assertFalse(handler.get(stat="nullstat"))
@@ -193,7 +193,7 @@ class TestBuffsAndHandler(EvenniaTest):
         self.assertFalse("ttb" in handler.get(trigger="nulltrig").keys())
         # type getters
         self.assertTrue("tmb" in handler.get(buffref=_TestModBuff))
-        self.assertFalse("tmb" in handler.get_by_type(_EmptyBuff))
+        self.assertFalse("tmb" in handler.get(buffref=_EmptyBuff))
         # source getter
         self.assertTrue("tmb" in handler.get(source=self.obj2))
         self.assertFalse("ttb" in handler.get(source=self.obj2))
@@ -208,8 +208,8 @@ class TestBuffsAndHandler(EvenniaTest):
         handler: BuffHandler = self.testobj.buffs
         handler.add(_TestModBuff)
         handler.add(_TestTrigBuff)
-        self.assertEqual(handler.get("tmb")["tmb"].flavor, "modderbuff")
-        self.assertEqual(handler.get("ttb")["ttb"].name, "ttb")
+        self.assertEqual(handler.get("tmb").flavor, "modderbuff")
+        self.assertEqual(handler.get("ttb").name, "ttb")
         mods = handler.view_modifiers("stat1")
         _testmods = {
             "add": {"total": 15, "strongest": 15},
@@ -368,14 +368,14 @@ class TestBuffsAndHandler(EvenniaTest):
         mock_delay.assert_has_calls(calls)
         self.testobj.db.timetest, self.testobj.db.ticktest = 1, False
         # test duration and ticking
-        _instance = handler.get("ttib")["ttib"]
+        _instance = handler.get("ttib")
         self.assertTrue(_instance.ticking)
         self.assertEqual(_instance.duration, 5)
         _instance.at_tick()
         self.assertTrue(self.testobj.db.ticktest)
         # test duration modification and cleanup
         _instance.duration = 0
-        self.assertEqual(handler.get("ttib")["ttib"].duration, 0)
+        self.assertEqual(handler.get("ttib").duration, 0)
         handler.cleanup()
         self.assertFalse(handler.get("ttib"), {})
 
@@ -386,7 +386,7 @@ class TestBuffsAndHandler(EvenniaTest):
         handler: BuffHandler = self.testobj.buffs
         handler.add(_EmptyBuff)
         self.assertEqual(handler.buffcache["empty"]["duration"], -1)
-        empty: _EmptyBuff = handler.get("empty")["empty"]
+        empty: _EmptyBuff = handler.get("empty")
         empty.duration = 30
         self.assertEqual(handler.buffcache["empty"]["duration"], 30)
 
@@ -427,5 +427,5 @@ class TestBuffsAndHandler(EvenniaTest):
         handler.add(StatBuff, key="gentest", to_cache=tc)
         self.assertEqual(handler.check(self.testobj.db.gentest, "gentest"), 15)
         self.assertEqual(
-            handler.get("gentest")["gentest"].flavor, "This buff affects the following stats: gentest"
+            handler.get("gentest").flavor, "This buff affects the following stats: gentest"
         )

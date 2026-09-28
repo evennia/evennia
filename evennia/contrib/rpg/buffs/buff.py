@@ -109,24 +109,24 @@ from evennia.utils import search, utils
 
 
 class BaseBuff:
-    key = "template"  # The buff's unique key. Will be used as the buff's key in the handler
-    name = "Template"  # The buff's name. Used for user messaging
-    flavor = "Template"  # The buff's flavor text. Used for user messaging
+    key = "template"    # The buff's unique key. Will be used as the buff's key in the handler
+    name = "Template"   # The buff's name. Used for user messaging
+    flavor = "Template" # The buff's flavor text. Used for user messaging
     visible = True  # If the buff is considered "visible" to the "view" method
 
-    triggers = []  # The effect's trigger strings, used for functions.
+    triggers = []   # The buff's trigger strings, used to trigger hook methods.
 
     handler = None
     start = 0
 
-    duration = -1  # Default buff duration; -1 for permanent, 0 for "instant", >0 normal
-    playtime = False  # Does this buff autopause when owning object is unpuppeted?
+    duration = -1   # Default buff duration; -1 for permanent, 0 for "instant", >0 normal
+    playtime = False    # Does this buff autopause when owning object is unpuppeted?
 
-    refresh = True  # Does the buff refresh its timer on application?
-    unique = True  # Does the buff overwrite existing buffs with the same key on the same target?
-    maxstacks = 1  # The maximum number of stacks the buff can have. If >1, this buff will stack.
-    stacks = 1  # Used as the default when applying this buff if no or negative stacks were specified (min: 1)
-    tickrate = 0  # How frequent does this buff tick, in seconds (cannot be lower than 1)
+    refresh = True      # Does the buff refresh its timer on application?
+    unique = True   # Does the buff overwrite existing buffs with the same key on the same target?
+    maxstacks = 1   # The maximum number of stacks the buff can have. If >1, this buff will stack.
+    stacks = 1      # Used as the default when applying this buff if no or negative stacks were specified (min: 1)
+    tickrate = 0    # How frequent does this buff tick, in seconds (cannot be lower than 1)
 
     mods = []  # List of mod objects. See Mod class below for more detail
     cache = {}
@@ -523,30 +523,28 @@ class BuffHandler:
         if b["duration"] > -1:
             utils.delay(b["duration"], self.cleanup, persistent=True)
 
-    def remove(
-            self,
-            key: str = None,
-            stacks: int = 0,
-            buffref: BaseBuff = None,
-            stat: str = None,
-            trigger: str = None,
-            source=None,
-            loud=True,
-            dispel=False,
-            expire=False,
-            context=None,
+    def remove(self,
+               key: str = None,
+               buffref: BaseBuff = None,
+               stat: str = None,
+               trigger: str = None,
+               source=None,
+               stacks: int = 0,
+               loud=True,
+               dispel=False,
+               expire=False,
+               context=None,
         ):
             """
             Combines the functionality of all removers into one.
     
             Args:
                 key:        (optional) The buff key. Supersedes all other removers
-                stacks:     (optional) The amount of stacks to remove; if unspecified, will remove the buff completely
-                tag:        (optional) The tag string to search for
-                bufftype:   (optional) The buff class to remove
+                buffref:    (optional) The buff class to remove
                 stat:       (optional) The stat string to search for
                 trigger:    (optional) The trigger string to search for
                 source:     (optional) The source to search for
+                stacks:     (optional) The amount of stacks to remove; if unspecified, will remove the buff completely
                 loud:       Calls all removal hooks when True. (default: True)
                 dispel:     Calls at_dispel when True. (default: False)
                 expire:     Calls at_expire when True. (default: False)
@@ -554,13 +552,20 @@ class BuffHandler:
             """
             
             _buffs = self.get(key=key, buffref=buffref, stat=stat, trigger=trigger, source=source)
+            if not isinstance(_buffs, dict) and key: _buffs = {key: _buffs} 
             self._remove_via_dict(_buffs, stacks, loud, dispel, expire, context)
 
     def clear(self, loud=True, dispel=False, expire=False, context=None):
         """Removes all buffs on this handler"""
         self.remove(loud=loud, dispel=dispel, expire=expire, context=context)
 
-    def get(self, key: str=None, buffref: BaseBuff=None, stat: str=None, trigger: str=None, source=None, to_filter=None) -> dict:
+    def get(self, 
+            key: str=None, 
+            buffref: BaseBuff=None, 
+            stat: str=None, 
+            trigger: str=None,
+            source=None, 
+            to_filter=None) -> dict | BaseBuff:
         """Grabs buffs according to the specified arguments. If no arguments are specified, grabs all buffs instead. Always returns a dictionary, even if only a single buff is found.
 
         Args:
@@ -570,7 +575,6 @@ class BuffHandler:
             trigger:    (optional) The string identifier to find relevant buffs
             source:     (optional) The source you want to filter buffs by
             to_filter:  (optional) A dictionary you wish to slice. If not provided, uses the whole buffcache.
-            
             """
 
         # get cache and instance all buffs in it
@@ -582,23 +586,14 @@ class BuffHandler:
         # find by key. supersedes all other get categories
         if key:
             _buff = _buffs.get(key)
-            if _buff: return {key: _buff}
+            if _buff: return _buff
             else: return {}
 
         # dictionary slices
-        if buffref: _buffs = {k: _buff 
-                              for k, _buff in _buffs.items() 
-                              if isinstance(_buff, buffref)}
-        if stat: _buffs = {k: _buff 
-                           for k, _buff in _buffs.items() 
-                           for m in _buff.mods 
-                           if m.stat == stat}
-        if trigger: _buffs = {k: _buff 
-                              for k, _buff in _buffs.items() 
-                              if trigger in _buff.triggers}
-        if source: _buffs = {k: _buff 
-                             for k, _buff in _buffs.items() 
-                             if _buff.source == source}
+        if buffref: _buffs = {k: _buff for k, _buff in _buffs.items() if isinstance(_buff, buffref)}
+        if stat: _buffs = {k: _buff for k, _buff in _buffs.items() for m in _buff.mods if m.stat == stat}
+        if trigger: _buffs = {k: _buff for k, _buff in _buffs.items() if trigger in _buff.triggers}
+        if source: _buffs = {k: _buff for k, _buff in _buffs.items() if _buff.source == source}
             
         return _buffs
 
@@ -1241,7 +1236,7 @@ def tick_buff(handler: BuffHandler, buffkey: str, context=None, initial=True):
         context = {}
 
     # Instantiate the buff and tickrate
-    buff: BaseBuff = handler.get(buffkey)[buffkey]
+    buff: BaseBuff = handler.get(buffkey)
     tr = max(1, buff.tickrate)
 
     # This stops the old ticking process if you refresh/stack the buff
