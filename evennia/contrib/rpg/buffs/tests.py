@@ -147,13 +147,16 @@ class TestBuffsAndHandler(EvenniaTest):
         # remove
         handler.remove("tmb")
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
-        # remove stacks
+        # remove stacks (partial and full)
         handler.add(_TestModBuff, stacks=3)
+        handler.remove("tmb", stacks=2)
+        self.assertTrue(self.testobj.db.buffs.get("tmb"))
+        handler.add(_TestModBuff, stacks=2)
         handler.remove("tmb", stacks=3)
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
         # remove by type
         handler.add(_TestModBuff)
-        handler.remove_by_type(_TestModBuff)
+        handler.remove(buffref=_TestModBuff)
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
         # remove by buff instance
         handler.add(_TestModBuff)
@@ -161,7 +164,7 @@ class TestBuffsAndHandler(EvenniaTest):
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
         # remove by source
         handler.add(_TestModBuff)
-        handler.remove_by_source(None)
+        handler.remove(source=None)
         self.assertFalse(self.testobj.db.buffs.get("tmb"))
         # remove by cachevalue
         handler.add(_TestModBuff)
@@ -181,18 +184,19 @@ class TestBuffsAndHandler(EvenniaTest):
         handler.add(_TestTrigBuff, to_cache={"ttbcache": True})
         # normal getter
         self.assertTrue(isinstance(handler.get("tmb"), _TestModBuff))
+        self.assertFalse(isinstance(handler.get("ttb"), _TestModBuff))
         # stat getters
-        self.assertTrue(isinstance(handler.get_by_stat("stat1")["tmb"], _TestModBuff))
-        self.assertFalse(handler.get_by_stat("nullstat"))
+        self.assertTrue(isinstance(handler.get(stat="stat1")["tmb"], _TestModBuff))
+        self.assertFalse(handler.get(stat="nullstat"))
         # trigger getters
-        self.assertTrue("ttb" in handler.get_by_trigger("test1").keys())
-        self.assertFalse("ttb" in handler.get_by_trigger("nulltrig").keys())
+        self.assertTrue("ttb" in handler.get(trigger="test1").keys())
+        self.assertFalse("ttb" in handler.get(trigger="nulltrig").keys())
         # type getters
-        self.assertTrue("tmb" in handler.get_by_type(_TestModBuff))
-        self.assertFalse("tmb" in handler.get_by_type(_EmptyBuff))
+        self.assertTrue("tmb" in handler.get(buffref=_TestModBuff))
+        self.assertFalse("tmb" in handler.get(buffref=_EmptyBuff))
         # source getter
-        self.assertTrue("tmb" in handler.get_by_source(self.obj2))
-        self.assertFalse("ttb" in handler.get_by_source(self.obj2))
+        self.assertTrue("tmb" in handler.get(source=self.obj2))
+        self.assertFalse("ttb" in handler.get(source=self.obj2))
         # cachevalue getter
         self.assertFalse("tmb" in handler.get_by_cachevalue("ttbcache"))
         self.assertTrue("ttb" in handler.get_by_cachevalue("ttbcache"))
@@ -248,7 +252,7 @@ class TestBuffsAndHandler(EvenniaTest):
         # apply only the strongest value
         self.assertEqual(handler.check(_stat1, "stat1", strongest=True), 80)
         # removing mod properly reduces value, doesn't affect other mods
-        handler.remove_by_type(_TestModBuff)
+        handler.remove(buffref=_TestModBuff)
         self.assertEqual(handler.check(_stat1, "stat1"), 30)
         self.assertEqual(handler.check(_stat2, "stat2"), 20)
         # divider mod test
@@ -288,14 +292,14 @@ class TestBuffsAndHandler(EvenniaTest):
         }
         # test negative conditional
         self.assertEqual(
-            handler.get_by_type(_TestConBuff)["tcb"].conditional(**_testcontext), False
+            handler.get(buffref=_TestConBuff)["tcb"].conditional(**_testcontext), False
         )
         handler.trigger("condtest", _testcontext)
         self.assertEqual(self.testobj.db.att, None)
         self.assertEqual(self.testobj.db.dmg, 0)
         # test positive conditional + context passing
         self.testobj.db.cond1 = True
-        self.assertEqual(handler.get_by_type(_TestConBuff)["tcb"].conditional(**_testcontext), True)
+        self.assertEqual(handler.get(buffref=_TestConBuff)["tcb"].conditional(**_testcontext), True)
         handler.trigger("condtest", _testcontext)
         self.assertEqual(self.testobj.db.att, self.obj2)
         self.assertEqual(self.testobj.db.dmg, 5)
@@ -315,7 +319,7 @@ class TestBuffsAndHandler(EvenniaTest):
         handler.trigger("comtest", self.testobj.db.comtext)
         self.assertEqual(self.testobj.db.comtext, {"cond": True})
         self.assertEqual(
-            handler.get_by_type(_TestComplexBuff)["tcomb"].conditional(**self.testobj.db.comtext),
+            handler.get(buffref=_TestComplexBuff)["tcomb"].conditional(**self.testobj.db.comtext),
             False,
         )
         self.assertEqual(
@@ -373,7 +377,7 @@ class TestBuffsAndHandler(EvenniaTest):
         _instance.duration = 0
         self.assertEqual(handler.get("ttib").duration, 0)
         handler.cleanup()
-        self.assertFalse(handler.get("ttib"), None)
+        self.assertFalse(handler.get("ttib"), {})
 
     @patch("evennia.contrib.rpg.buffs.buff.utils.delay", new=Mock())
     def test_cacheattrlink(self):
@@ -404,7 +408,7 @@ class TestBuffsAndHandler(EvenniaTest):
             self.testobj.buffs.add(_TestTrigBuff, key="trig" + str(x))
         self.assertEqual(self.testobj.stat1, 295)
         self.testobj.buffs.trigger("test1")
-        self.testobj.buffs.remove_by_type(_TestModBuff)
+        self.testobj.buffs.remove(buffref=_TestModBuff)
         self.assertEqual(self.testobj.stat1, 10)
         self.testobj.buffs.clear()
         self.assertFalse(self.testobj.buffs.all)
