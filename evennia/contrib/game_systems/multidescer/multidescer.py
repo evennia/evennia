@@ -260,7 +260,7 @@ class CmdMultiDesc(default_cmds.MuxCommand):
                     multidesc = caller.db.multidesc
                     for mkey, desc in multidesc:
                         if key == mkey:
-                            caller.msg("|wDecsription %s:|n\n%s" % (key, desc))
+                            caller.msg("|wDescription %s:|n\n%s" % (key, desc))
                             return
                     caller.msg("Description key '%s' not found." % key)
                 else:
