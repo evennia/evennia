@@ -109,26 +109,39 @@ from evennia.utils import search, utils
 
 
 class BaseBuff:
-    key = "template"    # The buff's unique key. Will be used as the buff's key in the handler
-    name = "Template"   # The buff's name. Used for user messaging
-    flavor = "Template" # The buff's flavor text. Used for user messaging
-    visible = True  # If the buff is considered "visible" to the "view" method
+    key = "template"
+    """The buff's unique key. Will be used as the buff's key in the handler"""
+    name = "Template"
+    """The buff's name. Used for user messaging"""
+    flavor = "Template"
+    """The buff's flavor text. Used for user messaging"""
+    visible = True
+    """If the buff is considered "visible" to the "view" method"""
 
-    triggers = []   # The buff's trigger strings, used to trigger hook methods.
+    triggers = []
+    """The buff's trigger strings, used in the `trigger()` method on the handler and the `at_trigger()` hook method on the buff."""
 
     handler = None
     start = 0
 
-    duration = -1   # Default buff duration; -1 for permanent, 0 for "instant", >0 normal
-    playtime = False    # Does this buff autopause when owning object is unpuppeted?
+    duration = -1
+    """Default buff duration in seconds; -1 for permanent, 0 for "instant", >0 for normal timing."""
+    playtime = False
+    """Does this buff autopause when owning object is unpuppeted?"""
 
-    refresh = True      # Does the buff refresh its timer on application?
-    unique = True   # Does the buff overwrite existing buffs with the same key on the same target?
-    maxstacks = 1   # The maximum number of stacks the buff can have. If >1, this buff will stack.
-    stacks = 1      # Used as the default when applying this buff if no or negative stacks were specified (min: 1)
-    tickrate = 0    # How frequent does this buff tick, in seconds (cannot be lower than 1)
+    refresh = True
+    """Does the buff refresh its timer on application?"""
+    unique = True
+    """Does the buff overwrite existing buffs with the same key on the same target?"""
+    maxstacks = 1
+    """The maximum number of stacks the buff can have. If >1, this buff will stack.""" 
+    stacks = 1
+    """Used as the default when applying this buff if no or negative stacks were specified (min: 1)"""
+    tickrate = 0
+    """How frequent does this buff tick, in seconds. If lower than 1, will not tick."""
 
-    mods = []  # List of mod objects. See Mod class below for more detail
+    mods = []
+    """List of :class:`Mod` objects this buff applies when checked."""
     cache = {}
 
     @property
@@ -308,10 +321,14 @@ class BaseBuff:
 class Mod:
     """A single stat mod object. One buff or trait can hold multiple mods, for the same or different stats."""
 
-    stat = "null"  # The stat string that is checked to see if this mod should be applied
+    stat = "null"
+    """The string used to check if this modifier is applied by the `check()` method on the handler."""
+    modifier = "add"
+    """The modifier the buff applies; 'add' or 'mult'. To do subtraction or division, add a negative or multiply a fraction."""
     value = 0  # Buff's value
-    perstack = 0  # How much additional value is added to the buff per stack
-    modifier = "add"  # The modifier the buff applies. 'add' or 'mult'
+    """The string used to check if this modifier is applied by the `check()` method on the handler."""
+    perstack = 0
+    """How much additional value is added to the buff per stack, including the first."""
 
     def __init__(self, stat: str, modifier: str, value, perstack=0.0) -> None:
         """
