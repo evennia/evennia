@@ -137,9 +137,12 @@ class EvenniaServerService(MultiService):
                 for sess in evennia.SESSION_HANDLER.values()
                 if (now - sess.cmd_last) > settings.IDLE_TIMEOUT
             ):
-                if not session.account or not session.account.access(
-                    session.account, "noidletimeout", default=False
-                ):
+                account = session.account
+                if not account:
+                    to_disconnect.append(session)
+                elif not account.access(
+                    account, "noidletimeout", default=False
+                ) and account.at_pre_idle_disconnect(session):
                     to_disconnect.append(session)
 
             for session in to_disconnect:

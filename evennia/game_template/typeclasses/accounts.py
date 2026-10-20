@@ -121,6 +121,7 @@ class Account(DefaultAccount):
      - at_pre_login()
      - at_post_login(session=None)
      - at_failed_login(session, **kwargs)
+     - at_pre_idle_disconnect(session, **kwargs)
      - at_disconnect(reason=None, **kwargs)
      - at_post_disconnect(**kwargs)
      - at_message_receive()
