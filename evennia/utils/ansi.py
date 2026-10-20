@@ -263,7 +263,9 @@ class ANSIParser(object):
 
     # escapes - these double-chars will be replaced with a single
     # instance of each
-    ansi_escapes = re.compile(r"(%s)" % "|".join(ANSI_ESCAPES), re.DOTALL)
+    ansi_escapes = re.compile(
+        r"(%s)" % "|".join(ANSI_ESCAPES + tuple(settings.COLOR_ANSI_EXTRA_ESCAPES)), re.DOTALL
+    )
 
     # tabs/linebreaks |/ and |- should be able to be cleaned
     unsafe_tokens = re.compile(r"\|\/|\|-", re.DOTALL)
