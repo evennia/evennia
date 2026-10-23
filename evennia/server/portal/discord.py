@@ -185,8 +185,10 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
 
     def reconnect(self):
         """
-        Force a reconnection of the bot protocol. This requires
-        de-registering the session and then reattaching a new one.
+        Reconnect the bot without stopping the factory's retry loop.
+
+        The old session is unregistered by `DiscordClient.onClose` when the
+        connection closes, before the replacement session connects.
 
         """
         # set up the reconnection
@@ -201,7 +203,6 @@ class DiscordWebsocketServerFactory(WebSocketClientFactory, protocol.Reconnectin
         self.delay = self.initialDelay
         # disconnect to allow the reconnection process to kick in
         self.bot.sendClose()
-        self.sessionhandler.server_disconnect(self.bot)
 
     def start(self):
         "Connect protocol to remote server"
@@ -421,13 +422,13 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
 
     def disconnect(self, reason=None):
         """
-        Generic hook for the engine to call in order to
-        disconnect this protocol.
+        Disconnect this protocol permanently at the engine's request.
 
         Args:
             reason (str or None): Motivation for the disconnection.
 
         """
+        self.factory.stopTrying()
         self.sendClose(self.CLOSE_STATUS_CODE_NORMAL, reason)
 
     def identify(self, *args, **kwargs):
