@@ -119,6 +119,40 @@ class TestServer(TestCase):
             calls = [call(sess1, reason=reason), call(sess4, reason=reason)]
             mocksess.disconnect.assert_has_calls(calls, any_order=True)
 
+    @override_settings(IDLE_TIMEOUT=10)
+    def test__server_maintenance_idle_hook(self):
+        with (
+            patch.multiple(
+                "evennia.server.service",
+                LoopingCall=DEFAULT,
+                connection=DEFAULT,
+                time=DEFAULT,
+            ) as mocks,
+            patch.object(evennia, "ServerConfig", new=MagicMock()) as mockconf,
+            patch.object(evennia, "SESSION_HANDLER", new=MagicMock()) as mocksess,
+        ):
+            self.server.maintenance_count = (3600 * 7) - 1
+            self.server._last_server_time_snapshot = 0
+            sess1 = MagicMock()
+            sess2 = MagicMock()
+            sess1.cmd_last = 100  # idle, hook allows the disconnect
+            sess2.cmd_last = 100  # idle, hook blocks the disconnect
+            sess1.account.access = MagicMock(return_value=False)
+            sess2.account.access = MagicMock(return_value=False)
+            sess1.account.at_pre_idle_disconnect = MagicMock(return_value=True)
+            sess2.account.at_pre_idle_disconnect = MagicMock(return_value=False)
+
+            mocks["time"].time = MagicMock(return_value=1000)
+
+            mockconf.objects.conf = MagicMock(return_value=100)
+            mocksess.values = MagicMock(return_value=[sess1, sess2])
+            mocksess.disconnect = MagicMock()
+
+            self.server.server_maintenance()
+            sess1.account.at_pre_idle_disconnect.assert_called_once_with(sess1)
+            sess2.account.at_pre_idle_disconnect.assert_called_once_with(sess2)
+            mocksess.disconnect.assert_called_once_with(sess1, reason="idle timeout exceeded")
+
     def test_update_defaults(self):
         with (
             patch.object(evennia, "ObjectDB", new=MagicMock()) as mockobj,

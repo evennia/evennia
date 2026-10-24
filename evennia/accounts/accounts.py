@@ -298,6 +298,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
      - at_pre_login()
      - at_post_login(session=None)
      - at_failed_login(session, **kwargs)
+     - at_pre_idle_disconnect(session, **kwargs)
      - at_disconnect(reason=None, **kwargs)
      - at_post_disconnect(**kwargs)
      - at_message_receive()
@@ -1758,6 +1759,29 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
                 overriding the call (unused by default).
         """
         pass
+
+    def at_pre_idle_disconnect(self, session, **kwargs):
+        """
+        Called before one of this account's sessions is disconnected for
+        exceeding `settings.IDLE_TIMEOUT`. This is only called if the account
+        does not pass the `noidletimeout` lock.
+
+        Args:
+            session (Session): The idle session about to be disconnected.
+            **kwargs (dict): Arbitrary, optional arguments for users
+                overriding the call (unused by default).
+
+        Returns:
+            bool: If the session should be disconnected.
+
+        Notes:
+            If this method returns False, the session stays connected until
+            the next idle check, where this hook is called again. This allows
+            for custom idle rules, such as only timing out some sessions or
+            using different idle thresholds per permission level.
+
+        """
+        return True
 
     def at_disconnect(self, reason=None, **kwargs):
         """
