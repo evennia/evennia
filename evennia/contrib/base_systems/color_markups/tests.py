@@ -5,6 +5,7 @@ Test Color markup.
 
 import re
 
+from evennia.utils import ansi
 from evennia.utils.test_resources import BaseEvenniaTest
 
 from . import color_markups
@@ -66,3 +67,22 @@ class TestColorMarkup(BaseEvenniaTest):
         bright_map = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
         self.assertEqual(bright_map[0][1], "%c[500")
         self.assertEqual(bright_map[-1][1], "%c[222")
+
+    def test_mux_escape(self):
+        escapes = color_markups.MUX_COLOR_ANSI_EXTRA_ESCAPES
+        self.assertIsNotNone(re.match(escapes[0], "%%"))
+        self.assertIsNone(re.match(escapes[0], "%c"))
+
+        # a parser set up as with the MUX settings (see the class docstring for
+        # why the settings themselves are not overridden here)
+        ansi_map = ansi.ANSIParser.ansi_map + color_markups.MUX_COLOR_ANSI_EXTRA_MAP
+        parser = ansi.ANSIParser()
+        parser.ansi_map_dict = dict(ansi_map)
+        parser.ansi_sub = re.compile(r"|".join(re.escape(tup[0]) for tup in ansi_map))
+        parser.ansi_escapes = re.compile(r"(%s)" % "|".join(ansi.ANSI_ESCAPES + tuple(escapes)))
+        # the parse cache is shared by all parsers, so don't reuse other tests' results
+        ansi._PARSE_CACHE.clear()
+
+        self.assertEqual(parser.parse_ansi("%crred"), ansi.ANSI_RED + "red")
+        self.assertEqual(parser.parse_ansi("%%crred"), "%crred")
+        self.assertEqual(parser.parse_ansi("100%% %crred"), "100% " + ansi.ANSI_RED + "red")
