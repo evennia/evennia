@@ -73,7 +73,7 @@ dependencies = [
   "django-filter == 25.2",
   "django-sekizai == 2.0.0",
   "inflect >= 5.2.0",
-  "autobahn >= 20.7.1, < 21.0.0",
+  "autobahn>=20.7.1,<27.0.0",
   "lunr == 0.7.0.post1",
   "simpleeval == 1.0.5",
   "uritemplate == 4.1.1",
