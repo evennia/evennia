@@ -25,6 +25,8 @@ Assign to the following settings variables (see below for example):
     COLOR_XTERM256_EXTRA_GBG - regex for defining XTERM256 grayscale background colors
     COLOR_ANSI_BRIGHT_BG_EXTRA_MAP = ANSI does not support bright backgrounds; we fake
     this by mapping ANSI markup to matching bright XTERM256 backgrounds
+    COLOR_ANSI_EXTRA_ESCAPES - regexes for escaping the custom markup, so it is
+    shown as text instead of being parsed as color
 
     COLOR_NO_DEFAULT - Set True/False. If False (default), extend the default
     markup, otherwise replace it completely.
@@ -55,4 +57,9 @@ COLOR_XTERM256_EXTRA_BG = color_markups.MUX_COLOR_XTERM256_EXTRA_BG
 COLOR_XTERM256_EXTRA_GFG = color_markups.MUX_COLOR_XTERM256_EXTRA_GFG
 COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
+COLOR_ANSI_EXTRA_ESCAPES = color_markups.MUX_COLOR_ANSI_EXTRA_ESCAPES
 ```
+
+With this, `%%` escapes the markup, so `%%cr` is shown as the text `%cr`
+instead of turning the text red. The `{`-style needs no extra escape, since
+`{{` is always an escape in Evennia.

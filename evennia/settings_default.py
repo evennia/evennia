@@ -527,6 +527,11 @@ COLOR_XTERM256_EXTRA_GBG = []
 # XTERM256 backgrounds where supported. This is a list of tuples that maps the wanted
 # ansi tag (not a regex!) to a valid XTERM256 background tag, such as `(r'{[r', r'{[500')`.
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = []
+# Extra escapes for custom color markup, given as a list of regexes matching a
+# doubled marker character, such as `r"%%"` for `%c`-style markup. Like the default
+# `||`, each match is replaced by a single instance of the character and the text
+# after it is not parsed as color markup. The defaults (`||`, `{{` and `\\`) always apply.
+COLOR_ANSI_EXTRA_ESCAPES = []
 # If set True, the above color settings *replace* the default |-style color markdown
 # rather than extend it.
 COLOR_NO_DEFAULT = False
