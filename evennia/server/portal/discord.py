@@ -534,7 +534,7 @@ class DiscordClient(WebSocketClientProtocol, _BASE_SESSION_CLASS):
             if "guild_id" in data:
                 # message received to a Discord channel
                 keywords["type"] = "channel"
-                author = data["member"]["nick"] or data["author"]["username"]
+                author = data.get("member", {}).get("nick") or data["author"]["username"]
                 author_id = data["author"]["id"]
                 keywords["sender"] = (author_id, author)
                 keywords["guild_id"] = data["guild_id"]
