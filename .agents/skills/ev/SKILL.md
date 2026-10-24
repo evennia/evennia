@@ -20,6 +20,13 @@ If no argument or unrecognized subcommand, show available subcommands.
 **Requires:** `gh` CLI. If not installed, ask the developer to install it
 (https://cli.github.com/) — do not attempt workarounds.
 
+**Always use full URLs.** Whenever you list *or* reference a PR or issue —
+in the main listing, in overlap notes, in follow-up commentary, or in any
+answer to a later question — include its full clickable GitHub URL
+(`https://github.com/evennia/evennia/pull/NNNN` or `/issues/NNNN`). Never
+refer to a PR/issue by a bare `#NNNN` alone; the developer must be able to
+click through to GitHub at all times.
+
 ---
 
 ## prs
@@ -44,7 +51,8 @@ List open PRs on `evennia/evennia` that need maintainer attention.
    ```
    where `<skill_dir>` is the directory containing this SKILL.md file.
 2. Present the output directly to the user — it is already formatted as
-   markdown with clickable URLs.
+   markdown with clickable URLs. Preserve every full URL, and keep them
+   full in any commentary you add (see "Always use full URLs" above).
 
 ---
 
@@ -68,7 +76,8 @@ oldest-first.
    ```
    where `<skill_dir>` is the directory containing this SKILL.md file.
 2. Present the output directly to the user — it is already formatted as
-   markdown with clickable URLs.
+   markdown with clickable URLs. Preserve every full URL, and keep them
+   full in any commentary you add (see "Always use full URLs" above).
 
 ---
 
