@@ -6,6 +6,7 @@
 - [Fix][pull3922]: Fix MXP OPEN mode eating unknown tags like <username> in plain text (blongden)
 - [Fix][pull3962]: Prevent aborting channel message distribution when at_pre_channel_msg returns False/None (owllex)
 - [Fix][pull3968]: EvMenu: format dict helptext per entry (Sanjays2402)
+- Fix: Unit test fixes making tests flaky for some db tests (Griatch)
 - Fix: EvMenu: render dict helptext as a readable list on 'help' instead of a raw dict (Griatch)
 
 [pull3922]: https://github.com/evennia/evennia/pull/3922

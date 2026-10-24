@@ -148,13 +148,14 @@ class TestDatabaseBackupScript(BaseEvenniaCommandTest):
     @patch("evennia.utils.logger.log_err")
     def test_postgres_failure_cleans_up(self, mock_logger, mock_run):
         """A failed pg_dump should not leave a partial .sql file behind."""
+        # creating the script runs a backup immediately, so pg_dump must fail from the start
+        mock_run.side_effect = subprocess.CalledProcessError(1, "pg_dump")
         self.call(
             backup.CmdBackup(),
             "",
             "You have scheduled backups to run every 86400 seconds.",
             caller=self.char1,
         )
-        mock_run.side_effect = subprocess.CalledProcessError(1, "pg_dump")
         self.call(backup.CmdBackup(), "/force", "", caller=self.char1)
         sql_files = (
             [f for f in os.listdir(backup.BACKUP_FOLDER) if f.endswith(".sql")]
