@@ -6,7 +6,8 @@
 - [Fix][pull3922]: Fix MXP OPEN mode eating unknown tags like <username> in plain text (blongden)
 - [Fix][pull3962]: Prevent aborting channel message distribution when at_pre_channel_msg returns False/None (owllex)
 - [Fix][pull3968]: EvMenu: format dict helptext per entry (Sanjays2402)
-- [Fix][issue3716]: Fix bug with Discord integration if not sending member key (Griatch)
+- [Fix][issue3716]: Bug with Discord integration if not sending member key (Griatch)
+- [Fix][issue3997]: Bug where multiple discord bots could trigger and clash (Griatch)
 - Fix: Unit test fixes making tests flaky for some db tests (Griatch)
 - Fix: EvMenu: render dict helptext as a readable list on 'help' instead of a raw dict (Griatch)
 
@@ -15,6 +16,7 @@
 [pull3963]: https://github.com/evennia/evennia/pull/3963
 [pull3968]: https://github.com/evennia/evennia/pull/3968
 [issue3716]: https://github.com/evennia/evennia/issues/3716
+[issue3997]: https://github.com/evennia/evennia/issues/3997
 
 ## Evennia 6.1.0
 
