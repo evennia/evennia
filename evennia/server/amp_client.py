@@ -64,7 +64,7 @@ class AMPClientFactory(protocol.ReconnectingClientFactory):
 
         """
         self.resetDelay()
-        self.server.amp_protocol = AMPServerClientProtocol()
+        self.server.amp_protocol = self.protocol()
         self.server.amp_protocol.factory = self
         return self.server.amp_protocol
 
