@@ -75,54 +75,65 @@ The combination of these two booleans creates one of three kinds of keys:
 
 ### Get Buffs
 
-The handler has several getter methods which return instanced buffs. You won't need to use these for basic functionality, but if you want to manipulate
+The handler has a getter method which return instanced buffs. You won't need to use these for basic functionality, but if you want to manipulate
 buffs after application, they are very useful. The handler's `check`/`trigger` methods utilize some of these getters, while others are just for developer convenience.
 
-`get(key)` is the most basic getter. It returns a single buff instance, or `None` if the buff doesn't exist on the handler. It is also the only getter
-that returns a single buff instance, rather than a dictionary.
+`get()` is the universal getter. Unless a specific key is specified, it returns a "sliced" dictionary of buff instances, based on the arguments fed to it. All arguments are optional; if none are provided, `get()` will provide a dictionary of all buffs associated with the handler.
+
+- `key`: The desired buff's database key. Supersedes all other getters. Returns a singular buff instance instead of a dictionary.
+- `buffref`: The buff class to search for
+- `stat`: The string identifier to find relevant mods
+- `trigger`: The string identifier used to "trigger" a buff; utilized by the `at_trigger` hook on the buff class
+- `source`: The source you want to filter buffs by
 
 > **Note**: The handler method `has(buff)` allows you to check if a matching key (if a string) or buff class (if a class) is present on the handler cache, without actually instantiating the buff. You should use this method for basic "is this buff present?" checks.
 
-Group getters, listed below, return a dictionary of values in the format `{buffkey: instance}`. If you want to iterate over all of these buffs,
-you should do so via the `dict.values()` method.
+By using the `to_filter` argument, you can "slice" an existing dictionary according to whatever criteria you wish.
+
+```python
+dict1 = handler.get(buffref=Burned)                     # This finds all "Burned" buffs on the handler
+dict2 = handler.get(source=self, to_filter=dict1)       # This filters dict1 to find buffs with the matching source
+```
+
+> **Note**: Should you want to utilize a pre-sliced dictionary, there are some handler properties to help.
+> For example, `handler.effects` returns all buffs that can be triggered.
+
+There is one other unique getter: `get_by_cachevalue(key, value)`, which returns buffs with the matching `key: value` pair in their cache. `value` is optional.
+
+### Remove Buffs
+
+You can also remove buffs with the `remove()` method. This function takes all of the same arguments as `get()`, as well as a few extra:
+
+- `stacks`: Determines how many stacks you wish to remove. If unspecified, will remove the buff entirely.
+- `loud`: Determines if the removal hooks - `at_remove`, `at_dispel`, and `at_expire` - for the buff are run. (Default: `True`)
+- `dispel`: Determines if the dispel hook for the buff is run. (Default: `False`)
+- `expire`: Determines if the expiry hook for the buff is run. Becomes `True` when a buff naturally runs out of duration (Default: `False`)
+- `context`: Provides a context dictionary which is fed to the removal hooks via ``**kwargs``
+
+There is one other unique remover: `remove_by_cachevalue(key, value)`, which removes buffs with the matching `key: value` pair in their cache. `value` is optional.
+
+> **Note** You can also remove a buff by calling the instance's `remove` helper method. You can do this by iterating on a dictionary returned by `get()`.
+
+```python
+to_remove = handler.get(trigger="foo")     # Finds all buffs with the specified trigger
+for buff in to_remove.values():                 # Removes all buffs in the to_remove dictionary via helper methods
+    buff.remove()   
+```
+
+#### Deprecated
+
+These getter and remover methods were deprecated, but still function. Their functionalities were rolled into `get()`/`remove()`
 
 - `get_all()` returns all buffs on this handler. You can also use the `handler.all` property.
 - `get_by_type(BuffClass)` returns buffs of the specified type.
 - `get_by_stat(stat)` returns buffs with a `Mod` object of the specified `stat` string in their `mods` list.
 - `get_by_trigger(string)` returns buffs with the specified string in their `triggers` list.
 - `get_by_source(Object)` returns buffs applied by the specified `source` object.
-- `get_by_cachevalue(key, value)` returns buffs with the matching `key: value` pair in their cache. `value` is optional.
-
-All group getters besides `get_all()` can "slice" an existing dictionary through the optional `to_filter` argument.
-
-```python
-dict1 = handler.get_by_type(Burned)                     # This finds all "Burned" buffs on the handler
-dict2 = handler.get_by_source(self, to_filter=dict1)    # This filters dict1 to find buffs with the matching source
-```
-
-> **Note**: Most of these getters also have an associated handler property. For example, `handler.effects` returns all buffs that can be triggered, which
-> is then iterated over by the `get_by_trigger` method.
-
-### Remove Buffs
-
-There are also a number of remover methods. Generally speaking, these follow the same format as the getters.
-
-- `remove(key)` removes the buff with the specified key.
-- `clear()` removes all buffs.
+- `clear()` removes all buffs; the same as passing `remove()`
 - `remove_by_type(BuffClass)` removes buffs of the specified type.
 - `remove_by_stat(stat)` removes buffs with a `Mod` object of the specified `stat` string in their `mods` list.
 - `remove_by_trigger(string)` removes buffs with the specified string in their `triggers` list.
 - `remove_by_source(Object)` removes buffs applied by the specified source
-- `remove_by_cachevalue(key, value)` removes buffs with the matching `key: value` pair in their cache. `value` is optional.
-
-You can also remove a buff by calling the instance's `remove` helper method. You can do this on the dictionaries returned by the
-getters listed above.
-
-```python
-to_remove = handler.get_by_trigger(trigger)     # Finds all buffs with the specified trigger
-for buff in to_remove.values():                 # Removes all buffs in the to_remove dictionary via helper methods
-    buff.remove()   
-```
 
 ### Check Modifiers
 
@@ -277,7 +288,7 @@ However, there are a lot of individual moving parts to a buff. Here's a step-thr
 
 Regardless of any other functionality, all buffs have the following class attributes:
 
-- They have customizable `key`, `name`, and `flavor` strings.
+- They have customizable `key`, `name`, and `flavor` strings
 - They have a `duration` (float), and automatically clean-up at the end. Use -1 for infinite duration, and 0 to clean-up immediately. (default: -1)
 - They have a `tickrate` (float), and automatically tick if it is greater than 1 (default: 0)
 - They can stack, if `maxstacks` (int) is not equal to 1. If it's 0, the buff stacks forever. (default: 1)
@@ -374,6 +385,10 @@ class AmplifyBuff(BaseBuff):
         if trigger == 'damage': print('Damage trigger called!')
         if trigger == 'heal': print('Heal trigger called!')
 ```
+
+> **Note**: You can also use `triggers` as passive tags for your buff. This is useful for grouping that other functions 
+> utilize without calling the trigger. For example, `remove_on_death` could be used to tag all buffs you want removed
+> by your `die()` function.
 
 ### Ticking
 
