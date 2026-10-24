@@ -1044,6 +1044,21 @@ STATICFILES_DIRS = [os.path.join(GAME_DIR, "web", "static")]
 # Patterns of files in the static directories. Used here to make sure that
 # its readme file is preserved but unused.
 STATICFILES_IGNORE_PATTERNS = ["README.md"]
+# Storage backends for uploaded media ("default") and static files ("staticfiles").
+# Evennia's static-files storage 'cache-busts' static files: when collecting static
+# files, it also stores a copy with a hash of the contents in the file name (like
+# `webclient.3a7bd3e2360a.css`) and makes the `{% static %}` template tag point to
+# that copy. This way browsers download a changed CSS/JS file instead of re-using an
+# outdated copy from their cache. To turn this off, set the "staticfiles" BACKEND to
+# "django.contrib.staticfiles.storage.StaticFilesStorage".
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "evennia.web.utils.staticfiles.CacheBustingStaticFilesStorage",
+    },
+}
 # The name of the currently selected web template. This corresponds to the
 # directory names shown in the templates directory.
 WEBSITE_TEMPLATE = "website"

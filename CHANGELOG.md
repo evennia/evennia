@@ -2,6 +2,9 @@
 
 ## Evennia Main branch
 
+- [Feat][issue3775]: Cache-bust website/webclient static files by adding a content
+  hash to their names, so browsers don't keep using outdated CSS/JS files. New default
+  `STORAGES` setting. (Griatch, with inspiration from InspectorCaracal)
 - [Feat][pull3963]: Allow customizing permission required to bypass max puppet limit (owllex)
 - [Fix][pull3922]: Fix MXP OPEN mode eating unknown tags like <username> in plain text (blongden)
 - [Fix][pull3962]: Prevent aborting channel message distribution when at_pre_channel_msg returns False/None (owllex)
@@ -16,6 +19,7 @@
 [pull3963]: https://github.com/evennia/evennia/pull/3963
 [pull3968]: https://github.com/evennia/evennia/pull/3968
 [issue3716]: https://github.com/evennia/evennia/issues/3716
+[issue3775]: https://github.com/evennia/evennia/issues/3775
 [issue3997]: https://github.com/evennia/evennia/issues/3997
 
 ## Evennia 6.1.0

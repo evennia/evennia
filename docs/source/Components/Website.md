@@ -180,8 +180,13 @@ You can also apply static files without reloading, but running this in the termi
 
 (this is run automatically when reloading the server).
 
-> Note that before you see new CSS files applied you may need to refresh your
-> browser without cache (Ctrl-F5 in Firefox, for example).
+> Evennia 'cache-busts' static files. When collecting them, it also stores a copy of each file
+> with a hash of its contents in the name (like `website.828b1e07cfdc.css`) and the
+> `{% static "website/css/website.css" %}` template tag points to that copy. Since the name changes
+> whenever the file changes, browsers will download the new version instead of using an outdated
+> copy from their cache. So when linking to a static file from a template, use `{% static %}`
+> rather than writing out a `/static/...` url. To turn this off, see the `STORAGES` setting in
+> `evennia/settings_default.py`.
 
 As an example, add/copy `custom.css` to `mygame/web/static/website/css/` and add the following:
 
