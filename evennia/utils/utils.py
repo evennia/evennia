@@ -226,7 +226,7 @@ def justify(text, width=None, align="l", indent=0, fillchar=" "):
     """
     Fully justify a text so that it fits inside `width`. When using
     full justification (default) this will be done by padding between
-    words with extra whitespace where necessary. Paragraphs will
+    words with extra whitespace where necessary. Paragraphs then will
     be retained.
 
     Args:
