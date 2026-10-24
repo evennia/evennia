@@ -257,11 +257,12 @@ class EvMore(object):
         self._paginator = self.paginator_index
         self._page_formatter = str
 
-        # set up individual pages for different sessions
-        height = max(4, session.protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
-        self.width = session.protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
-        # always limit number of chars to 10 000 per page
-        self.height = min(10000 // max(1, self.width), height)
+        # keep the original input so we can re-paginate on a terminal resize
+        self._inp = inp
+
+        # set up individual pages based on the current screen size
+        self.width, self.height = self._calc_size()
+        self._last_size = (self.width, self.height)
 
         # does initial parsing of input
         self.init_pages(inp)
@@ -271,10 +272,50 @@ class EvMore(object):
 
     # EvMore functional methods
 
+    def _calc_size(self):
+        """
+        Read the current screen size from the session's protocol flags.
+
+        These flags are updated dynamically by NAWS when the client's terminal
+        is resized, so this is re-read rather than cached to keep pagination in
+        sync with the current terminal dimensions.
+
+        Returns:
+            tuple: The `(width, height)` to use for pagination, where `height`
+                is capped so that a page never exceeds 10 000 characters.
+
+        """
+        protocol_flags = self._session.protocol_flags
+        height = max(4, protocol_flags.get("SCREENHEIGHT", {0: _SCREEN_HEIGHT})[0] - 4)
+        width = protocol_flags.get("SCREENWIDTH", {0: _SCREEN_WIDTH})[0]
+        # always limit number of chars to 10 000 per page
+        height = min(10000 // max(1, width), height)
+        return width, height
+
+    def _check_resize(self):
+        """
+        Re-read the current screen size and re-paginate if it has changed.
+
+        This handles the client resizing their terminal mid-pagination: the
+        pages are re-sliced at the new size and the current position is clamped
+        so it stays within the (possibly smaller) new page count.
+
+        """
+        new_size = self._calc_size()
+        if new_size != self._last_size:
+            self.width, self.height = new_size
+            self._last_size = new_size
+            # re-paginate the original input at the new size
+            self.init_pages(self._inp)
+            # keep the current position valid for the new page count
+            self._npos = max(0, min(self._npos, self._npages - 1))
+
     def display(self, show_footer=True):
         """
         Pretty-print the page.
         """
+        # re-read the terminal size in case it changed mid-pagination
+        self._check_resize()
         pos = 0
         text = "[no content]"
         if self._npages > 0:
