@@ -646,7 +646,7 @@ def msdp_report(session, *args, **kwargs):
     MSDP REPORT command
 
     """
-    kwargs["outputfunc_name":"report"]
+    kwargs["outputfunc_name"] = "report"
     monitor(session, *args, **kwargs)
 
 
