@@ -1977,6 +1977,34 @@ class DefaultGuest(DefaultAccount):
 
     """
 
+    def create_character(self, *args, **kwargs):
+        """
+        Create a character linked to this guest account.
+
+        Unless given explicitly, the character is placed in `settings.GUEST_START_LOCATION`
+        and gets `settings.GUEST_HOME` as its home.
+
+        Args:
+            *args: Passed on to `DefaultAccount.create_character`.
+
+        Keyword Args:
+            location (Object or str, optional): Where to create the character. Defaults
+                to `settings.GUEST_START_LOCATION`.
+            home (Object or str, optional): The character's home. Defaults to
+                `settings.GUEST_HOME`.
+            **kwargs (any): Passed on to `DefaultAccount.create_character`.
+
+        Returns:
+            Object: A new character of the `character_typeclass` type. None on an error.
+            list or None: A list of errors, or None.
+
+        """
+        if "location" not in kwargs:
+            kwargs["location"] = ObjectDB.objects.get_id(settings.GUEST_START_LOCATION)
+        if "home" not in kwargs:
+            kwargs["home"] = ObjectDB.objects.get_id(settings.GUEST_HOME)
+        return super().create_character(*args, **kwargs)
+
     @classmethod
     def create(cls, **kwargs):
         """

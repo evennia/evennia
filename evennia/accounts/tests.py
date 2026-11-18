@@ -97,6 +97,54 @@ class TestDefaultGuest(BaseEvenniaTest):
         self.assertTrue(account, "Guest account should have been created.")
         self.assertFalse(errors)
 
+    def test_character_uses_guest_start_location_and_home(self):
+        """
+        The guest character is created in GUEST_START_LOCATION with GUEST_HOME as home,
+        not in START_LOCATION/DEFAULT_HOME.
+
+        """
+        guest_home = create.create_object(self.room_typeclass, key="GuestHome")
+        with override_settings(
+            START_LOCATION=self.room1.dbref,
+            DEFAULT_HOME=self.room1.dbref,
+            GUEST_START_LOCATION=self.room2.dbref,
+            GUEST_HOME=guest_home.dbref,
+        ):
+            account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertTrue(account, errors)
+        character = account.characters.all()[0]
+        self.assertEqual(character.location, self.room2)
+        self.assertEqual(character.home, guest_home)
+
+    @patch("evennia.accounts.accounts._AUTO_CREATE_CHARACTER_WITH_ACCOUNT", False)
+    def test_character_uses_guest_settings_without_auto_create(self):
+        """The guest settings also apply when the character is created by `authenticate`."""
+        guest_home = create.create_object(self.room_typeclass, key="GuestHome")
+        with override_settings(
+            START_LOCATION=self.room1.dbref,
+            DEFAULT_HOME=self.room1.dbref,
+            GUEST_START_LOCATION=self.room2.dbref,
+            GUEST_HOME=guest_home.dbref,
+        ):
+            account, errors = DefaultGuest.authenticate(ip=self.ip)
+        self.assertTrue(account, errors)
+        character = account.characters.all()[0]
+        self.assertEqual(character.location, self.room2)
+        self.assertEqual(character.home, guest_home)
+
+    def test_create_character_explicit_location_and_home_win(self):
+        """An explicit `location`/`home` passed to create_character is not overridden."""
+        with override_settings(GUEST_START_LOCATION=self.room2.dbref, GUEST_HOME=self.room2.dbref):
+            account, errors = DefaultGuest.authenticate(ip=self.ip)
+            self.assertTrue(account, errors)
+            account.characters.all()[0].delete()
+            character, errs = account.create_character(
+                key="Explicit", location=self.room1, home=self.room1
+            )
+        self.assertFalse(errs)
+        self.assertEqual(character.location, self.room1)
+        self.assertEqual(character.home, self.room1)
+
     def test_at_post_login(self):
         self.account.db._last_puppet = self.char1
         self.account.at_post_login(self.session)
