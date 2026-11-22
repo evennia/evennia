@@ -146,11 +146,12 @@ class CmdUnconnectedConnect(COMMAND_DEFAULT_CLASS):
         Account = class_from_module(settings.BASE_ACCOUNT_TYPECLASS)
 
         name, password = parts
-        account, errors = Account.authenticate(
+        account, errors = yield Account.authenticate_async(
             username=name, password=password, ip=address, session=session
         )
         if account:
-            session.sessionhandler.login(session, account)
+            if not session.logged_in and session.sessid in session.sessionhandler:
+                session.sessionhandler.login(session, account)
         else:
             session.msg("|R%s|n" % "\n".join(errors))
 
@@ -227,7 +228,7 @@ class CmdUnconnectedCreate(COMMAND_DEFAULT_CLASS):
             return
 
         # everything's ok. Create the new player account.
-        account, errors = Account.create(
+        account, errors = yield Account.create_async(
             username=username, password=password, ip=address, session=session
         )
         if account:

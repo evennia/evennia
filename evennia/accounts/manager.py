@@ -201,6 +201,7 @@ class AccountDBManager(TypedObjectManager, UserManager):
         tags=None,
         attributes=None,
         report_to=None,
+        prehashed_password=None,
     ):
         """
         This creates a new account.
@@ -221,6 +222,9 @@ class AccountDBManager(TypedObjectManager, UserManager):
                  `(key, value [, category, [,lockstring [, default_pass]]])`
             report_to (Object): An object with a msg() method to report
                 errors to. If not given, errors will be logged.
+            prehashed_password (str, optional): Already-encoded Django password
+                hash string. When provided, skips cleartext password validation
+                and hashing (used by async account creation and guests).
 
         Returns:
             Account: The newly created Account.
@@ -269,7 +273,9 @@ class AccountDBManager(TypedObjectManager, UserManager):
             last_login=now,
             date_joined=now,
         )
-        if password is not None:
+        if prehashed_password is not None:
+            new_account.password = prehashed_password
+        elif password is not None:
             # the password may be None for 'fake' accounts, like bots
             valid, error = new_account.validate_password(password, new_account)
             if not valid:

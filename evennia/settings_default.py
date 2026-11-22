@@ -1177,6 +1177,20 @@ INSTALLED_APPS = [
 # This should usually not be changed.
 AUTH_USER_MODEL = "accounts.AccountDB"
 
+# Password hashers, in order of preference. Evennia uses an OWASP-compliant
+# Scrypt profile (N=2**15, r=8, p=1, ~32 MiB) that is both memory-hard and
+# faster than Django's default PBKDF2/p=5 Scrypt with no extra dependencies.
+# Keeping Django's standard hashers as fallbacks allows existing accounts to
+# authenticate normally and transparently upgrade their hashes on next login.
+# https://docs.djangoproject.com/en/6.0/topics/auth/passwords/
+PASSWORD_HASHERS = [
+    "evennia.accounts.hashers.EvenniaScryptPasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+]
+
 # Password validation plugins
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [

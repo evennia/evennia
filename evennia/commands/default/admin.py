@@ -10,6 +10,7 @@ import time
 from django.conf import settings
 
 import evennia
+from evennia.accounts.hashers import defer_make_password
 from evennia.server.models import ServerConfig
 from evennia.utils import class_from_module, evtable, logger, search
 
@@ -405,7 +406,8 @@ class CmdNewPassword(COMMAND_DEFAULT_CLASS):
             caller.msg(string)
             return
 
-        account.set_password(newpass)
+        encoded = yield defer_make_password(newpass)
+        account.set_password(encoded, prehashed=True)
         account.save()
         self.msg(f"{account.name} - new password set to '{newpass}'.")
         if account.character != caller:

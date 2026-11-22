@@ -1587,3 +1587,69 @@ class TestCmdSetMergeObjBindings(TestCase):
         self.assertEqual(len(merged2.commands), 2)
         keys = {cmd.key for cmd in merged2.commands}
         self.assertNotIn("b", keys)
+
+
+class TestProgressiveCommandDeferred(TestCase):
+    """No-DB tests for yielding Twisted Deferreds from Command.func()."""
+
+    def test_progressive_cmd_yields_deferred_value_and_falsey(self):
+        """Confirm _progressive_cmd_run resumes with Deferred results including False/None."""
+        from unittest.mock import Mock
+
+        from twisted.internet.defer import Deferred
+
+        from evennia.commands.cmdhandler import _progressive_cmd_run
+
+        d1 = Deferred()
+        d2 = Deferred()
+        d3 = Deferred()
+        received = []
+
+        cmd = Mock()
+        cmd.save_for_next = False
+        cmd.caller = Mock()
+
+        def gen_func():
+            received.append((yield d1))
+            received.append((yield d2))
+            received.append((yield d3))
+
+        _progressive_cmd_run(cmd, gen_func())
+        self.assertEqual(received, [])
+
+        d1.callback("hello")
+        self.assertEqual(received, ["hello"])
+        cmd.at_post_cmd.assert_not_called()
+
+        d2.callback(False)
+        self.assertEqual(received, ["hello", False])
+
+        d3.callback(None)
+        self.assertEqual(received, ["hello", False, None])
+        cmd.at_post_cmd.assert_called_once()
+
+    def test_progressive_cmd_propagates_deferred_errback(self):
+        """Confirm a failed Deferred throws into the command generator."""
+        from unittest.mock import Mock
+
+        from twisted.internet.defer import Deferred
+
+        from evennia.commands.cmdhandler import _progressive_cmd_run
+
+        d = Deferred()
+        caught = []
+
+        cmd = Mock()
+        cmd.save_for_next = False
+        cmd.caller = Mock()
+
+        def gen_func():
+            try:
+                yield d
+            except RuntimeError as err:
+                caught.append(str(err))
+
+        _progressive_cmd_run(cmd, gen_func())
+        d.errback(RuntimeError("boom"))
+        self.assertEqual(caught, ["boom"])
+        cmd.at_post_cmd.assert_called_once()

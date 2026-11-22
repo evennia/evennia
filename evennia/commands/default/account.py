@@ -25,6 +25,7 @@ from codecs import lookup as codecs_lookup
 from django.conf import settings
 
 import evennia
+from evennia.accounts.hashers import defer_check_password, defer_make_password
 from evennia.utils import create, logger, search, utils
 
 COMMAND_DEFAULT_CLASS = utils.class_from_module(settings.COMMAND_DEFAULT_CLASS)
@@ -729,14 +730,16 @@ class CmdPassword(COMMAND_DEFAULT_CLASS):
         # Validate password
         validated, error = account.validate_password(newpass)
 
-        if not account.check_password(oldpass):
+        is_valid, _ = yield defer_check_password(oldpass, account.password)
+        if not is_valid:
             self.msg("The specified old password isn't correct.")
         elif not validated:
             errors = [e for suberror in error.messages for e in error.messages]
             string = "\n".join(errors)
             self.msg(string)
         else:
-            account.set_password(newpass)
+            encoded = yield defer_make_password(newpass)
+            account.set_password(encoded, prehashed=True)
             account.save()
             self.msg("Password changed.")
             logger.log_sec(

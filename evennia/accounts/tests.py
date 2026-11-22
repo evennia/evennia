@@ -3,14 +3,23 @@
 from random import randint
 from unittest import TestCase
 
+from django.conf import settings
+from django.contrib.auth.hashers import PBKDF2PasswordHasher, ScryptPasswordHasher
 from django.test import override_settings
 from mock import MagicMock, Mock, patch
+from twisted.internet.defer import Deferred
 
 import evennia
 from evennia.accounts.accounts import (
     AccountSessionHandler,
     DefaultAccount,
     DefaultGuest,
+)
+from evennia.accounts.hashers import (
+    EvenniaScryptPasswordHasher,
+    defer_check_password,
+    defer_make_password,
+    verify_and_upgrade_password,
 )
 from evennia.utils import create
 from evennia.utils.test_resources import BaseEvenniaTest
@@ -96,6 +105,10 @@ class TestDefaultGuest(BaseEvenniaTest):
             account, errors = DefaultGuest.create()
         self.assertTrue(account, "Guest account should have been created.")
         self.assertFalse(errors)
+        self.assertFalse(
+            account.has_usable_password(),
+            "Ephemeral guest accounts should use an unusable password.",
+        )
 
     def test_at_post_login(self):
         self.account.db._last_puppet = self.char1
@@ -219,6 +232,194 @@ class TestDefaultAccountAuth(BaseEvenniaTest):
         # Try setting a better password (test for False; returns None on success)
         self.assertFalse(account.set_password("Mxyzptlk"))
         account.delete()
+
+    def test_password_hasher_default(self):
+        """Confirm default password hashing uses EvenniaScryptPasswordHasher."""
+        self.assertEqual(
+            settings.PASSWORD_HASHERS[0],
+            "evennia.accounts.hashers.EvenniaScryptPasswordHasher",
+        )
+        self.assertTrue(
+            self.account.password.startswith("scrypt$32768$"),
+            f"Expected scrypt$32768$ hash, got: {self.account.password[:20]}",
+        )
+
+    def test_password_hasher_pbkdf2_upgrade(self):
+        """Confirm legacy PBKDF2 passwords authenticate and upgrade to EvenniaScrypt."""
+        legacy_hash = PBKDF2PasswordHasher().encode(self.password, salt="testsalt", iterations=100)
+        self.account.password = legacy_hash
+        self.account.save(update_fields=["password"])
+
+        account, errors = DefaultAccount.authenticate(self.account.name, self.password)
+        self.assertEqual(account, self.account)
+        self.assertFalse(errors)
+
+        self.account.refresh_from_db()
+        self.assertTrue(
+            self.account.password.startswith("scrypt$32768$"),
+            "Legacy PBKDF2 password should transparently upgrade to EvenniaScrypt on login.",
+        )
+
+        # Verify subsequent authentication with upgraded hash succeeds
+        account, errors = DefaultAccount.authenticate(self.account.name, self.password)
+        self.assertEqual(account, self.account)
+        self.assertFalse(errors)
+
+    def test_authenticate_async(self):
+        """Confirm authenticate_async verifies credentials and upgrades legacy hashes."""
+        d = DefaultAccount.authenticate_async(self.account.name, self.password)
+        self.assertIsInstance(d, Deferred)
+        self.assertTrue(d.called)
+        account, errors = d.result
+        self.assertEqual(account, self.account)
+        self.assertEqual(account.backend, "evennia.web.utils.backends.CaseInsensitiveModelBackend")
+        self.assertFalse(errors)
+
+        # Invalid password fails cleanly
+        d = DefaultAccount.authenticate_async(self.account.name, "wrongpassword")
+        account, errors = d.result
+        self.assertIsNone(account)
+        self.assertTrue(errors)
+
+        # Legacy PBKDF2 password authenticates and upgrades in DB
+        legacy_hash = PBKDF2PasswordHasher().encode(self.password, salt="testsalt", iterations=100)
+        self.account.password = legacy_hash
+        self.account.save(update_fields=["password"])
+
+        d = DefaultAccount.authenticate_async(self.account.name, self.password)
+        account, errors = d.result
+        self.assertEqual(account, self.account)
+        self.assertFalse(errors)
+        self.account.refresh_from_db()
+        self.assertTrue(self.account.password.startswith("scrypt$32768$"))
+
+    def test_authenticate_async_respects_subclass_override(self):
+        """Confirm authenticate_async delegates when a subclass overrides authenticate()."""
+
+        class CustomAccount(DefaultAccount):
+            """Subclass with custom synchronous authenticate."""
+
+            called_sync = False
+
+            @classmethod
+            def authenticate(cls, username, password, ip="", **kwargs):
+                cls.called_sync = True
+                return None, ["custom error"]
+
+        d = CustomAccount.authenticate_async("someone", "secret")
+        account, errors = d.result
+        self.assertTrue(CustomAccount.called_sync)
+        self.assertIsNone(account)
+        self.assertEqual(errors, ["custom error"])
+
+    @override_settings(AUTHENTICATION_BACKENDS=["django.contrib.auth.backends.ModelBackend"])
+    def test_authenticate_async_custom_backend_fallback(self):
+        """Confirm authenticate_async falls back to Django authenticate for custom backends."""
+        with patch(
+            "evennia.accounts.accounts.authenticate", return_value=self.account
+        ) as mock_auth:
+            d = DefaultAccount.authenticate_async(self.account.name, self.password)
+            account, errors = d.result
+        mock_auth.assert_called_once_with(username=self.account.name, password=self.password)
+        self.assertEqual(account, self.account)
+        self.assertFalse(errors)
+
+    def test_create_async(self):
+        """Confirm create_async hashes via defer_make_password and creates valid account."""
+        d = DefaultAccount.create_async(username="asyncziggy", password="stardust11")
+        self.assertIsInstance(d, Deferred)
+        self.assertTrue(d.called)
+        account, errors = d.result
+        self.assertTrue(account)
+        self.assertFalse(errors)
+        self.assertTrue(account.password.startswith("scrypt$32768$"))
+        self.assertTrue(account.check_password("stardust11"))
+        account.delete()
+
+    def test_create_async_skips_hashing_on_validation_error(self):
+        """Confirm create_async does not invoke password hashing when validation fails."""
+        with patch("evennia.accounts.accounts.defer_make_password") as mock_defer:
+            d = DefaultAccount.create_async(username="xx", password="bad")
+            account, errors = d.result
+        self.assertIsNone(account)
+        self.assertTrue(errors)
+        mock_defer.assert_not_called()
+
+
+class TestPasswordHashers(TestCase):
+    """No-DB unit tests for EvenniaScryptPasswordHasher and thread-offload helpers."""
+
+    def test_scrypt_hasher_parameters_and_verify(self):
+        """Confirm EvenniaScryptPasswordHasher uses OWASP N=2**15, r=8, p=1 settings."""
+        hasher = EvenniaScryptPasswordHasher()
+        self.assertEqual(hasher.work_factor, 2**15)
+        self.assertEqual(hasher.block_size, 8)
+        self.assertEqual(hasher.parallelism, 1)
+        self.assertEqual(hasher.maxmem, 64 * 1024 * 1024)
+
+        encoded = hasher.encode("SuperSecret123!", hasher.salt())
+        self.assertTrue(encoded.startswith("scrypt$32768$"))
+        self.assertTrue(hasher.verify("SuperSecret123!", encoded))
+        self.assertFalse(hasher.verify("WrongPassword!", encoded))
+        self.assertFalse(hasher.must_update(encoded))
+
+    def test_scrypt_hasher_verifies_stock_django_scrypt(self):
+        """Confirm stock Django Scrypt hashes verify and flag must_update."""
+        stock_hasher = ScryptPasswordHasher()
+        stock_encoded = stock_hasher.encode("SuperSecret123!", stock_hasher.salt())
+
+        evennia_hasher = EvenniaScryptPasswordHasher()
+        self.assertTrue(evennia_hasher.verify("SuperSecret123!", stock_encoded))
+        self.assertTrue(evennia_hasher.must_update(stock_encoded))
+
+    def test_verify_and_upgrade_password(self):
+        """Confirm pure verify_and_upgrade_password upgrades legacy hashes without DB."""
+        legacy = PBKDF2PasswordHasher().encode("SuperSecret123!", salt="testsalt", iterations=100)
+        is_valid, upgraded = verify_and_upgrade_password("SuperSecret123!", legacy)
+        self.assertTrue(is_valid)
+        self.assertIsNotNone(upgraded)
+        self.assertTrue(upgraded.startswith("scrypt$32768$"))
+
+        # Already-current hash produces no upgrade
+        is_valid2, upgraded2 = verify_and_upgrade_password("SuperSecret123!", upgraded)
+        self.assertTrue(is_valid2)
+        self.assertIsNone(upgraded2)
+
+        # Wrong password fails with no upgrade
+        is_valid3, upgraded3 = verify_and_upgrade_password("WrongPass!", legacy)
+        self.assertFalse(is_valid3)
+        self.assertIsNone(upgraded3)
+
+    def test_defer_helpers_use_thread_when_reactor_running(self):
+        """Confirm defer_check_password and defer_make_password offload when reactor runs."""
+        sentinel_deferred = Deferred()
+        with (
+            patch("evennia.accounts.hashers.reactor") as mock_reactor,
+            patch(
+                "evennia.accounts.hashers.threads.deferToThread", return_value=sentinel_deferred
+            ) as mock_dtt,
+        ):
+            mock_reactor.running = True
+            res = defer_check_password("pw", "encoded")
+            self.assertIs(res, sentinel_deferred)
+            mock_dtt.assert_called_once_with(verify_and_upgrade_password, "pw", "encoded")
+
+            mock_dtt.reset_mock()
+            res2 = defer_make_password("pw")
+            self.assertIs(res2, sentinel_deferred)
+            self.assertEqual(mock_dtt.call_count, 1)
+            self.assertEqual(mock_dtt.call_args[0][1:], ("pw",))
+
+    def test_defer_helpers_sync_when_reactor_stopped(self):
+        """Confirm defer helpers return fired Deferreds when reactor is not running."""
+        d_make = defer_make_password("SuperSecret123!")
+        self.assertTrue(d_make.called)
+        encoded = d_make.result
+        self.assertTrue(encoded.startswith("scrypt$32768$"))
+
+        d_check = defer_check_password("SuperSecret123!", encoded)
+        self.assertTrue(d_check.called)
+        self.assertEqual(d_check.result, (True, None))
 
 
 class TestDefaultAccount(TestCase):
