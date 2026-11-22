@@ -36,7 +36,7 @@ from traceback import format_exc
 from django.conf import settings
 from django.utils.translation import gettext as _
 from twisted.internet import reactor
-from twisted.internet.defer import inlineCallbacks
+from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet.task import deferLater
 
 from evennia.commands.cmdset import CmdSet
@@ -199,7 +199,84 @@ def _process_input(caller, prompt, result, cmd, generator):
     return False
 
 
-def _progressive_cmd_run(cmd, generator, response=None):
+_UNSET = object()
+
+
+def _progressive_cmd_finish(cmd):
+    """
+    Run post-command cleanup after a progressive command generator finishes.
+
+    Args:
+        cmd (Command): The finished command instance.
+
+    """
+    # duplicated from cmdhandler._run_command, to have these
+    # run in the right order while staying inside the deferred
+    cmd.at_post_cmd()
+    if cmd.save_for_next:
+        # store a reference to this command, possibly
+        # accessible by the next command.
+        cmd.caller.ndb.last_cmd = copy(cmd)
+    else:
+        cmd.caller.ndb.last_cmd = None
+
+
+def _progressive_cmd_dispatch(cmd, generator, value):
+    """
+    Handle the value yielded by a progressive command generator.
+
+    Args:
+        cmd (Command): The command itself.
+        generator (GeneratorType): The generator describing the processing.
+        value (int, float, str, or Deferred): The yielded value.
+
+    Raises:
+        ValueError: If `value` is not a supported delay, prompt, or Deferred.
+
+    """
+    global _GET_INPUT
+    if not _GET_INPUT:
+        from evennia.utils.evmenu import get_input as _GET_INPUT
+
+    if isinstance(value, (int, float)):
+        utils.delay(value, _progressive_cmd_run, cmd, generator)
+    elif isinstance(value, str):
+        _GET_INPUT(
+            cmd.caller, value, _process_input, session=cmd.session, cmd=cmd, generator=generator
+        )
+    elif isinstance(value, Deferred):
+        value.addCallbacks(
+            lambda res: _progressive_cmd_run(cmd, generator, response=res),
+            lambda err: _progressive_cmd_err(cmd, generator, err),
+        )
+    else:
+        raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
+
+
+def _progressive_cmd_err(cmd, generator, failure):
+    """
+    Propagate a Twisted Failure from a yielded Deferred into a progressive
+    command generator.
+
+    Args:
+        cmd (Command): The command itself.
+        generator (GeneratorType): The generator describing the processing.
+        failure (Failure): The Failure from the rejected Deferred.
+
+    """
+    try:
+        value = generator.throw(failure.type, failure.value, failure.tb)
+    except StopIteration:
+        _progressive_cmd_finish(cmd)
+    except InterruptCommand:
+        pass
+    except Exception:
+        _msg_err(cmd.caller, _ERROR_UNTRAPPED)
+    else:
+        _progressive_cmd_dispatch(cmd, generator, value)
+
+
+def _progressive_cmd_run(cmd, generator, response=_UNSET):
     """
     Progressively call the command that was given in argument. Used
     when `yield` is present in the Command's `func()` method.
@@ -207,11 +284,11 @@ def _progressive_cmd_run(cmd, generator, response=None):
     Args:
         cmd (Command): the command itself.
         generator (GeneratorType): the generator describing the processing.
-        reponse (str, optional): the response to send to the generator.
+        response (Any, optional): the response to send to the generator.
 
     Raises:
         ValueError: If the func call yields something not identifiable as a
-            time-delay or a string prompt.
+            time-delay, a string prompt, or a Deferred.
 
     Note:
         This function is responsible for executing the command, if
@@ -219,36 +296,20 @@ def _progressive_cmd_run(cmd, generator, response=None):
         value will be accessible at each step and will affect the
         process.  If the value is a number, just delay the execution
         of the command.  If it's a string, wait for the user input.
+        If it's a Twisted `Deferred`, resume with its resolved result.
 
     """
-    global _GET_INPUT
-    if not _GET_INPUT:
-        from evennia.utils.evmenu import get_input as _GET_INPUT
-
     try:
-        if response is None:
+        if response is _UNSET:
             value = next(generator)
         else:
             value = generator.send(response)
     except StopIteration:
-        # duplicated from cmdhandler._run_command, to have these
-        # run in the right order while staying inside the deferred
-        cmd.at_post_cmd()
-        if cmd.save_for_next:
-            # store a reference to this command, possibly
-            # accessible by the next command.
-            cmd.caller.ndb.last_cmd = copy(cmd)
-        else:
-            cmd.caller.ndb.last_cmd = None
+        _progressive_cmd_finish(cmd)
+    except InterruptCommand:
+        pass
     else:
-        if isinstance(value, (int, float)):
-            utils.delay(value, _progressive_cmd_run, cmd, generator)
-        elif isinstance(value, str):
-            _GET_INPUT(
-                cmd.caller, value, _process_input, session=cmd.session, cmd=cmd, generator=generator
-            )
-        else:
-            raise ValueError("unknown type for a yielded value in command: {}".format(type(value)))
+        _progressive_cmd_dispatch(cmd, generator, value)
 
 
 # custom Exceptions

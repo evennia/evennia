@@ -14,16 +14,18 @@ instead for most things).
 import re
 import time
 import typing
-from random import getrandbits
 
 from django.conf import settings
-from django.contrib.auth import authenticate, password_validation
+from django.contrib.auth import authenticate, get_user_model, password_validation
+from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+from twisted.internet.defer import inlineCallbacks
 
 import evennia
+from evennia.accounts.hashers import defer_check_password, defer_make_password
 from evennia.accounts.manager import AccountManager
 from evennia.accounts.models import AccountDB
 from evennia.commands.cmdsethandler import CmdSetHandler
@@ -776,6 +778,98 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         return account, errors
 
     @classmethod
+    @inlineCallbacks
+    def authenticate_async(cls, username, password, ip="", **kwargs):
+        """
+        Non-blocking counterpart to `authenticate()` for Twisted commands.
+
+        Keeps all database, throttle, ban, and hook operations on the main
+        reactor thread while offloading the pure CPU password verification
+        (and any transparent hash upgrade) to a worker thread when the default
+        `CaseInsensitiveModelBackend` is active.
+
+        If a subclass has overridden `authenticate()` or custom
+        `AUTHENTICATION_BACKENDS` are configured, falls back cleanly to the
+        synchronous path.
+
+        Args:
+            username (str): Username of account.
+            password (str): Password of account.
+            ip (str, optional): IP address of client.
+
+        Keyword Args:
+            session (Session, optional): Session requesting authentication.
+
+        Returns:
+            Deferred: Fires with `(account, errors)` matching `authenticate()`.
+
+        """
+        if cls.authenticate.__func__ is not DefaultAccount.authenticate.__func__:
+            return cls.authenticate(username, password, ip=ip, **kwargs)
+
+        errors = []
+        if ip:
+            ip = str(ip)
+
+        # See if authentication is currently being throttled
+        if ip and LOGIN_THROTTLE.check(ip):
+            errors.append(_("Too many login failures; please try again in a few minutes."))
+            return None, errors
+
+        # Check IP and/or name bans
+        banned = cls.is_banned(username=username, ip=ip)
+        if banned:
+            errors.append(
+                _(
+                    "|rYou have been banned and cannot continue from here."
+                    "\nIf you feel this ban is in error, please email an admin.|x"
+                )
+            )
+            logger.log_sec(f"Authentication Denied (Banned): {username} (IP: {ip}).")
+            LOGIN_THROTTLE.update(ip, "Too many sightings of banned artifact.")
+            return None, errors
+
+        default_backend = "evennia.web.utils.backends.CaseInsensitiveModelBackend"
+        if list(settings.AUTHENTICATION_BACKENDS) == [default_backend]:
+            UserModel = get_user_model()
+            try:
+                candidate = UserModel.objects.get(username__iexact=username)
+            except UserModel.DoesNotExist:
+                account = None
+            else:
+                is_valid, upgraded_hash = yield defer_check_password(password, candidate.password)
+                if is_valid:
+                    if upgraded_hash:
+                        candidate.password = upgraded_hash
+                        candidate._password = None
+                        candidate.save(update_fields=["password"])
+                    candidate.backend = default_backend
+                    account = candidate
+                else:
+                    account = None
+        else:
+            account = authenticate(username=username, password=password)
+
+        if not account:
+            errors.append(_("Username and/or password is incorrect."))
+            logger.log_sec(f"Authentication Failure: {username} (IP: {ip}).")
+
+            if ip:
+                LOGIN_THROTTLE.update(ip, _("Too many authentication failures."))
+
+            session = kwargs.get("session", None)
+            if session:
+                failed_account = AccountDB.objects.get_account_from_name(username)
+                if failed_account:
+                    SIGNAL_ACCOUNT_POST_LOGIN_FAIL.send(sender=failed_account, session=session)
+                    failed_account.at_failed_login(session)
+
+            return None, errors
+
+        logger.log_sec(f"Authentication Success: {account} (IP: {ip}).")
+        return account, errors
+
+    @classmethod
     def normalize_username(cls, username):
         """
         Django: Applies NFKC Unicode normalization to usernames so that visually
@@ -870,12 +964,16 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         return valid, error
 
-    def set_password(self, password, **kwargs):
+    def set_password(self, password, prehashed=False, **kwargs):
         """
         Applies the given password to the account. Logs and triggers the `at_password_change` hook.
 
         Args:
-            password (str): Password to set.
+            password (str): Password to set (cleartext, or already-encoded hash
+                string when `prehashed=True`).
+            prehashed (bool, optional): If `True`, `password` is already a
+                Django-formatted hash string (e.g. computed in a worker thread)
+                and will be stored directly without re-hashing.
 
         Notes:
             This is called by Django also when logging in; it should not be mixed up with
@@ -883,7 +981,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             could get invalidated.
 
         """
-        super().set_password(password)
+        if prehashed:
+            self.password = password
+            self._password = None
+        else:
+            super().set_password(password)
         logger.log_sec(f"Password successfully changed for {self}.")
         self.at_password_change()
 
@@ -1026,6 +1128,7 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         username = kwargs.get("username", "")
         password = kwargs.get("password", "")
+        prehashed_password = kwargs.get("prehashed_password", None)
         email = kwargs.get("email", "").strip()
         guest = kwargs.get("guest", False)
 
@@ -1057,10 +1160,11 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
 
         # Validate password
         # Have to create a dummy Account object to check username similarity
-        valid, errs = cls.validate_password(password, account=cls(username=username))
-        if not valid:
-            errors.extend(errs)
-            return None, errors
+        if not (guest and prehashed_password is not None):
+            valid, errs = cls.validate_password(password, account=cls(username=username))
+            if not valid:
+                errors.extend(errs)
+                return None, errors
 
         # Check IP and/or name bans
         banned = cls.is_banned(username=username, ip=ip)
@@ -1077,7 +1181,12 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
         try:
             try:
                 account = create.create_account(
-                    username, email, password, permissions=permissions, typeclass=typeclass
+                    username,
+                    email,
+                    password,
+                    permissions=permissions,
+                    typeclass=typeclass,
+                    prehashed_password=prehashed_password,
                 )
                 logger.log_sec(f"Account Created: {account} (IP: {ip}).")
 
@@ -1136,6 +1245,73 @@ class DefaultAccount(AccountDB, metaclass=TypeclassBase):
             CREATION_THROTTLE.update(ip, "Too many accounts being created.")
         SIGNAL_ACCOUNT_POST_CREATE.send(sender=account, ip=ip)
         return account, errors
+
+    @classmethod
+    @inlineCallbacks
+    def create_async(cls, *args, **kwargs):
+        """
+        Non-blocking counterpart to `create()` for Twisted commands.
+
+        Performs fast validation, throttle, and ban checks on the main thread,
+        offloads password hashing to a worker thread, and then delegates
+        persistence and post-create hooks to `cls.create()` on the main thread.
+
+        If a subclass has overridden `create()`, falls back to calling it
+        synchronously.
+
+        Keyword Args:
+            Same as `create()`.
+
+        Returns:
+            Deferred: Fires with `(account, errors)` matching `create()`.
+
+        """
+        if cls.create.__func__ is not DefaultAccount.create.__func__:
+            return cls.create(*args, **kwargs)
+
+        errors = []
+        username = kwargs.get("username", "")
+        password = kwargs.get("password", "")
+        prehashed_password = kwargs.get("prehashed_password", None)
+        guest = kwargs.get("guest", False)
+
+        ip = kwargs.get("ip", "")
+        if isinstance(ip, (tuple, list)):
+            ip = ip[0]
+
+        if ip and CREATION_THROTTLE.check(ip):
+            errors.append(
+                _("You are creating too many accounts. Please log into an existing account.")
+            )
+            return None, errors
+
+        username = cls.normalize_username(username)
+
+        if not guest:
+            valid, errs = cls.validate_username(username)
+            if not valid:
+                errors.extend(errs)
+                return None, errors
+
+        if not (guest and prehashed_password is not None):
+            valid, errs = cls.validate_password(password, account=cls(username=username))
+            if not valid:
+                errors.extend(errs)
+                return None, errors
+
+        if cls.is_banned(username=username, ip=ip):
+            errors.append(
+                _(
+                    "|rYou have been banned and cannot continue from here."
+                    "\nIf you feel this ban is in error, please email an admin.|x"
+                )
+            )
+            return None, errors
+
+        if prehashed_password is None:
+            prehashed_password = yield defer_make_password(password)
+
+        return cls.create(*args, **{**kwargs, "prehashed_password": prehashed_password})
 
     def delete(self, *args, **kwargs):
         """
@@ -2022,8 +2198,10 @@ class DefaultGuest(DefaultAccount):
                     LOGIN_THROTTLE.update(ip, "Too many requests for Guest access.")
                 return None, errors
             else:
-                # build a new account with the found guest username
-                password = "%016x" % getrandbits(64)
+                # Build a new account with the found guest username. Guests are
+                # ephemeral and never authenticate by password, so use Django's
+                # unusable password marker to avoid unnecessary KDF work.
+                prehashed_password = make_password(None)
                 home = settings.GUEST_HOME
                 permissions = settings.PERMISSION_GUEST_DEFAULT
                 typeclass = settings.BASE_GUEST_TYPECLASS
@@ -2032,7 +2210,8 @@ class DefaultGuest(DefaultAccount):
                 account, errs = super(DefaultGuest, cls).create(
                     guest=True,
                     username=username,
-                    password=password,
+                    password=None,
+                    prehashed_password=prehashed_password,
                     permissions=permissions,
                     typeclass=typeclass,
                     home=home,

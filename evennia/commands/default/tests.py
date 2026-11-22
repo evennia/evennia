@@ -2280,6 +2280,38 @@ class TestUnconnectedCommand(BaseEvenniaCommandTest):
             "Registration is currently disabled.",
         )
 
+    def test_connect_and_create_async_commands(self):
+        """Confirm unconnected create and connect commands work with yielded Deferreds."""
+        self.session.logged_in = False
+        self.session.sessionhandler = MagicMock()
+        self.session.sessionhandler.__contains__ = MagicMock(return_value=True)
+
+        self.call(
+            unloggedin.CmdUnconnectedCreate(),
+            "NewPlayer ValidPass123",
+            "A new account 'NewPlayer' was created. Welcome!",
+            caller=self.session,
+            inputs=["y"],
+        )
+
+        self.call(
+            unloggedin.CmdUnconnectedConnect(),
+            "NewPlayer ValidPass123",
+            "",
+            caller=self.session,
+        )
+        self.session.sessionhandler.login.assert_called_once()
+
+        # Wrong password should send error and not log in again
+        self.session.sessionhandler.login.reset_mock()
+        self.call(
+            unloggedin.CmdUnconnectedConnect(),
+            "NewPlayer WrongPass123",
+            "Username and/or password is incorrect.",
+            caller=self.session,
+        )
+        self.session.sessionhandler.login.assert_not_called()
+
 
 # Test syscommands
 

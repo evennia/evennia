@@ -31,6 +31,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from mock import MagicMock, Mock, patch
 from twisted.internet.defer import Deferred
+from twisted.python.failure import Failure
 
 import evennia
 from evennia import settings_default
@@ -463,20 +464,33 @@ class EvenniaCommandTestMixin:
                 ret = cmdobj.func()
                 # handle func's with yield in them (making them generators)
                 if isinstance(ret, types.GeneratorType):
+                    yielded = None
+                    started = False
                     while True:
                         try:
-                            inp = inputs.pop() if inputs else None
-                            if inp:
-                                try:
-                                    # this mimics a user's reply to a prompt
-                                    ret.send(inp)
-                                except TypeError:
-                                    next(ret)
-                                    ret = ret.send(inp)
+                            if not started:
+                                started = True
+                                yielded = next(ret)
+                            elif isinstance(yielded, Deferred):
+                                if isinstance(yielded.result, Failure):
+                                    yielded = ret.throw(
+                                        yielded.result.type,
+                                        yielded.result.value,
+                                        yielded.result.tb,
+                                    )
+                                else:
+                                    yielded = ret.send(yielded.result)
+                            elif isinstance(yielded, str) and inputs:
+                                # this mimics a user's reply to a prompt
+                                yielded = ret.send(inputs.pop())
                             else:
-                                # non-input yield, like yield(10). We don't pause
-                                # but fire it immediately.
-                                next(ret)
+                                inp = inputs.pop() if inputs else None
+                                if inp:
+                                    yielded = ret.send(inp)
+                                else:
+                                    # non-input yield, like yield(10). We don't pause
+                                    # but fire it immediately.
+                                    yielded = next(ret)
                         except StopIteration:
                             break
 
